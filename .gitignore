@@ -1,0 +1,28 @@
+# Ignore compiled object files
+*.o
+
+# Ignore executables
+*.exe
+*.out
+
+# Ignore log files
+*.log
+
+# Ignore generated documentation
+/doc/
+
+# Ignore build directories
+/build/
+/dist/
+
+# Ignore package files
+*.tar.gz
+*.zip
+
+# Ignore IDE-specific files
+.idea/
+.vscode/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
