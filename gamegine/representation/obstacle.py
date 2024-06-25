@@ -1,13 +1,12 @@
 
 
 from typing import List, Tuple
-from gamegine.representation.bounds import Boundary, Polygon, Rectangle, Circle
+from gamegine.representation.bounds import Boundary, BoundedObject, Polygon, Rectangle, Circle
 
-
-class Obstacle(object): 
+class Obstacle(BoundedObject): 
     def __init__(self, name: str, bounds: Boundary) -> None:
+        super().__init__(bounds)
         self.name = name
-        self.bounds = bounds
         pass
 
     def __str__(self):
@@ -24,6 +23,5 @@ class Circular(Obstacle):
 class Polygonal(Obstacle):
     def __init__(self, name: str, points: List[Tuple[float, float]]) -> None:
         super().__init__(name, Polygon(points))
-
 
 

@@ -28,10 +28,10 @@ class Shade(Enum):
 class Opacity(Enum):
     OPAQUE = 1
     TRANSLUCENT = 0.5
-    TRANSPARENTISH = 0.8
+    TRANSPARENTISH = 0.2
 
 def get_color(color: Palette, shade: Shade, opacity: Opacity) -> Color:
-    return Color(*((color.get_color_array() + color.get_color_array() * shade.value).clip(0, 255).astype(int).tolist()), a=int(opacity.value*255))
+    return Color(*((color.get_color_array() + color.get_color_array() * shade.value).clip(0, 255).astype(int).tolist()), int(opacity.value*255))
 
 def get_color_from_rgb(rgb: np.array, opacity: Opacity) -> Color:
     if rgb.shape != (3,):
