@@ -19,6 +19,12 @@ def Inch(value) -> pint.Quantity:
 def Second(value) -> pint.Quantity:
     return Q_(value, 'second')
 
+def Radian(value) -> pint.Quantity:
+    return Q_(value, 'radian')
+
+def Degree(value) -> pint.Quantity:
+    return Q_(value, 'degree')
+
 def GetRegistry():
     return ureg
 

@@ -184,8 +184,9 @@ class BoundedObject(NamedObject):
         obj.bounds = obj.bounds.reflect_x(axis)
         return obj
     
-    def mirrored_over_vertical_ip(self, axis: pint.Quantity) -> None:
+    def mirrored_over_vertical_ip(self, axis: pint.Quantity) -> 'BoundedObject':
         self.bounds = self.bounds.reflect_x(axis)
+        return self
     
     def scaled(self, factor: pint.Quantity) -> 'BoundedObject':
         obj = copy.deepcopy(self)
@@ -196,6 +197,10 @@ class BoundedObject(NamedObject):
         obj = copy.deepcopy(self)
         obj.bounds = obj.bounds.translate(x, y)
         return obj
+    
+    def translate_ip(self, x: pint.Quantity, y: pint.Quantity) -> 'BoundedObject':
+        self.bounds = self.bounds.translate(x, y)
+        return self
 
 def CircularPattern(objects: List[BoundedObject], center: Tuple[pint.Quantity, pint.Quantity], angle: pint.Quantity, num_objects: int, prefix_func: Callable[[int], str]) -> List[BoundedObject]:
     if num_objects <= 1:
@@ -203,11 +208,13 @@ def CircularPattern(objects: List[BoundedObject], center: Tuple[pint.Quantity, p
     out = []
     angle_increment = angle / num_objects
     for object in objects:
-        vector = [center[0] - object.bounds.x, center[1] - object.bounds.y]
-        for i in range(num_objects):
+        centerToObject = [object.bounds.x - center[0], object.bounds.y - center[1]]
+        objectToCenter = [centerToObject[0] * -1, centerToObject[1] * -1]
+        
+        for i in range(1, num_objects):
             angle = angle_increment * i
-            new_vector = RotateAboutOrigin(vector, angle)
-            out.append(object.translated(new_vector[0], new_vector[1]).prefix(prefix_func(i)))
+            new_vector = RotateAboutOrigin(centerToObject, -angle)
+            out.append(object.translated(objectToCenter[0], objectToCenter[1]).translate_ip(new_vector[0], new_vector[1]).prefix(prefix_func(i)))
     return objects + out
 
 

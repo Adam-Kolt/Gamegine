@@ -29,6 +29,15 @@ class Game(object):
     
     def half_field_y(self):
         return self.field_size[1] / 2
+    
+    def field_size(self):
+        return self.field_size
+    
+    def full_field_y(self):
+        return self.field_size[1]
+    
+    def full_field_x(self):
+        return self.field_size[0]
 
     def add_obstacle(self, obstacle: obstacle.Obstacle) -> 'Game':
         if obstacle.name in self.obstacles:

@@ -54,15 +54,9 @@ def draw_fancy_polygon(polygon: Polygon, color: Palette, render_scale: pint.Quan
     pygame.draw.polygon(
         pygame.display.get_surface(),
         get_color(color, Shade.LIGHT, Opacity.TRANSPARENTISH),
-        polygon.points
+        [(RatioOf(point[0], render_scale), RatioOf(point[1], render_scale)) for point in polygon.points]
     )
 
-    # Inner Polygon
-    pygame.draw.polygon(
-        pygame.display.get_surface(),
-        get_color(color, Shade.NORMAL, Opacity.TRANSLUCENT),
-        [(point[0] + (polygon.points[0][0] - point[0]) * 0.1, point[1] + (polygon.points[0][1] - point[1]) * 0.1) for point in polygon.points]
-    )
 
 def draw_fancy_boundary(bounds, color: Palette, render_scale: pint.Quantity):
     if isinstance(bounds, Circle):

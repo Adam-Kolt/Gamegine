@@ -21,3 +21,4 @@ def RotateAboutOrigin(vector, angle: pint.Quantity):
     rads = angle.to("rad")
     x = vector[0] * math.cos(rads) - vector[1] * math.sin(rads)
     y = vector[0] * math.sin(rads) + vector[1] * math.cos(rads)
+    return [x, y]

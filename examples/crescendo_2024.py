@@ -1,10 +1,10 @@
 
 
 from gamegine.render.renderer import Renderer
-from gamegine.representation.bounds import Circle, SymmetricalX
+from gamegine.representation.bounds import Circle, SymmetricalX, CircularPattern
 from gamegine.representation.game import Game
-from gamegine.representation.obstacle import Circular, Rectangular
-from gamegine.utils.unit import Meter, Centimeter, Feet, Inch
+from gamegine.representation.obstacle import Circular, Polygonal, Rectangular
+from gamegine.utils.unit import Degree, Meter, Centimeter, Feet, Inch
 import time
 
 
@@ -12,8 +12,24 @@ test_game = Game("FRC Crescendo 2024")
 print("Name:", test_game.name)
 test_game.set_field_size(Feet(54)+Inch(3.25), Feet(26) + Inch(11.25))
 objs = SymmetricalX([
-    Rectangular("Test Rectangle", Feet(1), Feet(1), Feet(2), Feet(2)),
-    Circular("Stage Leg 1", Inch(133), Inch(161.62), Inch(7)),
+    *CircularPattern(
+        [Circular("Stage Leg", Inch(133), Inch(161.62), Inch(7))],
+        (Inch(133)+Inch(59.771), Inch(161.62)), 
+        Degree(360),
+        3,
+        lambda i : str(i)
+    ),
+    Polygonal("Subwoofer", [
+        (Inch(0), Inch(64.081)),
+        (Inch(0), Inch(64.081) + Inch(82.645)),
+        (Inch(35.695), Inch(64.081) + Inch(82.645) - Inch(20.825)),
+        (Inch(35.695), Inch(64.081) + Inch(20.825)),]),
+
+    Polygonal("Source", [
+        (Inch(0), Inch(281.5)),
+        (Inch(0), test_game.full_field_y()),
+        (Inch(72.111), test_game.full_field_y())
+    ])
 
 
     ], test_game.half_field_x(), "Red ", "Blue ")
