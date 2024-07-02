@@ -24,7 +24,7 @@ class MapDisplay(Drawable):
 
         for connection in self.connections:
             if len(connection) != 2:
-                print(f"WTF!!! {connection} Connection is not a pair of nodes.")
+                print(f"WTH! {connection} Connection is not a pair of nodes.")
                 continue
             # Literally no clue whether this is faster or slower than just converting the set to a list and indexing it
             one, two = connection.pop(), connection.pop()
