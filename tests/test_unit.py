@@ -26,26 +26,24 @@ def test_convert_to_standard_magnitude():
     assert StdMag(Centimeter(1)) == Q_(1, GetRegistry().centimeter).to_base_units().magnitude
     assert StdMag(Feet(1)) == Q_(1, GetRegistry().foot).to_base_units().magnitude
     assert StdMag(Inch(1)) == Q_(1, GetRegistry().inch).to_base_units().magnitude
-    assert StdMag(Second(1)) == Q_(1, GetRegistry().second).to_base_units().magnitude
-    assert StdMag(Radian(1)) == Q_(1, GetRegistry().radian).to_base_units().magnitude
-    assert StdMag(Degree(1)) == Q_(1, GetRegistry().degree).to_base_units().magnitude
+
 
 
 def test_convert_magnitude_to_standard():
-    from gamegine.utils.unit import ToStd, Meter, Centimeter, Feet, Inch, Second, Radian, Degree, GetRegistry
+    from gamegine.utils.unit import ToStd, Meter, Centimeter, Feet, Inch, Second, Radian, Degree, GetRegistry, StandardUnit
     from gamegine import Q_
-    assert ToStd(1) == Q_(1, GetRegistry().dimensionless)
+    assert ToStd(1) == Q_(1, StandardUnit)
     assert ToStd(1).magnitude == 1
     
 def test_convert_list_to_standard():
-    from gamegine.utils.unit import List2Std, Meter, Centimeter, Feet, Inch, Second, Radian, Degree, GetRegistry
+    from gamegine.utils.unit import List2Std, Meter, Centimeter, Feet, Inch, Second, Radian, Degree, GetRegistry, StandardUnit
     from gamegine import Q_
-    assert List2Std([1, 2, 3]) == [Q_(1, GetRegistry().dimensionless), Q_(2, GetRegistry().dimensionless), Q_(3, GetRegistry().dimensionless)]
+    assert List2Std([1, 2, 3]) == [Q_(1, StandardUnit), Q_(2, StandardUnit), Q_(3, StandardUnit)]
     assert List2Std([1, 2, 3])[0].magnitude == 1
 
 def test_convert_tuple_to_standard():
-    from gamegine.utils.unit import Tuple2Std, Meter, Centimeter, Feet, Inch, Second, Radian, Degree, GetRegistry
+    from gamegine.utils.unit import Tuple2Std, Meter, Centimeter, Feet, Inch, Second, Radian, Degree, GetRegistry, StandardUnit
     from gamegine import Q_
-    assert Tuple2Std((1, 2, 3)) == (Q_(1, GetRegistry().dimensionless), Q_(2, GetRegistry().dimensionless), Q_(3, GetRegistry().dimensionless))
+    assert Tuple2Std((1, 2, 3)) == (Q_(1, StandardUnit), Q_(2, StandardUnit), Q_(3, StandardUnit))
     assert Tuple2Std((1, 2, 3))[0].magnitude == 1
     

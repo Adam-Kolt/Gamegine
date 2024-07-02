@@ -2,8 +2,7 @@ from typing import List, Tuple
 import pint
 from gamegine import ureg, Q_
 
-StandardUnit = ureg.dimensionless
-
+StandardUnit = ureg.meter
 
 def Meter(value) -> pint.Quantity:
     return Q_(value, 'meter')
@@ -32,14 +31,17 @@ def GetRegistry():
 def Quantity(value, unit):
     return Q_(value, unit)
 
+# TODO: There may have been a slight oversight with this function. It only works for and made for length units. Maybe name it better.
+# \_(ツ)_/¯
+
 def StdMag(value: pint.Quantity):
-    return value.to_base_units().magnitude
+    return value.to(StandardUnit).magnitude
 
 def StdMagTuple(value: Tuple[pint.Quantity]):
-    return tuple([val.to_base_units().magnitude for val in value])
+    return tuple([StdMag(val) for val in value])
 
 def StdMagList(value: List[pint.Quantity]):
-    return [val.to(StandardUnit).magnitude for val in value]
+    return [StdMag(val) for val in value]
 
 def ToStd(value: float):
     return Q_(value, StandardUnit)

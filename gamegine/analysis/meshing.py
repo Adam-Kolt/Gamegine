@@ -86,7 +86,7 @@ class Map(object):
         coord = StdMagTuple((x, y))
         if coord not in self.encoding:
             raise Exception(f"Node at ({x}, {y}) does not exist.")
-        return self.encoding[(x, y)]
+        return self.encoding[coord]
     
     def decode_coordinates(self, node_id: int) -> Tuple[pint.Quantity, pint.Quantity]:
         if node_id not in self.nodes:
