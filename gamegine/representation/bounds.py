@@ -3,9 +3,13 @@ from abc import ABC, abstractmethod
 import copy
 
 import pint
-
+import math
 from gamegine.representation.base import NamedObject
 from gamegine.utils.matematika import ReflectValue1D, RotateAboutOrigin
+import shapely.geometry as sg
+
+from gamegine.utils.unit import StdMagTuple
+
 
 
 class Boundary(ABC):
@@ -26,7 +30,27 @@ class Boundary(ABC):
     def reflect_y(self, axis: pint.Quantity) -> 'Boundary':
         pass
 
-class Rectangle(Boundary):
+    @abstractmethod
+    def discretized(self, curve_segments: int = 5) -> 'DiscreteBoundary':
+        pass
+
+class DiscreteBoundary(Boundary):
+    @abstractmethod
+    def get_vertices(self) -> List[Tuple[pint.Quantity, pint.Quantity]]:
+        pass
+
+    def discretized(self, curve_segments: int = 5) -> 'DiscreteBoundary':
+        return self
+    
+    def __recompute_plain_points(self):
+        self.plain_points = [StdMagTuple(point) for point in self.get_vertices()]
+    
+    def intersects_line(self, x1: pint.Quantity, y1: pint.Quantity, x2: pint.Quantity, y2: pint.Quantity) -> bool:
+        self.__recompute_plain_points()
+        return sg.Polygon(self.plain_points).intersects(sg.LineString([StdMagTuple((x1, y1)), StdMagTuple((x2, y2))]))
+
+
+class Rectangle(DiscreteBoundary):
     def __init__(self, x: pint.Quantity, y: pint.Quantity, width: pint.Quantity, height: pint.Quantity):
         self.x = x
         self.y = y
@@ -56,6 +80,12 @@ class Rectangle(Boundary):
         self.y -= self.height
         return self
     
+    def discretized(self, curve_segments: int = 5) -> DiscreteBoundary:
+        return self
+    
+    def get_vertices(self) -> List[Tuple[pint.Quantity, pint.Quantity]]:
+        return [(self.x, self.y), (self.x + self.width, self.y), (self.x + self.width, self.y + self.height), (self.x, self.y + self.height)]
+    
 class Circle(Boundary):
     def __init__(self, x: pint.Quantity, y: pint.Quantity, radius: pint.Quantity):
         self.x = x
@@ -81,9 +111,17 @@ class Circle(Boundary):
     def reflect_y(self, axis: pint.Quantity) -> 'Circle':
         self.y = 2 * axis - self.y
         return self
+    
+    def discretized(self, curve_segments: int = 5) -> DiscreteBoundary:
+        points = []
+        step = math.pi / curve_segments
+        for i in range(curve_segments):
+            angle = step*i
+            points.append((math.cos(angle)*self.radius, math.sin(angle)*self.radius))
+        return Polygon(points)
 
     
-class Polygon(Boundary):
+class Polygon(DiscreteBoundary):
     def __init__(self, points: List[Tuple[pint.Quantity, pint.Quantity]]):
         self.points = points
 
@@ -106,8 +144,15 @@ class Polygon(Boundary):
         self.points = [(point[0], ReflectValue1D(point[1], axis)) for point in self.points]
         return self
     
+    def discretized(self, curve_segments: int = 5) -> DiscreteBoundary:
+        return self
     
-class Line(Boundary):
+    def get_vertices(self) -> List[Tuple[pint.Quantity, pint.Quantity]]:
+        return self.points
+
+    
+    
+class Line(DiscreteBoundary):
     def __init__(self, x1: pint.Quantity, y1: pint.Quantity, x2: pint.Quantity, y2: pint.Quantity):
         self.x1 = x1
         self.y1 = y1
@@ -141,7 +186,13 @@ class Line(Boundary):
         self.x2 = ReflectValue1D(self.x2, axis)
         return self
     
-class Point(Boundary):
+    def discretized(self, curve_segments: int = 5) -> DiscreteBoundary:
+        return self
+    
+    def get_vertices(self) -> List[Tuple[pint.Quantity, pint.Quantity]]:
+        return [(self.x1, self.y1), (self.x2, self.y2)]
+    
+class Point(DiscreteBoundary):
     def __init__(self, x: pint.Quantity, y: pint.Quantity):
         self.x = x
         self.y = y
@@ -166,6 +217,12 @@ class Point(Boundary):
     def reflect_x(self, axis: pint.Quantity) -> 'Point':
         self.x = ReflectValue1D(self.x, axis)
         return self
+    
+    def discretized(self, curve_segments: int = 5) -> DiscreteBoundary:
+        return self
+    
+    def get_vertices(self) -> List[Tuple[pint.Quantity, pint.Quantity]]:
+        return [(self.x, self.y)]
     
 class BoundedObject(NamedObject):
     def __init__(self, bounds: Boundary) -> None:

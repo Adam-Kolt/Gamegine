@@ -1,0 +1,68 @@
+Date : 2024-07-01 04:37:58
+Directory : c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine
+Total : 29 files,  832 codes, 33 comments, 329 blanks, all 1194 lines
+
+Languages
++------------------+------------+------------+------------+------------+------------+
+| language         | files      | code       | comment    | blank      | total      |
++------------------+------------+------------+------------+------------+------------+
+| Python           |         24 |        783 |         23 |        306 |      1,112 |
+| Batch            |          1 |         26 |          1 |          9 |         36 |
+| reStructuredText |          1 |         12 |          2 |          7 |         21 |
+| Makefile         |          1 |          9 |          7 |          5 |         21 |
+| Markdown         |          1 |          2 |          0 |          1 |          3 |
+| pip requirements |          1 |          0 |          0 |          1 |          1 |
++------------------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                      | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                         |         29 |        832 |         33 |        329 |      1,194 |
+| . (Files)                                                                                 |          3 |         22 |          0 |          4 |         26 |
+| docs                                                                                      |          4 |         56 |         20 |         31 |        107 |
+| examples                                                                                  |          3 |         71 |          1 |         36 |        108 |
+| gamegine                                                                                  |         17 |        606 |         12 |        243 |        861 |
+| gamegine (Files)                                                                          |          1 |          3 |          0 |          5 |          8 |
+| gamegine\analysis                                                                         |          2 |         88 |          2 |         29 |        119 |
+| gamegine\render                                                                           |          5 |        177 |          8 |         66 |        251 |
+| gamegine\representation                                                                   |          6 |        285 |          2 |        109 |        396 |
+| gamegine\utils                                                                            |          3 |         53 |          0 |         34 |         87 |
+| tests                                                                                     |          2 |         77 |          0 |         15 |         92 |
++-------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| filename                                                                                  | language         | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\README.md                               | Markdown         |          2 |          0 |          1 |          3 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\docs\Makefile                           | Makefile         |          9 |          7 |          5 |         21 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\docs\conf.py                            | Python           |          9 |         10 |         10 |         29 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\docs\index.rst                          | reStructuredText |         12 |          2 |          7 |         21 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\docs\make.bat                           | Batch            |         26 |          1 |          9 |         36 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\examples\__init__.py                    | Python           |          0 |          0 |          1 |          1 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\examples\basic_game.py                  | Python           |         33 |          1 |         19 |         53 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\examples\crescendo_2024.py              | Python           |         38 |          0 |         16 |         54 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\gamegine\__init__.py                    | Python           |          3 |          0 |          5 |          8 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\gamegine\analysis\meshing.py            | Python           |         88 |          2 |         28 |        118 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\gamegine\analysis\pathfinding.py        | Python           |          0 |          0 |          1 |          1 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\gamegine\render\analysis.py             | Python           |         25 |          1 |         10 |         36 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\gamegine\render\drawable.py             | Python           |         13 |          0 |          4 |         17 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\gamegine\render\helpers.py              | Python           |         50 |          6 |         17 |         73 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\gamegine\render\renderer.py             | Python           |         59 |          1 |         24 |         84 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\gamegine\render\style.py                | Python           |         30 |          0 |         11 |         41 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\gamegine\representation\__init__.py     | Python           |          0 |          0 |          1 |          1 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\gamegine\representation\base.py         | Python           |         10 |          0 |          4 |         14 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\gamegine\representation\bounds.py       | Python           |        203 |          1 |         67 |        271 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\gamegine\representation\game.py         | Python           |         46 |          0 |         22 |         68 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\gamegine\representation\interactable.py | Python           |          8 |          1 |          5 |         14 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\gamegine\representation\obstacle.py     | Python           |         18 |          0 |         10 |         28 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\gamegine\utils\__init__.py              | Python           |          0 |          0 |          1 |          1 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\gamegine\utils\matematika.py            | Python           |         17 |          0 |         10 |         27 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\gamegine\utils\unit.py                  | Python           |         36 |          0 |         23 |         59 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\requirements.txt                        | pip requirements |          0 |          0 |          1 |          1 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\setup.py                                | Python           |         20 |          0 |          2 |         22 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\tests\test_math.py                      | Python           |         34 |          0 |          7 |         41 |
+| c:\Users\akolt\OneDrive\Documents\GitHub\Gamegine\tests\test_unit.py                      | Python           |         43 |          0 |          8 |         51 |
+| Total                                                                                     |                  |        832 |         33 |        329 |      1,194 |
++-------------------------------------------------------------------------------------------+------------------+------------+------------+------------+------------+

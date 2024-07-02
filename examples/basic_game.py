@@ -1,5 +1,7 @@
 
 
+from gamegine.analysis.meshing import Map
+from gamegine.render.analysis import MapDisplay
 from gamegine.render.renderer import Renderer
 from gamegine.representation.bounds import Circle, SymmetricalX
 from gamegine.representation.game import Game
@@ -22,6 +24,18 @@ objs = SymmetricalX([
 test_game.add_obstacles(objs)
 
 
+map = Map("Test Map")
+
+# Mesh 
+map.add_node(Feet(1), Feet(23))
+map.add_node(Feet(9), Feet(2))
+map.add_node(Feet(4.3), Feet(12))
+map.add_node(Feet(20), Feet(23))
+map.connect_all_nodes()
+
+
+display = MapDisplay(map)
+
 
 renderer = Renderer()
 
@@ -32,6 +46,7 @@ print("Game set and display initialized")
 
 while renderer.loop():
     renderer.draw_static_elements()
+    renderer.draw_element(display)
     time.sleep(0.1)
     renderer.render_frame()
 
