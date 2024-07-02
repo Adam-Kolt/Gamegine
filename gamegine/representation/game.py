@@ -50,6 +50,9 @@ class Game(object):
         for obstacle in obstacles:
             self.add_obstacle(obstacle)
         return self
+    
+    def get_obstacles(self) -> List[obstacle.Obstacle]:
+        return self.obstacles.values()
 
     def add_interactable(self, interactable) -> 'Game':
         if interactable.name in self.interactables:

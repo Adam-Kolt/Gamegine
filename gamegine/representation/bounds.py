@@ -114,10 +114,10 @@ class Circle(Boundary):
     
     def discretized(self, curve_segments: int = 5) -> DiscreteBoundary:
         points = []
-        step = math.pi / curve_segments
+        step = 2 * math.pi / curve_segments
         for i in range(curve_segments):
             angle = step*i
-            points.append((math.cos(angle)*self.radius, math.sin(angle)*self.radius))
+            points.append((math.cos(angle)*self.radius + self.x, math.sin(angle)*self.radius + self.y))
         return Polygon(points)
 
     
@@ -258,6 +258,24 @@ class BoundedObject(NamedObject):
     def translate_ip(self, x: pint.Quantity, y: pint.Quantity) -> 'BoundedObject':
         self.bounds = self.bounds.translate(x, y)
         return self
+    
+    def discretized(self, curve_segments: int = 5) -> 'BoundedObject':
+        obj = copy.deepcopy(self)
+        obj.bounds = obj.bounds.discretized(curve_segments)
+        return obj
+    
+    def discretize_ip(self, curve_segments: int = 5) -> 'BoundedObject':
+        self.bounds = self.bounds.discretized(curve_segments)
+        return self
+
+def LineIntersectsAnyBound(bounds: List[DiscreteBoundary], x1: pint.Quantity, y1: pint.Quantity, x2: pint.Quantity, y2: pint.Quantity) -> bool:
+    for bound in bounds:
+        if not isinstance(bound, DiscreteBoundary):
+            print(f"Discretizing continous bound {bound}")
+        bound.discretized() # If not already discretized
+        if bound.intersects_line(x1, y1, x2, y2):
+            return True
+    return False
 
 def CircularPattern(objects: List[BoundedObject], center: Tuple[pint.Quantity, pint.Quantity], angle: pint.Quantity, num_objects: int, prefix_func: Callable[[int], str]) -> List[BoundedObject]:
     if num_objects <= 1:

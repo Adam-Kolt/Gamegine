@@ -33,4 +33,4 @@ class MapDisplay(Drawable):
             connection.add(one)
             connection.add(two)
             
-            pygame.draw.line(pygame.display.get_surface(), (0, 255, 0), (Renderer.to_pixels(node1[0]), Renderer.to_pixels(node1[1])), (Renderer.to_pixels(node2[0]), Renderer.to_pixels(node2[1])), width=5)
+            pygame.draw.line(pygame.display.get_surface(), (0, 255, 0), (Renderer.to_pixels(node1[0]), Renderer.to_pixels(node1[1])), (Renderer.to_pixels(node2[0]), Renderer.to_pixels(node2[1])), width=1)

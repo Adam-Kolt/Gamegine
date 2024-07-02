@@ -17,7 +17,8 @@ def ReflectValue1D(value, axis):
 def GetDistanceBetween(point1, point2):
     return (math.sqrt(point1[0]**2 + point2[0]**2), math.sqrt(point1[1]**2 + point2[1]**2))
 
-
+def CoordinateInRectangle(point, rectangle):
+    return rectangle[0] <= point[0] <= rectangle[2] and rectangle[1] <= point[1] <= rectangle[3]
 
 def RotateAboutOrigin(vector, angle: pint.Quantity):
     rads = angle.to("rad")

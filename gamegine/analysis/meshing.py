@@ -4,9 +4,10 @@ from typing import List, Set, Tuple
 import pint
 from enum import Enum
 
-from gamegine.utils.matematika import GetDistanceBetween
+from gamegine.representation.bounds import BoundedObject, LineIntersectsAnyBound
+from gamegine.utils.matematika import CoordinateInRectangle, GetDistanceBetween
 from gamegine import ureg
-from gamegine.utils.unit import StdMag, StdMagTuple, ToStd, Tuple2Std
+from gamegine.utils.unit import Centimeter, StdMag, StdMagTuple, ToStd, Tuple2Std
 
 
 
@@ -41,10 +42,11 @@ class Map(object):
         node1, node2 = StdMagTuple(node1), StdMagTuple(node2)
             
         if node1 not in self.encoding:
-            print(f"Node at {node1} does not exist. Attempting to add node.")
+            # TODO: Add logging stuff
+            # print(f"Node at {node1} does not exist. Attempting to add node.")
             self.add_node(node1[0], node1[1])
         if node2 not in self.encoding:
-            print(f"Node at {node2} does not exist. Attempting to add node.")
+            # print(f"Node at {node2} does not exist. Attempting to add node.")
             self.add_node(node2[0], node2[1])
 
         node1_id = self.encoding[node1]
@@ -112,6 +114,34 @@ class Map(object):
     def add_connected_node(self, x: pint.Quantity, y: pint.Quantity, strategy: ConnectionStrategy) -> 'Map':
         # TODO: Implement connection strategy
         return self
+
+def VisibilityGraph(obstacles: List[BoundedObject], required_points: List[Tuple[pint.Quantity, pint.Quantity]]=[], clip_to: Tuple[pint.Quantity, pint.Quantity] = None, discretization_quality: int = 4) -> Map:
+    map = Map("Visibility Graph")
+    discrete_bounds = [obstacle.bounds.discretized(discretization_quality) for obstacle in obstacles]
+    points = [point for bounds in discrete_bounds for point in bounds.get_vertices()] # This is cooked...also flattening this array and adding necessary points
+    points.extend(required_points)
+    
+    for i, point in enumerate(points):
+        for j in range(i+1, len(points)):
+            if clip_to is not None:
+                if not (CoordinateInRectangle(point, [0, 0, *clip_to]) and CoordinateInRectangle(points[j], [0, 0, *clip_to])):
+                    continue
+
+            # Move points on line along slope slightly to avoid intersection with the edge
+            # Warning: Super Jank Solution                             / \
+            # TODO: Fix this jank solution...later...possibly...plz \_(._.)_/
+            intersection_line = (point[0], point[1], points[j][0], points[j][1])
+            slope = (intersection_line[3] - intersection_line[1]) / (intersection_line[2] - intersection_line[0] + Centimeter(1e-6))
+            step = Centimeter(0.01)
+            intersection_line = (intersection_line[0] + step, intersection_line[1] + step*slope, intersection_line[2] - step, intersection_line[3] - step*slope)
+            
+            if not LineIntersectsAnyBound(discrete_bounds, *intersection_line):
+                map.add_edge(point, points[j])
+    return map
+
+
+
+
 
 
 

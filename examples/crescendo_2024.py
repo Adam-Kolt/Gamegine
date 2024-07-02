@@ -1,7 +1,9 @@
 
 
+from gamegine.analysis.meshing import VisibilityGraph
+from gamegine.render.analysis import MapDisplay
 from gamegine.render.renderer import Renderer
-from gamegine.representation.bounds import Circle, SymmetricalX, CircularPattern
+from gamegine.representation.bounds import Circle, Point, SymmetricalX, CircularPattern
 from gamegine.representation.game import Game
 from gamegine.representation.obstacle import Circular, Polygonal, Rectangular
 from gamegine.utils.unit import Degree, Meter, Centimeter, Feet, Inch
@@ -29,7 +31,8 @@ objs = SymmetricalX([
         (Inch(0), Inch(281.5)),
         (Inch(0), test_game.full_field_y()),
         (Inch(72.111), test_game.full_field_y())
-    ])
+    ]),
+
 
 
     ], test_game.half_field_x(), "Red ", "Blue ")
@@ -37,7 +40,16 @@ objs = SymmetricalX([
 
 test_game.add_obstacles(objs)
 
+starting_points = [    
+    Point(Inch(49), Inch(29.64)),
+    Point(Inch(49), Inch(66)),
+    Point(Inch(49), Inch(132)),
+    Point(Inch(49), Inch(198)),
+    ]
+points = [point.get_vertices()[0] for point in starting_points]
 
+map = VisibilityGraph(test_game.get_obstacles(), points, test_game.field_size)
+map_visual = MapDisplay(map)
 
 renderer = Renderer()
 
@@ -48,6 +60,7 @@ print("Game set and display initialized")
 
 while renderer.loop():
     renderer.draw_static_elements()
+    renderer.draw_element(map_visual)
     time.sleep(0.1)
     renderer.render_frame()
 
