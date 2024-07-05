@@ -7,7 +7,7 @@ from enum import Enum
 from gamegine.representation.bounds import BoundedObject, LineIntersectsAnyBound
 from gamegine.utils.matematika import CoordinateInRectangle, GetDistanceBetween
 from gamegine import ureg
-from gamegine.utils.unit import Centimeter, StdMag, StdMagTuple, ToStd, Tuple2Std
+from gamegine.utils.unit import Centimeter, Inch, StdMag, StdMagTuple, ToStd, Tuple2Std
 
 
 
@@ -72,7 +72,7 @@ class Map(object):
         coord = StdMagTuple((x, y))
         if coord not in self.encoding:
             raise Exception(f"Node at ({x}, {y}) does not exist.")
-        return (self.encoding[coord], coord)
+        return (self.encoding[coord], Tuple2Std(coord))
     
     def get_neighbours(self, node_id: int) -> List[Tuple[int, pint.Quantity]]:
         if node_id not in self.nodes:
@@ -91,7 +91,7 @@ class Map(object):
     def decode_coordinates(self, node_id: int) -> Tuple[pint.Quantity, pint.Quantity]:
         if node_id not in self.nodes:
             raise Exception(f"Node with id {node_id} does not exist.")
-        return self.nodes[node_id][0]
+        return Tuple2Std(self.nodes[node_id][0])
     
     def get_all_unique_connections(self) -> List[Set[Tuple[int, int]]]:
         connections = []
@@ -114,10 +114,17 @@ class Map(object):
     def add_connected_node(self, x: pint.Quantity, y: pint.Quantity, strategy: ConnectionStrategy) -> 'Map':
         # TODO: Implement connection strategy
         return self
+    
+    def get_closest_node(self, x: pint.Quantity, y: pint.Quantity) -> Tuple[int, Tuple[pint.Quantity, pint.Quantity]]:
+        coord = StdMagTuple((x, y))
+        if coord in self.encoding:
+            return self.get_node(x, y)
+        return self.get_node(*Tuple2Std(min(self.nodes.items(), key=lambda node: GetDistanceBetween(node[1][0], coord))[1][0]))
 
-def VisibilityGraph(obstacles: List[BoundedObject], required_points: List[Tuple[pint.Quantity, pint.Quantity]]=[], clip_to: Tuple[pint.Quantity, pint.Quantity] = None, discretization_quality: int = 4) -> Map:
+
+def VisibilityGraph(obstacles: List[BoundedObject], required_points: List[Tuple[pint.Quantity, pint.Quantity]]=[], clip_to: Tuple[pint.Quantity, pint.Quantity] = None, discretization_quality: int = 4, obstacle_clearance: pint.Quantity = Inch(21)) -> Map:
     map = Map("Visibility Graph")
-    discrete_bounds = [obstacle.bounds.discretized(discretization_quality) for obstacle in obstacles]
+    discrete_bounds = [obstacle.bounds.discretized(discretization_quality).buffered(obstacle_clearance) for obstacle in obstacles]
     points = [point for bounds in discrete_bounds for point in bounds.get_vertices()] # This is cooked...also flattening this array and adding necessary points
     points.extend(required_points)
     

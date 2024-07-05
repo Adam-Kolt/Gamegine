@@ -41,7 +41,7 @@ class Game(object):
 
     def add_obstacle(self, obstacle: obstacle.Obstacle) -> 'Game':
         if obstacle.name in self.obstacles:
-            raise Exception(f"Obstacle {obstacle.name} already exists. Names must be unique.")
+            raise Exception(f"Obstacle {obstacle.name} already exists. Names must be unique.") #  ¯\_(ツ)_/¯
         
         self.obstacles[obstacle.name] = obstacle
         return self

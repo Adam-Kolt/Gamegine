@@ -8,7 +8,7 @@ from gamegine.representation.base import NamedObject
 from gamegine.utils.matematika import ReflectValue1D, RotateAboutOrigin
 import shapely.geometry as sg
 
-from gamegine.utils.unit import StdMagTuple
+from gamegine.utils.unit import List2Std, StdMag, StdMagTuple, Tuple2Std
 
 
 
@@ -48,6 +48,15 @@ class DiscreteBoundary(Boundary):
     def intersects_line(self, x1: pint.Quantity, y1: pint.Quantity, x2: pint.Quantity, y2: pint.Quantity) -> bool:
         self.__recompute_plain_points()
         return sg.Polygon(self.plain_points).intersects(sg.LineString([StdMagTuple((x1, y1)), StdMagTuple((x2, y2))]))
+    
+    def __convert_coordinate_sequence(self, coord_sequence) -> List[Tuple[float, float]]:
+        return [Tuple2Std((x,y)) for x,y in coord_sequence]
+
+
+    def buffered(self, distance: pint.Quantity) -> 'DiscreteBoundary': # Efficiency is cooked here...but its easy
+        self.__recompute_plain_points()
+        coords = self.__convert_coordinate_sequence(sg.Polygon(self.plain_points).buffer(StdMag(distance), quad_segs=1).exterior.coords)
+        return Polygon(coords)
 
 
 class Rectangle(DiscreteBoundary):
