@@ -8,7 +8,7 @@ from gamegine.representation.base import NamedObject
 from gamegine.utils.matematika import ReflectValue1D, RotateAboutOrigin
 import shapely.geometry as sg
 
-from gamegine.utils.unit import List2Std, StdMag, StdMagTuple, Tuple2Std
+from gamegine.utils.unit import Inch, List2Std, StdMag, StdMagTuple, Tuple2Std
 
 
 
@@ -48,6 +48,10 @@ class DiscreteBoundary(Boundary):
     def intersects_line(self, x1: pint.Quantity, y1: pint.Quantity, x2: pint.Quantity, y2: pint.Quantity) -> bool:
         self.__recompute_plain_points()
         return sg.Polygon(self.plain_points).intersects(sg.LineString([StdMagTuple((x1, y1)), StdMagTuple((x2, y2))]))
+
+    def contains_point(self, x: pint.Quantity, y: pint.Quantity) -> bool:
+        self.__recompute_plain_points()
+        return sg.Polygon(self.plain_points).contains(sg.Point(StdMagTuple((x, y))))
     
     def __convert_coordinate_sequence(self, coord_sequence) -> List[Tuple[float, float]]:
         return [Tuple2Std((x,y)) for x,y in coord_sequence]
@@ -310,3 +314,9 @@ def SymmetricalY(objects: List[BoundedObject], axis: pint.Quantity, prefix: str,
 
 def SymmetricalXY(objects: List[BoundedObject], axis_x: pint.Quantity, axis_y: pint.Quantity, prefix: str, prefix_og: str = "") -> List[BoundedObject]:
     return [obj.prefix(prefix_og) for obj in objects] + [obj.mirrored_over_vertical(axis_y).mirrored_over_horizontal_ip(axis_x).prefix(prefix) for obj in objects]
+
+def ExpandedObjectBounds(objects: List[BoundedObject], robot_radius: pint.Quantity = Inch(21), discretization_quality=4) -> List[DiscreteBoundary]:
+    return [object.bounds.discretized(discretization_quality).buffered(robot_radius) for object in objects]
+
+def ExpandedBounds(bounds: List[Boundary], robot_radius: pint.Quantity = Inch(21), discretization_quality=4) -> List[DiscreteBoundary]:
+    return [bound.discretized(discretization_quality).buffered(robot_radius) for bound in bounds]

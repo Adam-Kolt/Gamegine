@@ -3,7 +3,7 @@
 from gamegine.analysis.meshing import VisibilityGraph
 from gamegine.render.analysis import MapDisplay, PathDisplay
 from gamegine.render.renderer import Renderer
-from gamegine.representation.bounds import Circle, Point, SymmetricalX, CircularPattern
+from gamegine.representation.bounds import Circle, ExpandedObjectBounds, Point, SymmetricalX, CircularPattern
 from gamegine.representation.game import Game
 from gamegine.representation.obstacle import Circular, Polygonal, Rectangular
 from gamegine.utils.unit import Degree, Meter, Centimeter, Feet, Inch
@@ -49,9 +49,10 @@ starting_points = [
     ]
 points = [point.get_vertices()[0] for point in starting_points]
 
-map = VisibilityGraph(test_game.get_obstacles(), points, test_game.field_size)
+expanded_obstacles = ExpandedObjectBounds(test_game.get_obstacles())
+map = VisibilityGraph(expanded_obstacles, points, test_game.field_size)
 
-path = pathfinding.findPath(map, (Inch(30),Inch(20)), (Feet(50), Feet(9)), pathfinding.AStar, pathfinding.InitialConnectionPolicy.SnapToClosest)
+path = pathfinding.findPath(map, (Inch(30),Inch(20)), (Feet(50), Feet(9)), pathfinding.DirectedAStar, pathfinding.InitialConnectionPolicy.ConnectToClosest)
 path_display = PathDisplay(path)
 
 map_visual = MapDisplay(map)

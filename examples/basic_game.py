@@ -3,7 +3,7 @@
 from gamegine.analysis.meshing import Map, VisibilityGraph
 from gamegine.render.analysis import MapDisplay
 from gamegine.render.renderer import Renderer
-from gamegine.representation.bounds import Circle, Point, SymmetricalX
+from gamegine.representation.bounds import Circle, ExpandedObjectBounds, Point, SymmetricalX
 from gamegine.representation.game import Game
 from gamegine.representation.obstacle import Circular, Rectangular
 from gamegine.utils.unit import Meter, Centimeter, Feet, Inch
@@ -34,7 +34,7 @@ map.add_node(Feet(20), Feet(23))
 map.connect_all_nodes()
 
 
-visibility_map = VisibilityGraph(test_game.get_obstacles())
+visibility_map = VisibilityGraph(ExpandedObjectBounds(test_game.get_obstacles()))
 print(visibility_map.get_all_nodes())
 
 display = MapDisplay(visibility_map)

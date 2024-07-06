@@ -3,6 +3,13 @@ import pint
 from gamegine import ureg, Q_
 
 StandardUnit = ureg.meter
+"""
+    TODO: Maybe this
+    Now that i think about it...we may want to just convert units on creation to a float of the standard unit, speeding up legit everything...
+    Oh well, maybe by the time we get GTA 6.
+    ¯\_(ツ)_/¯
+"""
+
 
 def Meter(value) -> pint.Quantity:
     return Q_(value, 'meter')

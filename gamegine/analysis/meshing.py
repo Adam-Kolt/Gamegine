@@ -4,7 +4,7 @@ from typing import List, Set, Tuple
 import pint
 from enum import Enum
 
-from gamegine.representation.bounds import BoundedObject, LineIntersectsAnyBound
+from gamegine.representation.bounds import Boundary, BoundedObject, DiscreteBoundary, LineIntersectsAnyBound
 from gamegine.utils.matematika import CoordinateInRectangle, GetDistanceBetween
 from gamegine import ureg
 from gamegine.utils.unit import Centimeter, Inch, StdMag, StdMagTuple, ToStd, Tuple2Std
@@ -122,9 +122,9 @@ class Map(object):
         return self.get_node(*Tuple2Std(min(self.nodes.items(), key=lambda node: GetDistanceBetween(node[1][0], coord))[1][0]))
 
 
-def VisibilityGraph(obstacles: List[BoundedObject], required_points: List[Tuple[pint.Quantity, pint.Quantity]]=[], clip_to: Tuple[pint.Quantity, pint.Quantity] = None, discretization_quality: int = 4, obstacle_clearance: pint.Quantity = Inch(21)) -> Map:
+def VisibilityGraph(obstacles: List[Boundary], required_points: List[Tuple[pint.Quantity, pint.Quantity]]=[], clip_to: Tuple[pint.Quantity, pint.Quantity] = None, discretization_quality: int = 4) -> Map:
     map = Map("Visibility Graph")
-    discrete_bounds = [obstacle.bounds.discretized(discretization_quality).buffered(obstacle_clearance) for obstacle in obstacles]
+    discrete_bounds = [obstacle.discretized(discretization_quality) for obstacle in obstacles]
     points = [point for bounds in discrete_bounds for point in bounds.get_vertices()] # This is cooked...also flattening this array and adding necessary points
     points.extend(required_points)
     
@@ -145,6 +145,12 @@ def VisibilityGraph(obstacles: List[BoundedObject], required_points: List[Tuple[
             if not LineIntersectsAnyBound(discrete_bounds, *intersection_line):
                 map.add_edge(point, points[j])
     return map
+
+def TriangulatedGraph(obstacles: List[Boundary], field_bounds: Tuple[pint.Quantity, pint.Quantity], discretization_quality: int = 4) -> Map:
+    map = Map("Triangulated Graph")
+    discrete_bounds = [obstacle.discretized(discretization_quality) for obstacle in obstacles]
+    points = [point for bounds in discrete_bounds for point in bounds.get_vertices()]
+
 
 
 
