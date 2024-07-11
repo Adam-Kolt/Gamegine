@@ -1,6 +1,9 @@
+from enum import Enum
 from typing import List, Tuple
 import pint
+import pint.converters
 from gamegine import ureg, Q_
+import warnings
 
 StandardUnit = ureg.meter
 """
@@ -14,6 +17,9 @@ StandardUnit = ureg.meter
 def Meter(value) -> pint.Quantity:
     return Q_(value, 'meter')
 
+def Zero() -> pint.Quantity:
+    return Q_(0, 'meter')
+
 def Centimeter(value) -> pint.Quantity:
     return Q_(value, 'centimeter')
 
@@ -22,6 +28,15 @@ def Feet(value) -> pint.Quantity:
 
 def Inch(value) -> pint.Quantity:
     return Q_(value, 'inch')
+
+def HalfSub(value) -> pint.Quantity:
+    return Inch(value * 6)
+
+def FullSub(value) -> pint.Quantity:
+    return Feet(value)
+
+def BigMac(value) -> pint.Quantity:
+    return Centimeter(value  * 10)
 
 def Second(value) -> pint.Quantity:
     return Q_(value, 'second')
@@ -60,9 +75,35 @@ def List2Std(value: List[float]):
 def Tuple2Std(value: Tuple[float]):
     return tuple([Q_(val, StandardUnit) for val in value])
 
-
-
-
-        
 def RatioOf(quant1, quant2):
     return (quant1/quant2).to_base_units().magnitude
+
+
+
+### Awaiting Substitution into Old Unit System
+### Eventually... ¯\_(ツ)_/¯
+
+class LinearUnits(Enum):
+    Meter = 1
+    Centimeter = 0.01
+    Feet = 0.3048
+    Inch = 0.0254
+    Yard = 0.9144
+    Kilometer = 1000
+    Mile = 1609.34
+    NauticalMile = 1852 # Future proofing for FRC in 2077
+
+
+class LinearMeasurement(float): # A class which ensures unit-aware initialization of linear measurements
+    def __new__(cls, value: float, unit: LinearUnits):
+        if isinstance(value, LinearMeasurement):
+            return value
+        if isinstance(unit, float):
+            warnings.warn("UNIT WARNING! Using float as unit increases the risk that you collide with the Martian service, use a specified LinearUnits Enum instead.")
+            return float.__new__(cls, value * unit)
+        return float.__new__(cls, value * unit.value)
+    
+    def to(self, unit: LinearUnits) -> float:
+        return self / unit.value
+
+        

@@ -1,6 +1,6 @@
 
 
-from gamegine.analysis.meshing import Map, VisibilityGraph
+from gamegine.analysis.meshing import Map, VisibilityGraph, TriangulatedGraph
 from gamegine.render.analysis import MapDisplay
 from gamegine.render.renderer import Renderer
 from gamegine.representation.bounds import Circle, ExpandedObjectBounds, Point, SymmetricalX
@@ -22,7 +22,7 @@ objs = SymmetricalX([
 
 
 test_game.add_obstacles(objs)
-
+test_game.enable_field_border_obstacles()
 
 map = Map("Test Map")
 
@@ -34,8 +34,9 @@ map.add_node(Feet(20), Feet(23))
 map.connect_all_nodes()
 
 
-visibility_map = VisibilityGraph(ExpandedObjectBounds(test_game.get_obstacles()))
-print(visibility_map.get_all_nodes())
+obstacles = ExpandedObjectBounds(test_game.get_obstacles())
+visibility_map = TriangulatedGraph(obstacles, Feet(3), test_game.get_field_size())
+
 
 display = MapDisplay(visibility_map)
 

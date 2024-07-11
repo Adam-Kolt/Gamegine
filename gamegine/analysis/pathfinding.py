@@ -7,6 +7,8 @@ from enum import Enum
 from abc import ABC, abstractmethod
 
 from gamegine.analysis.meshing import Map
+from gamegine.representation.bounds import Boundary, DiscreteBoundary
+from gamegine.utils.logging import Debug
 from gamegine.utils.matematika import AngleBetweenVectors, GetDistanceBetween
 from gamegine.utils.unit import StdMag, StdMagTuple
 
@@ -33,10 +35,11 @@ class Heuristics(object):
         end_coords = StdMagTuple(map.decode_coordinates(end))
         next_coords = StdMagTuple(map.decode_coordinates(next))
         current_coords = StdMagTuple(map.decode_coordinates(current))
-        direction_weight = 1
+        direction_weight = 0.00
         vector_to_next = (next_coords[0] - current_coords[0], next_coords[1] - current_coords[1])
         vector_to_end = (end_coords[0] - next_coords[0], end_coords[1] - next_coords[1])
         return GetDistanceBetween(end_coords, next_coords) + AngleBetweenVectors(vector_to_next, vector_to_end) * direction_weight
+    
 
 class AStar(Pathfinder):
     class Node:
@@ -89,7 +92,24 @@ class DirectedAStar(AStar):
     @staticmethod 
     def calculate_path(map: Map, start: int, end: int) -> List[int]:
         return super(DirectedAStar, DirectedAStar).calculate_path(map, start, end, Heuristics.DirectedEuclideanHeuristic)
+    
 
+
+def shortcut_path(discrete_obstacles: List[DiscreteBoundary], path: List[Tuple[Quantity, Quantity]]) -> List[Tuple[Quantity, Quantity]]:
+    if len(path) <= 2:
+        return path
+    out = [path[0]]
+    current = path[0]
+
+    i = 2
+    while i < len(path)-1:
+        if any(obstacle.intersects_line(*current, *path[i]) for obstacle in discrete_obstacles):
+            Debug(f"Path segment {current} -> {path[i]} intersects obstacle. Skipping.")
+            out.append(path[i-1])
+            current = path[i-1]
+        i += 1
+    out.append(path[-1])
+    return out
 
 def findPath(map: Map, start: Tuple[Quantity, Quantity], end: Tuple[Quantity, Quantity], pathfinder: Pathfinder = DirectedAStar , initial_connection_policy: InitialConnectionPolicy = InitialConnectionPolicy.ConnectToClosest):
     match initial_connection_policy:

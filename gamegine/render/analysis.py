@@ -24,17 +24,11 @@ class MapDisplay(Drawable):
             pygame.draw.circle(pygame.display.get_surface(), (0, 255, 0), (Renderer.to_pixels(node[1][0]), Renderer.to_pixels(node[1][1])), 5)
 
         for connection in self.connections:
-            if len(connection) != 2:
-                print(f"WTH! {connection} Connection is not a pair of nodes.")
-                continue
-            # Literally no clue whether this is faster or slower than just converting the set to a list and indexing it
-            one, two = connection.pop(), connection.pop()
+            one, two = connection[0][0], connection[0][1]
             node1 = self.map.decode_coordinates(one)
             node2 = self.map.decode_coordinates(two)
-            connection.add(one)
-            connection.add(two)
-            
-            pygame.draw.line(pygame.display.get_surface(), (0, 255, 0), (Renderer.to_pixels(node1[0]), Renderer.to_pixels(node1[1])), (Renderer.to_pixels(node2[0]), Renderer.to_pixels(node2[1])), width=1)
+            color = (0, 255, 0) if connection[2] else (255, 0, 0)
+            pygame.draw.line(pygame.display.get_surface(), color, (Renderer.to_pixels(node1[0]), Renderer.to_pixels(node1[1])), (Renderer.to_pixels(node2[0]), Renderer.to_pixels(node2[1])), width=1)
 
 class PathDisplay(Drawable):
         

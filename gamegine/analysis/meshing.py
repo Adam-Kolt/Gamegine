@@ -1,5 +1,6 @@
 
 # {node_id : ((x, y), [(neighbour_id, distance), ...]), ...}
+import math
 from typing import List, Set, Tuple
 import pint
 from enum import Enum
@@ -7,7 +8,7 @@ from enum import Enum
 from gamegine.representation.bounds import Boundary, BoundedObject, DiscreteBoundary, LineIntersectsAnyBound
 from gamegine.utils.matematika import CoordinateInRectangle, GetDistanceBetween
 from gamegine import ureg
-from gamegine.utils.unit import Centimeter, Inch, StdMag, StdMagTuple, ToStd, Tuple2Std
+from gamegine.utils.unit import Centimeter, Inch, RatioOf, StdMag, StdMagTuple, ToStd, Tuple2Std
 
 
 
@@ -16,7 +17,9 @@ class ConnectionStrategy(Enum):
     LineOfSight = 2
 
 
-
+# TODO: Add one-directional edges
+# TODO: Change name of distance to weight, and add easy distance multiplier for weight
+# TODO: Add display for one-directional edges and colors depending on weight
 class Map(object):
     def __init__(self, name: str = "Map") -> None:
         self.name = name
@@ -38,7 +41,7 @@ class Map(object):
         self.id += 1
         return self
 
-    def add_edge(self, node1: Tuple[pint.Quantity, pint.Quantity], node2: Tuple[pint.Quantity, pint.Quantity], distance: pint.Quantity = None) -> 'Map':
+    def add_edge(self, node1: Tuple[pint.Quantity, pint.Quantity], node2: Tuple[pint.Quantity, pint.Quantity], weight: float = None, bidirectional: bool = True, weight_backward: float = None) -> 'Map':
         node1, node2 = StdMagTuple(node1), StdMagTuple(node2)
             
         if node1 not in self.encoding:
@@ -54,14 +57,20 @@ class Map(object):
         if node1_id == node2_id:
             raise Exception("Cannot add edge between the same node.")
         
-        if distance is None:
-            distance = GetDistanceBetween(node1, node2)
-        else: 
-            distance = StdMag(distance)
+        if weight is None:
+            weight = GetDistanceBetween(node1, node2)
         
-        self.nodes[node1_id][1][node2_id] = distance
-        self.nodes[node2_id][1][node1_id] = distance
+        self.nodes[node1_id][1][node2_id] = weight
+
+        if bidirectional:
+            if weight_backward is None:
+                weight_backward = weight
+            self.nodes[node2_id][1][node1_id] = weight_backward
+
         return self
+    
+    def add_one_way_edge(self, node1: Tuple[pint.Quantity, pint.Quantity], node2: Tuple[pint.Quantity, pint.Quantity], weight: float) -> 'Map':
+        return self.add_edge(node1, node2, weight, False)
     
     def add_edges(self, edges: List[Tuple[Tuple[pint.Quantity, pint.Quantity], Tuple[pint.Quantity, pint.Quantity], pint.Quantity]]) -> 'Map':
         for edge in edges:
@@ -93,14 +102,16 @@ class Map(object):
             raise Exception(f"Node with id {node_id} does not exist.")
         return Tuple2Std(self.nodes[node_id][0])
     
-    def get_all_unique_connections(self) -> List[Set[Tuple[int, int]]]:
-        connections = []
+    def get_all_unique_connections(self) -> List[Tuple[Tuple[int, int], Tuple[float], bool]]:
+        connections = {}
         for node_id, node in self.nodes.items():
-            for id, distance in node[1].items():
-                node_pair = {node_id, id}
-                if node_pair not in connections:
-                    connections.append(node_pair)
-        return connections
+            for id, weight in node[1].items():
+                if (id, node_id) in connections:
+                    connections[(id, node_id)] = (connections[(id, node_id)], weight)
+                else:
+                    connections[(node_id, id)] = weight
+
+        return [(connection, weights, len(weights)==2) for connection, weights in connections.items()]
 
     def connect_all_nodes(self) -> 'Map':
         items = list(self.nodes.items())
@@ -109,6 +120,12 @@ class Map(object):
                 node1_id, node1 = items[i]
                 node2_id, node2 = items[j]
                 self.add_edge(Tuple2Std(node1[0]), Tuple2Std(node2[0]))
+        return self
+    
+    def connect_all_points(self, points: List[Tuple[pint.Quantity, pint.Quantity]]) -> 'Map':
+        for i in range(len(points)):
+            for j in range(i+1, len(points)):
+                self.add_edge(points[i], points[j])
         return self
     
     def add_connected_node(self, x: pint.Quantity, y: pint.Quantity, strategy: ConnectionStrategy) -> 'Map':
@@ -146,10 +163,35 @@ def VisibilityGraph(obstacles: List[Boundary], required_points: List[Tuple[pint.
                 map.add_edge(point, points[j])
     return map
 
-def TriangulatedGraph(obstacles: List[Boundary], field_bounds: Tuple[pint.Quantity, pint.Quantity], discretization_quality: int = 4) -> Map:
+def TriangulatedGraph(obstacles: List[Boundary], triangle_size: pint.Quantity, field_bounds: Tuple[pint.Quantity, pint.Quantity], discretization_quality: int = 4) -> Map:
     map = Map("Triangulated Graph")
     discrete_bounds = [obstacle.discretized(discretization_quality) for obstacle in obstacles]
-    points = [point for bounds in discrete_bounds for point in bounds.get_vertices()]
+    altitude = math.sqrt(3) * triangle_size * 0.5
+    for row in range(math.ceil(RatioOf(field_bounds[1], altitude))):
+        x_offset = row % 2 * (0.5 * triangle_size)
+        for column in range(math.ceil(RatioOf(field_bounds[0], triangle_size))):
+            points = [
+                (x_offset + column * triangle_size, (row+1) * altitude),
+                (x_offset + (column+1) * triangle_size, (row+1) * altitude),
+                (x_offset + (column+0.5) * triangle_size, (row) * altitude)
+            ]
+
+            good_points = []
+            for point in points:
+                eliminate = False
+                for bound in discrete_bounds:
+                    if bound.contains_point(*point) or not CoordinateInRectangle(point, [0, 0, *field_bounds]):
+                        eliminate = True
+                        break
+                if not eliminate:
+                    good_points.append(point)
+
+            map.connect_all_points(good_points)
+
+    return map
+
+            
+
 
 
 

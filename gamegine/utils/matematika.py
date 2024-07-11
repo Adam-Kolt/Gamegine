@@ -3,6 +3,10 @@ import numpy as np
 import pint
 import math
 
+from gamegine.utils.logging import Debug
+
+def Clamp(value, min_value, max_value):
+    return max(min(value, max_value), min_value)
 
 def ReflectPoint(point, normal):
     return point - 2 * np.dot(point, normal) * normal
@@ -27,4 +31,5 @@ def RotateAboutOrigin(vector, angle: pint.Quantity):
     return [x, y]
 
 def AngleBetweenVectors(vector1, vector2):
-    return math.acos(np.dot(vector1, vector2) / (np.linalg.norm(vector1) * np.linalg.norm(vector2)))
+    ratio = Clamp(np.dot(vector1, vector2) / (np.linalg.norm(vector1) * np.linalg.norm(vector2)), -1, 1)
+    return math.acos(ratio)

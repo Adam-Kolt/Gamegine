@@ -57,11 +57,16 @@ class Renderer:
         if self.game is None:
             raise Exception("Game not set")
         
-        for obstacle in self.game.obstacles.values():
-            draw_obstacle(obstacle, Renderer.render_scale)
+        for obstacle in self.game.static_obstacles.values():
+            if obstacle.isVisible():
+                draw_obstacle(obstacle, Renderer.render_scale)
 
     def draw_element(self, element: Drawable):
         element.draw(Renderer.render_scale)
+
+    def draw_elements(self, elements: list[Drawable]):
+        for element in elements:
+            self.draw_element(element)
 
     def loop(self) -> bool:
         if self.game is None:
