@@ -1,13 +1,16 @@
-
-
 import math
 from typing import Tuple
 
 import pint
 from gamegine.analysis.meshing import TriangulatedGraph, VisibilityGraph
-from gamegine.render.analysis import PathDisplay
 from gamegine.render.renderer import Renderer
-from gamegine.representation.bounds import Circle, ExpandedObjectBounds, Point, SymmetricalX, CircularPattern
+from gamegine.representation.bounds import (
+    Circle,
+    ExpandedObjectBounds,
+    Point,
+    SymmetricalX,
+    CircularPattern,
+)
 from gamegine.representation.game import Game
 from gamegine.representation.obstacle import Circular, Polygonal, Rectangular
 from gamegine.utils.unit import Degree, Meter, Centimeter, Feet, Inch
@@ -18,52 +21,70 @@ import time
 test_game = Game("FRC Crescendo 2024")
 
 print("Name:", test_game.name)
-test_game.set_field_size(Feet(54)+Inch(3.25), Feet(26) + Inch(11.25))
-objs = SymmetricalX([
-    *CircularPattern(
-        [Circular("Stage Leg", Inch(133), Inch(161.62), Inch(7))],
-        (Inch(133)+Inch(59.771), Inch(161.62)), 
-        Degree(360),
-        3,
-        lambda i : str(i)
-    ),
-    Polygonal("Subwoofer", [
-        (Inch(0), Inch(64.081)),
-        (Inch(0), Inch(64.081) + Inch(82.645)),
-        (Inch(35.695), Inch(64.081) + Inch(82.645) - Inch(20.825)),
-        (Inch(35.695), Inch(64.081) + Inch(20.825)),]),
-
-    Polygonal("Source", [
-        (Inch(0), Inch(281.5)),
-        (Inch(0), test_game.full_field_y()),
-        (Inch(72.111), test_game.full_field_y())
-    ]),
-
-
-
-    ], test_game.half_field_x(), "Red ", "Blue ")
+test_game.set_field_size(Feet(54) + Inch(3.25), Feet(26) + Inch(11.25))
+objs = SymmetricalX(
+    [
+        *CircularPattern(
+            [Circular("Stage Leg", Inch(133), Inch(161.62), Inch(7))],
+            (Inch(133) + Inch(59.771), Inch(161.62)),
+            Degree(360),
+            3,
+            lambda i: str(i),
+        ),
+        Polygonal(
+            "Subwoofer",
+            [
+                (Inch(0), Inch(64.081)),
+                (Inch(0), Inch(64.081) + Inch(82.645)),
+                (Inch(35.695), Inch(64.081) + Inch(82.645) - Inch(20.825)),
+                (Inch(35.695), Inch(64.081) + Inch(20.825)),
+            ],
+        ),
+        Polygonal(
+            "Source",
+            [
+                (Inch(0), Inch(281.5)),
+                (Inch(0), test_game.full_field_y()),
+                (Inch(72.111), test_game.full_field_y()),
+            ],
+        ),
+    ],
+    test_game.half_field_x(),
+    "Red ",
+    "Blue ",
+)
 
 
 test_game.add_obstacles(objs)
 test_game.enable_field_border_obstacles()
 
-starting_points = [] # Points where the robot usually starts
+starting_points = []  # Points where the robot usually starts
 points = [point.get_vertices()[0] for point in starting_points]
 
-expanded_obstacles = ExpandedObjectBounds(test_game.get_obstacles(), robot_radius=Inch((15 + 8) * math.sqrt(2)))
-#map = VisibilityGraph(expanded_obstacles, points, test_game.field_size)
+expanded_obstacles = ExpandedObjectBounds(
+    test_game.get_obstacles(), robot_radius=Inch((15 + 8) * math.sqrt(2))
+)
+# map = VisibilityGraph(expanded_obstacles, points, test_game.field_size)
 map = TriangulatedGraph(expanded_obstacles, Feet(2), test_game.get_field_size())
 
-def CreatePath(start: Tuple[pint.Quantity, pint.Quantity], end: Tuple[pint.Quantity, pint.Quantity]) -> PathDisplay:
-    path = pathfinding.findPath(map, start, end, pathfinding.DirectedAStar, pathfinding.InitialConnectionPolicy.SnapToClosest)
-    path = pathfinding.shortcut_path(expanded_obstacles, path)
-    return PathDisplay(path)
+
+def CreatePath(
+    start: Tuple[pint.Quantity, pint.Quantity], end: Tuple[pint.Quantity, pint.Quantity]
+) -> pathfinding.Path:
+    path = pathfinding.findPath(
+        map,
+        start,
+        end,
+        pathfinding.DirectedAStar,
+        pathfinding.InitialConnectionPolicy.ConnectToClosest,
+    )
+    path.shortcut(expanded_obstacles)
+    return path
+
 
 path_displays = [
     CreatePath((Feet(3), Feet(2)), (Feet(50), Feet(20))),
-
 ]
-
 
 
 renderer = Renderer()
@@ -80,4 +101,3 @@ while renderer.loop():
 
     time.sleep(0.1)
     renderer.render_frame()
-

@@ -1,7 +1,4 @@
-
-
 from gamegine.analysis.meshing import Map, VisibilityGraph
-from gamegine.render.analysis import PathDisplay
 from gamegine.render.renderer import Renderer
 from gamegine.representation.bounds import Circle, Point, SymmetricalX
 from gamegine.representation.game import Game
@@ -13,13 +10,16 @@ import time
 
 test_game = Game("Test Game")
 print("Name:", test_game.name)
-test_game.set_field_size(Feet(54)+Inch(3.25), Feet(26) + Inch(11.25))
-objs = SymmetricalX([
-    Rectangular("Test Rectangle", Feet(1), Feet(1), Feet(2), Feet(2)),
-    Circular("Test Circle", Feet(4), Feet(4), Feet(1)),
-
-
-    ], test_game.half_field_x(), "Red ", "Blue ")
+test_game.set_field_size(Feet(54) + Inch(3.25), Feet(26) + Inch(11.25))
+objs = SymmetricalX(
+    [
+        Rectangular("Test Rectangle", Feet(1), Feet(1), Feet(2), Feet(2)),
+        Circular("Test Circle", Feet(4), Feet(4), Feet(1)),
+    ],
+    test_game.half_field_x(),
+    "Red ",
+    "Blue ",
+)
 
 
 test_game.add_obstacles(objs)
@@ -27,17 +27,17 @@ test_game.add_obstacles(objs)
 
 map = Map("Test Map")
 
-# Mesh 
+# Mesh
 map.add_node(Feet(1), Feet(23))
 map.add_node(Feet(9), Feet(2))
 map.add_node(Feet(4.3), Feet(12))
 map.add_node(Feet(20), Feet(23))
 map.connect_all_nodes()
 
-path = pathfinding.findPath(map, (Feet(12), Feet(23)), (Feet(9), Feet(2)), pathfinding.AStar)
-print(path)
+path = pathfinding.findPath(
+    map, (Feet(12), Feet(23)), (Feet(9), Feet(2)), pathfinding.AStar
+)
 
-path_display = PathDisplay(path)
 
 renderer = Renderer()
 
@@ -49,7 +49,6 @@ print("Game set and display initialized")
 while renderer.loop():
     renderer.draw_static_elements()
     renderer.draw_element(map)
-    renderer.draw_element(path_display)
+    renderer.draw_element(path)
     time.sleep(0.1)
     renderer.render_frame()
-
