@@ -1,10 +1,11 @@
 
 
+import math
 from typing import Tuple
 
 import pint
 from gamegine.analysis.meshing import TriangulatedGraph, VisibilityGraph
-from gamegine.render.analysis import MapDisplay, PathDisplay
+from gamegine.render.analysis import PathDisplay
 from gamegine.render.renderer import Renderer
 from gamegine.representation.bounds import Circle, ExpandedObjectBounds, Point, SymmetricalX, CircularPattern
 from gamegine.representation.game import Game
@@ -46,20 +47,15 @@ objs = SymmetricalX([
 test_game.add_obstacles(objs)
 test_game.enable_field_border_obstacles()
 
-starting_points = [    
-    Point(Inch(49), Inch(29.64)),
-    Point(Inch(49), Inch(66)),
-    Point(Inch(49), Inch(132)),
-    Point(Inch(49), Inch(198)),
-    ]
+starting_points = [] # Points where the robot usually starts
 points = [point.get_vertices()[0] for point in starting_points]
 
-expanded_obstacles = ExpandedObjectBounds(test_game.get_obstacles(), robot_radius=Inch(30))
+expanded_obstacles = ExpandedObjectBounds(test_game.get_obstacles(), robot_radius=Inch((15 + 8) * math.sqrt(2)))
 #map = VisibilityGraph(expanded_obstacles, points, test_game.field_size)
 map = TriangulatedGraph(expanded_obstacles, Feet(2), test_game.get_field_size())
 
 def CreatePath(start: Tuple[pint.Quantity, pint.Quantity], end: Tuple[pint.Quantity, pint.Quantity]) -> PathDisplay:
-    path = pathfinding.findPath(map, start, end, pathfinding.DirectedAStar, pathfinding.InitialConnectionPolicy.ConnectToClosest)
+    path = pathfinding.findPath(map, start, end, pathfinding.DirectedAStar, pathfinding.InitialConnectionPolicy.SnapToClosest)
     path = pathfinding.shortcut_path(expanded_obstacles, path)
     return PathDisplay(path)
 
@@ -68,7 +64,7 @@ path_displays = [
 
 ]
 
-map_visual = MapDisplay(map)
+
 
 renderer = Renderer()
 
@@ -79,7 +75,7 @@ print("Game set and display initialized")
 
 while renderer.loop():
     renderer.draw_static_elements()
-    renderer.draw_element(map_visual)
+    renderer.draw_element(map)
     renderer.draw_elements(path_displays)
 
     time.sleep(0.1)

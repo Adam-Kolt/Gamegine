@@ -83,7 +83,7 @@ def RatioOf(quant1, quant2):
 ### Awaiting Substitution into Old Unit System
 ### Eventually... ¯\_(ツ)_/¯
 
-class LinearUnits(Enum):
+class SpacialUnits(Enum):
     Meter = 1
     Centimeter = 0.01
     Feet = 0.3048
@@ -94,16 +94,16 @@ class LinearUnits(Enum):
     NauticalMile = 1852 # Future proofing for FRC in 2077
 
 
-class LinearMeasurement(float): # A class which ensures unit-aware initialization of linear measurements
-    def __new__(cls, value: float, unit: LinearUnits):
-        if isinstance(value, LinearMeasurement):
+class SpatialMeasurement(float): # A class which ensures unit-aware initialization of spacial measurements
+    def __new__(cls, value: float, unit: SpacialUnits):
+        if isinstance(value, SpatialMeasurement):
             return value
         if isinstance(unit, float):
-            warnings.warn("UNIT WARNING! Using float as unit increases the risk that you collide with the Martian service, use a specified LinearUnits Enum instead.")
+            warnings.warn("UNIT WARNING! Using float as unit increases the risk that you collide with the Martian surface, use a specified LinearUnits Enum instead.")
             return float.__new__(cls, value * unit)
         return float.__new__(cls, value * unit.value)
     
-    def to(self, unit: LinearUnits) -> float:
+    def to(self, unit: SpacialUnits) -> float:
         return self / unit.value
 
         

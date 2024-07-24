@@ -5,6 +5,10 @@ from typing import List, Set, Tuple
 import pint
 from enum import Enum
 
+import pygame
+
+from gamegine.render.drawable import Drawable
+from gamegine.render.renderer import Renderer
 from gamegine.representation.bounds import Boundary, BoundedObject, DiscreteBoundary, LineIntersectsAnyBound
 from gamegine.utils.matematika import CoordinateInRectangle, GetDistanceBetween
 from gamegine import ureg
@@ -20,13 +24,17 @@ class ConnectionStrategy(Enum):
 # TODO: Add one-directional edges
 # TODO: Change name of distance to weight, and add easy distance multiplier for weight
 # TODO: Add display for one-directional edges and colors depending on weight
-class Map(object):
+class Map(Drawable):
     def __init__(self, name: str = "Map") -> None:
         self.name = name
         self.nodes = {}
         self.encoding = {}
         self.id = 0
 
+        # Rendering Caches
+        self.nodes_cache = self.get_all_nodes()
+        self.connections_cache = self.get_all_unique_connections()
+        self.cache_up_to_date = True
     
     def add_node(self, x: pint.Quantity, y: pint.Quantity) -> 'Map':
         if type(x) != float:
@@ -39,6 +47,7 @@ class Map(object):
             raise Exception(f"Node at ({x}, {y}) already exists.")
         self.encoding[coord] = self.id
         self.id += 1
+        self.__cache_outdated()
         return self
 
     def add_edge(self, node1: Tuple[pint.Quantity, pint.Quantity], node2: Tuple[pint.Quantity, pint.Quantity], weight: float = None, bidirectional: bool = True, weight_backward: float = None) -> 'Map':
@@ -66,7 +75,7 @@ class Map(object):
             if weight_backward is None:
                 weight_backward = weight
             self.nodes[node2_id][1][node1_id] = weight_backward
-
+        self.__cache_outdated()
         return self
     
     def add_one_way_edge(self, node1: Tuple[pint.Quantity, pint.Quantity], node2: Tuple[pint.Quantity, pint.Quantity], weight: float) -> 'Map':
@@ -137,6 +146,34 @@ class Map(object):
         if coord in self.encoding:
             return self.get_node(x, y)
         return self.get_node(*Tuple2Std(min(self.nodes.items(), key=lambda node: GetDistanceBetween(node[1][0], coord))[1][0]))
+    
+    def __cache_outdated(self):
+        self.cache_up_to_date = False
+
+    def __update_nodes_cache(self) -> None:
+        self.nodes_cache = self.get_all_nodes()
+
+    def __update_connections_cache(self) -> None:
+        self.connections_cache = self.get_all_unique_connections()
+
+    def z_index(self) -> int:
+        return 0
+    
+    def draw(self, render_scale: pint.Quantity) -> None:
+        if not self.cache_up_to_date:
+            self.__update_nodes_cache()
+            self.__update_connections_cache()
+            self.cache_up_to_date = True
+
+        for node in self.nodes_cache:
+            pygame.draw.circle(pygame.display.get_surface(), (0, 255, 0), (Renderer.to_pixels(node[1][0]), Renderer.to_pixels(node[1][1])), 5)
+
+        for connection in self.connections_cache:
+            one, two = connection[0][0], connection[0][1]
+            node1 = self.decode_coordinates(one)
+            node2 = self.decode_coordinates(two)
+            color = (0, 255, 0) if connection[2] else (255, 0, 0)
+            pygame.draw.line(pygame.display.get_surface(), color, (Renderer.to_pixels(node1[0]), Renderer.to_pixels(node1[1])), (Renderer.to_pixels(node2[0]), Renderer.to_pixels(node2[1])), width=1)
 
 
 def VisibilityGraph(obstacles: List[Boundary], required_points: List[Tuple[pint.Quantity, pint.Quantity]]=[], clip_to: Tuple[pint.Quantity, pint.Quantity] = None, discretization_quality: int = 4) -> Map:

@@ -1,7 +1,7 @@
 
 
 from gamegine.analysis.meshing import Map, VisibilityGraph
-from gamegine.render.analysis import MapDisplay, PathDisplay
+from gamegine.render.analysis import PathDisplay
 from gamegine.render.renderer import Renderer
 from gamegine.representation.bounds import Circle, Point, SymmetricalX
 from gamegine.representation.game import Game
@@ -37,8 +37,6 @@ map.connect_all_nodes()
 path = pathfinding.findPath(map, (Feet(12), Feet(23)), (Feet(9), Feet(2)), pathfinding.AStar)
 print(path)
 
-
-display = MapDisplay(map)
 path_display = PathDisplay(path)
 
 renderer = Renderer()
@@ -50,7 +48,7 @@ print("Game set and display initialized")
 
 while renderer.loop():
     renderer.draw_static_elements()
-    renderer.draw_element(display)
+    renderer.draw_element(map)
     renderer.draw_element(path_display)
     time.sleep(0.1)
     renderer.render_frame()

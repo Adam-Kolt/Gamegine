@@ -7,6 +7,7 @@ from enum import Enum
 from abc import ABC, abstractmethod
 
 from gamegine.analysis.meshing import Map
+from gamegine.render.drawable import Drawable
 from gamegine.representation.bounds import Boundary, DiscreteBoundary
 from gamegine.utils.logging import Debug
 from gamegine.utils.matematika import AngleBetweenVectors, GetDistanceBetween
@@ -16,6 +17,46 @@ class InitialConnectionPolicy(Enum):
     ConnectToClosest = 0
     SnapToClosest = 1
     VisibilityConnect = 2
+
+class Path(Drawable): # TODO: Use in codebase
+    def __init__(self, path: List[Tuple[Quantity, Quantity]]) -> None:
+        self.path = path
+
+    def set_path(self, path: List[Tuple[Quantity, Quantity]]) -> None:
+        self.path = path
+
+    def add_point(self, point: Tuple[Quantity, Quantity]) -> None:
+        self.path.append(point)
+
+    def get_points(self) -> List[Tuple[Quantity, Quantity]]:
+        return self.path
+    
+    def shortcut(self, discrete_obstacles: List[DiscreteBoundary]) -> None:
+        if len(self.path) <= 2:
+            return self.path
+        out = [self.path[0]]
+        current = self.path[0]
+
+        i = 2
+        while i < len(self.path)-1:
+            if any(obstacle.intersects_line(*current, *self.path[i]) for obstacle in discrete_obstacles):
+                Debug(f"Path segment {current} -> {self.path[i]} intersects obstacle. Skipping.")
+                out.append(self.path[i-1])
+                current = self.path[i-1]
+            i += 1
+        out.append(self.path[-1])
+        return out
+
+    def z_index(self) -> int:
+        return 1
+
+    def draw(self, render_scale: Quantity) -> None:
+        for i in range(len(self.path) - 1):
+            node1 = self.path[i]
+            node2 = self.path[i + 1]
+            Debug(f"Drawing line from {node1} to {node2}")
+            #pygame.draw.line(pygame.display.get_surface(), (255, 0, 0), (Renderer.to_pixels(node1[0]), Renderer.to_pixels(node1[1])), (Renderer.to_pixels(node2[0]), Renderer.to_pixels(node2[1])), width=2)
+
 
 class Pathfinder(ABC):
     @abstractmethod
