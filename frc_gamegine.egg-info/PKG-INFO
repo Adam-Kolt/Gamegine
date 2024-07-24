@@ -1,15 +1,13 @@
 Metadata-Version: 2.1
-Name: frc_gamegine
+Name: frc-gamegine
 Version: 0.1.0
 Summary: A FRC game representation, analysis, and simulation engine for performing post-kickoff strategy and design evaluation and optimization alongside ML Agent training.
 Home-page: https://github.com/yourusername/my_library
 Author: Adam Koltuniuk
 Author-email: adam@koltuni.uk
 Classifier: Programming Language :: Python :: 3
-Requires-Python: >=3.11.9
+Requires-Python: >=3.10.10
 Description-Content-Type: text/markdown
-Requires-Dist: numpy
-Requires-Dist: requests
 
 **Gamegine**
 
