@@ -22,6 +22,7 @@
 # Ignore IDE-specific files
 .idea/
 .vscode/
+.VSCodeCounter/
 
 # Ignore system files
 .DS_Store
