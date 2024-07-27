@@ -1,49 +1,51 @@
-
-def test_create_units_magnitude():
-    from gamegine.utils.unit import Meter, Centimeter, Feet, Inch, Second, Radian, Degree, GetRegistry
-    assert Meter(1).magnitude == 1
-    assert Centimeter(1).magnitude == 1
-    assert Feet(1).magnitude == 1
-    assert Inch(1).magnitude == 1
-    assert Second(1).magnitude == 1
-    assert Radian(1).magnitude == 1
-    assert Degree(1).magnitude == 1
-
-def test_create_units_unit():
-    from gamegine.utils.unit import Meter, Centimeter, Feet, Inch, Second, Radian, Degree, GetRegistry
-    assert Meter(1).units == GetRegistry().meter
-    assert Centimeter(1).units == GetRegistry().centimeter
-    assert Feet(1).units == GetRegistry().foot
-    assert Inch(1).units == GetRegistry().inch
-    assert Second(1).units == GetRegistry().second
-    assert Radian(1).units == GetRegistry().radian
-    assert Degree(1).units == GetRegistry().degree
-
-def test_convert_to_standard_magnitude():
-    from gamegine.utils.unit import StdMag, Meter, Centimeter, Feet, Inch, Second, Radian, Degree, GetRegistry
-    from gamegine import Q_
-    assert StdMag(Meter(1)) == Q_(1, GetRegistry().meter).to_base_units().magnitude
-    assert StdMag(Centimeter(1)) == Q_(1, GetRegistry().centimeter).to_base_units().magnitude
-    assert StdMag(Feet(1)) == Q_(1, GetRegistry().foot).to_base_units().magnitude
-    assert StdMag(Inch(1)) == Q_(1, GetRegistry().inch).to_base_units().magnitude
+import pytest
 
 
+def test_create_units():
+    from gamegine.utils.unit import Feet, Inch, Meter, Centimeter
 
-def test_convert_magnitude_to_standard():
-    from gamegine.utils.unit import ToStd, Meter, Centimeter, Feet, Inch, Second, Radian, Degree, GetRegistry, StandardUnit
-    from gamegine import Q_
-    assert ToStd(1) == Q_(1, StandardUnit)
-    assert ToStd(1).magnitude == 1
-    
-def test_convert_list_to_standard():
-    from gamegine.utils.unit import List2Std, Meter, Centimeter, Feet, Inch, Second, Radian, Degree, GetRegistry, StandardUnit
-    from gamegine import Q_
-    assert List2Std([1, 2, 3]) == [Q_(1, StandardUnit), Q_(2, StandardUnit), Q_(3, StandardUnit)]
-    assert List2Std([1, 2, 3])[0].magnitude == 1
+    assert isinstance(Feet(1), Feet)
+    assert isinstance(Inch(1), Inch)
+    assert isinstance(Meter(1), Meter)
+    assert isinstance(Centimeter(1), Centimeter)
 
-def test_convert_tuple_to_standard():
-    from gamegine.utils.unit import Tuple2Std, Meter, Centimeter, Feet, Inch, Second, Radian, Degree, GetRegistry, StandardUnit
-    from gamegine import Q_
-    assert Tuple2Std((1, 2, 3)) == (Q_(1, StandardUnit), Q_(2, StandardUnit), Q_(3, StandardUnit))
-    assert Tuple2Std((1, 2, 3))[0].magnitude == 1
-    
+
+def test_add_units():
+    from gamegine.utils.unit import Feet, Inch, Meter, Centimeter, Yard
+
+    assert Feet(1) + Feet(2) == Yard(1)
+    assert Inch(1) + Inch(1) == Inch(2)
+    assert Meter(1) + Meter(1) == Meter(2)
+    assert Centimeter(99) + Centimeter(1) == Meter(1)
+    with pytest.raises(TypeError):
+        Feet(1) + 1
+
+
+def test_sub_units():
+    from gamegine.utils.unit import Feet, Inch, Meter, Centimeter, Yard
+
+    assert Yard(1) - Feet(2) == Feet(1)
+    assert Inch(2) - Inch(1) == Inch(1)
+    assert Meter(2) - Meter(1) == Meter(1)
+    assert Meter(1) - Centimeter(99) == Centimeter(1)
+    with pytest.raises(TypeError):
+        Feet(1) - 1
+
+
+def test_mul_units():
+    from gamegine.utils.unit import Feet, Inch, Meter, Centimeter
+
+    assert Feet(2) * 2 == Feet(4)
+    assert Inch(2) * 2 == Inch(4)
+    assert Meter(2) * 2 == Meter(4)
+    assert Centimeter(2) * 2 == Centimeter(4)
+
+
+def test_div_units():
+    from gamegine.utils.unit import Feet, Inch, Meter, Centimeter
+
+    assert Feet(4) / 2 == Feet(2)
+    assert Inch(4) / 2 == Inch(2)
+    assert Meter(4) / 2 == Meter(2)
+    assert Centimeter(4) / 2 == Centimeter(2)
+    assert Feet(1) / Inch(1) == 12

@@ -4,7 +4,7 @@ import pint
 from gamegine.render.drawable import Drawable
 from gamegine.render.helpers import draw_obstacle
 from gamegine.representation.game import Game
-from gamegine.utils.unit import Centimeter, RatioOf
+from gamegine.utils.unit import Centimeter, RatioOf, SpatialMeasurement
 
 pygame.init()
 
@@ -24,7 +24,7 @@ class Renderer:
         self.last_animation_loop = pygame.time.get_ticks()
 
 
-    def set_render_scale(self, scale: pint.Quantity):
+    def set_render_scale(self, scale: SpatialMeasurement):
         Renderer.render_scale = scale
         self.init_display()
     
@@ -38,7 +38,7 @@ class Renderer:
         return ticks
 
     @staticmethod
-    def to_pixels(value: pint.Quantity) -> int:
+    def to_pixels(value: SpatialMeasurement) -> int:
         return int(RatioOf(value, Renderer.render_scale))
 
     def init_display(self):

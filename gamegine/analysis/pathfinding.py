@@ -13,7 +13,7 @@ from gamegine.render.renderer import Renderer
 from gamegine.representation.bounds import Boundary, DiscreteBoundary
 from gamegine.utils.logging import Debug
 from gamegine.utils.matematika import AngleBetweenVectors, GetDistanceBetween
-from gamegine.utils.unit import StdMag, StdMagTuple
+
 
 
 class InitialConnectionPolicy(Enum):
@@ -86,17 +86,17 @@ class Pathfinder(ABC):
 class Heuristics(object):
     @staticmethod
     def EuclideanHeuristic(map: Map, start: int, end: int, current: int, next: int):
-        end_coords = StdMagTuple(map.decode_coordinates(end))
-        next_coords = StdMagTuple(map.decode_coordinates(next))
+        end_coords = map.decode_coordinates(end)
+        next_coords = map.decode_coordinates(next)
         return GetDistanceBetween(end_coords, next_coords)
 
     @staticmethod
     def DirectedEuclideanHeuristic(
         map: Map, start: int, end: int, current: int, next: int
     ):
-        end_coords = StdMagTuple(map.decode_coordinates(end))
-        next_coords = StdMagTuple(map.decode_coordinates(next))
-        current_coords = StdMagTuple(map.decode_coordinates(current))
+        end_coords = map.decode_coordinates(end)
+        next_coords = map.decode_coordinates(next)
+        current_coords = map.decode_coordinates(current)
         direction_weight = 0.00
         vector_to_next = (
             next_coords[0] - current_coords[0],
@@ -153,7 +153,7 @@ class AStar(Pathfinder):
 
             neighbors = map.get_neighbours(current_node.id)
             for neighbor in neighbors:
-                g_score = StdMag(neighbor[1]) + current_node.g_score
+                g_score = neighbor[1] + current_node.g_score
                 f_score = g_score + heuristic(
                     map, start, end, current_node.id, neighbor[0]
                 )
@@ -206,14 +206,14 @@ def findPath(
     match initial_connection_policy:
         case InitialConnectionPolicy.ConnectToClosest:
             connect_start = map.get_closest_node(*start)
-            if StdMagTuple(start) != StdMagTuple(connect_start[1]):
+            if start != connect_start[1]:
                 map.add_edge(start, connect_start[1])
                 start_node = map.encode_coordinates(*start)
             else:
                 start_node = connect_start[0]
 
             connect_end = map.get_closest_node(*end)
-            if StdMagTuple(end) != StdMagTuple(connect_end[1]):
+            if end != connect_end[1]:
                 map.add_edge(end, connect_end[1])
                 end_node = map.encode_coordinates(*end)
             else:

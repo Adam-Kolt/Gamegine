@@ -13,7 +13,7 @@ from gamegine.representation.bounds import (
 )
 from gamegine.representation.game import Game
 from gamegine.representation.obstacle import Circular, Polygonal, Rectangular
-from gamegine.utils.unit import Degree, Meter, Centimeter, Feet, Inch
+from gamegine.utils.unit import Degree, Meter, Centimeter, Feet, Inch, SpatialMeasurement
 from gamegine.analysis import pathfinding
 import time
 
@@ -69,7 +69,7 @@ map = TriangulatedGraph(expanded_obstacles, Feet(2), test_game.get_field_size())
 
 
 def CreatePath(
-    start: Tuple[pint.Quantity, pint.Quantity], end: Tuple[pint.Quantity, pint.Quantity]
+    start: Tuple[SpatialMeasurement, SpatialMeasurement], end: Tuple[SpatialMeasurement, SpatialMeasurement]
 ) -> pathfinding.Path:
     path = pathfinding.findPath(
         map,

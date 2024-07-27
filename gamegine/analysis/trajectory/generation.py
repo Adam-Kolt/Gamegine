@@ -16,7 +16,7 @@ class TrajectoryParameters: # All values are in m/s, m/s^2, m/s^3,
 
 class TrajectoryGenerator(ABC):
     @abstractmethod
-    def calculate_trajectory(self, path: List[Tuple[pint.Quantity, pint.Quantity]], parameters: TrajectoryParameters, obstacles: List[DiscreteBoundary]) -> 'Trajectory':
+    def calculate_trajectory(self, path: List[Tuple[SpatialMeasurement, SpatialMeasurement]], parameters):
         pass
 
 class Trajectory(Drawable):
