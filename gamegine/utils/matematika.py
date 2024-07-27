@@ -4,6 +4,7 @@ import pint
 import math
 
 from gamegine.utils.logging import Debug
+from gamegine.utils.unit import AngularMeasurement, AngularUnits
 
 def Clamp(value, min_value, max_value):
     return max(min(value, max_value), min_value)
@@ -24,8 +25,9 @@ def GetDistanceBetween(point1, point2):
 def CoordinateInRectangle(point, rectangle):
     return rectangle[0] <= point[0] <= rectangle[2] and rectangle[1] <= point[1] <= rectangle[3]
 
-def RotateAboutOrigin(vector, angle: pint.Quantity):
-    rads = angle.to("rad")
+def RotateAboutOrigin(vector, angle: AngularMeasurement):
+    Debug(angle)
+    rads = angle.to(AngularUnits.Radian)
     x = vector[0] * math.cos(rads) - vector[1] * math.sin(rads)
     y = vector[0] * math.sin(rads) + vector[1] * math.cos(rads)
     return [x, y]

@@ -1,7 +1,7 @@
 from typing import List
 import pint
 
-from gamegine.utils.unit import Meter, Zero
+from gamegine.utils.unit import Meter, SpatialMeasurement, Zero
 import numpy as np
 from gamegine.representation import obstacle
 
@@ -19,7 +19,7 @@ class Game(object):
         self.field_borders = False
         
 
-    def set_field_size(self, width: pint.Quantity, height: pint.Quantity):
+    def set_field_size(self, width: SpatialMeasurement, height: SpatialMeasurement):
         self.field_size = (width, height)
         if self.field_borders:
             self.__recompute_field_border_obstacles()

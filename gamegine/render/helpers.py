@@ -3,11 +3,11 @@ import pint
 from gamegine.representation.bounds import Circle, Polygon, Rectangle
 import pygame
 
-from gamegine.utils.unit import RatioOf
+from gamegine.utils.unit import RatioOf, SpatialMeasurement
 from .style import get_color, Palette, Shade, Opacity
 # TODO: Some of this is kinda cooked and should be configured elsewhere
 
-def draw_fancy_circle(circle: Circle, color: Palette, render_scale: pint.Quantity):
+def draw_fancy_circle(circle: Circle, color: Palette, render_scale: SpatialMeasurement):
     # Outer Circle
     pygame.draw.circle(
         pygame.display.get_surface(),
@@ -25,7 +25,7 @@ def draw_fancy_circle(circle: Circle, color: Palette, render_scale: pint.Quantit
     )
 
 
-def draw_fancy_rectangle(rectangle: Rectangle, color: Palette, render_scale: pint.Quantity):
+def draw_fancy_rectangle(rectangle: Rectangle, color: Palette, render_scale: SpatialMeasurement):
     border_width = 5
     border_radius = 5
     
@@ -49,7 +49,7 @@ def draw_fancy_rectangle(rectangle: Rectangle, color: Palette, render_scale: pin
 
 
 
-def draw_fancy_polygon(polygon: Polygon, color: Palette, render_scale: pint.Quantity):
+def draw_fancy_polygon(polygon: Polygon, color: Palette, render_scale: SpatialMeasurement):
     # Outer Polygon
     pygame.draw.polygon(
         pygame.display.get_surface(),
@@ -58,7 +58,7 @@ def draw_fancy_polygon(polygon: Polygon, color: Palette, render_scale: pint.Quan
     )
 
 
-def draw_fancy_boundary(bounds, color: Palette, render_scale: pint.Quantity):
+def draw_fancy_boundary(bounds, color: Palette, render_scale: SpatialMeasurement):
     if isinstance(bounds, Circle):
         draw_fancy_circle(bounds, color, render_scale)
     elif isinstance(bounds, Rectangle):
@@ -68,5 +68,5 @@ def draw_fancy_boundary(bounds, color: Palette, render_scale: pint.Quantity):
     else:
         raise ValueError("Unknown boundary type")
     
-def draw_obstacle(obstacle, render_scale: pint.Quantity):
+def draw_obstacle(obstacle, render_scale: SpatialMeasurement):
     draw_fancy_boundary(obstacle.bounds, Palette.RED, render_scale)
