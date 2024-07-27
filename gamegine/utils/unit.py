@@ -98,7 +98,7 @@ class SpatialUnits(Enum):
     NauticalMile = 1852
     MicroMeter = 0.000001
 
-
+# TODO: You know, the naming might not be 100% great, but at least it's compatible with Apple
 class SpatialMeasurement(
     float
 ):  # A class which ensures unit-aware initialization of spacial measurements
