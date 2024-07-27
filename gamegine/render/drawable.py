@@ -10,8 +10,3 @@ class Drawable(ABC):
     @abstractmethod
     def draw(self, render_scale: pint.Quantity):
         pass
-
-class Animated(Drawable):
-    @abstractmethod
-    def animate(self, render_scale: pint.Quantity, animation_tick: int, delta_time: int):
-        pass

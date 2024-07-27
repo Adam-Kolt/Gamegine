@@ -48,6 +48,10 @@ class DiscreteBoundary(Boundary):
     def intersects_line(self, x1: pint.Quantity, y1: pint.Quantity, x2: pint.Quantity, y2: pint.Quantity) -> bool:
         self.__recompute_plain_points()
         return sg.Polygon(self.plain_points).intersects(sg.LineString([StdMagTuple((x1, y1)), StdMagTuple((x2, y2))]))
+    
+    def intersects_rectangle(self, x: pint.Quantity, y: pint.Quantity, width: pint.Quantity, height: pint.Quantity) -> bool:
+        self.__recompute_plain_points()
+        return sg.Polygon(self.plain_points).intersects(sg.box(x, y, x + width, y + height))
 
     def contains_point(self, x: pint.Quantity, y: pint.Quantity) -> bool:
         self.__recompute_plain_points()
