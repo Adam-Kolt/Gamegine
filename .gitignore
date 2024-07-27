@@ -6,7 +6,8 @@
 *.out
 
 # Ignore cache files
-*.pyc
+__pycache__/
+*.py[cod]
 
 # Ignore log files
 *.log
