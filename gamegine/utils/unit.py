@@ -153,13 +153,13 @@ class SpatialMeasurement(
         return SpatialMeasurement(float(self) % float(other), self.BASE_UNIT)
     
     def __neg__(self):
-        return AngularMeasurement(-float(self), self.BASE_UNIT)
+        return SpatialMeasurement(-float(self), self.BASE_UNIT)
     
     def __abs__(self):
-        return AngularMeasurement(abs(float(self)), self.BASE_UNIT)
+        return SpatialMeasurement(abs(float(self)), self.BASE_UNIT)
     
     def __pow__(self, other):
-        return AngularMeasurement(float(self) ** float(other), self.BASE_UNIT)
+        return SpatialMeasurement(float(self) ** float(other), self.BASE_UNIT)
 
 class Meter(SpatialMeasurement):
     def __new__(cls, value: float):

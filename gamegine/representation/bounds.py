@@ -4,12 +4,16 @@ import copy
 
 import pint
 import math
+
+import pygame
+from gamegine.render.drawable import Drawable
+from gamegine.render.style import Palette
 from gamegine.representation.base import NamedObject
 from gamegine.utils.logging import Debug
 from gamegine.utils.matematika import ReflectValue1D, RotateAboutOrigin
 import shapely.geometry as sg
 
-from gamegine.utils.unit import AngularMeasurement, Inch, SpatialMeasurement
+from gamegine.utils.unit import AngularMeasurement, Inch, RatioOf, SpatialMeasurement
 
 
 
@@ -35,7 +39,7 @@ class Boundary(ABC):
     def discretized(self, curve_segments: int = 5) -> 'DiscreteBoundary':
         pass
 
-class DiscreteBoundary(Boundary):
+class DiscreteBoundary(Boundary, Drawable):
     @abstractmethod
     def get_vertices(self) -> List[Tuple[SpatialMeasurement, SpatialMeasurement]]:
         pass
@@ -50,9 +54,9 @@ class DiscreteBoundary(Boundary):
         self.__recompute_plain_points()
         return sg.Polygon(self.plain_points).intersects(sg.LineString([(x1, y1), (x2, y2)]))
     
-    def intersects_rectangle(self, x: SpatialMeasurement, y: SpatialMeasurement, width:  SpatialMeasurement, height: SpatialMeasurement) -> bool:
+    def intersects_rectangle(self, x: SpatialMeasurement, y: SpatialMeasurement, max_x: SpatialMeasurement, max_y: SpatialMeasurement) -> bool:
         self.__recompute_plain_points()
-        return sg.Polygon(self.plain_points).intersects(sg.box(x, y, x + width, y + height))
+        return sg.Polygon(self.plain_points).intersects(sg.box(x, y, max_x, max_y))
 
     def contains_point(self, x: SpatialMeasurement, y: SpatialMeasurement) -> bool:
         self.__recompute_plain_points()
@@ -60,6 +64,23 @@ class DiscreteBoundary(Boundary):
     
     def __convert_coordinate_sequence(self, coord_sequence) -> List[Tuple[float, float]]:
         return [(x,y) for x,y in coord_sequence]
+    
+    def get_bounded_rectangle(self) -> 'Rectangle':
+        self.__recompute_plain_points()
+        min_x = min([point[0] for point in self.plain_points])
+        min_y = min([point[1] for point in self.plain_points])
+        max_x = max([point[0] for point in self.plain_points])
+        max_y = max([point[1] for point in self.plain_points])
+        return Rectangle(min_x, min_y, max_x - min_x, max_y - min_y)
+
+    
+    def draw(self, render_scale: SpatialMeasurement) -> None:
+        pygame.draw.polygon(
+            pygame.display.get_surface(),
+            (255, 255, 0),
+            [(RatioOf(point[0], render_scale), RatioOf(point[1], render_scale)) for point in self.get_vertices()]
+        )
+
 
 
     def buffered(self, distance: SpatialMeasurement) -> 'DiscreteBoundary': # Efficiency is cooked here...but its easy

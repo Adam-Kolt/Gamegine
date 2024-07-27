@@ -5,6 +5,7 @@ import pint
 
 from gamegine.render.drawable import Drawable
 from gamegine.representation.bounds import DiscreteBoundary
+from gamegine.utils.unit import SpatialMeasurement
 
 @dataclass
 class TrajectoryParameters: # All values are in m/s, m/s^2, m/s^3,
@@ -21,5 +22,5 @@ class TrajectoryGenerator(ABC):
 
 class Trajectory(Drawable):
     @abstractmethod
-    def get_discrete_trajectory(self, poll_step: pint.Quantity) -> List[Tuple[pint.Quantity, pint.Quantity]]:
+    def get_discrete_trajectory(self, poll_step: pint.Quantity) -> List[Tuple[SpatialMeasurement, SpatialMeasurement]]:
         pass

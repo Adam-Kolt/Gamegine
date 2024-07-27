@@ -1,6 +1,6 @@
 
 import pint
-from gamegine.representation.bounds import Circle, Polygon, Rectangle
+from gamegine.representation.bounds import Circle, DiscreteBoundary, Polygon, Rectangle
 import pygame
 
 from gamegine.utils.unit import RatioOf, SpatialMeasurement
@@ -57,6 +57,13 @@ def draw_fancy_polygon(polygon: Polygon, color: Palette, render_scale: SpatialMe
         [(RatioOf(point[0], render_scale), RatioOf(point[1], render_scale)) for point in polygon.points]
     )
 
+def draw_fancy_discrete_boundary(discrete_boundary, color: Palette, render_scale: SpatialMeasurement):
+    pygame.draw.polygon(
+        pygame.display.get_surface(),
+        get_color(color, Shade.LIGHT, Opacity.TRANSPARENTISH),
+        [(RatioOf(point[0], render_scale), RatioOf(point[1], render_scale)) for point in discrete_boundary.get_vertices()]
+    )
+
 
 def draw_fancy_boundary(bounds, color: Palette, render_scale: SpatialMeasurement):
     if isinstance(bounds, Circle):
@@ -65,6 +72,8 @@ def draw_fancy_boundary(bounds, color: Palette, render_scale: SpatialMeasurement
         draw_fancy_rectangle(bounds, color, render_scale)
     elif isinstance(bounds, Polygon):
         draw_fancy_polygon(bounds, color, render_scale)
+    elif issubclass(bounds.__class__, DiscreteBoundary):
+        draw_fancy_discrete_boundary(bounds, color, render_scale)
     else:
         raise ValueError("Unknown boundary type")
     

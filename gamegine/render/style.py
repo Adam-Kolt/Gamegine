@@ -3,21 +3,14 @@ import numpy as np
 from pygame import Color
 
 class Palette(Enum):
-    RED = 1
-    GREEN = 2
-    BLUE = 3
-    YELLOW = 4
-
-    color_map = {
-        RED: np.array([255, 0, 0]),
-        GREEN: np.array([0, 255, 0]),
-        BLUE: np.array([0, 0, 255]),
-        YELLOW: np.array([255, 255, 0])
-    }
+    RED = [200, 0, 0]
+    GREEN = [0, 200, 0]
+    BLUE = [0, 0, 200]
+    YELLOW = [200, 200, 0]
 
 
     def get_color_array(self) -> np.ndarray:
-        return np.array([200, 0, 0])
+        return np.array(self.value)
         
 
 class Shade(Enum):

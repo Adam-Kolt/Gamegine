@@ -3,6 +3,7 @@ from typing import Tuple
 
 import pint
 from gamegine.analysis.meshing import TriangulatedGraph, VisibilityGraph
+from gamegine.analysis.trajectory.BezierCurvatureAware import BezierCurvatureAware
 from gamegine.render.renderer import Renderer
 from gamegine.representation.bounds import (
     Circle,
@@ -62,9 +63,9 @@ starting_points = []  # Points where the robot usually starts
 points = [point.get_vertices()[0] for point in starting_points]
 
 expanded_obstacles = ExpandedObjectBounds(
-    test_game.get_obstacles(), robot_radius=Inch((15 + 8) * math.sqrt(2))
+    test_game.get_obstacles(), robot_radius=Inch(24.075), discretization_quality=8
 )
-# map = VisibilityGraph(expanded_obstacles, points, test_game.field_size)
+#map = VisibilityGraph(expanded_obstacles, points, test_game.field_size)
 map = TriangulatedGraph(expanded_obstacles, Feet(2), test_game.get_field_size())
 
 
@@ -76,7 +77,7 @@ def CreatePath(
         start,
         end,
         pathfinding.DirectedAStar,
-        pathfinding.InitialConnectionPolicy.ConnectToClosest,
+        pathfinding.InitialConnectionPolicy.SnapToClosest,
     )
     path.shortcut(expanded_obstacles)
     return path
@@ -86,11 +87,14 @@ path_displays = [
     CreatePath((Feet(3), Feet(2)), (Feet(50), Feet(20))),
 ]
 
+trajectory_generator = BezierCurvatureAware()
+trajectory_generator.calculate_trajectory(path_displays[0].get_points(), None, expanded_obstacles)
+safe_corridor = trajectory_generator.GetSafeCorridor()
 
 renderer = Renderer()
 
 renderer.set_game(test_game)
-renderer.set_render_scale(Centimeter(1.5))
+renderer.set_render_scale(Centimeter(1))
 renderer.init_display()
 print("Game set and display initialized")
 
@@ -98,6 +102,7 @@ while renderer.loop():
     renderer.draw_static_elements()
     renderer.draw_element(map)
     renderer.draw_elements(path_displays)
+    renderer.draw_elements(safe_corridor)
 
     time.sleep(0.1)
     renderer.render_frame()
