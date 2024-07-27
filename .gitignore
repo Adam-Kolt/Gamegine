@@ -5,6 +5,9 @@
 *.exe
 *.out
 
+# Ignore cache files
+*.pyc
+
 # Ignore log files
 *.log
 
