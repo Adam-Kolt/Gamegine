@@ -1,7 +1,6 @@
 import math
 from queue import PriorityQueue
 from typing import Callable, Dict, List, Tuple
-from pint import Quantity
 from enum import Enum
 from abc import ABC, abstractmethod
 
@@ -13,7 +12,7 @@ from gamegine.render.renderer import Renderer
 from gamegine.representation.bounds import Boundary, DiscreteBoundary
 from gamegine.utils.logging import Debug
 from gamegine.utils.matematika import AngleBetweenVectors, GetDistanceBetween
-
+from gamegine.utils.unit import SpatialMeasurement
 
 
 class InitialConnectionPolicy(Enum):
@@ -23,19 +22,25 @@ class InitialConnectionPolicy(Enum):
 
 
 class Path(Drawable):
-    def __init__(self, path: List[Tuple[Quantity, Quantity]]) -> None:
+    def __init__(
+        self, path: List[Tuple[SpatialMeasurement, SpatialMeasurement]]
+    ) -> None:
         self.path = path
 
-    def set_path(self, path: List[Tuple[Quantity, Quantity]]) -> None:
+    def set_path(
+        self, path: List[Tuple[SpatialMeasurement, SpatialMeasurement]]
+    ) -> None:
         self.path = path
 
-    def add_point(self, point: Tuple[Quantity, Quantity]) -> None:
+    def add_point(self, point: Tuple[SpatialMeasurement, SpatialMeasurement]) -> None:
         self.path.append(point)
 
-    def get_points(self) -> List[Tuple[Quantity, Quantity]]:
+    def get_points(self) -> List[Tuple[SpatialMeasurement, SpatialMeasurement]]:
         return self.path
 
-    def shortcut(self, discrete_obstacles: List[DiscreteBoundary], max_jump:int =-1) -> "Path":
+    def shortcut(
+        self, discrete_obstacles: List[DiscreteBoundary], max_jump: int = -1
+    ) -> "Path":
         if len(self.path) <= 2:
             return self.path
         out = [self.path[0]]
@@ -63,14 +68,35 @@ class Path(Drawable):
     def shortcutted(self, discrete_obstacles: List[DiscreteBoundary]) -> "Path":
         return Path(shortcut_tuple_path(discrete_obstacles, self.path))
 
+    def dissect(self, units_per_node: SpatialMeasurement) -> "Path":
+        self.path = self.dissected(units_per_node).get_points()
+        return self
+
+    def dissected(self, units_per_node: SpatialMeasurement) -> "Path":
+        path = self.path
+        disected_path = []
+        for i in range(len(path) - 1):
+            a = path[i]
+            b = path[i + 1]
+            distance = math.sqrt((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2)
+            steps = int(distance / units_per_node)
+            for j in range(steps):
+                disected_path.append(
+                    (
+                        a[0] + (b[0] - a[0]) * j / steps,
+                        a[1] + (b[1] - a[1]) * j / steps,
+                    )
+                )
+        disected_path.append(path[-1])
+        return Path(disected_path)
+
     def z_index(self) -> int:
         return 1
 
-    def draw(self, render_scale: Quantity) -> None:
+    def draw(self, render_scale: SpatialMeasurement) -> None:
         for i in range(len(self.path) - 1):
             node1 = self.path[i]
             node2 = self.path[i + 1]
-            Debug(f"Drawing line from {node1} to {node2}")
             pygame.draw.line(
                 pygame.display.get_surface(),
                 (255, 0, 0),
@@ -78,6 +104,21 @@ class Path(Drawable):
                 (Renderer.to_pixels(node2[0]), Renderer.to_pixels(node2[1])),
                 width=2,
             )
+            pygame.draw.circle(
+                pygame.display.get_surface(),
+                (255, 0, 0),
+                (Renderer.to_pixels(node1[0]), Renderer.to_pixels(node1[1])),
+                3,
+            )
+        pygame.draw.circle(
+            pygame.display.get_surface(),
+            (255, 0, 0),
+            (
+                Renderer.to_pixels(self.path[-1][0]),
+                Renderer.to_pixels(self.path[-1][1]),
+            ),
+            3,
+        )
 
 
 class Pathfinder(ABC):
@@ -178,8 +219,9 @@ class DirectedAStar(AStar):
 
 
 def shortcut_tuple_path(
-    discrete_obstacles: List[DiscreteBoundary], path: List[Tuple[Quantity, Quantity]]
-) -> List[Tuple[Quantity, Quantity]]:
+    discrete_obstacles: List[DiscreteBoundary],
+    path: List[Tuple[SpatialMeasurement, SpatialMeasurement]],
+) -> List[Tuple[SpatialMeasurement, SpatialMeasurement]]:
     if len(path) <= 2:
         return path
     out = [path[0]]
@@ -201,8 +243,8 @@ def shortcut_tuple_path(
 
 def findPath(
     map: Map,
-    start: Tuple[Quantity, Quantity],
-    end: Tuple[Quantity, Quantity],
+    start: Tuple[SpatialMeasurement, SpatialMeasurement],
+    end: Tuple[SpatialMeasurement, SpatialMeasurement],
     pathfinder: Pathfinder = DirectedAStar,
     initial_connection_policy: InitialConnectionPolicy = InitialConnectionPolicy.ConnectToClosest,
 ) -> Path:

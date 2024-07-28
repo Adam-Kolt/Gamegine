@@ -7,9 +7,11 @@ import warnings
 
 # TODO: Please PLEASE clean this mess up ¯\_(ツ)_/¯
 
+
 class AngularUnits(Enum):
     Radian = 1
     Degree = 0.0174533
+
 
 class AngularMeasurement(float):
     BASE_UNIT = AngularUnits.Degree
@@ -28,7 +30,7 @@ class AngularMeasurement(float):
             value = value * unit.value / cls.BASE_UNIT.value
         value = round(value, cls.MAX_DECIMALS)
         return float.__new__(cls, value)
-    
+
     def __deepcopy__(self, memo):
         return AngularMeasurement(self, self.BASE_UNIT)
 
@@ -42,46 +44,43 @@ class AngularMeasurement(float):
         if isinstance(other, AngularMeasurement):
             return AngularMeasurement(float(self) + float(other), self.BASE_UNIT)
         return NotImplemented
-    
+
     def __sub__(self, other):
         if isinstance(other, AngularMeasurement):
             return AngularMeasurement(float(self) - float(other), self.BASE_UNIT)
         return NotImplemented
-    
+
     def __mul__(self, other):
         return AngularMeasurement(float(self) * float(other), self.BASE_UNIT)
-    
+
     def __truediv__(self, other):
         if isinstance(other, AngularMeasurement):
             return float(self) / float(other)
         return AngularMeasurement(float(self) / float(other), self.BASE_UNIT)
-    
+
     def __floordiv__(self, other):
         if isinstance(other, AngularMeasurement):
             return float(self) // float(other)
         return AngularMeasurement(float(self) // float(other), self.BASE_UNIT)
-    
+
     def __mod__(self, other):
         return AngularMeasurement(float(self) % float(other), self.BASE_UNIT)
-    
+
     def __neg__(self):
         return AngularMeasurement(-float(self), self.BASE_UNIT)
-    
+
     def __abs__(self):
         return AngularMeasurement(abs(float(self)), self.BASE_UNIT)
-    
+
     def __pow__(self, other):
         return AngularMeasurement(float(self) ** float(other), self.BASE_UNIT)
 
-    
 
-    
-
-    
 class Degree(AngularMeasurement):
     def __new__(cls, value: float):
         return AngularMeasurement.__new__(cls, value, AngularUnits.Degree)
-    
+
+
 class Radian(AngularMeasurement):
     def __new__(cls, value: float):
         return AngularMeasurement.__new__(cls, value, AngularUnits.Radian)
@@ -98,12 +97,18 @@ class SpatialUnits(Enum):
     NauticalMile = 1852
     MicroMeter = 0.000001
 
+
 # TODO: You know, the naming might not be 100% great, but at least it's compatible with Apple
 class SpatialMeasurement(
     float
 ):  # A class which ensures unit-aware initialization of spacial measurements
-    BASE_UNIT = SpatialUnits.MicroMeter # To avoid floating point errors, we make the base unit smal, so all units are stored as integer floats
-    MAX_DECIMALS = 9 # For creation and conversion into base unit, to avoid floating point errors
+    BASE_UNIT = (
+        SpatialUnits.MicroMeter
+    )  # To avoid floating point errors, we make the base unit smal, so all units are stored as integer floats
+    STRING_UNIT = SpatialUnits.Meter
+    MAX_DECIMALS = (
+        9  # For creation and conversion into base unit, to avoid floating point errors
+    )
 
     def __new__(cls, value: float, unit: SpatialUnits):
         if isinstance(value, SpatialMeasurement):
@@ -125,41 +130,50 @@ class SpatialMeasurement(
     def to(self, unit: SpatialUnits) -> float:
         return self * self.BASE_UNIT.value / unit.value
 
+    def __str__(self):
+        converted = self.to(self.STRING_UNIT)
+        return f"{float(converted)} {self.STRING_UNIT.name}"
+
+    def __repr__(self) -> str:
+        converted = self.to(self.STRING_UNIT)
+        return f"{float(converted)} {self.STRING_UNIT.name}"
+
     # Only allow addition and subtraction of SpatialMeasurements
     def __add__(self, other):
         if isinstance(other, SpatialMeasurement):
             return SpatialMeasurement(float(self) + float(other), self.BASE_UNIT)
         return NotImplemented
-    
+
     def __sub__(self, other):
         if isinstance(other, SpatialMeasurement):
             return SpatialMeasurement(float(self) - float(other), self.BASE_UNIT)
         return NotImplemented
-    
+
     def __mul__(self, other):
         return SpatialMeasurement(float(self) * float(other), self.BASE_UNIT)
-    
+
     def __truediv__(self, other):
         if isinstance(other, SpatialMeasurement):
             return float(self) / float(other)
         return SpatialMeasurement(float(self) / float(other), self.BASE_UNIT)
-    
+
     def __floordiv__(self, other):
         if isinstance(other, SpatialMeasurement):
             return float(self) // float(other)
         return SpatialMeasurement(float(self) // float(other), self.BASE_UNIT)
-    
+
     def __mod__(self, other):
         return SpatialMeasurement(float(self) % float(other), self.BASE_UNIT)
-    
+
     def __neg__(self):
         return SpatialMeasurement(-float(self), self.BASE_UNIT)
-    
+
     def __abs__(self):
         return SpatialMeasurement(abs(float(self)), self.BASE_UNIT)
-    
+
     def __pow__(self, other):
         return SpatialMeasurement(float(self) ** float(other), self.BASE_UNIT)
+
 
 class Meter(SpatialMeasurement):
     def __new__(cls, value: float):
@@ -212,9 +226,10 @@ def FullSub(value) -> SpatialMeasurement:
 def BigMac(value) -> SpatialMeasurement:
     return Centimeter(value * 10)
 
+
 def RatioOf(a: SpatialMeasurement, b: SpatialMeasurement) -> float:
     return a / b
 
+
 def Zero() -> SpatialMeasurement:
     return Meter(0)
-  

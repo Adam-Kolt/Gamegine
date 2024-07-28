@@ -3,7 +3,7 @@ from typing import Tuple
 
 import pint
 from gamegine.analysis.meshing import TriangulatedGraph, VisibilityGraph
-from gamegine.analysis.trajectory.BezierCurvatureAware import BezierCurvatureAware
+from gamegine.analysis.trajectory.SafetyCorridorAssisted import SafetyCorridorAssisted
 from gamegine.render.renderer import Renderer
 from gamegine.representation.bounds import (
     Circle,
@@ -14,7 +14,14 @@ from gamegine.representation.bounds import (
 )
 from gamegine.representation.game import Game
 from gamegine.representation.obstacle import Circular, Polygonal, Rectangular
-from gamegine.utils.unit import Degree, Meter, Centimeter, Feet, Inch, SpatialMeasurement
+from gamegine.utils.unit import (
+    Degree,
+    Meter,
+    Centimeter,
+    Feet,
+    Inch,
+    SpatialMeasurement,
+)
 from gamegine.analysis import pathfinding
 import time
 
@@ -65,12 +72,13 @@ points = [point.get_vertices()[0] for point in starting_points]
 expanded_obstacles = ExpandedObjectBounds(
     test_game.get_obstacles(), robot_radius=Inch(24.075), discretization_quality=8
 )
-#map = VisibilityGraph(expanded_obstacles, points, test_game.field_size)
+# map = VisibilityGraph(expanded_obstacles, points, test_game.field_size)
 map = TriangulatedGraph(expanded_obstacles, Feet(2), test_game.get_field_size())
 
 
 def CreatePath(
-    start: Tuple[SpatialMeasurement, SpatialMeasurement], end: Tuple[SpatialMeasurement, SpatialMeasurement]
+    start: Tuple[SpatialMeasurement, SpatialMeasurement],
+    end: Tuple[SpatialMeasurement, SpatialMeasurement],
 ) -> pathfinding.Path:
     path = pathfinding.findPath(
         map,
@@ -79,7 +87,7 @@ def CreatePath(
         pathfinding.AStar,
         pathfinding.InitialConnectionPolicy.SnapToClosest,
     )
-    path.shortcut(expanded_obstacles, max_jump=4)
+    path.shortcut(expanded_obstacles)
     return path
 
 
@@ -87,8 +95,8 @@ path_displays = [
     CreatePath((Feet(3), Feet(2)), (Feet(50), Feet(20))),
 ]
 
-trajectory_generator = BezierCurvatureAware()
-trajectory_generator.calculate_trajectory(path_displays[0].get_points(), None, expanded_obstacles)
+trajectory_generator = SafetyCorridorAssisted()
+trajectory_generator.calculate_trajectory(path_displays[0], None, expanded_obstacles)
 safe_corridor = trajectory_generator.GetSafeCorridor()
 
 renderer = Renderer()
