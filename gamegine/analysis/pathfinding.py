@@ -22,7 +22,7 @@ class InitialConnectionPolicy(Enum):
     VisibilityConnect = 2
 
 
-class Path(Drawable):  # TODO: Use in codebase
+class Path(Drawable):
     def __init__(self, path: List[Tuple[Quantity, Quantity]]) -> None:
         self.path = path
 

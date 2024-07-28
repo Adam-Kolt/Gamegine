@@ -28,7 +28,7 @@ class BezierCurvatureAware(TrajectoryGenerator):
     def __GetExpandedRectangle(self, x: SpatialMeasurement, y: SpatialMeasurement, obstacles: List[DiscreteBoundary]) -> SafeCorridor:
         INITIAL_STEP_SIZE = Meter(1)
 
-        # TODO: Adding small amount to prevent it being a line is kinda scuff, but it works for now
+        # Adding small amount to prevent it being a line is kinda scuff, but it works for now
         rectangle = [x, y, x+Centimeter(1), y+Centimeter(1)] # [min_x, min_y, max_x, max_y] 
         expansion_order = [3, 2, 1, 0] # Order of expansion: 0 = min_x, 1 = min_y, 2 = max_x, 3 = max_y
 

@@ -52,6 +52,9 @@ class Renderer:
                 self.to_pixels(dimensions[1])
             )
         )
+        # TODO: Logo kinda bad, make better
+        logo = pygame.image.load("gamegine/render/assets/logo.png")
+        pygame.display.set_icon(logo)
 
     def draw_static_elements(self):
         if self.game is None:
