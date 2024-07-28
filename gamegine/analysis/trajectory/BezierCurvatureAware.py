@@ -43,11 +43,18 @@ class BezierCurvatureAware(TrajectoryGenerator):
             while not any(obstacle.intersects_rectangle(rectangle[0], rectangle[1], rectangle[2], rectangle[3]) for obstacle in obstacles):
                 Debug(f"Expanding rectangle: {rectangle} by {step_size} in direction {i}")
                 rectangle[i] += step_size
+
+            # Expand and backoff until rectangle perfectly fits within obstacles
+            for x in range(4):
+                while not any(obstacle.intersects_rectangle(rectangle[0], rectangle[1], rectangle[2], rectangle[3]) for obstacle in obstacles):
+                    rectangle[i] += step_size
             
-            # Shrink back in decremental steps until the rectangle no longer intersects with an obstacle
-            while any(obstacle.intersects_rectangle(rectangle[0], rectangle[1], rectangle[2], rectangle[3]) for obstacle in obstacles):
-                step_size /= 2
-                rectangle[i] -= step_size
+                # Shrink back in decremental steps until the rectangle no longer intersects with an obstacle
+                while any(obstacle.intersects_rectangle(rectangle[0], rectangle[1], rectangle[2], rectangle[3]) for obstacle in obstacles):
+                    step_size /= 2
+                    rectangle[i] -= step_size
+
+                
 
         return SafeCorridor(rectangle[0], rectangle[1], rectangle[2]-rectangle[0], rectangle[3]-rectangle[1])
 
@@ -55,9 +62,8 @@ class BezierCurvatureAware(TrajectoryGenerator):
         safe_corridor: List[Rectangle] = []
         rect_obstacles = [obstacle.get_bounded_rectangle() for obstacle in obstacles] # Convert obstacles to rectangles for better corridor expansion
 
-        # First and Last points are fixed
-        safe_corridor.append(self.__GetExpandedRectangle(path[1][0], path[1][1], rect_obstacles))
-        for i in range(2, len(path)-1):
+        safe_corridor.append(self.__GetExpandedRectangle(path[0][0], path[0][1], rect_obstacles))
+        for i in range(1, len(path)):
             last_rectangle = safe_corridor[-1]
             if last_rectangle.contains_point(path[i][0], path[i][1]):
                 continue

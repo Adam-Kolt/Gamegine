@@ -76,10 +76,10 @@ def CreatePath(
         map,
         start,
         end,
-        pathfinding.DirectedAStar,
+        pathfinding.AStar,
         pathfinding.InitialConnectionPolicy.SnapToClosest,
     )
-    path.shortcut(expanded_obstacles)
+    path.shortcut(expanded_obstacles, max_jump=4)
     return path
 
 
@@ -103,6 +103,7 @@ while renderer.loop():
     renderer.draw_element(map)
     renderer.draw_elements(path_displays)
     renderer.draw_elements(safe_corridor)
+    renderer.draw_elements(expanded_obstacles)
 
     time.sleep(0.1)
     renderer.render_frame()

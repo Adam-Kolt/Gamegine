@@ -35,24 +35,27 @@ class Path(Drawable):  # TODO: Use in codebase
     def get_points(self) -> List[Tuple[Quantity, Quantity]]:
         return self.path
 
-    def shortcut(self, discrete_obstacles: List[DiscreteBoundary]) -> "Path":
+    def shortcut(self, discrete_obstacles: List[DiscreteBoundary], max_jump:int =-1) -> "Path":
         if len(self.path) <= 2:
             return self.path
         out = [self.path[0]]
         current = self.path[0]
 
         i = 2
+        jump_count = 0
         while i < len(self.path) - 1:
             if any(
                 obstacle.intersects_line(*current, *self.path[i])
                 for obstacle in discrete_obstacles
-            ):
+            ) or (max_jump > 0 and jump_count > max_jump):
                 Debug(
                     f"Path segment {current} -> {self.path[i]} intersects obstacle. Skipping."
                 )
                 out.append(self.path[i - 1])
                 current = self.path[i - 1]
+                jump_count = 0
             i += 1
+            jump_count += 1
         out.append(self.path[-1])
         self.path = out
         return self
