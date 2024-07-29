@@ -40,31 +40,12 @@ class SafetyCorridorAssisted(TrajectoryGenerator):
         Debug(f"Path map: {corridor[1]}")
         pass
 
-    def __DissectPath(
-        self, path: Path
-    ) -> List[Tuple[SpatialMeasurement, SpatialMeasurement]]:
-        path = path.get_points()
-        disected_path = []
-        for i in range(len(path) - 1):
-            a = path[i]
-            b = path[i + 1]
-            distance = math.sqrt((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2)
-            steps = int(distance / self.units_per_node)
-            for j in range(steps):
-                disected_path.append(
-                    (
-                        a[0] + (b[0] - a[0]) * j / steps,
-                        a[1] + (b[1] - a[1]) * j / steps,
-                    )
-                )
-        disected_path.append(path[-1])
-        return disected_path
-
     def __GetExpandedRectangle(
         self,
         x: SpatialMeasurement,
         y: SpatialMeasurement,
         obstacles: List[DiscreteBoundary],
+        alternate_obstacles: List[DiscreteBoundary] = None,
     ) -> SafeCorridor:
         INITIAL_STEP_SIZE = Meter(1)
 
@@ -96,10 +77,16 @@ class SafetyCorridorAssisted(TrajectoryGenerator):
                 )
                 for obstacle in obstacles
             ):
-                Warn(
-                    f"Initial rectangle intersects with obstacle: {rectangle}. Skipping."
-                )
-                continue
+                if not alternate_obstacles is None:
+                    Warn(
+                        f"Initial rectangle intersects with obstacle: {rectangle}. Attempting to use alternate obstacles"
+                    )
+                    obstacles = alternate_obstacles
+                else:
+                    Debug(
+                        f"Initial rectangle intersects with obstacle: {rectangle}. skipping"
+                    )
+                    continue
 
             # Expand until the rectangle intersects with an obstacle
             while not any(
@@ -150,12 +137,12 @@ class SafetyCorridorAssisted(TrajectoryGenerator):
     ) -> Tuple[List[SafeCorridor], Dict[int, int]]:
         safe_corridor: List[Rectangle] = []
         path_map: Dict[int, int] = {}
-        rect_obstacles = [
-            obstacle for obstacle in obstacles
-        ]  # A Remnant of the past...for now
+        rect_obstacles = [obstacle.get_bounded_rectangle() for obstacle in obstacles]
 
         safe_corridor.append(
-            self.__GetExpandedRectangle(path[0][0], path[0][1], rect_obstacles)
+            self.__GetExpandedRectangle(
+                path[0][0], path[0][1], rect_obstacles, obstacles
+            )
         )
         path_map[0] = 0
 
@@ -163,7 +150,12 @@ class SafetyCorridorAssisted(TrajectoryGenerator):
             last_rectangle = safe_corridor[-1]
             if not last_rectangle.contains_point(path[i][0], path[i][1]):
                 safe_corridor.append(
-                    self.__GetExpandedRectangle(path[i][0], path[i][1], rect_obstacles)
+                    self.__GetExpandedRectangle(
+                        path[i][0],
+                        path[i][1],
+                        rect_obstacles,
+                        alternate_obstacles=obstacles,
+                    )
                 )
             path_map[i] = len(safe_corridor) - 1
 

@@ -5,7 +5,7 @@ import pint.converters
 from gamegine import ureg, Q_
 import warnings
 
-# TODO: Please PLEASE clean this mess up ¯\_(ツ)_/¯
+# TODO: There is currently no way to express complex units, such as m/s^2, but the system is fast and simple
 
 
 class AngularUnits(Enum):
