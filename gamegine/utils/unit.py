@@ -233,3 +233,256 @@ def RatioOf(a: SpatialMeasurement, b: SpatialMeasurement) -> float:
 
 def Zero() -> SpatialMeasurement:
     return Meter(0)
+
+
+class ForceUnits(Enum):
+    Newton = 1
+    Pound = 4.44822
+
+
+class ForceMeasurement(float):
+    BASE_UNIT = ForceUnits.Newton
+    MAX_DECIMALS = 9
+
+    def __new__(cls, value: float, unit: ForceUnits):
+        if isinstance(value, ForceMeasurement):
+            return value
+        value = round(value, cls.MAX_DECIMALS)
+        if isinstance(unit, float):
+            warnings.warn(
+                "UNIT WARNING! Using float as unit increases the risk that you collide with the Martian surface, use a specified ForceUnits Enum instead."
+            )
+            value = value * unit / cls.BASE_UNIT.value
+        else:
+            value = value * unit.value / cls.BASE_UNIT.value
+        value = round(value, cls.MAX_DECIMALS)
+        return float.__new__(cls, value)
+
+    def __deepcopy__(self, memo):
+        return ForceMeasurement(self, self.BASE_UNIT)
+
+    def __str__(self):
+        return f"{float(self)} {self.BASE_UNIT.name}"
+
+    def to(self, unit: ForceUnits) -> float:
+        return self * self.BASE_UNIT.value / unit.value
+
+    def __add__(self, other):
+        if isinstance(other, ForceMeasurement):
+            return ForceMeasurement(float(self) + float(other), self.BASE_UNIT)
+        return NotImplemented
+
+    def __sub__(self, other):
+        if isinstance(other, ForceMeasurement):
+            return ForceMeasurement(float(self) - float(other), self.BASE_UNIT)
+        return NotImplemented
+
+    def __mul__(self, other):
+        return ForceMeasurement(float(self) * float(other), self.BASE_UNIT)
+
+    def __truediv__(self, other):
+        if isinstance(other, ForceMeasurement):
+            return float(self) / float(other)
+        return ForceMeasurement(float(self) / float(other), self.BASE_UNIT)
+
+    def __floordiv__(self, other):
+        if isinstance(other, ForceMeasurement):
+            return float(self) // float(other)
+        return ForceMeasurement(float(self) // float(other), self.BASE_UNIT)
+
+    def __mod__(self, other):
+        return ForceMeasurement(float(self) % float(other), self.BASE_UNIT)
+
+    def __neg__(self):
+        return ForceMeasurement(-float(self), self.BASE_UNIT)
+
+    def __abs__(self):
+        return ForceMeasurement(abs(float(self)), self.BASE_UNIT)
+
+    def __pow__(self, other):
+        return ForceMeasurement(float(self) ** float(other), self.BASE_UNIT)
+
+
+class Newton(ForceMeasurement):
+    def __new__(cls, value: float):
+        return ForceMeasurement.__new__(cls, value, ForceUnits.Newton)
+
+
+class Pound(ForceMeasurement):
+    def __new__(cls, value: float):
+        return ForceMeasurement.__new__(cls, value, ForceUnits.Pound)
+
+
+class TimeUnits(Enum):
+    Second = 1
+    Minute = 60
+    Hour = 3600
+    Day = 86400
+    Week = 604800
+    Year = 31536000
+
+
+class TimeMeasurement(float):
+    BASE_UNIT = TimeUnits.Second
+    MAX_DECIMALS = 9
+
+    def __new__(cls, value: float, unit: TimeUnits):
+        if isinstance(value, TimeMeasurement):
+            return value
+        value = round(value, cls.MAX_DECIMALS)
+        if isinstance(unit, float):
+            warnings.warn(
+                "UNIT WARNING! Using float as unit increases the risk that you collide with the Martian surface, use a specified TimeUnits Enum instead."
+            )
+            value = value * unit / cls.BASE_UNIT.value
+        else:
+            value = value * unit.value / cls.BASE_UNIT.value
+        value = round(value, cls.MAX_DECIMALS)
+        return float.__new__(cls, value)
+
+    def __deepcopy__(self, memo):
+        return TimeMeasurement(self, self.BASE_UNIT)
+
+    def __str__(self):
+        return f"{float(self)} {self.BASE_UNIT.name}"
+
+    def to(self, unit: TimeUnits) -> float:
+        return self * self.BASE_UNIT.value / unit.value
+
+    def __add__(self, other):
+        if isinstance(other, TimeMeasurement):
+            return TimeMeasurement(float(self) + float(other), self.BASE_UNIT)
+        return NotImplemented
+
+    def __sub__(self, other):
+        if isinstance(other, TimeMeasurement):
+            return TimeMeasurement(float(self) - float(other), self.BASE_UNIT)
+        return NotImplemented
+
+    def __mul__(self, other):
+        return TimeMeasurement(float(self) * float(other), self.BASE_UNIT)
+
+    def __truediv__(self, other):
+        if isinstance(other, TimeMeasurement):
+            return float(self) / float(other)
+        return TimeMeasurement(float(self) / float(other), self.BASE_UNIT)
+
+    def __floordiv__(self, other):
+        if isinstance(other, TimeMeasurement):
+            return float(self) // float(other)
+        return TimeMeasurement(float(self) // float(other), self.BASE_UNIT)
+
+    def __mod__(self, other):
+        return TimeMeasurement(float(self) % float(other), self.BASE_UNIT)
+
+    def __neg__(self):
+        return TimeMeasurement(-float(self), self.BASE_UNIT)
+
+    def __abs__(self):
+        return TimeMeasurement(abs(float(self)), self.BASE_UNIT)
+
+    def __pow__(self, other):
+        return TimeMeasurement(float(self) ** float(other), self.BASE_UNIT)
+
+
+class Second(TimeMeasurement):
+    def __new__(cls, value: float):
+        return TimeMeasurement.__new__(cls, value, TimeUnits.Second)
+
+
+class Minute(TimeMeasurement):
+    def __new__(cls, value: float):
+        return TimeMeasurement.__new__(cls, value, TimeUnits.Minute)
+
+
+class Hour(TimeMeasurement):
+    def __new__(cls, value: float):
+        return TimeMeasurement.__new__(cls, value, TimeUnits.Hour)
+
+
+class Day(TimeMeasurement):
+    def __new__(cls, value: float):
+        return TimeMeasurement.__new__(cls, value, TimeUnits.Day)
+
+
+class Week(TimeMeasurement):
+    def __new__(cls, value: float):
+        return TimeMeasurement.__new__(cls, value, TimeUnits.Week)
+
+
+class Year(TimeMeasurement):
+    def __new__(cls, value: float):
+        return TimeMeasurement.__new__(cls, value, TimeUnits.Year)
+
+
+class MassUnits(Enum):
+    Kilogram = 1
+    Pound = 0.453592
+    Gram = 0.001
+    Ounce = 0.0283495
+    Stone = 6.35029
+    Ton = 1000
+    MetricTon = 1000
+
+
+class MassMeasurement(float):
+    BASE_UNIT = MassUnits.Kilogram
+    MAX_DECIMALS = 9
+
+    def __new__(cls, value: float, unit: MassUnits):
+        if isinstance(value, MassMeasurement):
+            return value
+        value = round(value, cls.MAX_DECIMALS)
+        if isinstance(unit, float):
+            warnings.warn(
+                "UNIT WARNING! Using float as unit increases the risk that you collide with the Martian surface, use a specified MassUnits Enum instead."
+            )
+            value = value * unit / cls.BASE_UNIT.value
+        else:
+            value = value * unit.value / cls.BASE_UNIT.value
+        value = round(value, cls.MAX_DECIMALS)
+        return float.__new__(cls, value)
+
+    def __deepcopy__(self, memo):
+        return MassMeasurement(self, self.BASE_UNIT)
+
+    def __str__(self):
+        return f"{float(self)} {self.BASE_UNIT.name}"
+
+    def to(self, unit: MassUnits) -> float:
+        return self * self.BASE_UNIT.value / unit.value
+
+    def __add__(self, other):
+        if isinstance(other, MassMeasurement):
+            return MassMeasurement(float(self) + float(other), self.BASE_UNIT)
+        return NotImplemented
+
+    def __sub__(self, other):
+        if isinstance(other, MassMeasurement):
+            return MassMeasurement(float(self) - float(other), self.BASE_UNIT)
+        return NotImplemented
+
+    def __mul__(self, other):
+        return MassMeasurement(float(self) * float(other), self.BASE_UNIT)
+
+    def __truediv__(self, other):
+        if isinstance(other, MassMeasurement):
+            return float(self) / float(other)
+        return MassMeasurement(float(self) / float(other), self.BASE_UNIT)
+
+    def __floordiv__(self, other):
+        if isinstance(other, MassMeasurement):
+            return float(self) // float(other)
+        return MassMeasurement(float(self) // float(other), self.BASE_UNIT)
+
+    def __mod__(self, other):
+        return MassMeasurement(float(self) % float(other), self.BASE_UNIT)
+
+    def __neg__(self):
+        return MassMeasurement(-float(self), self.BASE_UNIT)
+
+    def __abs__(self):
+        return MassMeasurement(abs(float(self)), self.BASE_UNIT)
+
+    def __pow__(self, other):
+        return MassMeasurement(float(self) ** float(other), self.BASE_UNIT)

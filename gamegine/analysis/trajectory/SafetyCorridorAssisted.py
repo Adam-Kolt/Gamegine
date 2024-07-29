@@ -4,9 +4,10 @@ import pint
 
 from gamegine.analysis.pathfinding import Path
 from gamegine.analysis.trajectory.generation import (
-    HolonomicTrajectoryParameters,
-    TrajectoryGenerator,
-    Trajectory,
+    GuidedSwerveTrajectoryGenerator,
+    SwerveDrivetrainParameters,
+    SwerveTrajectory,
+    TrajectoryKeypoint,
 )
 from gamegine.render import helpers
 from gamegine.render.style import Palette
@@ -20,18 +21,20 @@ class SafeCorridor(Rectangle):
         helpers.draw_fancy_rectangle(self, Palette.BLUE, render_scale)
 
 
-class SafetyCorridorAssisted(TrajectoryGenerator):
+class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
     def __init__(self, units_per_node: SpatialMeasurement = Centimeter(10)):
         self.safe_corridor: List[SafeCorridor] = []
         self.units_per_node = units_per_node
 
     def calculate_trajectory(
         self,
-        path: Path,
-        parameters: HolonomicTrajectoryParameters,
+        guide_path: Path,
         obstacles: List[DiscreteBoundary],
-    ) -> Trajectory:
-        self.dissected_path = path.dissected(units_per_node=self.units_per_node)
+        start_parameters: TrajectoryKeypoint,
+        end_parameters: TrajectoryKeypoint,
+        drivetrain_parameters: SwerveDrivetrainParameters,
+    ) -> SwerveTrajectory:
+        self.dissected_path = guide_path.dissected(units_per_node=self.units_per_node)
         corridor = self.__GenerateSafeCorridor(
             self.dissected_path.get_points(), obstacles
         )

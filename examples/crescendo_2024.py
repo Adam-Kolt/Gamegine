@@ -4,6 +4,10 @@ from typing import Tuple
 import pint
 from gamegine.analysis.meshing import TriangulatedGraph, VisibilityGraph
 from gamegine.analysis.trajectory.SafetyCorridorAssisted import SafetyCorridorAssisted
+from gamegine.analysis.trajectory.generation import (
+    SwerveDrivetrainParameters,
+    TrajectoryKeypoint,
+)
 from gamegine.render.renderer import Renderer
 from gamegine.representation.bounds import (
     Circle,
@@ -96,7 +100,13 @@ path_displays = [
 ]
 
 trajectory_generator = SafetyCorridorAssisted()
-trajectory_generator.calculate_trajectory(path_displays[0], None, expanded_obstacles)
+trajectory_generator.calculate_trajectory(
+    path_displays[0],
+    expanded_obstacles,
+    TrajectoryKeypoint(),
+    TrajectoryKeypoint(),
+    SwerveDrivetrainParameters(),
+)
 safe_corridor = trajectory_generator.GetSafeCorridor()
 
 renderer = Renderer()
