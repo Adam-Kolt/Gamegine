@@ -20,12 +20,9 @@ class AprilTag(BoundedObject):
         id: int,
         family: AprilTagFamily,
     ) -> None:
-        bound = Point(x, y)
-        self.x = x
-        self.y = y
-        self.z = z
+        self.position = Point(x, y, z)
         self.id = id
         self.family = family
         self.heading = heading
         self.name = f"AprilTag {id}"
-        super().__init__(bound)
+        super().__init__(self.position)
