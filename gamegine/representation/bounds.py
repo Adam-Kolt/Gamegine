@@ -203,6 +203,16 @@ class Rectangle(DiscreteBoundary):
         ]
 
 
+class Square(Rectangle):
+    def __init__(
+        self, x: SpatialMeasurement, y: SpatialMeasurement, side: SpatialMeasurement
+    ):
+        super().__init__(x, y, side, side)
+
+    def __str__(self):
+        return f"Square(x={self.x}, y={self.y}, side={self.width})"
+
+
 class Circle(Boundary):
     def __init__(
         self, x: SpatialMeasurement, y: SpatialMeasurement, radius: SpatialMeasurement
@@ -246,11 +256,11 @@ class Circle(Boundary):
 
     def get_3d(
         self, z_start: SpatialMeasurement = 0, z_end: SpatialMeasurement = 0
-    ) -> "CircularPrism":
-        return CircularPrism(self.x, self.y, self.radius, z_start, z_end)
+    ) -> "Cylinder":
+        return Cylinder(self.x, self.y, self.radius, z_start, z_end)
 
 
-class CircularPrism(Circle, DiscreteBoundary3D):
+class Cylinder(Circle, DiscreteBoundary3D):
     def __init__(
         self,
         x: SpatialMeasurement,

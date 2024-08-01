@@ -117,11 +117,13 @@ renderer.init_display()
 print("Game set and display initialized")
 
 while renderer.loop():
-    renderer.draw_static_elements()
+
     renderer.draw_element(map)
-    renderer.draw_elements(path_displays)
+
     renderer.draw_elements(safe_corridor)
     renderer.draw_elements(expanded_obstacles)
+    renderer.draw_elements(path_displays)
+    renderer.draw_static_elements()
 
     time.sleep(0.1)
     renderer.render_frame()

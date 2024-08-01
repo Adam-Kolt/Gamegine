@@ -1,19 +1,185 @@
 from enum import Enum
 from typing import List, Tuple
-import pint
-import pint.converters
-from gamegine import ureg, Q_
 import warnings
+from abc import ABC, abstractmethod, ABCMeta
 
-# TODO: There is currently no way to express complex units, such as m/s^2, but the system is fast and simple
+from gamegine.utils.logging import Error
+
+# The manifestation of insanity in a unit system, created in a naive attempt at making stuff lightweight and easier to use...after not wanting to read the documentation of the pint library
+# A reminder to not do this
 
 
-class AngularUnits(Enum):
+class ComplexMeasurement(float):
+    def __new__(
+        cls,
+        value: float,
+        numerator: List[Tuple["MeasurementUnit", int]],
+        denominator: List[Tuple["MeasurementUnit", int]],
+    ):
+        if isinstance(value, ComplexMeasurement):
+            return value
+
+        # Convert the value to the base unit
+        for unit, power in numerator:
+            base_unit = unit.wth_uses_you().get_base_unit().value
+            current_unit = unit.value
+            value *= base_unit**power / current_unit**power
+
+        for unit, power in denominator:
+            base_unit = unit.wth_uses_you().get_base_unit().value
+            current_unit = unit.value
+            value *= current_unit**power / base_unit**power
+
+    def __init__(
+        self,
+        value: float,
+        numerator: List[Tuple["MeasurementUnit", int]],
+        denominator: List[Tuple["MeasurementUnit", int]],
+    ):
+
+        self.numerator = {}
+        self.denominator = {}
+
+        for unit, power in numerator:
+            base_unit = unit.wth_uses_you().get_base_unit().name
+            if base_unit in self.numerator:
+                self.numerator[base_unit] += power
+            else:
+                self.numerator[base_unit] = power
+
+        for unit, power in denominator:
+            base_unit = unit.wth_uses_you().get_base_unit().name
+            if base_unit in self.denominator:
+                self.denominator[base_unit] += power
+            else:
+                self.denominator[base_unit] = power
+
+    def __str__(self):
+        numerator = " * ".join(
+            [f"{unit}^{power}" for unit, power in self.numerator.items()]
+        )
+        denominator = " * ".join(
+            [f"{unit}^{power}" for unit, power in self.denominator.items()]
+        )
+        return f"{float(self)} {numerator} / {denominator}"
+
+    def compare_units(
+        self,
+        numerator: List[Tuple["MeasurementUnit", int]],
+        denominator: List[Tuple["MeasurementUnit", int]],
+    ):
+        for unit, power in numerator:
+            base_unit = unit.wth_uses_you().get_base_unit().name
+            if base_unit not in self.numerator or self.numerator[base_unit] != power:
+                return False
+
+        for unit, power in denominator:
+            base_unit = unit.wth_uses_you().get_base_unit().name
+            if (
+                base_unit not in self.denominator
+                or self.denominator[base_unit] != power
+            ):
+                return False
+
+        return True
+
+    def simplify_units(self):
+        for unit, power in self.numerator.items():
+            if unit in self.denominator:
+                pwr = power
+                power -= self.denominator[unit]
+                self.denominator[unit] -= pwr
+
+            if power <= 0:
+                del self.numerator[unit]
+
+        for unit, power in self.denominator.items():
+            if power <= 0:
+                del self.denominator
+
+    def __add__(self, value):
+        if isinstance(value, float):  # Maybe should just error here
+            warnings.warn(
+                "Warning! Adding a float to a complex measurement, this is not recommended, please define the unit of the float."
+            )
+            return ComplexMeasurement(
+                float(self) + value, self.numerator, self.denominator
+            )
+        elif issubclass(value.__class__, Measurement) and not issubclass(
+            value.__class__, ComplexMeasurement
+        ):
+            value = ComplexMeasurement(value, [(value.get_base_unit(), 1)], [])
+
+        if self.compare_units(value.numerator, value.denominator):
+            return ComplexMeasurement(
+                float(self) + float(value), self.numerator, self.denominator
+            )
+        Error("Adding two complex measurements with different units is not allowed.")
+        return self
+
+    def __sub__(self, value):
+        if isinstance(value, float):
+            warnings.warn(
+                "Warning! Subtracting a float from a complex measurement, this is not recommended, please define the unit of the float."
+            )
+            return ComplexMeasurement(
+                float(self) - value, self.numerator, self.denominator
+            )
+        elif issubclass(value.__class__, Measurement) and not issubclass(
+            value.__class__, ComplexMeasurement
+        ):
+            value = ComplexMeasurement(value, [(value.get_base_unit(), 1)], [])
+
+        if self.compare_units(value.numerator, value.denominator):
+            return ComplexMeasurement(
+                float(self) - float(value), self.numerator, self.denominator
+            )
+        Error(
+            "Subtracting two complex measurements with different units is not allowed."
+        )
+        return self
+
+    def dimensionally_analyze_units(
+        self,
+        numerator: List[Tuple["MeasurementUnit", int]],
+        denominator: List[Tuple["MeasurementUnit", int]],
+    ):
+        pass  # TODO: Implement
+
+    def __mul__(self, value):
+        pass
+
+
+class AbstractEnumMeta(ABCMeta, Enum.__class__):
+    pass
+
+
+class MeasurementUnit(Enum, metaclass=AbstractEnumMeta):
+    @abstractmethod
+    def wth_uses_you(self) -> "Measurement":
+        pass
+
+
+class Measurement(float, ABC):
+    BASE_UNIT: MeasurementUnit
+    MAX_DECIMALS: int
+
+    def get_base_unit(self) -> MeasurementUnit:
+        return self.BASE_UNIT
+
+    def get_max_decimals(self) -> int:
+        return self.MAX_DECIMALS
+
+
+class AngularUnits(MeasurementUnit):
     Radian = 1
     Degree = 0.0174533
 
+    def wth_uses_you(self) -> "AngularMeasurement":
+        return AngularMeasurement
 
-class AngularMeasurement(float):
+
+class AngularMeasurement(Measurement):
     BASE_UNIT = AngularUnits.Degree
     MAX_DECIMALS = 9
 
@@ -86,7 +252,7 @@ class Radian(AngularMeasurement):
         return AngularMeasurement.__new__(cls, value, AngularUnits.Radian)
 
 
-class SpatialUnits(Enum):
+class SpatialUnits(MeasurementUnit):
     Meter = 1
     Centimeter = 0.01
     Feet = 0.3048
@@ -96,6 +262,9 @@ class SpatialUnits(Enum):
     Mile = 1609.34
     NauticalMile = 1852
     MicroMeter = 0.000001
+
+    def wth_uses_you(self) -> "SpatialMeasurement":
+        return SpatialMeasurement
 
 
 # TODO: You know, the naming might not be 100% great, but at least it's compatible with Apple
@@ -235,12 +404,15 @@ def Zero() -> SpatialMeasurement:
     return Meter(0)
 
 
-class ForceUnits(Enum):
+class ForceUnits(MeasurementUnit):
     Newton = 1
     Pound = 4.44822
 
+    def wth_uses_you(self) -> "ForceMeasurement":
+        return ForceMeasurement
 
-class ForceMeasurement(float):
+
+class ForceMeasurement(Measurement):
     BASE_UNIT = ForceUnits.Newton
     MAX_DECIMALS = 9
 
@@ -313,7 +485,7 @@ class Pound(ForceMeasurement):
         return ForceMeasurement.__new__(cls, value, ForceUnits.Pound)
 
 
-class TimeUnits(Enum):
+class TimeUnits(MeasurementUnit):
     Second = 1
     Minute = 60
     Hour = 3600
@@ -321,8 +493,11 @@ class TimeUnits(Enum):
     Week = 604800
     Year = 31536000
 
+    def wth_uses_you(self) -> "TimeMeasurement":
+        return TimeMeasurement
 
-class TimeMeasurement(float):
+
+class TimeMeasurement(Measurement):
     BASE_UNIT = TimeUnits.Second
     MAX_DECIMALS = 9
 
@@ -424,8 +599,11 @@ class MassUnits(Enum):
     Ton = 1000
     MetricTon = 1000
 
+    def wth_uses_you(self) -> "MassMeasurement":
+        return MassMeasurement
 
-class MassMeasurement(float):
+
+class MassMeasurement(Measurement):
     BASE_UNIT = MassUnits.Kilogram
     MAX_DECIMALS = 9
 
