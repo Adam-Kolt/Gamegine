@@ -5,6 +5,8 @@ from typing import Dict
 from gamegine.utils.logging import Debug, Error, Warn
 import numpy as np
 
+# Unit System V2...Still flawed, yet less so
+
 
 class Unit(object):
     ROUNDING = 9
@@ -162,12 +164,32 @@ class ComplexUnit(Unit):
 
 class AccelerationUnit(ComplexUnit):
     def __init__(self, spatial: SpatialUnit, time: TimeUnit) -> None:
-        super().__init__({spatial: 1, time: 2})
+        super().__init__({spatial: 1, time: -2})
 
 
 class VelocityUnit(ComplexUnit):
     def __init__(self, spatial: SpatialUnit, time: TimeUnit) -> None:
-        super().__init__({spatial: 1, time: 2})
+        super().__init__({spatial: 1, time: -1})
+
+
+class OmegaUnit(ComplexUnit):
+    def __init__(self, angles: AngularUnit, time: TimeUnit) -> None:
+        super().__init__({angles: 1, time: -1})
+
+
+class AlphaUnit(ComplexUnit):
+    def __init__(self, angles: AngularUnit, time: TimeUnit) -> None:
+        super().__init__({angles: 1, time: -2})
+
+
+class TorqueUnit(ComplexUnit):
+    def __init__(self, spatial: SpatialUnit, force: ForceUnit) -> None:
+        super().__init__({spatial: 1, force: 1})
+
+
+class MOIUnit(ComplexUnit):
+    def __init__(self, mass: MassUnit, spatial: SpatialUnit) -> None:
+        super().__init__({spatial: 1, mass: 2})
 
 
 class Units:
@@ -225,6 +247,16 @@ class ComplexUnits:
         KilometerPerHour = VelocityUnit(Units.Spatial.Kilometer, Units.Time.Hour)
         MilePerHour = VelocityUnit(Units.Spatial.Mile, Units.Time.Hour)
         FootPerSecond = VelocityUnit(Units.Spatial.Feet, Units.Time.Second)
+
+    class Torque:
+        NewtonMeter = TorqueUnit(Units.Spatial.Meter, Units.Force.Newton)
+
+    class MOI:
+        KilogramMetersSquared = MOIUnit(Units.Mass.Kilogram, Units.Spatial.Meter)
+
+    class Omega:
+        RadsPerSecond = OmegaUnit(Units.Angular.Radian, Units.Time.Second)
+        DegreesPerSecond = OmegaUnit(Units.Angular.Degree, Units.Time.Second)
 
 
 class ComplexMeasurement(float):
@@ -347,18 +379,18 @@ class Velocity(ComplexMeasurement):
         super().__init__(magnitude, unit, base_magnitude)
 
 
-class MeterPerSecond(Velocity):
+class MetersPerSecond(Velocity):
     def __new__(cls, magnitude: float, base_magnitude=None):
         return super().__new__(
             magnitude, ComplexUnits.Velocity.MeterPerSecond, base_magnitude
         )
 
 
-class Acceleration(ComplexMeasurement):
+class Omega(ComplexMeasurement):
     def __new__(
         cls,
         magnitude: float,
-        unit: VelocityUnit,
+        unit: OmegaUnit,
         base_magnitude=None,
     ):
         return super().__new__(magnitude, unit, base_magnitude)
@@ -366,34 +398,69 @@ class Acceleration(ComplexMeasurement):
     def __init__(
         self,
         magnitude: float,
-        unit: VelocityUnit,
+        unit: OmegaUnit,
         base_magnitude=None,
     ) -> None:
         super().__init__(magnitude, unit, base_magnitude)
+
+
+class RadiansPerSecond(Omega):
+    def __init__(self, magnitude: float) -> None:
+        super().__init__(magnitude, ComplexUnits.Omega.RadsPerSecond)
 
 
 class Acceleration(ComplexMeasurement):
     def __new__(
         cls,
         magnitude: float,
-        spatial_unit: SpatialUnit,
-        time_unit: TimeUnit,
+        unit: AccelerationUnit,
         base_magnitude=None,
     ):
-        return super().__new__(
-            magnitude, ComplexUnit({spatial_unit: 1, time_unit: 2}), base_magnitude
-        )
+        return super().__new__(magnitude, unit, base_magnitude)
 
     def __init__(
         self,
         magnitude: float,
-        spatial_unit: SpatialUnit,
-        time_unit: TimeUnit,
+        unit: AccelerationUnit,
         base_magnitude=None,
     ) -> None:
-        super().__init__(
-            magnitude, ComplexUnit({spatial_unit: 1, time_unit: 2}), base_magnitude
-        )
+        super().__init__(magnitude, unit, base_magnitude)
+
+
+class Torque(ComplexMeasurement):
+    def __new__(
+        cls,
+        magnitude: float,
+        unit: TorqueUnit,
+        base_magnitude=None,
+    ):
+        return super().__new__(magnitude, unit, base_magnitude)
+
+    def __init__(
+        self,
+        magnitude: float,
+        unit: TorqueUnit,
+        base_magnitude=None,
+    ) -> None:
+        super().__init__(magnitude, unit, base_magnitude)
+
+
+class MOI(ComplexMeasurement):
+    def __new__(
+        cls,
+        magnitude: float,
+        unit: MOIUnit,
+        base_magnitude=None,
+    ):
+        return super().__new__(magnitude, unit, base_magnitude)
+
+    def __init__(
+        self,
+        magnitude: float,
+        unit: MOIUnit,
+        base_magnitude=None,
+    ) -> None:
+        super().__init__(magnitude, unit, base_magnitude)
 
 
 class Measurement(float):

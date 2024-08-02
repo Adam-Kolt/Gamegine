@@ -7,10 +7,16 @@ from gamegine.analysis.pathfinding import Path
 from gamegine.render.drawable import Drawable
 from gamegine.representation.bounds import DiscreteBoundary
 from gamegine.utils.unit import (
+    MOI,
     AngularMeasurement,
     ForceMeasurement,
     MassMeasurement,
+    MetersPerSecond,
+    Omega,
+    RadiansPerSecond,
     SpatialMeasurement,
+    Torque,
+    Velocity,
 )
 
 
@@ -20,57 +26,23 @@ class DrivetrainParameters(ABC):
 
 @dataclass
 class SwerveDrivetrainParameters:
-    max_module_speed: SpatialMeasurement
-    max_module_force: ForceMeasurement
+    max_module_speed: Velocity
+    max_module_force: Torque
     wheel_radius: SpatialMeasurement
     wheel_base: SpatialMeasurement
     track_width: SpatialMeasurement
-    moi: float
+    moi: MOI
     mass: MassMeasurement
-
-    def __init__(
-        self,
-        max_module_speed: SpatialMeasurement = None,
-        max_module_force: ForceMeasurement = None,
-        wheel_radius: SpatialMeasurement = None,
-        wheel_base: SpatialMeasurement = None,
-        track_width: SpatialMeasurement = None,
-        moi: float = None,
-        mass: MassMeasurement = None,
-    ):
-        self.max_module_speed = max_module_speed
-        self.max_module_force = max_module_force
-        self.wheel_radius = wheel_radius
-        self.wheel_base = wheel_base
-        self.track_width = track_width
-        self.moi = moi
-        self.mass = mass
 
 
 @dataclass
 class TrajectoryKeypoint:
-    x: SpatialMeasurement
-    y: SpatialMeasurement
-    theta: AngularMeasurement
-    velocity_x: SpatialMeasurement
-    velocity_y: SpatialMeasurement
-    omega: AngularMeasurement
-
-    def __init__(
-        self,
-        x: SpatialMeasurement = None,
-        y: SpatialMeasurement = None,
-        theta: AngularMeasurement = None,
-        velocity_x: SpatialMeasurement = None,
-        velocity_y: SpatialMeasurement = None,
-        omega: AngularMeasurement = None,
-    ):
-        self.x = x
-        self.y = y
-        self.theta = theta
-        self.velocity_x = velocity_x
-        self.velocity_y = velocity_y
-        self.omega = omega
+    x: SpatialMeasurement = None
+    y: SpatialMeasurement = None
+    theta: AngularMeasurement = None
+    velocity_x: Velocity = MetersPerSecond(0.0)
+    velocity_y: Velocity = MetersPerSecond(0.0)
+    omega: Omega = RadiansPerSecond(0.0)
 
 
 class GuidedTrajectoryGenerator(ABC):
