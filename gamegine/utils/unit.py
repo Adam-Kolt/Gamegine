@@ -1,666 +1,796 @@
 from enum import Enum
-from typing import List, Tuple
-import warnings
-from abc import ABC, abstractmethod, ABCMeta
+from abc import ABC, abstractmethod
+from typing import Dict
 
-from gamegine.utils.logging import Error
+from gamegine.utils.logging import Debug, Error, Warn
+import numpy as np
 
-# The manifestation of insanity in a unit system, created in a naive attempt at making stuff lightweight and easier to use...after not wanting to read the documentation of the pint library
-# A reminder to not do this
+
+class Unit(object):
+    ROUNDING = 9
+
+    def __init__(
+        self, dimension: "Dimension", scale: float = 0, symbol="", shift: float = 0
+    ) -> None:
+        self.scale = scale
+        self.shift = shift
+        self.symbol = symbol
+        self.dimension = dimension
+
+    def to_base(self, value: float) -> float:
+        return round(float(value) * self.scale + self.shift, Unit.ROUNDING)
+
+    def from_base(self, value: float) -> float:
+        return round(float(value) / self.scale - self.shift, Unit.ROUNDING)
+
+    def get_dimension(self) -> "Dimension":
+        return self.dimension
+
+    def get_symbol(self) -> str:
+        return self.symbol
+
+    def get_scale(self):
+        return self.scale
+
+
+class Dimension(Enum):
+    Spatial = 0
+    Mass = 1
+    Force = 2
+    Energy = 3
+    Temporal = 4
+
+
+class SpatialUnit(Unit):
+    def __init__(self, scale: float = 0, display="", shift: float = 0) -> None:
+        super().__init__(Dimension.Spatial, scale, display, shift)
+
+
+class TimeUnit(Unit):
+    def __init__(self, scale: float = 0, display="", shift: float = 0) -> None:
+        super().__init__(Dimension.Temporal, scale, display, shift)
+
+
+class MassUnit(Unit):
+    def __init__(self, scale: float = 0, display="", shift: float = 0) -> None:
+        super().__init__(Dimension.Mass, scale, display, shift)
+
+
+class ForceUnit(Unit):
+    def __init__(self, scale: float = 0, display="", shift: float = 0) -> None:
+        super().__init__(Dimension.Force, scale, display, shift)
+
+
+class EnergyUnit(Unit):
+    def __init__(self, scale: float = 0, display="", shift: float = 0) -> None:
+        super().__init__(Dimension.Energy, scale, display, shift)
+
+
+class AngularUnit(Unit):
+    def __init__(self, scale: float = 0, display="", shift: float = 0) -> None:
+        super().__init__(Dimension.Energy, scale, display, shift)
+
+
+class ComplexUnit(Unit):
+    ALIASES = {}  # Possible future speedup if necessary
+
+    def __init__(self, units: Dict[Unit, int]) -> None:
+        dimensionality = np.zeros(len(Dimension))
+        self.units: Dict[int, Unit] = {}
+        for unit, power in units.items():
+            dimension = unit.get_dimension()
+            index = dimension.value
+            dimensionality[index] += power
+
+            if not index in self.units:
+                self.units[index] = unit
+        self.dimension = dimensionality
+
+    def __eq__(self, value: object) -> bool:
+        if isinstance(value, ComplexUnit):
+            return (value.dimension == self.dimension).all()
+        return False
+
+    def __merge_units(self, other: "ComplexUnit"):
+        for dimension, unit in other.units.items():
+            if not dimension in self.units:
+                self.units[dimension] = unit
+
+    def __mul__(self, other):
+        if not isinstance(other, ComplexUnit):
+            return
+        self.dimension += other.dimension
+        self.__merge_units(other)
+        return self
+
+    def __truediv__(self, other):
+        if not isinstance(other, ComplexUnit):
+            return
+        self.dimension -= other.dimension
+        self.__merge_units(other)
+        return self
+
+    def to_base(
+        self, value: float
+    ) -> float:  # TODO: Account for shift, not just scale, in units
+        value = float(value)
+        for i, pwr in enumerate(self.dimension):
+            if pwr == 0:
+                continue
+            value *= self.units[i].get_scale() ** pwr
+        return value
+
+    def from_base(self, value: float) -> float:
+        value = float(value)
+        for i, pwr in enumerate(self.dimension):
+            if pwr == 0:
+                continue
+            value /= self.units[i].get_scale() ** pwr
+        return value
+
+    def get_symbol(self) -> str:
+        num = []
+        den = []
+        for i, pwr in enumerate(self.dimension):
+            if pwr == 0:
+                continue
+            symbol = self.units[i].get_symbol()
+            if pwr > 0:
+                if pwr == 1:
+                    num.append(symbol)
+                else:
+                    num.append(f"{symbol}^{pwr}")
+            else:
+                if pwr == -1:
+                    den.append(symbol)
+                else:
+                    den.append(f"{symbol}^{abs(pwr)}")
+        top = " * ".join(num)
+        # TODO: make this cleaner
+        if num == [] and den == []:
+            return ""
+        if num == []:
+            top = "1"
+        if den == []:
+            return top
+        bottom = " * ".join(den)
+        return f"{top}/{bottom}"
+
+    def get_dimension(self):
+        return self.dimension
+
+
+class AccelerationUnit(ComplexUnit):
+    def __init__(self, spatial: SpatialUnit, time: TimeUnit) -> None:
+        super().__init__({spatial: 1, time: 2})
+
+
+class VelocityUnit(ComplexUnit):
+    def __init__(self, spatial: SpatialUnit, time: TimeUnit) -> None:
+        super().__init__({spatial: 1, time: 2})
+
+
+class Units:
+    class Spatial:
+        Meter = SpatialUnit(1, "m")
+        Centimeter = SpatialUnit(0.01, "cm")
+        Feet = SpatialUnit(0.3048, "ft")
+        Inch = SpatialUnit(0.0254, "in")
+        Yard = SpatialUnit(0.9144, "yd")
+        Kilometer = SpatialUnit(1000, "km")
+        Mile = SpatialUnit(1609.34, "mi")
+        NauticalMile = SpatialUnit(1852, "nmi")
+        MicroMeter = SpatialUnit(0.000001, "μm")
+
+    class Time:
+        Second = TimeUnit(1, "s")
+        Minute = TimeUnit(60, "min")
+        Hour = TimeUnit(3600, "h")
+        Day = TimeUnit(86400, "d")
+
+    class Mass:
+        Gram = MassUnit(1, "g")
+        Kilogram = MassUnit(1000, "kg")
+        Milligram = MassUnit(0.001, "mg")
+        Pound = MassUnit(453.592, "lb")
+        Ounce = MassUnit(28.3495, "oz")
+
+    class Force:
+        Newton = ForceUnit(1, "N")
+        Dyne = ForceUnit(0.00001, "dyn")
+        PoundForce = ForceUnit(4.44822, "lbf")
+        KilogramForce = ForceUnit(9.80665, "kgf")
+
+    class Energy:
+        Joule = EnergyUnit(1, "J")
+        Kilojoule = EnergyUnit(1000, "kJ")
+        Calorie = EnergyUnit(4.184, "cal")
+        Kilocalorie = EnergyUnit(4184, "kcal")
+        WattHour = EnergyUnit(3600, "Wh")
+        KilowattHour = EnergyUnit(3600000, "kWh")
+        ElectronVolt = EnergyUnit(1.60218e-19, "eV")
+
+    class Angular:
+        Radian = AngularUnit(1, "rad")
+        Degree = AngularUnit(0.0174533, "°")
+        Grad = AngularUnit(0.01570796, "grad")
+
+
+class ComplexUnits:
+    class Acceleration:
+        MeterPerSecondSquared = AccelerationUnit(Units.Spatial.Meter, Units.Time.Second)
+
+    class Velocity:
+        MeterPerSecond = VelocityUnit(Units.Spatial.Meter, Units.Time.Second)
+        KilometerPerHour = VelocityUnit(Units.Spatial.Kilometer, Units.Time.Hour)
+        MilePerHour = VelocityUnit(Units.Spatial.Mile, Units.Time.Hour)
+        FootPerSecond = VelocityUnit(Units.Spatial.Feet, Units.Time.Second)
 
 
 class ComplexMeasurement(float):
+    def __new__(cls, magnitude: float, unit: ComplexUnit, base_magnitude=None):
+        if base_magnitude:
+            return float.__new__(cls, base_magnitude)
+        if isinstance(magnitude, ComplexMeasurement):
+            return magnitude
+        value = unit.to_base(magnitude)
+        return float.__new__(cls, value)
+
+    def __init__(
+        self, magnitude: float, unit: ComplexUnit, base_magnitude=None
+    ) -> None:
+        super().__init__()
+        self.dimension = unit.get_dimension()
+        self.unit = unit
+
+    def __deepcopy__(self, memo):
+        return ComplexUnit(self, self.unit)
+
+    def to(self, unit: ComplexUnit):
+        unit.from_base(self)
+
+    def get_unit_magnitude(self) -> float:
+        return self.unit.from_base(self)
+
+    def __str__(self) -> str:
+        return f"{self.get_unit_magnitude()} {self.unit.get_symbol()}"
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+    def get_dimension(self):
+        return self.dimension
+
+    def get_unit(self) -> ComplexUnit:
+        return self.unit
+
+    def to_complex(self):
+        return self
+
+    def __is_same_dimension(self, other: "ComplexMeasurement"):
+        return other.get_unit() == self.get_unit()
+
+    @classmethod
+    def __is_a_measurement(cls, other):
+        return isinstance(other, ComplexMeasurement)
+
+    def __add__(self, other) -> float:
+        if ComplexMeasurement.__is_a_measurement(other) and self.__is_same_dimension(
+            other
+        ):
+            return ComplexMeasurement(
+                0, self.unit, base_magnitude=float(self) + float(other)
+            )
+        else:
+            Error("Cannot add measurements of different dimensions")
+
+    def __sub__(self, other) -> float:
+        if ComplexMeasurement.__is_a_measurement(other) and self.__is_same_dimension(
+            other
+        ):
+            return ComplexMeasurement(
+                0, self.unit, base_magnitude=float(self) - float(other)
+            )
+        else:
+            Error("Cannot add measurements of different dimensions")
+
+    def __mul__(self, other):  # Make complex units
+        if isinstance(other, ComplexMeasurement):
+            return ComplexMeasurement(
+                0, self.unit * other.unit, base_magnitude=float(self) * float(other)
+            )
+        return ComplexMeasurement(
+            0, other.unit, base_magnitude=float(self) * float(other)
+        )
+
+    def __truediv__(self, other):
+        if isinstance(other, Measurement):
+            return float(self) / float(other)
+        return Measurement(0, self.unit, base_magnitude=float(self) / float(other))
+
+    def __floordiv__(self, other):
+        if isinstance(other, Measurement):
+            return float(self) // float(other)
+        return Measurement(0, self.unit, base_magnitude=float(self) // float(other))
+
+    def __mod__(self, other):
+        return Measurement(float(self) % float(other), self.unit)
+
+    def __neg__(self):
+        return Measurement(-float(self), self.unit)
+
+    def __abs__(self):
+        return Measurement(abs(float(self)), self.unit)
+
+    def __pow__(self, other):  # Make into complex measurement
+        if isinstance(other, Measurement):
+            Error("Cannot raise measurement to power of another measurment")
+        return Measurement(float(self) ** float(other), self.unit)
+
+
+# TODO: Maybe later generics
+class Velocity(ComplexMeasurement):
     def __new__(
         cls,
-        value: float,
-        numerator: List[Tuple["MeasurementUnit", int]],
-        denominator: List[Tuple["MeasurementUnit", int]],
+        magnitude: float,
+        unit: VelocityUnit,
+        base_magnitude=None,
     ):
-        if isinstance(value, ComplexMeasurement):
-            return value
-
-        # Convert the value to the base unit
-        for unit, power in numerator:
-            base_unit = unit.wth_uses_you().get_base_unit().value
-            current_unit = unit.value
-            value *= base_unit**power / current_unit**power
-
-        for unit, power in denominator:
-            base_unit = unit.wth_uses_you().get_base_unit().value
-            current_unit = unit.value
-            value *= current_unit**power / base_unit**power
+        return super().__new__(magnitude, unit, base_magnitude)
 
     def __init__(
         self,
-        value: float,
-        numerator: List[Tuple["MeasurementUnit", int]],
-        denominator: List[Tuple["MeasurementUnit", int]],
+        magnitude: float,
+        unit: VelocityUnit,
+        base_magnitude=None,
+    ) -> None:
+        super().__init__(magnitude, unit, base_magnitude)
+
+
+class MeterPerSecond(Velocity):
+    def __new__(cls, magnitude: float, base_magnitude=None):
+        return super().__new__(
+            magnitude, ComplexUnits.Velocity.MeterPerSecond, base_magnitude
+        )
+
+
+class Acceleration(ComplexMeasurement):
+    def __new__(
+        cls,
+        magnitude: float,
+        unit: VelocityUnit,
+        base_magnitude=None,
     ):
+        return super().__new__(magnitude, unit, base_magnitude)
 
-        self.numerator = {}
-        self.denominator = {}
-
-        for unit, power in numerator:
-            base_unit = unit.wth_uses_you().get_base_unit().name
-            if base_unit in self.numerator:
-                self.numerator[base_unit] += power
-            else:
-                self.numerator[base_unit] = power
-
-        for unit, power in denominator:
-            base_unit = unit.wth_uses_you().get_base_unit().name
-            if base_unit in self.denominator:
-                self.denominator[base_unit] += power
-            else:
-                self.denominator[base_unit] = power
-
-    def __str__(self):
-        numerator = " * ".join(
-            [f"{unit}^{power}" for unit, power in self.numerator.items()]
-        )
-        denominator = " * ".join(
-            [f"{unit}^{power}" for unit, power in self.denominator.items()]
-        )
-        return f"{float(self)} {numerator} / {denominator}"
-
-    def compare_units(
+    def __init__(
         self,
-        numerator: List[Tuple["MeasurementUnit", int]],
-        denominator: List[Tuple["MeasurementUnit", int]],
+        magnitude: float,
+        unit: VelocityUnit,
+        base_magnitude=None,
+    ) -> None:
+        super().__init__(magnitude, unit, base_magnitude)
+
+
+class Acceleration(ComplexMeasurement):
+    def __new__(
+        cls,
+        magnitude: float,
+        spatial_unit: SpatialUnit,
+        time_unit: TimeUnit,
+        base_magnitude=None,
     ):
-        for unit, power in numerator:
-            base_unit = unit.wth_uses_you().get_base_unit().name
-            if base_unit not in self.numerator or self.numerator[base_unit] != power:
-                return False
-
-        for unit, power in denominator:
-            base_unit = unit.wth_uses_you().get_base_unit().name
-            if (
-                base_unit not in self.denominator
-                or self.denominator[base_unit] != power
-            ):
-                return False
-
-        return True
-
-    def simplify_units(self):
-        for unit, power in self.numerator.items():
-            if unit in self.denominator:
-                pwr = power
-                power -= self.denominator[unit]
-                self.denominator[unit] -= pwr
-
-            if power <= 0:
-                del self.numerator[unit]
-
-        for unit, power in self.denominator.items():
-            if power <= 0:
-                del self.denominator
-
-    def __add__(self, value):
-        if isinstance(value, float):  # Maybe should just error here
-            warnings.warn(
-                "Warning! Adding a float to a complex measurement, this is not recommended, please define the unit of the float."
-            )
-            return ComplexMeasurement(
-                float(self) + value, self.numerator, self.denominator
-            )
-        elif issubclass(value.__class__, Measurement) and not issubclass(
-            value.__class__, ComplexMeasurement
-        ):
-            value = ComplexMeasurement(value, [(value.get_base_unit(), 1)], [])
-
-        if self.compare_units(value.numerator, value.denominator):
-            return ComplexMeasurement(
-                float(self) + float(value), self.numerator, self.denominator
-            )
-        Error("Adding two complex measurements with different units is not allowed.")
-        return self
-
-    def __sub__(self, value):
-        if isinstance(value, float):
-            warnings.warn(
-                "Warning! Subtracting a float from a complex measurement, this is not recommended, please define the unit of the float."
-            )
-            return ComplexMeasurement(
-                float(self) - value, self.numerator, self.denominator
-            )
-        elif issubclass(value.__class__, Measurement) and not issubclass(
-            value.__class__, ComplexMeasurement
-        ):
-            value = ComplexMeasurement(value, [(value.get_base_unit(), 1)], [])
-
-        if self.compare_units(value.numerator, value.denominator):
-            return ComplexMeasurement(
-                float(self) - float(value), self.numerator, self.denominator
-            )
-        Error(
-            "Subtracting two complex measurements with different units is not allowed."
+        return super().__new__(
+            magnitude, ComplexUnit({spatial_unit: 1, time_unit: 2}), base_magnitude
         )
-        return self
 
-    def dimensionally_analyze_units(
+    def __init__(
         self,
-        numerator: List[Tuple["MeasurementUnit", int]],
-        denominator: List[Tuple["MeasurementUnit", int]],
-    ):
-        pass  # TODO: Implement
-
-    def __mul__(self, value):
-        pass
-
-
-class AbstractEnumMeta(ABCMeta, Enum.__class__):
-    pass
+        magnitude: float,
+        spatial_unit: SpatialUnit,
+        time_unit: TimeUnit,
+        base_magnitude=None,
+    ) -> None:
+        super().__init__(
+            magnitude, ComplexUnit({spatial_unit: 1, time_unit: 2}), base_magnitude
+        )
 
 
-class MeasurementUnit(Enum, metaclass=AbstractEnumMeta):
-    @abstractmethod
-    def wth_uses_you(self) -> "Measurement":
-        pass
+class Measurement(float):
+    def __new__(cls, magnitude: float, unit: Unit, base_magnitude=None):
+        if base_magnitude:
+            return float.__new__(cls, base_magnitude)
+        if isinstance(magnitude, Measurement):
+            return magnitude
+        value = unit.to_base(magnitude)
+        return float.__new__(cls, value)
+
+    def __init__(self, magnitude: float, unit: Unit, base_magnitude=None) -> None:
+        super().__init__()
+        self.dimension = unit.get_dimension()
+        self.unit = unit
+
+    def __deepcopy__(self, memo):
+        return Measurement(0, self.unit, base_magnitude=float(self))
+
+    def to(self, unit: Unit):
+        return unit.from_base(self)
+
+    def get_unit_magnitude(self) -> float:
+        return self.unit.from_base(self)
+
+    def __str__(self) -> str:
+        return f"{self.get_unit_magnitude()} {self.unit.get_symbol()}"
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+    def get_dimension(self) -> Dimension:
+        return self.dimension
+
+    def get_unit(self) -> Unit:
+        return self.unit
+
+    def __is_same_dimension(self, other):
+        return other.get_dimension() == self.get_dimension()
+
+    @classmethod
+    def __is_a_measurement(cls, other):
+        return isinstance(other, Measurement)
+
+    def __add__(self, other) -> float:
+        if isinstance(other, ComplexMeasurement):
+            return self.to_complex() + other
+        elif Measurement.__is_a_measurement(other) and self.__is_same_dimension(other):
+            return Measurement(0, self.unit, base_magnitude=float(self) + float(other))
+        else:
+            Error("Cannot add measurements of different dimensions")
+
+    def __sub__(self, other) -> float:
+        if Measurement.__is_a_measurement(other) and self.__is_same_dimension(other):
+            return Measurement(0, self.unit, base_magnitude=float(self) - float(other))
+        else:
+            Error("Cannot add measurements of different dimensions")
+
+    def __mul__(self, other):  # Make complex units
+        if isinstance(other, Measurement) or isinstance(other, ComplexMeasurement):
+            return self.to_complex() * other.to_complex()
+        else:
+            return Measurement(0, self.unit, base_magnitude=float(self) * float(other))
+
+    def __truediv__(self, other):
+        if isinstance(other, Measurement):
+            return float(self) / float(other)
+        if isinstance(other, ComplexMeasurement):
+            return self.to_complex() / other
+        return Measurement(0, self.unit, base_magnitude=float(self) / float(other))
+
+    def __floordiv__(self, other):
+        if isinstance(other, Measurement):
+            return float(self) // float(other)
+        if isinstance(other, ComplexMeasurement):
+            return self.to_complex() // other
+        return Measurement(0, self.unit, base_magnitude=float(self) // float(other))
+
+    def __mod__(self, other):
+        return Measurement(0, self.unit, base_magnitude=float(self) % float(other))
+
+    def __neg__(self):
+        return Measurement(0, self.unit, base_magnitude=-float(self))
+
+    def __abs__(self):
+        return Measurement(0, self.unit, base_magnitude=abs(float(self)))
+
+    def __pow__(self, other):  # Make into complex measurement
+        if isinstance(other, Measurement):
+            Error("Cannot raise measurement to power of another measurment")
+        return self.to_complex(pwr=float(other))
+
+    def to_complex(self, pwr: int = 1) -> ComplexMeasurement:
+        return ComplexMeasurement(
+            0, unit=ComplexUnit({self.get_unit(): pwr}), base_magnitude=float(self)
+        )
 
 
-class Measurement(float, ABC):
-    BASE_UNIT: MeasurementUnit
-    MAX_DECIMALS: int
-
-    def get_base_unit(self) -> MeasurementUnit:
-        return self.BASE_UNIT
-
-    def get_max_decimals(self) -> int:
-        return self.MAX_DECIMALS
+class SpatialMeasurement(Measurement):
+    def __init__(
+        self, magnitude: float, unit: SpatialUnit, base_magnitude=None
+    ) -> None:
+        super().__init__(magnitude, unit, base_magnitude)
 
 
-class AngularUnits(MeasurementUnit):
-    Radian = 1
-    Degree = 0.0174533
+class TimeMeasurement(Measurement):
+    def __init__(self, magnitude: float, unit: TimeUnit, base_magnitude=None) -> None:
+        super().__init__(magnitude, unit, base_magnitude)
 
-    def wth_uses_you(self) -> "AngularMeasurement":
-        return AngularMeasurement
+
+class MassMeasurement(Measurement):
+    def __init__(self, magnitude: float, unit: MassUnit, base_magnitude=None) -> None:
+        super().__init__(magnitude, unit, base_magnitude)
+
+
+class ForceMeasurement(Measurement):
+    def __init__(self, magnitude: float, unit: ForceUnit, base_magnitude=None) -> None:
+        super().__init__(magnitude, unit, base_magnitude)
+
+
+class EnergyMeasurement(Measurement):
+    def __init__(self, magnitude: float, unit: EnergyUnit, base_magnitude=None) -> None:
+        super().__init__(magnitude, unit, base_magnitude)
 
 
 class AngularMeasurement(Measurement):
-    BASE_UNIT = AngularUnits.Degree
-    MAX_DECIMALS = 9
-
-    def __new__(cls, value: float, unit: AngularUnits):
-        if isinstance(value, AngularMeasurement):
-            return value
-        value = round(value, cls.MAX_DECIMALS)
-        if isinstance(unit, float):
-            warnings.warn(
-                "UNIT WARNING! Using float as unit increases the risk that you collide (while vigorously spinning) with the Martian surface, use a specified AngularUnits Enum instead."
-            )
-            value = value * unit / cls.BASE_UNIT.value
-        else:
-            value = value * unit.value / cls.BASE_UNIT.value
-        value = round(value, cls.MAX_DECIMALS)
-        return float.__new__(cls, value)
-
-    def __deepcopy__(self, memo):
-        return AngularMeasurement(self, self.BASE_UNIT)
-
-    def __str__(self):
-        return f"{float(self)} {self.BASE_UNIT.name}"
-
-    def to(self, unit: AngularUnits) -> float:
-        return self * self.BASE_UNIT.value / unit.value
-
-    def __add__(self, other):
-        if isinstance(other, AngularMeasurement):
-            return AngularMeasurement(float(self) + float(other), self.BASE_UNIT)
-        return NotImplemented
-
-    def __sub__(self, other):
-        if isinstance(other, AngularMeasurement):
-            return AngularMeasurement(float(self) - float(other), self.BASE_UNIT)
-        return NotImplemented
-
-    def __mul__(self, other):
-        return AngularMeasurement(float(self) * float(other), self.BASE_UNIT)
-
-    def __truediv__(self, other):
-        if isinstance(other, AngularMeasurement):
-            return float(self) / float(other)
-        return AngularMeasurement(float(self) / float(other), self.BASE_UNIT)
-
-    def __floordiv__(self, other):
-        if isinstance(other, AngularMeasurement):
-            return float(self) // float(other)
-        return AngularMeasurement(float(self) // float(other), self.BASE_UNIT)
-
-    def __mod__(self, other):
-        return AngularMeasurement(float(self) % float(other), self.BASE_UNIT)
-
-    def __neg__(self):
-        return AngularMeasurement(-float(self), self.BASE_UNIT)
-
-    def __abs__(self):
-        return AngularMeasurement(abs(float(self)), self.BASE_UNIT)
-
-    def __pow__(self, other):
-        return AngularMeasurement(float(self) ** float(other), self.BASE_UNIT)
+    def __init__(
+        self, magnitude: float, unit: AngularUnit, base_magnitude=None
+    ) -> None:
+        super().__init__(magnitude, unit, base_magnitude)
 
 
-class Degree(AngularMeasurement):
-    def __new__(cls, value: float):
-        return AngularMeasurement.__new__(cls, value, AngularUnits.Degree)
-
-
-class Radian(AngularMeasurement):
-    def __new__(cls, value: float):
-        return AngularMeasurement.__new__(cls, value, AngularUnits.Radian)
-
-
-class SpatialUnits(MeasurementUnit):
-    Meter = 1
-    Centimeter = 0.01
-    Feet = 0.3048
-    Inch = 0.0254
-    Yard = 0.9144
-    Kilometer = 1000
-    Mile = 1609.34
-    NauticalMile = 1852
-    MicroMeter = 0.000001
-
-    def wth_uses_you(self) -> "SpatialMeasurement":
-        return SpatialMeasurement
-
-
-# TODO: You know, the naming might not be 100% great, but at least it's compatible with Apple
-class SpatialMeasurement(
-    float
-):  # A class which ensures unit-aware initialization of spacial measurements
-    BASE_UNIT = (
-        SpatialUnits.MicroMeter
-    )  # To avoid floating point errors, we make the base unit smal, so all units are stored as integer floats
-    STRING_UNIT = SpatialUnits.Meter
-    MAX_DECIMALS = (
-        9  # For creation and conversion into base unit, to avoid floating point errors
-    )
-
-    def __new__(cls, value: float, unit: SpatialUnits):
-        if isinstance(value, SpatialMeasurement):
-            return value
-        value = round(value, cls.MAX_DECIMALS)
-        if isinstance(unit, float):
-            warnings.warn(
-                "UNIT WARNING! Using float as unit increases the risk that you collide with the Martian surface, use a specified LinearUnits Enum instead."
-            )
-            value = value * unit / cls.BASE_UNIT.value
-        else:
-            value = value * unit.value / cls.BASE_UNIT.value
-        value = round(value, cls.MAX_DECIMALS)
-        return float.__new__(cls, value)
-
-    def __deepcopy__(self, memo):
-        return SpatialMeasurement(self, self.BASE_UNIT)
-
-    def to(self, unit: SpatialUnits) -> float:
-        return self * self.BASE_UNIT.value / unit.value
-
-    def __str__(self):
-        converted = self.to(self.STRING_UNIT)
-        return f"{float(converted)} {self.STRING_UNIT.name}"
-
-    def __repr__(self) -> str:
-        converted = self.to(self.STRING_UNIT)
-        return f"{float(converted)} {self.STRING_UNIT.name}"
-
-    # Only allow addition and subtraction of SpatialMeasurements
-    def __add__(self, other):
-        if isinstance(other, SpatialMeasurement):
-            return SpatialMeasurement(float(self) + float(other), self.BASE_UNIT)
-        return NotImplemented
-
-    def __sub__(self, other):
-        if isinstance(other, SpatialMeasurement):
-            return SpatialMeasurement(float(self) - float(other), self.BASE_UNIT)
-        return NotImplemented
-
-    def __mul__(self, other):
-        return SpatialMeasurement(float(self) * float(other), self.BASE_UNIT)
-
-    def __truediv__(self, other):
-        if isinstance(other, SpatialMeasurement):
-            return float(self) / float(other)
-        return SpatialMeasurement(float(self) / float(other), self.BASE_UNIT)
-
-    def __floordiv__(self, other):
-        if isinstance(other, SpatialMeasurement):
-            return float(self) // float(other)
-        return SpatialMeasurement(float(self) // float(other), self.BASE_UNIT)
-
-    def __mod__(self, other):
-        return SpatialMeasurement(float(self) % float(other), self.BASE_UNIT)
-
-    def __neg__(self):
-        return SpatialMeasurement(-float(self), self.BASE_UNIT)
-
-    def __abs__(self):
-        return SpatialMeasurement(abs(float(self)), self.BASE_UNIT)
-
-    def __pow__(self, other):
-        return SpatialMeasurement(float(self) ** float(other), self.BASE_UNIT)
-
-
+# Spatial units
 class Meter(SpatialMeasurement):
-    def __new__(cls, value: float):
-        return SpatialMeasurement.__new__(cls, value, SpatialUnits.Meter)
+    def __new__(cls, magnitude: float):
+        return SpatialMeasurement.__new__(cls, magnitude, Units.Spatial.Meter)
+
+    def __init__(self, magnitude: float) -> None:
+        SpatialMeasurement.__init__(self, magnitude, Units.Spatial.Meter)
 
 
 class Centimeter(SpatialMeasurement):
-    def __new__(cls, value: float):
-        return SpatialMeasurement.__new__(cls, value, SpatialUnits.Centimeter)
+    def __new__(cls, magnitude: float):
+        return SpatialMeasurement.__new__(cls, magnitude, Units.Spatial.Centimeter)
+
+    def __init__(self, magnitude: float) -> None:
+        SpatialMeasurement.__init__(self, magnitude, Units.Spatial.Centimeter)
 
 
 class Feet(SpatialMeasurement):
-    def __new__(cls, value: float):
-        return SpatialMeasurement.__new__(cls, value, SpatialUnits.Feet)
+    def __new__(cls, magnitude: float):
+        return SpatialMeasurement.__new__(cls, magnitude, Units.Spatial.Feet)
+
+    def __init__(self, magnitude: float) -> None:
+        SpatialMeasurement.__init__(self, magnitude, Units.Spatial.Feet)
 
 
 class Inch(SpatialMeasurement):
-    def __new__(cls, value: float):
-        return SpatialMeasurement.__new__(cls, value, SpatialUnits.Inch)
+    def __new__(cls, magnitude: float):
+        return SpatialMeasurement.__new__(cls, magnitude, Units.Spatial.Inch)
+
+    def __init__(self, magnitude: float) -> None:
+        SpatialMeasurement.__init__(self, magnitude, Units.Spatial.Inch)
 
 
 class Yard(SpatialMeasurement):
-    def __new__(cls, value: float):
-        return SpatialMeasurement.__new__(cls, value, SpatialUnits.Yard)
+    def __new__(cls, magnitude: float):
+        return SpatialMeasurement.__new__(cls, magnitude, Units.Spatial.Yard)
+
+    def __init__(self, magnitude: float) -> None:
+        SpatialMeasurement.__init__(self, magnitude, Units.Spatial.Yard)
 
 
 class Kilometer(SpatialMeasurement):
-    def __new__(cls, value: float):
-        return SpatialMeasurement.__new__(cls, value, SpatialUnits.Kilometer)
+    def __new__(cls, magnitude: float):
+        return SpatialMeasurement.__new__(cls, magnitude, Units.Spatial.Kilometer)
+
+    def __init__(self, magnitude: float) -> None:
+        SpatialMeasurement.__init__(self, magnitude, Units.Spatial.Kilometer)
 
 
 class Mile(SpatialMeasurement):
-    def __new__(cls, value: float):
-        return SpatialMeasurement.__new__(cls, value, SpatialUnits.Mile)
+    def __new__(cls, magnitude: float):
+        return SpatialMeasurement.__new__(cls, magnitude, Units.Spatial.Mile)
+
+    def __init__(self, magnitude: float) -> None:
+        SpatialMeasurement.__init__(self, magnitude, Units.Spatial.Mile)
 
 
 class NauticalMile(SpatialMeasurement):
-    def __new__(cls, value: float):
-        return SpatialMeasurement.__new__(cls, value, SpatialUnits.NauticalMile)
+    def __new__(cls, magnitude: float):
+        return SpatialMeasurement.__new__(cls, magnitude, Units.Spatial.NauticalMile)
+
+    def __init__(self, magnitude: float) -> None:
+        SpatialMeasurement.__init__(self, magnitude, Units.Spatial.NauticalMile)
 
 
-def HalfSub(value) -> SpatialMeasurement:
-    return Inch(value * 6)
+class MicroMeter(SpatialMeasurement):
+    def __new__(cls, magnitude: float):
+        return SpatialMeasurement.__new__(cls, magnitude, Units.Spatial.MicroMeter)
+
+    def __init__(self, magnitude: float) -> None:
+        SpatialMeasurement.__init__(self, magnitude, Units.Spatial.MicroMeter)
 
 
-def FullSub(value) -> SpatialMeasurement:
-    return Feet(value)
+# Time units
+class Second(TimeMeasurement):
+    def __new__(cls, magnitude: float):
+        return TimeMeasurement.__new__(cls, magnitude, Units.Time.Second)
+
+    def __init__(self, magnitude: float) -> None:
+        TimeMeasurement.__init__(self, magnitude, Units.Time.Second)
 
 
-def BigMac(value) -> SpatialMeasurement:
-    return Centimeter(value * 10)
+class Minute(TimeMeasurement):
+    def __new__(cls, magnitude: float):
+        return TimeMeasurement.__new__(cls, magnitude, Units.Time.Minute)
+
+    def __init__(self, magnitude: float) -> None:
+        TimeMeasurement.__init__(self, magnitude, Units.Time.Minute)
 
 
-def RatioOf(a: SpatialMeasurement, b: SpatialMeasurement) -> float:
+class Hour(TimeMeasurement):
+    def __new__(cls, magnitude: float):
+        return TimeMeasurement.__new__(cls, magnitude, Units.Time.Hour)
+
+    def __init__(self, magnitude: float) -> None:
+        TimeMeasurement.__init__(self, magnitude, Units.Time.Hour)
+
+
+class Day(TimeMeasurement):
+    def __new__(cls, magnitude: float):
+        return TimeMeasurement.__new__(cls, magnitude, Units.Time.Day)
+
+    def __init__(self, magnitude: float) -> None:
+        TimeMeasurement.__init__(self, magnitude, Units.Time.Day)
+
+
+# Mass units
+class Gram(MassMeasurement):
+    def __new__(cls, magnitude: float):
+        return MassMeasurement.__new__(cls, magnitude, Units.Mass.Gram)
+
+    def __init__(self, magnitude: float) -> None:
+        MassMeasurement.__init__(self, magnitude, Units.Mass.Gram)
+
+
+class Kilogram(MassMeasurement):
+    def __new__(cls, magnitude: float):
+        return MassMeasurement.__new__(cls, magnitude, Units.Mass.Kilogram)
+
+    def __init__(self, magnitude: float) -> None:
+        MassMeasurement.__init__(self, magnitude, Units.Mass.Kilogram)
+
+
+class Milligram(MassMeasurement):
+    def __new__(cls, magnitude: float):
+        return MassMeasurement.__new__(cls, magnitude, Units.Mass.Milligram)
+
+    def __init__(self, magnitude: float) -> None:
+        MassMeasurement.__init__(self, magnitude, Units.Mass.Milligram)
+
+
+class Pound(MassMeasurement):
+    def __new__(cls, magnitude: float):
+        return MassMeasurement.__new__(cls, magnitude, Units.Mass.Pound)
+
+    def __init__(self, magnitude: float) -> None:
+        MassMeasurement.__init__(self, magnitude, Units.Mass.Pound)
+
+
+class Ounce(MassMeasurement):
+    def __new__(cls, magnitude: float):
+        return MassMeasurement.__new__(cls, magnitude, Units.Mass.Ounce)
+
+    def __init__(self, magnitude: float) -> None:
+        MassMeasurement.__init__(self, magnitude, Units.Mass.Ounce)
+
+
+# Force units
+class Newton(ForceMeasurement):
+    def __new__(cls, magnitude: float):
+        return ForceMeasurement.__new__(cls, magnitude, Units.Force.Newton)
+
+    def __init__(self, magnitude: float) -> None:
+        ForceMeasurement.__init__(self, magnitude, Units.Force.Newton)
+
+
+class Dyne(ForceMeasurement):
+    def __new__(cls, magnitude: float):
+        return ForceMeasurement.__new__(cls, magnitude, Units.Force.Dyne)
+
+    def __init__(self, magnitude: float) -> None:
+        ForceMeasurement.__init__(self, magnitude, Units.Force.Dyne)
+
+
+class PoundForce(ForceMeasurement):
+    def __new__(cls, magnitude: float):
+        return ForceMeasurement.__new__(cls, magnitude, Units.Force.PoundForce)
+
+    def __init__(self, magnitude: float) -> None:
+        ForceMeasurement.__init__(self, magnitude, Units.Force.PoundForce)
+
+
+class KilogramForce(ForceMeasurement):
+    def __new__(cls, magnitude: float):
+        return ForceMeasurement.__new__(cls, magnitude, Units.Force.KilogramForce)
+
+    def __init__(self, magnitude: float) -> None:
+        ForceMeasurement.__init__(self, magnitude, Units.Force.KilogramForce)
+
+
+# Energy units
+class Joule(EnergyMeasurement):
+    def __new__(cls, magnitude: float):
+        return EnergyMeasurement.__new__(cls, magnitude, Units.Energy.Joule)
+
+    def __init__(self, magnitude: float) -> None:
+        EnergyMeasurement.__init__(self, magnitude, Units.Energy.Joule)
+
+
+class Kilojoule(EnergyMeasurement):
+    def __new__(cls, magnitude: float):
+        return EnergyMeasurement.__new__(cls, magnitude, Units.Energy.Kilojoule)
+
+    def __init__(self, magnitude: float) -> None:
+        EnergyMeasurement.__init__(self, magnitude, Units.Energy.Kilojoule)
+
+
+class Calorie(EnergyMeasurement):
+    def __new__(cls, magnitude: float):
+        return EnergyMeasurement.__new__(cls, magnitude, Units.Energy.Calorie)
+
+    def __init__(self, magnitude: float) -> None:
+        EnergyMeasurement.__init__(self, magnitude, Units.Energy.Calorie)
+
+
+class Kilocalorie(EnergyMeasurement):
+    def __new__(cls, magnitude: float):
+        return EnergyMeasurement.__new__(cls, magnitude, Units.Energy.Kilocalorie)
+
+    def __init__(self, magnitude: float) -> None:
+        EnergyMeasurement.__init__(self, magnitude, Units.Energy.Kilocalorie)
+
+
+class WattHour(EnergyMeasurement):
+    def __new__(cls, magnitude: float):
+        return EnergyMeasurement.__new__(cls, magnitude, Units.Energy.WattHour)
+
+    def __init__(self, magnitude: float) -> None:
+        EnergyMeasurement.__init__(self, magnitude, Units.Energy.WattHour)
+
+
+class KilowattHour(EnergyMeasurement):
+    def __new__(cls, magnitude: float):
+        return EnergyMeasurement.__new__(cls, magnitude, Units.Energy.KilowattHour)
+
+    def __init__(self, magnitude: float) -> None:
+        EnergyMeasurement.__init__(self, magnitude, Units.Energy.KilowattHour)
+
+
+class ElectronVolt(EnergyMeasurement):
+    def __new__(cls, magnitude: float):
+        return EnergyMeasurement.__new__(cls, magnitude, Units.Energy.ElectronVolt)
+
+    def __init__(self, magnitude: float) -> None:
+        EnergyMeasurement.__init__(self, magnitude, Units.Energy.ElectronVolt)
+
+
+# Angular units
+class Radian(AngularMeasurement):
+    def __new__(cls, magnitude: float):
+        return AngularMeasurement.__new__(cls, magnitude, Units.Angular.Radian)
+
+    def __init__(self, magnitude: float) -> None:
+        AngularMeasurement.__init__(self, magnitude, Units.Angular.Radian)
+
+
+class Degree(AngularMeasurement):
+    def __new__(cls, magnitude: float):
+        return AngularMeasurement.__new__(cls, magnitude, Units.Angular.Degree)
+
+    def __init__(self, magnitude: float) -> None:
+        AngularMeasurement.__init__(self, magnitude, Units.Angular.Degree)
+
+
+class Grad(AngularMeasurement):
+    def __new__(cls, magnitude: float):
+        return AngularMeasurement.__new__(cls, magnitude, Units.Angular.Grad)
+
+    def __init__(self, magnitude: float) -> None:
+        AngularMeasurement.__init__(self, magnitude, Units.Angular.Grad)
+
+
+def RatioOf(a, b):
     return a / b
 
 
 def Zero() -> SpatialMeasurement:
     return Meter(0)
-
-
-class ForceUnits(MeasurementUnit):
-    Newton = 1
-    Pound = 4.44822
-
-    def wth_uses_you(self) -> "ForceMeasurement":
-        return ForceMeasurement
-
-
-class ForceMeasurement(Measurement):
-    BASE_UNIT = ForceUnits.Newton
-    MAX_DECIMALS = 9
-
-    def __new__(cls, value: float, unit: ForceUnits):
-        if isinstance(value, ForceMeasurement):
-            return value
-        value = round(value, cls.MAX_DECIMALS)
-        if isinstance(unit, float):
-            warnings.warn(
-                "UNIT WARNING! Using float as unit increases the risk that you collide with the Martian surface, use a specified ForceUnits Enum instead."
-            )
-            value = value * unit / cls.BASE_UNIT.value
-        else:
-            value = value * unit.value / cls.BASE_UNIT.value
-        value = round(value, cls.MAX_DECIMALS)
-        return float.__new__(cls, value)
-
-    def __deepcopy__(self, memo):
-        return ForceMeasurement(self, self.BASE_UNIT)
-
-    def __str__(self):
-        return f"{float(self)} {self.BASE_UNIT.name}"
-
-    def to(self, unit: ForceUnits) -> float:
-        return self * self.BASE_UNIT.value / unit.value
-
-    def __add__(self, other):
-        if isinstance(other, ForceMeasurement):
-            return ForceMeasurement(float(self) + float(other), self.BASE_UNIT)
-        return NotImplemented
-
-    def __sub__(self, other):
-        if isinstance(other, ForceMeasurement):
-            return ForceMeasurement(float(self) - float(other), self.BASE_UNIT)
-        return NotImplemented
-
-    def __mul__(self, other):
-        return ForceMeasurement(float(self) * float(other), self.BASE_UNIT)
-
-    def __truediv__(self, other):
-        if isinstance(other, ForceMeasurement):
-            return float(self) / float(other)
-        return ForceMeasurement(float(self) / float(other), self.BASE_UNIT)
-
-    def __floordiv__(self, other):
-        if isinstance(other, ForceMeasurement):
-            return float(self) // float(other)
-        return ForceMeasurement(float(self) // float(other), self.BASE_UNIT)
-
-    def __mod__(self, other):
-        return ForceMeasurement(float(self) % float(other), self.BASE_UNIT)
-
-    def __neg__(self):
-        return ForceMeasurement(-float(self), self.BASE_UNIT)
-
-    def __abs__(self):
-        return ForceMeasurement(abs(float(self)), self.BASE_UNIT)
-
-    def __pow__(self, other):
-        return ForceMeasurement(float(self) ** float(other), self.BASE_UNIT)
-
-
-class Newton(ForceMeasurement):
-    def __new__(cls, value: float):
-        return ForceMeasurement.__new__(cls, value, ForceUnits.Newton)
-
-
-class Pound(ForceMeasurement):
-    def __new__(cls, value: float):
-        return ForceMeasurement.__new__(cls, value, ForceUnits.Pound)
-
-
-class TimeUnits(MeasurementUnit):
-    Second = 1
-    Minute = 60
-    Hour = 3600
-    Day = 86400
-    Week = 604800
-    Year = 31536000
-
-    def wth_uses_you(self) -> "TimeMeasurement":
-        return TimeMeasurement
-
-
-class TimeMeasurement(Measurement):
-    BASE_UNIT = TimeUnits.Second
-    MAX_DECIMALS = 9
-
-    def __new__(cls, value: float, unit: TimeUnits):
-        if isinstance(value, TimeMeasurement):
-            return value
-        value = round(value, cls.MAX_DECIMALS)
-        if isinstance(unit, float):
-            warnings.warn(
-                "UNIT WARNING! Using float as unit increases the risk that you collide with the Martian surface, use a specified TimeUnits Enum instead."
-            )
-            value = value * unit / cls.BASE_UNIT.value
-        else:
-            value = value * unit.value / cls.BASE_UNIT.value
-        value = round(value, cls.MAX_DECIMALS)
-        return float.__new__(cls, value)
-
-    def __deepcopy__(self, memo):
-        return TimeMeasurement(self, self.BASE_UNIT)
-
-    def __str__(self):
-        return f"{float(self)} {self.BASE_UNIT.name}"
-
-    def to(self, unit: TimeUnits) -> float:
-        return self * self.BASE_UNIT.value / unit.value
-
-    def __add__(self, other):
-        if isinstance(other, TimeMeasurement):
-            return TimeMeasurement(float(self) + float(other), self.BASE_UNIT)
-        return NotImplemented
-
-    def __sub__(self, other):
-        if isinstance(other, TimeMeasurement):
-            return TimeMeasurement(float(self) - float(other), self.BASE_UNIT)
-        return NotImplemented
-
-    def __mul__(self, other):
-        return TimeMeasurement(float(self) * float(other), self.BASE_UNIT)
-
-    def __truediv__(self, other):
-        if isinstance(other, TimeMeasurement):
-            return float(self) / float(other)
-        return TimeMeasurement(float(self) / float(other), self.BASE_UNIT)
-
-    def __floordiv__(self, other):
-        if isinstance(other, TimeMeasurement):
-            return float(self) // float(other)
-        return TimeMeasurement(float(self) // float(other), self.BASE_UNIT)
-
-    def __mod__(self, other):
-        return TimeMeasurement(float(self) % float(other), self.BASE_UNIT)
-
-    def __neg__(self):
-        return TimeMeasurement(-float(self), self.BASE_UNIT)
-
-    def __abs__(self):
-        return TimeMeasurement(abs(float(self)), self.BASE_UNIT)
-
-    def __pow__(self, other):
-        return TimeMeasurement(float(self) ** float(other), self.BASE_UNIT)
-
-
-class Second(TimeMeasurement):
-    def __new__(cls, value: float):
-        return TimeMeasurement.__new__(cls, value, TimeUnits.Second)
-
-
-class Minute(TimeMeasurement):
-    def __new__(cls, value: float):
-        return TimeMeasurement.__new__(cls, value, TimeUnits.Minute)
-
-
-class Hour(TimeMeasurement):
-    def __new__(cls, value: float):
-        return TimeMeasurement.__new__(cls, value, TimeUnits.Hour)
-
-
-class Day(TimeMeasurement):
-    def __new__(cls, value: float):
-        return TimeMeasurement.__new__(cls, value, TimeUnits.Day)
-
-
-class Week(TimeMeasurement):
-    def __new__(cls, value: float):
-        return TimeMeasurement.__new__(cls, value, TimeUnits.Week)
-
-
-class Year(TimeMeasurement):
-    def __new__(cls, value: float):
-        return TimeMeasurement.__new__(cls, value, TimeUnits.Year)
-
-
-class MassUnits(Enum):
-    Kilogram = 1
-    Pound = 0.453592
-    Gram = 0.001
-    Ounce = 0.0283495
-    Stone = 6.35029
-    Ton = 1000
-    MetricTon = 1000
-
-    def wth_uses_you(self) -> "MassMeasurement":
-        return MassMeasurement
-
-
-class MassMeasurement(Measurement):
-    BASE_UNIT = MassUnits.Kilogram
-    MAX_DECIMALS = 9
-
-    def __new__(cls, value: float, unit: MassUnits):
-        if isinstance(value, MassMeasurement):
-            return value
-        value = round(value, cls.MAX_DECIMALS)
-        if isinstance(unit, float):
-            warnings.warn(
-                "UNIT WARNING! Using float as unit increases the risk that you collide with the Martian surface, use a specified MassUnits Enum instead."
-            )
-            value = value * unit / cls.BASE_UNIT.value
-        else:
-            value = value * unit.value / cls.BASE_UNIT.value
-        value = round(value, cls.MAX_DECIMALS)
-        return float.__new__(cls, value)
-
-    def __deepcopy__(self, memo):
-        return MassMeasurement(self, self.BASE_UNIT)
-
-    def __str__(self):
-        return f"{float(self)} {self.BASE_UNIT.name}"
-
-    def to(self, unit: MassUnits) -> float:
-        return self * self.BASE_UNIT.value / unit.value
-
-    def __add__(self, other):
-        if isinstance(other, MassMeasurement):
-            return MassMeasurement(float(self) + float(other), self.BASE_UNIT)
-        return NotImplemented
-
-    def __sub__(self, other):
-        if isinstance(other, MassMeasurement):
-            return MassMeasurement(float(self) - float(other), self.BASE_UNIT)
-        return NotImplemented
-
-    def __mul__(self, other):
-        return MassMeasurement(float(self) * float(other), self.BASE_UNIT)
-
-    def __truediv__(self, other):
-        if isinstance(other, MassMeasurement):
-            return float(self) / float(other)
-        return MassMeasurement(float(self) / float(other), self.BASE_UNIT)
-
-    def __floordiv__(self, other):
-        if isinstance(other, MassMeasurement):
-            return float(self) // float(other)
-        return MassMeasurement(float(self) // float(other), self.BASE_UNIT)
-
-    def __mod__(self, other):
-        return MassMeasurement(float(self) % float(other), self.BASE_UNIT)
-
-    def __neg__(self):
-        return MassMeasurement(-float(self), self.BASE_UNIT)
-
-    def __abs__(self):
-        return MassMeasurement(abs(float(self)), self.BASE_UNIT)
-
-    def __pow__(self, other):
-        return MassMeasurement(float(self) ** float(other), self.BASE_UNIT)

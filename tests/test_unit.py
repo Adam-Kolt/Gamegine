@@ -49,3 +49,9 @@ def test_div_units():
     assert Meter(4) / 2 == Meter(2)
     assert Centimeter(4) / 2 == Centimeter(2)
     assert Feet(1) / Inch(1) == 12
+
+
+def test_complex_measurement_creation():
+    from gamegine.utils.unit import ComplexMeasurement, SpatialUnits, TimeUnits
+
+    ComplexMeasurement(15, [(SpatialUnits.Meter, 1)], [(TimeUnits.Second, 1)])

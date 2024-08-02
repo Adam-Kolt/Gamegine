@@ -497,8 +497,10 @@ def CircularPattern(
     if num_objects <= 1:
         raise Exception("Number of objects must be greater than 1")
     out = []
-    Debug(angle)
+    Debug(f"Circular pattern with angle: {angle}")
     angle_increment = angle / num_objects
+    Debug(f"Increment: {angle_increment}")
+    Debug(f"Doubled: {angle_increment*2}")
     for object in objects:
         centerToObject = [object.bounds.x - center[0], object.bounds.y - center[1]]
         objectToCenter = [centerToObject[0] * -1, centerToObject[1] * -1]

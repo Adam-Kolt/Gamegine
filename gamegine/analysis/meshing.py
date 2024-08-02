@@ -14,14 +14,10 @@ from gamegine.representation.bounds import (
     DiscreteBoundary,
     LineIntersectsAnyBound,
 )
+from gamegine.utils.logging import Debug
 from gamegine.utils.matematika import CoordinateInRectangle, GetDistanceBetween
 from gamegine import ureg
-from gamegine.utils.unit import (
-    Centimeter,
-    Inch,
-    RatioOf,
-    SpatialMeasurement
-)
+from gamegine.utils.unit import Centimeter, Inch, RatioOf, SpatialMeasurement
 
 
 class ConnectionStrategy(Enum):
@@ -63,11 +59,10 @@ class Map(Drawable):
     ) -> "Map":
 
         if node1 not in self.encoding:
-            # TODO: Add logging stuff
-            # print(f"Node at {node1} does not exist. Attempting to add node.")
+            Debug(f"Node at {node1} does not exist. Attempting to add node.")
             self.add_node(node1[0], node1[1])
         if node2 not in self.encoding:
-            # print(f"Node at {node2} does not exist. Attempting to add node.")
+            Debug(f"Node at {node2} does not exist. Attempting to add node.")
             self.add_node(node2[0], node2[1])
 
         node1_id = self.encoding[node1]
@@ -125,7 +120,9 @@ class Map(Drawable):
             for neighbour_id, distance in self.nodes[node_id][1].items()
         ]
 
-    def get_all_nodes(self) -> List[Tuple[int, Tuple[SpatialMeasurement, SpatialMeasurement]]]:
+    def get_all_nodes(
+        self,
+    ) -> List[Tuple[int, Tuple[SpatialMeasurement, SpatialMeasurement]]]:
         return [(node_id, node[0]) for node_id, node in self.nodes.items()]
 
     def encode_coordinates(self, x: SpatialMeasurement, y: SpatialMeasurement) -> int:
@@ -134,7 +131,9 @@ class Map(Drawable):
             raise Exception(f"Node at ({x}, {y}) does not exist.")
         return self.encoding[coord]
 
-    def decode_coordinates(self, node_id: int) -> Tuple[SpatialMeasurement, SpatialMeasurement]:
+    def decode_coordinates(
+        self, node_id: int
+    ) -> Tuple[SpatialMeasurement, SpatialMeasurement]:
         if node_id not in self.nodes:
             raise Exception(f"Node with id {node_id} does not exist.")
         return self.nodes[node_id][0]
@@ -186,10 +185,9 @@ class Map(Drawable):
             return self.get_node(x, y)
         return self.get_node(
             *min(
-                    self.nodes.items(),
-                    key=lambda node: GetDistanceBetween(node[1][0], coord),
-                )[1][0]
-            
+                self.nodes.items(),
+                key=lambda node: GetDistanceBetween(node[1][0], coord),
+            )[1][0]
         )
 
     def __cache_outdated(self):
