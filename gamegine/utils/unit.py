@@ -279,7 +279,7 @@ class ComplexMeasurement(float):
         return ComplexUnit(self, self.unit)
 
     def to(self, unit: ComplexUnit):
-        unit.from_base(self)
+        return unit.from_base(self)
 
     def get_unit_magnitude(self) -> float:
         return self.unit.from_base(self)
@@ -368,7 +368,7 @@ class Velocity(ComplexMeasurement):
         unit: VelocityUnit,
         base_magnitude=None,
     ):
-        return super().__new__(magnitude, unit, base_magnitude)
+        return ComplexMeasurement.__new__(cls, magnitude, unit, base_magnitude)
 
     def __init__(
         self,
@@ -379,11 +379,8 @@ class Velocity(ComplexMeasurement):
         super().__init__(magnitude, unit, base_magnitude)
 
 
-class MetersPerSecond(Velocity):
-    def __new__(cls, magnitude: float, base_magnitude=None):
-        return super().__new__(
-            magnitude, ComplexUnits.Velocity.MeterPerSecond, base_magnitude
-        )
+def MetersPerSecond(magnitude: float) -> Velocity:
+    return Velocity(magnitude, ComplexUnits.Velocity.MeterPerSecond)
 
 
 class Omega(ComplexMeasurement):
@@ -393,7 +390,7 @@ class Omega(ComplexMeasurement):
         unit: OmegaUnit,
         base_magnitude=None,
     ):
-        return super().__new__(magnitude, unit, base_magnitude)
+        return ComplexMeasurement.__new__(cls, magnitude, unit, base_magnitude)
 
     def __init__(
         self,
@@ -404,9 +401,8 @@ class Omega(ComplexMeasurement):
         super().__init__(magnitude, unit, base_magnitude)
 
 
-class RadiansPerSecond(Omega):
-    def __init__(self, magnitude: float) -> None:
-        super().__init__(magnitude, ComplexUnits.Omega.RadsPerSecond)
+def RadiansPerSecond(magnitude: float):
+    return Omega(magnitude, ComplexUnits.Omega.RadsPerSecond)
 
 
 class Acceleration(ComplexMeasurement):
@@ -416,7 +412,7 @@ class Acceleration(ComplexMeasurement):
         unit: AccelerationUnit,
         base_magnitude=None,
     ):
-        return super().__new__(magnitude, unit, base_magnitude)
+        return ComplexMeasurement.__new__(magnitude, unit, base_magnitude)
 
     def __init__(
         self,
@@ -434,7 +430,7 @@ class Torque(ComplexMeasurement):
         unit: TorqueUnit,
         base_magnitude=None,
     ):
-        return super().__new__(magnitude, unit, base_magnitude)
+        return ComplexMeasurement.__new__(cls, magnitude, unit, base_magnitude)
 
     def __init__(
         self,
@@ -445,6 +441,10 @@ class Torque(ComplexMeasurement):
         super().__init__(magnitude, unit, base_magnitude)
 
 
+def NewtonMeter(magnitude: float):
+    return Torque(magnitude, ComplexUnits.Torque.NewtonMeter)
+
+
 class MOI(ComplexMeasurement):
     def __new__(
         cls,
@@ -452,7 +452,7 @@ class MOI(ComplexMeasurement):
         unit: MOIUnit,
         base_magnitude=None,
     ):
-        return super().__new__(magnitude, unit, base_magnitude)
+        return ComplexMeasurement.__new__(cls, magnitude, unit, base_magnitude)
 
     def __init__(
         self,
@@ -461,6 +461,10 @@ class MOI(ComplexMeasurement):
         base_magnitude=None,
     ) -> None:
         super().__init__(magnitude, unit, base_magnitude)
+
+
+def KilogramMetersSquared(magnitude: float):
+    return MOI(magnitude, ComplexUnits.MOI.KilogramMetersSquared)
 
 
 class Measurement(float):
@@ -555,7 +559,9 @@ class Measurement(float):
 
     def to_complex(self, pwr: int = 1) -> ComplexMeasurement:
         return ComplexMeasurement(
-            0, unit=ComplexUnit({self.get_unit(): pwr}), base_magnitude=float(self)
+            0,
+            unit=ComplexUnit({self.get_unit(): pwr}),
+            base_magnitude=float(self) ** pwr,
         )
 
 
@@ -594,265 +600,134 @@ class AngularMeasurement(Measurement):
 
 
 # Spatial units
-class Meter(SpatialMeasurement):
-    def __new__(cls, magnitude: float):
-        return SpatialMeasurement.__new__(cls, magnitude, Units.Spatial.Meter)
-
-    def __init__(self, magnitude: float) -> None:
-        SpatialMeasurement.__init__(self, magnitude, Units.Spatial.Meter)
+# Spatial units
+def Meter(magnitude: float):
+    return SpatialMeasurement(magnitude, Units.Spatial.Meter)
 
 
-class Centimeter(SpatialMeasurement):
-    def __new__(cls, magnitude: float):
-        return SpatialMeasurement.__new__(cls, magnitude, Units.Spatial.Centimeter)
-
-    def __init__(self, magnitude: float) -> None:
-        SpatialMeasurement.__init__(self, magnitude, Units.Spatial.Centimeter)
+def Centimeter(magnitude: float):
+    return SpatialMeasurement(magnitude, Units.Spatial.Centimeter)
 
 
-class Feet(SpatialMeasurement):
-    def __new__(cls, magnitude: float):
-        return SpatialMeasurement.__new__(cls, magnitude, Units.Spatial.Feet)
-
-    def __init__(self, magnitude: float) -> None:
-        SpatialMeasurement.__init__(self, magnitude, Units.Spatial.Feet)
+def Feet(magnitude: float):
+    return SpatialMeasurement(magnitude, Units.Spatial.Feet)
 
 
-class Inch(SpatialMeasurement):
-    def __new__(cls, magnitude: float):
-        return SpatialMeasurement.__new__(cls, magnitude, Units.Spatial.Inch)
-
-    def __init__(self, magnitude: float) -> None:
-        SpatialMeasurement.__init__(self, magnitude, Units.Spatial.Inch)
+def Inch(magnitude: float):
+    return SpatialMeasurement(magnitude, Units.Spatial.Inch)
 
 
-class Yard(SpatialMeasurement):
-    def __new__(cls, magnitude: float):
-        return SpatialMeasurement.__new__(cls, magnitude, Units.Spatial.Yard)
-
-    def __init__(self, magnitude: float) -> None:
-        SpatialMeasurement.__init__(self, magnitude, Units.Spatial.Yard)
+def Yard(magnitude: float):
+    return SpatialMeasurement(magnitude, Units.Spatial.Yard)
 
 
-class Kilometer(SpatialMeasurement):
-    def __new__(cls, magnitude: float):
-        return SpatialMeasurement.__new__(cls, magnitude, Units.Spatial.Kilometer)
-
-    def __init__(self, magnitude: float) -> None:
-        SpatialMeasurement.__init__(self, magnitude, Units.Spatial.Kilometer)
+def Kilometer(magnitude: float):
+    return SpatialMeasurement(magnitude, Units.Spatial.Kilometer)
 
 
-class Mile(SpatialMeasurement):
-    def __new__(cls, magnitude: float):
-        return SpatialMeasurement.__new__(cls, magnitude, Units.Spatial.Mile)
-
-    def __init__(self, magnitude: float) -> None:
-        SpatialMeasurement.__init__(self, magnitude, Units.Spatial.Mile)
+def Mile(magnitude: float):
+    return SpatialMeasurement(magnitude, Units.Spatial.Mile)
 
 
-class NauticalMile(SpatialMeasurement):
-    def __new__(cls, magnitude: float):
-        return SpatialMeasurement.__new__(cls, magnitude, Units.Spatial.NauticalMile)
-
-    def __init__(self, magnitude: float) -> None:
-        SpatialMeasurement.__init__(self, magnitude, Units.Spatial.NauticalMile)
+def NauticalMile(magnitude: float):
+    return SpatialMeasurement(magnitude, Units.Spatial.NauticalMile)
 
 
-class MicroMeter(SpatialMeasurement):
-    def __new__(cls, magnitude: float):
-        return SpatialMeasurement.__new__(cls, magnitude, Units.Spatial.MicroMeter)
-
-    def __init__(self, magnitude: float) -> None:
-        SpatialMeasurement.__init__(self, magnitude, Units.Spatial.MicroMeter)
+def MicroMeter(magnitude: float):
+    return SpatialMeasurement(magnitude, Units.Spatial.MicroMeter)
 
 
 # Time units
-class Second(TimeMeasurement):
-    def __new__(cls, magnitude: float):
-        return TimeMeasurement.__new__(cls, magnitude, Units.Time.Second)
-
-    def __init__(self, magnitude: float) -> None:
-        TimeMeasurement.__init__(self, magnitude, Units.Time.Second)
+def Second(magnitude: float):
+    return TimeMeasurement(magnitude, Units.Time.Second)
 
 
-class Minute(TimeMeasurement):
-    def __new__(cls, magnitude: float):
-        return TimeMeasurement.__new__(cls, magnitude, Units.Time.Minute)
-
-    def __init__(self, magnitude: float) -> None:
-        TimeMeasurement.__init__(self, magnitude, Units.Time.Minute)
+def Minute(magnitude: float):
+    return TimeMeasurement(magnitude, Units.Time.Minute)
 
 
-class Hour(TimeMeasurement):
-    def __new__(cls, magnitude: float):
-        return TimeMeasurement.__new__(cls, magnitude, Units.Time.Hour)
-
-    def __init__(self, magnitude: float) -> None:
-        TimeMeasurement.__init__(self, magnitude, Units.Time.Hour)
+def Hour(magnitude: float):
+    return TimeMeasurement(magnitude, Units.Time.Hour)
 
 
-class Day(TimeMeasurement):
-    def __new__(cls, magnitude: float):
-        return TimeMeasurement.__new__(cls, magnitude, Units.Time.Day)
-
-    def __init__(self, magnitude: float) -> None:
-        TimeMeasurement.__init__(self, magnitude, Units.Time.Day)
+def Day(magnitude: float):
+    return TimeMeasurement(magnitude, Units.Time.Day)
 
 
 # Mass units
-class Gram(MassMeasurement):
-    def __new__(cls, magnitude: float):
-        return MassMeasurement.__new__(cls, magnitude, Units.Mass.Gram)
-
-    def __init__(self, magnitude: float) -> None:
-        MassMeasurement.__init__(self, magnitude, Units.Mass.Gram)
+def Gram(magnitude: float):
+    return MassMeasurement(magnitude, Units.Mass.Gram)
 
 
-class Kilogram(MassMeasurement):
-    def __new__(cls, magnitude: float):
-        return MassMeasurement.__new__(cls, magnitude, Units.Mass.Kilogram)
-
-    def __init__(self, magnitude: float) -> None:
-        MassMeasurement.__init__(self, magnitude, Units.Mass.Kilogram)
+def Kilogram(magnitude: float):
+    return MassMeasurement(magnitude, Units.Mass.Kilogram)
 
 
-class Milligram(MassMeasurement):
-    def __new__(cls, magnitude: float):
-        return MassMeasurement.__new__(cls, magnitude, Units.Mass.Milligram)
-
-    def __init__(self, magnitude: float) -> None:
-        MassMeasurement.__init__(self, magnitude, Units.Mass.Milligram)
+def Milligram(magnitude: float):
+    return MassMeasurement(magnitude, Units.Mass.Milligram)
 
 
-class Pound(MassMeasurement):
-    def __new__(cls, magnitude: float):
-        return MassMeasurement.__new__(cls, magnitude, Units.Mass.Pound)
-
-    def __init__(self, magnitude: float) -> None:
-        MassMeasurement.__init__(self, magnitude, Units.Mass.Pound)
+def Pound(magnitude: float):
+    return MassMeasurement(magnitude, Units.Mass.Pound)
 
 
-class Ounce(MassMeasurement):
-    def __new__(cls, magnitude: float):
-        return MassMeasurement.__new__(cls, magnitude, Units.Mass.Ounce)
-
-    def __init__(self, magnitude: float) -> None:
-        MassMeasurement.__init__(self, magnitude, Units.Mass.Ounce)
+def Ounce(magnitude: float):
+    return MassMeasurement(magnitude, Units.Mass.Ounce)
 
 
 # Force units
-class Newton(ForceMeasurement):
-    def __new__(cls, magnitude: float):
-        return ForceMeasurement.__new__(cls, magnitude, Units.Force.Newton)
-
-    def __init__(self, magnitude: float) -> None:
-        ForceMeasurement.__init__(self, magnitude, Units.Force.Newton)
+def Newton(magnitude: float):
+    return ForceMeasurement(magnitude, Units.Force.Newton)
 
 
-class Dyne(ForceMeasurement):
-    def __new__(cls, magnitude: float):
-        return ForceMeasurement.__new__(cls, magnitude, Units.Force.Dyne)
-
-    def __init__(self, magnitude: float) -> None:
-        ForceMeasurement.__init__(self, magnitude, Units.Force.Dyne)
+def Dyne(magnitude: float):
+    return ForceMeasurement(magnitude, Units.Force.Dyne)
 
 
-class PoundForce(ForceMeasurement):
-    def __new__(cls, magnitude: float):
-        return ForceMeasurement.__new__(cls, magnitude, Units.Force.PoundForce)
-
-    def __init__(self, magnitude: float) -> None:
-        ForceMeasurement.__init__(self, magnitude, Units.Force.PoundForce)
+def PoundForce(magnitude: float):
+    return ForceMeasurement(magnitude, Units.Force.PoundForce)
 
 
-class KilogramForce(ForceMeasurement):
-    def __new__(cls, magnitude: float):
-        return ForceMeasurement.__new__(cls, magnitude, Units.Force.KilogramForce)
-
-    def __init__(self, magnitude: float) -> None:
-        ForceMeasurement.__init__(self, magnitude, Units.Force.KilogramForce)
+def KilogramForce(magnitude: float):
+    return ForceMeasurement(magnitude, Units.Force.KilogramForce)
 
 
 # Energy units
-class Joule(EnergyMeasurement):
-    def __new__(cls, magnitude: float):
-        return EnergyMeasurement.__new__(cls, magnitude, Units.Energy.Joule)
-
-    def __init__(self, magnitude: float) -> None:
-        EnergyMeasurement.__init__(self, magnitude, Units.Energy.Joule)
+def Joule(magnitude: float):
+    return EnergyMeasurement(magnitude, Units.Energy.Joule)
 
 
-class Kilojoule(EnergyMeasurement):
-    def __new__(cls, magnitude: float):
-        return EnergyMeasurement.__new__(cls, magnitude, Units.Energy.Kilojoule)
-
-    def __init__(self, magnitude: float) -> None:
-        EnergyMeasurement.__init__(self, magnitude, Units.Energy.Kilojoule)
+def Kilojoule(magnitude: float):
+    return EnergyMeasurement(magnitude, Units.Energy.Kilojoule)
 
 
-class Calorie(EnergyMeasurement):
-    def __new__(cls, magnitude: float):
-        return EnergyMeasurement.__new__(cls, magnitude, Units.Energy.Calorie)
-
-    def __init__(self, magnitude: float) -> None:
-        EnergyMeasurement.__init__(self, magnitude, Units.Energy.Calorie)
+def Calorie(magnitude: float):
+    return EnergyMeasurement(magnitude, Units.Energy.Calorie)
 
 
-class Kilocalorie(EnergyMeasurement):
-    def __new__(cls, magnitude: float):
-        return EnergyMeasurement.__new__(cls, magnitude, Units.Energy.Kilocalorie)
-
-    def __init__(self, magnitude: float) -> None:
-        EnergyMeasurement.__init__(self, magnitude, Units.Energy.Kilocalorie)
+def Kilocalorie(magnitude: float):
+    return EnergyMeasurement(magnitude, Units.Energy.Kilocalorie)
 
 
-class WattHour(EnergyMeasurement):
-    def __new__(cls, magnitude: float):
-        return EnergyMeasurement.__new__(cls, magnitude, Units.Energy.WattHour)
-
-    def __init__(self, magnitude: float) -> None:
-        EnergyMeasurement.__init__(self, magnitude, Units.Energy.WattHour)
+def WattHour(magnitude: float):
+    return EnergyMeasurement(magnitude, Units.Energy.WattHour)
 
 
-class KilowattHour(EnergyMeasurement):
-    def __new__(cls, magnitude: float):
-        return EnergyMeasurement.__new__(cls, magnitude, Units.Energy.KilowattHour)
-
-    def __init__(self, magnitude: float) -> None:
-        EnergyMeasurement.__init__(self, magnitude, Units.Energy.KilowattHour)
+def KilowattHour(magnitude: float):
+    return EnergyMeasurement(magnitude, Units.Energy.KilowattHour)
 
 
-class ElectronVolt(EnergyMeasurement):
-    def __new__(cls, magnitude: float):
-        return EnergyMeasurement.__new__(cls, magnitude, Units.Energy.ElectronVolt)
-
-    def __init__(self, magnitude: float) -> None:
-        EnergyMeasurement.__init__(self, magnitude, Units.Energy.ElectronVolt)
+def ElectronVolt(magnitude: float):
+    return EnergyMeasurement(magnitude, Units.Energy.ElectronVolt)
 
 
 # Angular units
-class Radian(AngularMeasurement):
-    def __new__(cls, magnitude: float):
-        return AngularMeasurement.__new__(cls, magnitude, Units.Angular.Radian)
-
-    def __init__(self, magnitude: float) -> None:
-        AngularMeasurement.__init__(self, magnitude, Units.Angular.Radian)
+def Radian(magnitude: float):
+    return AngularMeasurement(magnitude, Units.Angular.Radian)
 
 
-class Degree(AngularMeasurement):
-    def __new__(cls, magnitude: float):
-        return AngularMeasurement.__new__(cls, magnitude, Units.Angular.Degree)
-
-    def __init__(self, magnitude: float) -> None:
-        AngularMeasurement.__init__(self, magnitude, Units.Angular.Degree)
-
-
-class Grad(AngularMeasurement):
-    def __new__(cls, magnitude: float):
-        return AngularMeasurement.__new__(cls, magnitude, Units.Angular.Grad)
-
-    def __init__(self, magnitude: float) -> None:
-        AngularMeasurement.__init__(self, magnitude, Units.Angular.Grad)
+def Degree(magnitude: float):
+    return AngularMeasurement(magnitude, Units.Angular.Degree)
 
 
 def RatioOf(a, b):

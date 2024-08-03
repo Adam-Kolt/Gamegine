@@ -1,11 +1,12 @@
 import math
-from typing import Tuple
+from typing import List, Tuple
 
 import pint
 from gamegine.analysis.meshing import TriangulatedGraph, VisibilityGraph
 from gamegine.analysis.trajectory.SafetyCorridorAssisted import SafetyCorridorAssisted
 from gamegine.analysis.trajectory.generation import (
-    SwerveDrivetrainParameters,
+    SwerveTrajectory,
+    Trajectory,
     TrajectoryKeypoint,
 )
 from gamegine.render.renderer import Renderer
@@ -18,12 +19,19 @@ from gamegine.representation.bounds import (
 )
 from gamegine.representation.game import Game
 from gamegine.representation.obstacle import Circular, Polygonal, Rectangular
+from gamegine.representation.robot import (
+    PhysicalParameters,
+    SwerveDrivetrainCharacteristics,
+)
 from gamegine.utils.unit import (
     Degree,
+    Kilogram,
+    KilogramMetersSquared,
     Meter,
     Centimeter,
     Feet,
     Inch,
+    Pound,
     SpatialMeasurement,
 )
 from gamegine.analysis import pathfinding
@@ -74,10 +82,13 @@ starting_points = []  # Points where the robot usually starts
 points = [point.get_vertices()[0] for point in starting_points]
 
 expanded_obstacles = ExpandedObjectBounds(
-    test_game.get_obstacles(), robot_radius=Inch(24.075), discretization_quality=8
+    test_game.get_obstacles(), robot_radius=Inch(24.075), discretization_quality=16
 )
-# map = VisibilityGraph(expanded_obstacles, points, test_game.field_size)
-map = TriangulatedGraph(expanded_obstacles, Feet(2), test_game.get_field_size())
+expanded_obstacles_v = ExpandedObjectBounds(
+    test_game.get_obstacles(), robot_radius=Inch(25), discretization_quality=5
+)
+# map = VisibilityGraph(expanded_obstacles_v, points, test_game.field_size)
+map = TriangulatedGraph(expanded_obstacles, Feet(4), test_game.get_field_size())
 
 
 def CreatePath(
@@ -89,26 +100,52 @@ def CreatePath(
         start,
         end,
         pathfinding.AStar,
-        pathfinding.InitialConnectionPolicy.SnapToClosest,
+        pathfinding.InitialConnectionPolicy.ConnectToClosest,
     )
-    path.shortcut(expanded_obstacles, 4)
+    path.shortcut(expanded_obstacles)
     return path
 
 
-path_displays = [
-    CreatePath((Feet(3), Feet(2)), (Feet(50), Feet(20))),
-]
+corridors = []
 
-trajectory_generator = SafetyCorridorAssisted()
-trajectory_generator.calculate_trajectory(
-    path_displays[0],
-    expanded_obstacles,
-    TrajectoryKeypoint(),
-    TrajectoryKeypoint(),
-    SwerveDrivetrainParameters(),
+
+def CreateTrajectory(
+    start: Tuple[SpatialMeasurement, SpatialMeasurement],
+    end: Tuple[SpatialMeasurement, SpatialMeasurement],
+):
+    path = CreatePath(start, end)
+
+    trajectory_generator = SafetyCorridorAssisted(Centimeter(10))
+    traj = trajectory_generator.calculate_trajectory(
+        path,
+        expanded_obstacles,
+        TrajectoryKeypoint(),
+        TrajectoryKeypoint(),
+        PhysicalParameters(Pound(120), KilogramMetersSquared(5)),
+        SwerveDrivetrainCharacteristics(),
+    )
+    corridors.extend(trajectory_generator.GetSafeCorridor())
+    return traj
+
+
+def Destinations(
+    places: List[Tuple[SpatialMeasurement, SpatialMeasurement]]
+) -> List[SwerveTrajectory]:
+    out = []
+    for i in range(len(places) - 1):
+        start = places[i]
+        end = places[i + 1]
+        out.append(CreateTrajectory(start, end))
+    return out
+
+
+# safe_corridor = trajectory_generator.GetSafeCorridor()
+trajectories = Destinations(
+    [
+        (Feet(6), Inch(64.081) + Inch(82.645) / 2),
+        (Feet(36), Feet(3)),
+    ]
 )
-safe_corridor = trajectory_generator.GetSafeCorridor()
-
 renderer = Renderer()
 
 renderer.set_game(test_game)
@@ -120,9 +157,9 @@ while renderer.loop():
 
     renderer.draw_element(map)
 
-    renderer.draw_elements(safe_corridor)
+    renderer.draw_elements(corridors)
     renderer.draw_elements(expanded_obstacles)
-    renderer.draw_elements(path_displays)
+    renderer.draw_elements(trajectories)
     renderer.draw_static_elements()
 
     renderer.render_frame()

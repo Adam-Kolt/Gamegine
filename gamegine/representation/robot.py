@@ -8,7 +8,10 @@ from dataclasses import dataclass
 from gamegine.utils.unit import (
     MOI,
     ComplexMeasurement,
+    Inch,
     MassMeasurement,
+    MetersPerSecond,
+    NewtonMeter,
     Omega,
     RadiansPerSecond,
     SpatialMeasurement,
@@ -35,17 +38,17 @@ class Robot(NamedObject):
 
 @dataclass
 class SwerveModuleCharacteristics:
-    max_module_speed: Velocity
-    max_module_force: Torque
-    wheel_radius: SpatialMeasurement
+    max_module_speed: Velocity = MetersPerSecond(6.0)
+    max_module_force: Torque = NewtonMeter(7.0)
+    wheel_radius: SpatialMeasurement = Inch(2)
     rotation_speed: Omega = RadiansPerSecond(6.28)
 
 
 @dataclass
 class SwerveDrivetrainCharacteristics:
-    module: SwerveModuleCharacteristics
-    wheel_base: SpatialMeasurement
-    track_width: SpatialMeasurement
+    module: SwerveModuleCharacteristics = SwerveModuleCharacteristics()
+    wheel_base: SpatialMeasurement = Inch(30)
+    track_width: SpatialMeasurement = Inch(30)
 
 
 class SwerveRobot(Robot):

@@ -17,7 +17,7 @@ from gamegine.representation.bounds import (
 from gamegine.utils.logging import Debug
 from gamegine.utils.matematika import CoordinateInRectangle, GetDistanceBetween
 from gamegine import ureg
-from gamegine.utils.unit import Centimeter, Inch, RatioOf, SpatialMeasurement
+from gamegine.utils.unit import Centimeter, Inch, RatioOf, SpatialMeasurement, Units
 
 
 class ConnectionStrategy(Enum):
@@ -136,7 +136,11 @@ class Map(Drawable):
     ) -> Tuple[SpatialMeasurement, SpatialMeasurement]:
         if node_id not in self.nodes:
             raise Exception(f"Node with id {node_id} does not exist.")
-        return self.nodes[node_id][0]
+        raw = self.nodes[node_id][0]
+        return (
+            SpatialMeasurement(0, Units.Spatial.Meter, base_magnitude=raw[0]),
+            SpatialMeasurement(0, Units.Spatial.Meter, base_magnitude=raw[1]),
+        )
 
     def get_all_unique_connections(
         self,

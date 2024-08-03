@@ -202,6 +202,18 @@ class Rectangle(DiscreteBoundary):
             (self.x, self.y + self.height),
         ]
 
+    def get_min_x(self) -> SpatialMeasurement:
+        return self.x
+
+    def get_max_x(self) -> SpatialMeasurement:
+        return self.x + self.width
+
+    def get_min_y(self) -> SpatialMeasurement:
+        return self.y
+
+    def get_max_y(self) -> SpatialMeasurement:
+        return self.y + self.height
+
 
 class Square(Rectangle):
     def __init__(
