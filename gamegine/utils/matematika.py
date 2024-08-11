@@ -3,7 +3,8 @@ import pint
 import math
 
 from gamegine.utils.logging import Debug
-from gamegine.utils.unit import AngularMeasurement, Units
+from gamegine.utils.NCIM.ncim import AngularMeasurement
+from gamegine.utils.NCIM.Dimensions import angular
 
 
 def Clamp(value, min_value, max_value):
@@ -36,7 +37,7 @@ def CoordinateInRectangle(point, rectangle):
 
 def RotateAboutOrigin(vector, angle: AngularMeasurement):
     Debug(f"Raw: {float(angle)} Angle: {angle}")
-    rads = angle.to(Units.Angular.Radian)
+    rads = angle.to(angular.Radian)
     Debug(f"Rads: {rads}")
     x = vector[0] * math.cos(rads) - vector[1] * math.sin(rads)
     y = vector[0] * math.sin(rads) + vector[1] * math.cos(rads)

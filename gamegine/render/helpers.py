@@ -2,7 +2,7 @@ import pint
 from gamegine.representation.bounds import Circle, DiscreteBoundary, Polygon, Rectangle
 import pygame
 
-from gamegine.utils.unit import RatioOf, SpatialMeasurement
+from gamegine.utils.NCIM.ncim import RatioOf, SpatialMeasurement
 from .style import get_color, Palette, Shade, Opacity
 
 # TODO: Some of this is kinda cooked and should be configured elsewhere

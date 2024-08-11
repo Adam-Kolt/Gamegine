@@ -7,7 +7,7 @@ from gamegine.representation.bounds import (
     Rectangle,
     Circle,
 )
-from gamegine.utils.unit import SpatialMeasurement
+from gamegine.utils.NCIM.ncim import SpatialMeasurement
 
 
 class Obstacle(BoundedObject):

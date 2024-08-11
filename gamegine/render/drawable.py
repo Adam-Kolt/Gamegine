@@ -2,7 +2,8 @@ from abc import ABC, abstractmethod
 
 import pint
 
-from gamegine.utils.unit import SpatialMeasurement
+from gamegine.utils.NCIM.ncim import SpatialMeasurement
+
 
 class Drawable(ABC):
     @abstractmethod

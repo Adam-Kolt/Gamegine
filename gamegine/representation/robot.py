@@ -5,7 +5,7 @@ from gamegine.representation.base import NamedObject
 from gamegine.representation.bounds import Boundary3D
 from dataclasses import dataclass
 
-from gamegine.utils.unit import (
+from gamegine.utils.NCIM.ncim import (
     MOI,
     ComplexMeasurement,
     Inch,

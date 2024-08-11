@@ -3,7 +3,7 @@ from gamegine.render.renderer import Renderer
 from gamegine.representation.bounds import Circle, Point, SymmetricalX
 from gamegine.representation.game import Game
 from gamegine.representation.obstacle import Circular, Rectangular
-from gamegine.utils.unit import Meter, Centimeter, Feet, Inch
+from gamegine.utils.NCIM.ncim import Meter, Centimeter, Feet, Inch
 from gamegine.analysis import pathfinding
 import time
 

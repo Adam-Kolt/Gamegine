@@ -1,5 +1,5 @@
 from gamegine.representation.bounds import Boundary, BoundedObject, Point
-from gamegine.utils.unit import AngularMeasurement, SpatialMeasurement
+from gamegine.utils.NCIM.ncim import AngularMeasurement, SpatialMeasurement
 from enum import Enum
 
 

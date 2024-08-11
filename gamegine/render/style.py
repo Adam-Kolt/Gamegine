@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import List
 import numpy as np
 from pygame import Color
 

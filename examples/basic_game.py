@@ -8,7 +8,7 @@ from gamegine.representation.bounds import (
 )
 from gamegine.representation.game import Game
 from gamegine.representation.obstacle import Circular, Rectangular
-from gamegine.utils.unit import Meter, Centimeter, Feet, Inch
+from gamegine.utils.NCIM.ncim import Meter, Centimeter, Feet, Inch
 import time
 
 

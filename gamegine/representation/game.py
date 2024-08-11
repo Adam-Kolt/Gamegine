@@ -2,7 +2,7 @@ from typing import List
 import pint
 
 from gamegine.utils.logging import Debug
-from gamegine.utils.unit import Meter, SpatialMeasurement, Zero
+from gamegine.utils.NCIM.ncim import Meter, SpatialMeasurement, Zero
 import numpy as np
 from gamegine.representation import obstacle
 

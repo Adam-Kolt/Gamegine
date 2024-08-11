@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Tuple
 from dataclasses import dataclass
 import pint
+import pygame
 
 from gamegine.analysis.pathfinding import Path
 from gamegine.render import helpers
@@ -12,7 +13,8 @@ from gamegine.representation.robot import (
     PhysicalParameters,
     SwerveDrivetrainCharacteristics,
 )
-from gamegine.utils.unit import (
+from gamegine.utils.logging import Debug
+from gamegine.utils.NCIM.ncim import (
     MOI,
     AngularMeasurement,
     ForceMeasurement,
@@ -21,8 +23,9 @@ from gamegine.utils.unit import (
     MetersPerSecond,
     Omega,
     RadiansPerSecond,
+    RatioOf,
     SpatialMeasurement,
-    TimeMeasurement,
+    TemporalMeasurement,
     Torque,
     Velocity,
 )
@@ -80,6 +83,9 @@ class TrajectoryState:
     acc_x: Velocity = MetersPerSecond(0.0)
     acc_y: Velocity = MetersPerSecond(0.0)
 
+    def get_velocity_magnitude(self) -> Velocity:
+        return (self.vel_x**2 + self.vel_y**2) ** 0.5
+
 
 class Trajectory(Drawable):
     @abstractmethod
@@ -93,7 +99,7 @@ class Trajectory(Drawable):
         pass
 
     @abstractmethod
-    def get_travel_time() -> TimeMeasurement:
+    def get_travel_time() -> TemporalMeasurement:
         pass
 
     @abstractmethod
@@ -101,7 +107,7 @@ class Trajectory(Drawable):
         pass
 
     @abstractmethod
-    def at_time(time: TimeMeasurement) -> TrajectoryState:
+    def at_time(time: TemporalMeasurement) -> TrajectoryState:
         pass
 
 
@@ -112,9 +118,18 @@ class SwerveTrajectory(
 
 
 class InterpolatedSwerveTrajectory(SwerveTrajectory):
+
     def __init__(self, states: List[TrajectoryState]) -> None:
         super().__init__()
         self.discrete_states = states
+        self.__calc_maximums()
+
+    def __calc_maximums(self):
+        self.MAX_VEL = 0
+        for state in self.discrete_states:
+            vel = state.get_velocity_magnitude()
+            if vel > self.MAX_VEL:
+                self.MAX_VEL = vel
 
     def get_discrete_trajectory(
         self, poll_step: SpatialMeasurement
@@ -124,30 +139,29 @@ class InterpolatedSwerveTrajectory(SwerveTrajectory):
     def get_length() -> SpatialMeasurement:
         pass
 
-    def get_travel_time() -> TimeMeasurement:
+    def get_travel_time() -> TemporalMeasurement:
         pass
 
     def get(percentage: float) -> TrajectoryState:
         pass
 
-    def at_time(time: TimeMeasurement) -> TrajectoryState:
+    def at_time(time: TemporalMeasurement) -> TrajectoryState:
         pass
 
     def draw(self, render_scale: SpatialMeasurement):
         for i in range(len(self.discrete_states) - 1):
             point = self.discrete_states[i]
             point2 = self.discrete_states[i + 1]
-
-            helpers.draw_line(
-                point.x,
-                point.y,
-                point2.x,
-                point2.y,
-                Inch(1.5),
-                Palette.PINK,
-                render_scale,
+            vel = point.get_velocity_magnitude()
+            vel_ratio = float(vel / self.MAX_VEL)
+            pygame.draw.line(
+                pygame.display.get_surface(),
+                (int(vel_ratio * 255), 100, 0),
+                (RatioOf(point.x, render_scale), RatioOf(point.y, render_scale)),
+                (RatioOf(point2.x, render_scale), RatioOf(point2.y, render_scale)),
+                width=int(RatioOf(Inch(1) + Inch(1) * vel_ratio, render_scale)),
             )
-            helpers.draw_point(point.x, point.y, Inch(1.5), Palette.PINK, render_scale)
+
         helpers.draw_point(point2.x, point2.y, Inch(2), Palette.PINK, render_scale)
         helpers.draw_point(
             self.discrete_states[0].x,
@@ -156,3 +170,6 @@ class InterpolatedSwerveTrajectory(SwerveTrajectory):
             Palette.PINK,
             render_scale,
         )
+
+    def get_points(self):
+        return self.discrete_states

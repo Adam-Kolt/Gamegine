@@ -17,15 +17,16 @@ from gamegine.representation.robot import (
     PhysicalParameters,
     SwerveDrivetrainCharacteristics,
 )
+from gamegine.utils.NCIM.ComplexDimensions.torque import NewtonMeter
+from gamegine.utils.NCIM.Dimensions.mass import Kilogram
 from gamegine.utils.logging import Debug, Warn
-from gamegine.utils.unit import (
+from gamegine.utils.NCIM.ncim import (
     Centimeter,
-    ComplexUnits,
     MassMeasurement,
     Meter,
+    MetersPerSecond,
     Radian,
     SpatialMeasurement,
-    Units,
 )
 from jormungandr.optimization import OptimizationProblem
 import numpy as np
@@ -44,15 +45,18 @@ class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
     def __get_max_acc_ms(
         self, mass: MassMeasurement, drivetrain: SwerveDrivetrainCharacteristics
     ):
-        return drivetrain.module.max_module_force.to(Units.Force.Newton) / mass.to(
-            Units.Mass.Kilogram
+        return (
+            drivetrain.module.max_module_force.to(NewtonMeter)
+            / mass.to(Kilogram)
+            / drivetrain.module.wheel_radius.to(Meter)
+            * 4
         )
 
     def __bound_in_rect(self, rect: Rectangle, problem, x, y):
-        problem.subject_to(x > rect.get_min_x().to(Units.Spatial.Meter))
-        problem.subject_to(x < rect.get_max_x().to(Units.Spatial.Meter))
-        problem.subject_to(y > rect.get_min_y().to(Units.Spatial.Meter))
-        problem.subject_to(y < rect.get_max_y().to(Units.Spatial.Meter))
+        problem.subject_to(x > rect.get_min_x().to(Meter))
+        problem.subject_to(x < rect.get_max_x().to(Meter))
+        problem.subject_to(y > rect.get_min_y().to(Meter))
+        problem.subject_to(y < rect.get_max_y().to(Meter))
 
     def __apply_boundary_constraints(
         self,
@@ -79,18 +83,15 @@ class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
         drivetrain: SwerveDrivetrainCharacteristics,
     ):
         # Basic Constraints
-        MAX_SPEED = drivetrain.module.max_module_speed.to(
-            ComplexUnits.Velocity.MeterPerSecond
-        )
-        MAX_ACC = self.__get_max_acc_ms(physics.mass, drivetrain)
+        MAX_SPEED = drivetrain.module.max_module_speed.to(MetersPerSecond)
+        Debug(f"Max Speed: {MAX_SPEED}")
 
+        MAX_ACC = self.__get_max_acc_ms(physics.mass, drivetrain)
+        Debug(f"Max Acceleration: {MAX_ACC}")
         Debug("Creating Optimization Problem")
         trajectory_problem = OptimizationProblem()
 
-        initial_points = [
-            (x.to(Units.Spatial.Meter), y.to(Units.Spatial.Meter))
-            for x, y in path.get_points()
-        ]
+        initial_points = [(x.to(Meter), y.to(Meter)) for x, y in path.get_points()]
         steps = len(initial_points)
 
         X = trajectory_problem.decision_variable(steps)
@@ -105,22 +106,14 @@ class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
         # Start
         trajectory_problem.subject_to(X[0] == initial_points[0][0])
         trajectory_problem.subject_to(Y[0] == initial_points[0][1])
-        trajectory_problem.subject_to(
-            VX[0] == start.velocity_x.to(ComplexUnits.Velocity.MeterPerSecond)
-        )
-        trajectory_problem.subject_to(
-            VY[0] == start.velocity_y.to(ComplexUnits.Velocity.MeterPerSecond)
-        )
+        trajectory_problem.subject_to(VX[0] == start.velocity_x.to(MetersPerSecond))
+        trajectory_problem.subject_to(VY[0] == start.velocity_y.to(MetersPerSecond))
 
         # End
         trajectory_problem.subject_to(X[-1] == initial_points[-1][0])
         trajectory_problem.subject_to(Y[-1] == initial_points[-1][1])
-        trajectory_problem.subject_to(
-            VX[-1] == start.velocity_x.to(ComplexUnits.Velocity.MeterPerSecond)
-        )
-        trajectory_problem.subject_to(
-            VY[-1] == start.velocity_y.to(ComplexUnits.Velocity.MeterPerSecond)
-        )
+        trajectory_problem.subject_to(VX[-1] == start.velocity_x.to(MetersPerSecond))
+        trajectory_problem.subject_to(VY[-1] == start.velocity_y.to(MetersPerSecond))
 
         self.__apply_boundary_constraints(
             trajectory_problem, corridor, corridor_path_map, X, Y
@@ -156,13 +149,13 @@ class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
             # Space Out
             trajectory_problem.subject_to(
                 (next_x - curr_x) ** 2 + (next_y - curr_y) ** 2
-                > (self.units_per_node.to(Units.Spatial.Meter) / 3) ** 2
+                > (self.units_per_node.to(Meter) / 3) ** 2
             )
 
             # Not too much though
             trajectory_problem.subject_to(
                 (next_x - curr_x) ** 2 + (next_y - curr_y) ** 2
-                < (self.units_per_node.to(Units.Spatial.Meter) * 1.5) ** 2
+                < (self.units_per_node.to(Meter) * 1.5) ** 2
             )
 
         # Initial Guesses
@@ -181,9 +174,20 @@ class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
         trajectory_problem.solve(tolerance=1e-11)
 
         points = []
+        total_time = 0
         for i in range(steps):
-            points.append((Meter(X.value(i)), Meter(Y.value(i))))
+            state = TrajectoryState(
+                Meter(X.value(i)),
+                Meter(Y.value(i)),
+                Radian(0),
+                MetersPerSecond(VX.value(i)),
+                MetersPerSecond(VY.value(i)),
+            )
 
+            points.append(state)
+        for i in range(steps - 1):
+            total_time += DT.value(i)
+        Debug(f"Generated Trajectory with travel time of {total_time} seconds")
         return points
 
     def calculate_trajectory(
@@ -194,7 +198,7 @@ class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
         end_parameters: TrajectoryKeypoint,
         physical_parameters: PhysicalParameters,
         drivetrain_parameters: SwerveDrivetrainCharacteristics,
-    ) -> SwerveTrajectory:
+    ) -> InterpolatedSwerveTrajectory:
         self.dissected_path = guide_path.dissected(units_per_node=self.units_per_node)
         self.drivetrain = drivetrain_parameters
         self.start = start_parameters
@@ -216,12 +220,7 @@ class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
             drivetrain_parameters,
         )
 
-        return InterpolatedSwerveTrajectory(
-            [
-                TrajectoryState(point[0], point[1], Radian(0))
-                for point in trajectory_path
-            ]
-        )
+        return InterpolatedSwerveTrajectory(trajectory_path)
 
     def __GetExpandedRectangle(
         self,
@@ -340,16 +339,20 @@ class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
         path_map[0] = 0
 
         for i in range(1, len(path)):
-            last_rectangle = safe_corridor[-1]
-            if not last_rectangle.contains_point(path[i][0], path[i][1]):
-                safe_corridor.append(
-                    self.__GetExpandedRectangle(
-                        path[i][0],
-                        path[i][1],
-                        rect_obstacles,
-                        alternate_obstacles=obstacles,
-                    )
+            for rectangle in safe_corridor:
+                if rectangle.contains_point(path[i][0], path[i][1]):
+                    path_map[i] = safe_corridor.index(rectangle)
+                    break
+            if i in path_map:
+                continue
+            safe_corridor.append(
+                self.__GetExpandedRectangle(
+                    path[i][0],
+                    path[i][1],
+                    rect_obstacles,
+                    alternate_obstacles=obstacles,
                 )
+            )
             path_map[i] = len(safe_corridor) - 1
 
         Debug(

@@ -13,7 +13,12 @@ from gamegine.utils.logging import Debug
 from gamegine.utils.matematika import ReflectValue1D, RotateAboutOrigin
 import shapely.geometry as sg
 
-from gamegine.utils.unit import AngularMeasurement, Inch, RatioOf, SpatialMeasurement
+from gamegine.utils.NCIM.ncim import (
+    AngularMeasurement,
+    Inch,
+    RatioOf,
+    SpatialMeasurement,
+)
 
 
 class Boundary(ABC):

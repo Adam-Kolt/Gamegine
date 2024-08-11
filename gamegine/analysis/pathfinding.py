@@ -12,7 +12,7 @@ from gamegine.render.renderer import Renderer
 from gamegine.representation.bounds import Boundary, DiscreteBoundary
 from gamegine.utils.logging import Debug
 from gamegine.utils.matematika import AngleBetweenVectors, GetDistanceBetween
-from gamegine.utils.unit import SpatialMeasurement
+from gamegine.utils.NCIM.ncim import SpatialMeasurement
 
 
 class InitialConnectionPolicy(Enum):
