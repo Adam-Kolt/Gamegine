@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 import pint
 
 from gamegine.utils.logging import Debug
@@ -8,8 +8,14 @@ from gamegine.representation import obstacle
 
 
 class Game(object):
+    """A class representing an FRC Game. Serves as the base container for all other representation objects such as obstacles, interactables, and zones. Also stores any and all game logic and state variables.
+
+    :param name: The name of the game. Defaults to "FRC Game".
+    :type name: str, optional
+    """
 
     def __init__(self, name: str = "FRC Game") -> None:
+        """Constructor method for the Game class. Initializes the game with a name and default field size of 15m x 15m."""
         Debug(f"Creating new game: {name}")
         self.name = name
         self.field_size = (Meter(15.0), Meter(15.0))
@@ -21,32 +27,72 @@ class Game(object):
         self.field_borders = False
 
     def set_field_size(self, width: SpatialMeasurement, height: SpatialMeasurement):
+        """Sets the field size of the game.
+
+        :param width: The width of the field.
+        :type width: :class:`SpatialMeasurement`
+        :param height: The height of the field.
+        :type height: :class:`SpatialMeasurement`
+        """
         self.field_size = (width, height)
         if self.field_borders:
             self.__recompute_field_border_obstacles()
 
-    def get_field_size(self):
+    def get_field_size(self) -> Tuple[SpatialMeasurement, SpatialMeasurement]:
+        """Returns the field size of the game.
+
+        :return: The field size of the game.
+        :rtype: Tuple[:class:`SpatialMeasurement`, :class:`SpatialMeasurement`]
+        """
         return self.field_size
 
-    def half_field_size(self):
+    def half_field_size(self) -> Tuple[SpatialMeasurement, SpatialMeasurement]:
+        """Returns the half of the field size of the game.
+
+        :return: The half of the field size of the game.
+        :rtype: Tuple[:class:`SpatialMeasurement`, :class:`SpatialMeasurement`]
+        """
         return (self.field_size[0] / 2, self.field_size[1])
 
-    def half_field_x(self):
+    def half_field_x(self) -> SpatialMeasurement:
+        """Returns the half of the field size of the game along the x-axis.
+
+        :return: The half of the field size of the game along the x-axis.
+        :rtype: :class:`SpatialMeasurement`
+        """
         return self.field_size[0] / 2
 
     def half_field_y(self):
+        """Returns the half of the field size of the game along the y-axis.
+
+        :return: The half of the field size of the game along the y-axis.
+        :rtype: :class:`SpatialMeasurement`
+        """
         return self.field_size[1] / 2
 
-    def field_size(self):
-        return self.field_size
+    def full_field_y(self) -> SpatialMeasurement:
+        """Returns the size of the field along the y-axis.
 
-    def full_field_y(self):
+        :return: The size of the field along the y-axis.
+        :rtype: :class:`SpatialMeasurement
+        """
         return self.field_size[1]
 
     def full_field_x(self):
+        """
+        Returns the size of the field along the x-axis.
+
+        :return: The size of the field along the x-axis.
+        :rtype: :class:`SpatialMeasurement`
+        """
         return self.field_size[0]
 
     def add_obstacle(self, obstacle: obstacle.Obstacle) -> "Game":
+        """Adds an obstacle to the game.
+
+        :param obstacle: The obstacle to add.
+        :type obstacle: :class:`Obstacle`
+        """
         if obstacle.name in self.static_obstacles:
             raise Exception(
                 f"Obstacle {obstacle.name} already exists. Names must be unique."

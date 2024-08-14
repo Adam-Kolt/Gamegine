@@ -117,6 +117,10 @@ class SwerveTrajectory(
     pass
 
 
+class SwerveTrajectoryState(TrajectoryState):
+    pass
+
+
 class InterpolatedSwerveTrajectory(SwerveTrajectory):
 
     def __init__(self, states: List[TrajectoryState]) -> None:

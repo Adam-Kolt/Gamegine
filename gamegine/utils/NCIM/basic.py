@@ -7,8 +7,6 @@ from gamegine.utils.NCIM.dimension import Dimension
 from gamegine.utils.logging import Debug, Error, Warn
 import numpy as np
 
-# Not Crashing Into Mars (NCIM) Unit System
-
 
 class Unit(object):
     ROUNDING = 9

@@ -1,0 +1,12 @@
+
+Gamegine API Reference
+=======================
+
+.. automodule:: gamegine
+     :members:
+
+
+Trajectory
+==========
+.. automodule:: gamegine.analysis.trajectory
+     :members:

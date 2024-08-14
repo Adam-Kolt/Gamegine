@@ -44,7 +44,7 @@ class Renderer:
     def init_display(self):
         if self.game is None:
             raise Exception("Game not set")
-        dimensions = self.game.field_size
+        dimensions = self.game.get_field_size
         pygame.display.set_caption(self.game.name)
         pygame.display.set_mode(
             (self.to_pixels(dimensions[0]), self.to_pixels(dimensions[1]))
