@@ -4,6 +4,14 @@ from gamegine.utils.NCIM.basic import ComplexMeasurement, ComplexUnit
 
 
 class OmegaUnit(ComplexUnit):
+    """A class representing an angular velocity complex unit, composed of an angular and temporal element in the form angular^1 / temporal^1, in addition to creating a :class:`Omega` of the same type when called. Inherits from the :class:`ComplexUnit` class.
+
+    :param angles: The angular unit of the angular velocity.
+    :type angles: :class:`AngularUnit`
+    :param time: The temporal unit of the angular velocity.
+    :type time: :class:`TemporalUnit`
+    """
+
     def __init__(self, angles: AngularUnit, time: TemporalUnit) -> None:
         super().__init__({angles: 1, time: -1})
 
@@ -12,6 +20,16 @@ class OmegaUnit(ComplexUnit):
 
 
 class Omega(ComplexMeasurement):
+    """A class representing an angular velocity complex measurement, composed of an angular and temporal element in the form angular^1 / temporal^1. Inherits from the :class:`ComplexMeasurement` class.
+
+    :param magnitude: The magnitude of the measurement.
+    :type magnitude: float
+    :param unit: The unit of the measurement.
+    :type unit: :class:`OmegaUnit`
+    :param base_magnitude: The base magnitude of the measurement, used for internal creation. Defaults to None.
+    :type base_magnitude: float, optional
+    """
+
     def __new__(
         cls,
         magnitude: float,
