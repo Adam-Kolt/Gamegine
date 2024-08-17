@@ -5,7 +5,7 @@
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
 
     <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
-        <title>gamegine.representation.game - Documentation</title>
+        <title>gamegine.representation.game - FRC Gamegine 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -165,7 +165,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="../../../index.html"><div class="brand">Documentation</div></a>
+      <a href="../../../index.html"><div class="brand">FRC Gamegine 0.1.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -193,7 +193,6 @@
     <img class="sidebar-logo only-dark" src="../../../_static/GamegineLight.png" alt="Dark Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -202,9 +201,10 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference_index.html">Gamegine API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference_index.html#module-gamegine.representation.game">Representation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference_index.html#module-gamegine.analysis.trajectory">Trajectory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference_index.html">Representation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference_index.html#module-gamegine.representation.game">Game</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference_index.html#module-gamegine.representation.bounds">Bounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ncim.html">NCIM</a></li>
 </ul>
 
 </div>
@@ -250,7 +250,7 @@
 
 
 <div class="viewcode-block" id="Game">
-<a class="viewcode-back" href="../../../reference_index.html#gamegine.representation.game.Game">[docs]</a>
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.game.Game">[docs]</a>
 <span class="k">class</span> <span class="nc">Game</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;A class representing an FRC Game. Serves as the base container for all other representation objects such as obstacles, interactables, and zones. Also stores any and all game logic and state variables.</span>
 
@@ -271,7 +271,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">field_borders</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="Game.set_field_size">
-<a class="viewcode-back" href="../../../reference_index.html#gamegine.representation.game.Game.set_field_size">[docs]</a>
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.game.Game.set_field_size">[docs]</a>
     <span class="k">def</span> <span class="nf">set_field_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="n">SpatialMeasurement</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="n">SpatialMeasurement</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the field size of the game.</span>
 
@@ -286,7 +286,7 @@
 
 
 <div class="viewcode-block" id="Game.get_field_size">
-<a class="viewcode-back" href="../../../reference_index.html#gamegine.representation.game.Game.get_field_size">[docs]</a>
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.game.Game.get_field_size">[docs]</a>
     <span class="k">def</span> <span class="nf">get_field_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">SpatialMeasurement</span><span class="p">,</span> <span class="n">SpatialMeasurement</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the field size of the game.</span>
 
@@ -297,7 +297,7 @@
 
 
 <div class="viewcode-block" id="Game.half_field_size">
-<a class="viewcode-back" href="../../../reference_index.html#gamegine.representation.game.Game.half_field_size">[docs]</a>
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.game.Game.half_field_size">[docs]</a>
     <span class="k">def</span> <span class="nf">half_field_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">SpatialMeasurement</span><span class="p">,</span> <span class="n">SpatialMeasurement</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the half of the field size of the game.</span>
 
@@ -308,7 +308,7 @@
 
 
 <div class="viewcode-block" id="Game.half_field_x">
-<a class="viewcode-back" href="../../../reference_index.html#gamegine.representation.game.Game.half_field_x">[docs]</a>
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.game.Game.half_field_x">[docs]</a>
     <span class="k">def</span> <span class="nf">half_field_x</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SpatialMeasurement</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the half of the field size of the game along the x-axis.</span>
 
@@ -319,7 +319,7 @@
 
 
 <div class="viewcode-block" id="Game.half_field_y">
-<a class="viewcode-back" href="../../../reference_index.html#gamegine.representation.game.Game.half_field_y">[docs]</a>
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.game.Game.half_field_y">[docs]</a>
     <span class="k">def</span> <span class="nf">half_field_y</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the half of the field size of the game along the y-axis.</span>
 
@@ -330,7 +330,7 @@
 
 
 <div class="viewcode-block" id="Game.full_field_y">
-<a class="viewcode-back" href="../../../reference_index.html#gamegine.representation.game.Game.full_field_y">[docs]</a>
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.game.Game.full_field_y">[docs]</a>
     <span class="k">def</span> <span class="nf">full_field_y</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SpatialMeasurement</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the size of the field along the y-axis.</span>
 
@@ -341,7 +341,7 @@
 
 
 <div class="viewcode-block" id="Game.full_field_x">
-<a class="viewcode-back" href="../../../reference_index.html#gamegine.representation.game.Game.full_field_x">[docs]</a>
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.game.Game.full_field_x">[docs]</a>
     <span class="k">def</span> <span class="nf">full_field_x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the size of the field along the x-axis.</span>
@@ -353,7 +353,7 @@
 
 
 <div class="viewcode-block" id="Game.add_obstacle">
-<a class="viewcode-back" href="../../../reference_index.html#gamegine.representation.game.Game.add_obstacle">[docs]</a>
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.game.Game.add_obstacle">[docs]</a>
     <span class="k">def</span> <span class="nf">add_obstacle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obstacle</span><span class="p">:</span> <span class="n">obstacle</span><span class="o">.</span><span class="n">Obstacle</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Game&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds an obstacle to the game.</span>
 
@@ -369,24 +369,65 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 
+<div class="viewcode-block" id="Game.modify_obstacle">
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.game.Game.modify_obstacle">[docs]</a>
     <span class="k">def</span> <span class="nf">modify_obstacle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obstacle</span><span class="p">:</span> <span class="n">obstacle</span><span class="o">.</span><span class="n">Obstacle</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Game&quot;</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">static_obstacles</span><span class="p">[</span><span class="n">obstacle</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">obstacle</span>
-        <span class="k">return</span> <span class="bp">self</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replaces an existing obstacle with a new one, allowing for modifications to the obstacle. If the obstacle does not exist, it will be added.</span>
 
+<span class="sd">        :param obstacle: The obstacle to modify.</span>
+<span class="sd">        :type obstacle: :class:`Obstacle`</span>
+<span class="sd">        :return: The game object with the modified obstacle.</span>
+<span class="sd">        :rtype: :class:`Game`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">static_obstacles</span><span class="p">[</span><span class="n">obstacle</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">obstacle</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Game.modify_obstacles">
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.game.Game.modify_obstacles">[docs]</a>
     <span class="k">def</span> <span class="nf">modify_obstacles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obstacles</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">obstacle</span><span class="o">.</span><span class="n">Obstacle</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Game&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replaces existing obstacles with new ones, allowing for modifications to the obstacles. If an obstacle does not exist, it will be added.</span>
+
+<span class="sd">        :param obstacles: The obstacles to modify.</span>
+<span class="sd">        :type obstacles: List[:class:`Obstacle`]</span>
+<span class="sd">        :return: The game object with the modified obstacles.</span>
+<span class="sd">        :rtype: :class:`Game`&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">obstacle</span> <span class="ow">in</span> <span class="n">obstacles</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">modify_obstacle</span><span class="p">(</span><span class="n">obstacle</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
+
+<div class="viewcode-block" id="Game.get_obstacle">
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.game.Game.get_obstacle">[docs]</a>
     <span class="k">def</span> <span class="nf">get_obstacle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">obstacle</span><span class="o">.</span><span class="n">Obstacle</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">static_obstacles</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the obstacle with the given name.</span>
 
+<span class="sd">        :param name: The name of the obstacle.</span>
+<span class="sd">        :type name: str</span>
+<span class="sd">        :return: The obstacle with the given name.</span>
+<span class="sd">        :rtype: :class:`Obstacle`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">static_obstacles</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Game.add_obstacles">
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.game.Game.add_obstacles">[docs]</a>
     <span class="k">def</span> <span class="nf">add_obstacles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obstacles</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">obstacle</span><span class="o">.</span><span class="n">Obstacle</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Game&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds a list of obstacles to the game.</span>
+
+<span class="sd">        :param obstacles: The obstacles to add.</span>
+<span class="sd">        :type obstacles: List[:class:`Obstacle`]</span>
+<span class="sd">        :return: The game object with the added obstacles.</span>
+<span class="sd">        :rtype: :class:`Game`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">for</span> <span class="n">obstacle</span> <span class="ow">in</span> <span class="n">obstacles</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_obstacle</span><span class="p">(</span><span class="n">obstacle</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
 
     <span class="k">def</span> <span class="nf">__recompute_field_border_obstacles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Game&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Recomputes the field border obstacles based on the current field size.&quot;&quot;&quot;</span>
         <span class="n">thickness</span> <span class="o">=</span> <span class="n">Meter</span><span class="p">(</span><span class="mf">0.00001</span><span class="p">)</span>  <span class="c1"># In order to make the border a valid obstacle</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">modify_obstacles</span><span class="p">(</span>
             <span class="p">[</span>
@@ -421,13 +462,26 @@
             <span class="p">]</span>
         <span class="p">)</span>
 
+<div class="viewcode-block" id="Game.enable_field_border_obstacles">
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.game.Game.enable_field_border_obstacles">[docs]</a>
     <span class="k">def</span> <span class="nf">enable_field_border_obstacles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Game&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Enables the field border obstacles.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">field_borders</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__recompute_field_border_obstacles</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
+
+<div class="viewcode-block" id="Game.get_obstacles">
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.game.Game.get_obstacles">[docs]</a>
     <span class="k">def</span> <span class="nf">get_obstacles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">obstacle</span><span class="o">.</span><span class="n">Obstacle</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">static_obstacles</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns all obstacles in the game.</span>
+
+<span class="sd">        :return: All obstacles in the game.</span>
+<span class="sd">        :rtype: List[:class:`Obstacle`]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">static_obstacles</span><span class="o">.</span><span class="n">values</span><span class="p">()</span></div>
+
 
     <span class="k">def</span> <span class="nf">add_interactable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interactable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Game&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">interactable</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">interactables</span><span class="p">:</span>
@@ -477,7 +531,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=01f34227"></script>
+</div><script src="../../../_static/documentation_options.js?v=38b66d78"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>

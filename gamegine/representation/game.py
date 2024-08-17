@@ -102,23 +102,52 @@ class Game(object):
         return self
 
     def modify_obstacle(self, obstacle: obstacle.Obstacle) -> "Game":
+        """Replaces an existing obstacle with a new one, allowing for modifications to the obstacle. If the obstacle does not exist, it will be added.
+
+        :param obstacle: The obstacle to modify.
+        :type obstacle: :class:`Obstacle`
+        :return: The game object with the modified obstacle.
+        :rtype: :class:`Game`
+        """
         self.static_obstacles[obstacle.name] = obstacle
         return self
 
     def modify_obstacles(self, obstacles: List[obstacle.Obstacle]) -> "Game":
+        """Replaces existing obstacles with new ones, allowing for modifications to the obstacles. If an obstacle does not exist, it will be added.
+
+        :param obstacles: The obstacles to modify.
+        :type obstacles: List[:class:`Obstacle`]
+        :return: The game object with the modified obstacles.
+        :rtype: :class:`Game`"""
         for obstacle in obstacles:
             self.modify_obstacle(obstacle)
         return self
 
     def get_obstacle(self, name: str) -> obstacle.Obstacle:
+        """Returns the obstacle with the given name.
+
+        :param name: The name of the obstacle.
+        :type name: str
+        :return: The obstacle with the given name.
+        :rtype: :class:`Obstacle`
+        """
         return self.static_obstacles[name]
 
     def add_obstacles(self, obstacles: List[obstacle.Obstacle]) -> "Game":
+        """Adds a list of obstacles to the game.
+
+        :param obstacles: The obstacles to add.
+        :type obstacles: List[:class:`Obstacle`]
+        :return: The game object with the added obstacles.
+        :rtype: :class:`Game`
+        """
+
         for obstacle in obstacles:
             self.add_obstacle(obstacle)
         return self
 
     def __recompute_field_border_obstacles(self) -> "Game":
+        """Recomputes the field border obstacles based on the current field size."""
         thickness = Meter(0.00001)  # In order to make the border a valid obstacle
         self.modify_obstacles(
             [
@@ -154,11 +183,18 @@ class Game(object):
         )
 
     def enable_field_border_obstacles(self) -> "Game":
+        """Enables the field border obstacles."""
         self.field_borders = True
         self.__recompute_field_border_obstacles()
         return self
 
     def get_obstacles(self) -> List[obstacle.Obstacle]:
+        """Returns all obstacles in the game.
+
+        :return: All obstacles in the game.
+        :rtype: List[:class:`Obstacle`]
+        """
+
         return self.static_obstacles.values()
 
     def add_interactable(self, interactable) -> "Game":

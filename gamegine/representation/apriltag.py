@@ -10,6 +10,21 @@ class AprilTagFamily(Enum):
 
 
 class AprilTag(BoundedObject):
+    """A representation of an AprilTag used on FRC fields. Contains information about the tag's position, orientation, and family.
+
+    :param x: The x-coordinate of the tag.
+    :type x: :class:`SpatialMeasurement`
+    :param y: The y-coordinate of the tag.
+    :type y: :class:`SpatialMeasurement`
+    :param z: The z-coordinate of the tag, or the height of the tag.
+    :type z: :class:`SpatialMeasurement`
+    :param heading: The heading of the tag.
+    :type heading: :class:`AngularMeasurement`
+    :param id: The ID of the tag.
+    :type id: int
+    :param family: The family of the tag.
+    :type family: :class:`AprilTagFamily`
+    """
 
     def __init__(
         self,

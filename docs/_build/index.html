@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Gamegine API Reference" href="reference_index.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Representation" href="reference_index.html" />
 
     <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
-        <title>Documentation</title>
+        <title>FRC Gamegine 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
@@ -166,7 +166,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">Documentation</div></a>
+      <a href="#"><div class="brand">FRC Gamegine 0.1.0 documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -194,7 +194,6 @@
     <img class="sidebar-logo only-dark" src="_static/GamegineLight.png" alt="Dark Logo"/>
   </div>
   
-  <span class="sidebar-brand-text">Documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -203,9 +202,13 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
-<li class="toctree-l1"><a class="reference internal" href="reference_index.html">Gamegine API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference_index.html#module-gamegine.representation.game">Representation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference_index.html#module-gamegine.analysis.trajectory">Trajectory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference_index.html">Representation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference_index.html#module-gamegine.representation.game">Game</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference_index.html#module-gamegine.representation.bounds">Bounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ncim.html">NCIM Units Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ncim.html#module-gamegine.utils.NCIM.ncim">Generic NCIM Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ncim.html#module-gamegine.utils.NCIM.basic">Base Measurements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ncim.html#module-gamegine.utils.NCIM.Dimensions.spatial">Spatial</a></li>
 </ul>
 
 </div>
@@ -246,16 +249,58 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="welcome-to-frc-gamegine-s-documentation">
-<h1>Welcome to FRC Gamegine’s documentation!<a class="headerlink" href="#welcome-to-frc-gamegine-s-documentation" title="Link to this heading">¶</a></h1>
+          <section id="the-knowledge-bank">
+<h1>The Knowledge Bank<a class="headerlink" href="#the-knowledge-bank" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="reference_index.html">Gamegine API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference_index.html#module-gamegine.representation.game">Representation</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="reference_index.html">Representation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference_index.html#module-gamegine.representation.game">Game</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="reference_index.html#gamegine.representation.game.Game"><code class="docutils literal notranslate"><span class="pre">Game</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="reference_index.html#module-gamegine.analysis.trajectory">Trajectory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference_index.html#module-gamegine.representation.bounds">Bounds</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference_index.html#gamegine.representation.bounds.Boundary"><code class="docutils literal notranslate"><span class="pre">Boundary</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference_index.html#gamegine.representation.bounds.Boundary3D"><code class="docutils literal notranslate"><span class="pre">Boundary3D</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference_index.html#gamegine.representation.bounds.BoundedObject"><code class="docutils literal notranslate"><span class="pre">BoundedObject</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference_index.html#gamegine.representation.bounds.Circle"><code class="docutils literal notranslate"><span class="pre">Circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference_index.html#gamegine.representation.bounds.CircularPattern"><code class="docutils literal notranslate"><span class="pre">CircularPattern()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference_index.html#gamegine.representation.bounds.Cylinder"><code class="docutils literal notranslate"><span class="pre">Cylinder</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference_index.html#gamegine.representation.bounds.DiscreteBoundary"><code class="docutils literal notranslate"><span class="pre">DiscreteBoundary</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference_index.html#gamegine.representation.bounds.DiscreteBoundary3D"><code class="docutils literal notranslate"><span class="pre">DiscreteBoundary3D</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference_index.html#gamegine.representation.bounds.ExpandedBounds"><code class="docutils literal notranslate"><span class="pre">ExpandedBounds()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference_index.html#gamegine.representation.bounds.ExpandedObjectBounds"><code class="docutils literal notranslate"><span class="pre">ExpandedObjectBounds()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference_index.html#gamegine.representation.bounds.Line"><code class="docutils literal notranslate"><span class="pre">Line</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference_index.html#gamegine.representation.bounds.LineIntersectsAnyBound"><code class="docutils literal notranslate"><span class="pre">LineIntersectsAnyBound()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference_index.html#gamegine.representation.bounds.Point"><code class="docutils literal notranslate"><span class="pre">Point</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference_index.html#gamegine.representation.bounds.Polygon"><code class="docutils literal notranslate"><span class="pre">Polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference_index.html#gamegine.representation.bounds.PolygonalPrism"><code class="docutils literal notranslate"><span class="pre">PolygonalPrism</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference_index.html#gamegine.representation.bounds.Rectangle"><code class="docutils literal notranslate"><span class="pre">Rectangle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference_index.html#gamegine.representation.bounds.Square"><code class="docutils literal notranslate"><span class="pre">Square</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference_index.html#gamegine.representation.bounds.SymmetricalX"><code class="docutils literal notranslate"><span class="pre">SymmetricalX()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference_index.html#gamegine.representation.bounds.SymmetricalXY"><code class="docutils literal notranslate"><span class="pre">SymmetricalXY()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference_index.html#gamegine.representation.bounds.SymmetricalY"><code class="docutils literal notranslate"><span class="pre">SymmetricalY()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ncim.html">NCIM Units Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ncim.html#module-gamegine.utils.NCIM.ncim">Generic NCIM Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ncim.html#gamegine.utils.NCIM.ncim.RatioOf"><code class="docutils literal notranslate"><span class="pre">RatioOf()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ncim.html#gamegine.utils.NCIM.ncim.Zero"><code class="docutils literal notranslate"><span class="pre">Zero()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ncim.html#module-gamegine.utils.NCIM.basic">Base Measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ncim.html#gamegine.utils.NCIM.basic.ComplexDimension"><code class="docutils literal notranslate"><span class="pre">ComplexDimension</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ncim.html#gamegine.utils.NCIM.basic.ComplexDimensionMap"><code class="docutils literal notranslate"><span class="pre">ComplexDimensionMap</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ncim.html#gamegine.utils.NCIM.basic.ComplexMeasurement"><code class="docutils literal notranslate"><span class="pre">ComplexMeasurement</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ncim.html#gamegine.utils.NCIM.basic.ComplexUnit"><code class="docutils literal notranslate"><span class="pre">ComplexUnit</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ncim.html#gamegine.utils.NCIM.basic.Measurement"><code class="docutils literal notranslate"><span class="pre">Measurement</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ncim.html#gamegine.utils.NCIM.basic.Unit"><code class="docutils literal notranslate"><span class="pre">Unit</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ncim.html#module-gamegine.utils.NCIM.Dimensions.spatial">Spatial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ncim.html#gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement"><code class="docutils literal notranslate"><span class="pre">SpatialMeasurement</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="ncim.html#gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit"><code class="docutils literal notranslate"><span class="pre">SpatialUnit</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -278,7 +323,7 @@
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Gamegine API Reference</div>
+                <div class="title">Representation</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -307,7 +352,7 @@
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=01f34227"></script>
+</div><script src="_static/documentation_options.js?v=38b66d78"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=5fa4622c"></script>

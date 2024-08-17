@@ -1,14 +1,13 @@
 
-Gamegine API Reference
-=======================
-
-
 Representation
 ==============
+
+Game
+====
 .. automodule:: gamegine.representation.game
      :members:
 
-Trajectory
-==========
-.. automodule:: gamegine.analysis.trajectory
+Bounds 
+======
+.. automodule:: gamegine.representation.bounds
      :members:

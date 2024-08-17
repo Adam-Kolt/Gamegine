@@ -33,9 +33,10 @@ html_static_path = ["_static"]
 html_theme_options = {
     "light_logo": "GamegineDark.png",
     "dark_logo": "GamegineLight.png",
+    "sidebar_hide_name": True,
+    "navigation_with_keys": True,
 }
 
-html_title = "Documentation"
 
 import os
 import sys
