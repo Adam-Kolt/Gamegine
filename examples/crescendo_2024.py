@@ -11,6 +11,7 @@ from gamegine.analysis.trajectory.generation import (
     TrajectoryKeypoint,
 )
 from gamegine.render.renderer import Renderer
+from gamegine.representation.apriltag import AprilTag, AprilTagFamily
 from gamegine.representation.bounds import (
     Circle,
     ExpandedObjectBounds,
@@ -24,6 +25,7 @@ from gamegine.representation.robot import (
     PhysicalParameters,
     SwerveDrivetrainCharacteristics,
 )
+from gamegine.utils.NCIM.Dimensions.angular import Radian
 from gamegine.utils.NCIM.ncim import (
     Degree,
     Kilogram,
@@ -160,6 +162,108 @@ renderer.set_render_scale(Centimeter(1))
 renderer.init_display()
 print("Game set and display initialized")
 
+apriltag_list = [
+    AprilTag(
+        Inch(593.68),
+        Inch(313.57),
+        Inch(53.38),
+        Degree(-120),
+        1,
+        AprilTagFamily.TAG_36h11,
+    ),
+    AprilTag(
+        Inch(637.21),
+        Inch(288.46),
+        Inch(53.38),
+        Degree(-120),
+        2,
+        AprilTagFamily.TAG_36h11,
+    ),
+    AprilTag(
+        Inch(652.73),
+        Inch(127.08),
+        Inch(57.13),
+        Degree(-180),
+        3,
+        AprilTagFamily.TAG_36h11,
+    ),
+    AprilTag(
+        Inch(652.73),
+        Inch(104.83),
+        Inch(57.13),
+        Degree(-180),
+        4,
+        AprilTagFamily.TAG_36h11,
+    ),
+    AprilTag(
+        Inch(578.77), Inch(0.25), Inch(53.38), Degree(-270), 5, AprilTagFamily.TAG_36h11
+    ),
+    AprilTag(
+        Inch(72.5), Inch(0.25), Inch(53.38), Degree(-270), 6, AprilTagFamily.TAG_36h11
+    ),
+    AprilTag(
+        Inch(-1.5), Inch(104.83), Inch(57.13), Degree(0), 7, AprilTagFamily.TAG_36h11
+    ),
+    AprilTag(
+        Inch(-1.5), Inch(127.08), Inch(57.13), Degree(0), 8, AprilTagFamily.TAG_36h11
+    ),
+    AprilTag(
+        Inch(14.02), Inch(288.46), Inch(53.38), Degree(-60), 9, AprilTagFamily.TAG_36h11
+    ),
+    AprilTag(
+        Inch(57.54),
+        Inch(313.57),
+        Inch(53.38),
+        Degree(-60),
+        10,
+        AprilTagFamily.TAG_36h11,
+    ),
+    AprilTag(
+        Inch(468.69),
+        Inch(177.06),
+        Inch(52.00),
+        Degree(-300),
+        11,
+        AprilTagFamily.TAG_36h11,
+    ),
+    AprilTag(
+        Inch(468.69),
+        Inch(146.15),
+        Inch(52.00),
+        Degree(-60),
+        12,
+        AprilTagFamily.TAG_36h11,
+    ),
+    AprilTag(
+        Inch(441.74),
+        Inch(161.63),
+        Inch(52.00),
+        Degree(-180),
+        13,
+        AprilTagFamily.TAG_36h11,
+    ),
+    AprilTag(
+        Inch(209.48), Inch(161.63), Inch(52.00), Degree(0), 14, AprilTagFamily.TAG_36h11
+    ),
+    AprilTag(
+        Inch(182.73),
+        Inch(146.15),
+        Inch(52.00),
+        Degree(-120),
+        15,
+        AprilTagFamily.TAG_36h11,
+    ),
+    AprilTag(
+        Inch(182.73),
+        Inch(177.06),
+        Inch(52.00),
+        Degree(-240),
+        16,
+        AprilTagFamily.TAG_36h11,
+    ),
+]
+
+
 loop = True
 while loop != False:
     loop = renderer.loop()
@@ -182,5 +286,5 @@ while loop != False:
     renderer.draw_elements(expanded_obstacles)
     renderer.draw_elements(trajectories)
     renderer.draw_static_elements()
-
+    renderer.draw_elements(apriltag_list)
     renderer.render_frame()
