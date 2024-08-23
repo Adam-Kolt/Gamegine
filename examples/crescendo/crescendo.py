@@ -3,6 +3,7 @@ from typing import List, Tuple
 
 import pint
 import pygame
+from examples.crescendo.gamepieces import Note
 from gamegine.analysis.meshing import TriangulatedGraph, VisibilityGraph
 from gamegine.analysis.trajectory.SafetyCorridorAssisted import SafetyCorridorAssisted
 from gamegine.analysis.trajectory.generation import (
@@ -25,6 +26,8 @@ from gamegine.representation.robot import (
     PhysicalParameters,
     SwerveDrivetrainCharacteristics,
 )
+from gamegine.utils.NCIM.ComplexDimensions.electricpot import Volt
+from gamegine.utils.NCIM.ComplexDimensions.omega import RotationsPerSecond
 from gamegine.utils.NCIM.Dimensions.angular import Radian
 from gamegine.utils.NCIM.ncim import (
     Degree,
@@ -40,6 +43,8 @@ from gamegine.utils.NCIM.ncim import (
 )
 from gamegine.analysis import pathfinding
 import time
+
+from gamegine.utils.logging import Debug
 
 
 test_game = Game("FRC Crescendo 2024")
@@ -263,6 +268,11 @@ apriltag_list = [
     ),
 ]
 
+notes = [
+    Note(Inch(114), Inch(161.62)),
+    Note(Inch(114), Inch(161.62) - Inch(57)),
+    Note(Inch(114), Inch(161.62) - Inch(57) * 2),
+]
 
 loop = True
 while loop != False:
@@ -282,9 +292,10 @@ while loop != False:
 
     renderer.draw_element(map)
 
-    renderer.draw_elements(corridors)
     renderer.draw_elements(expanded_obstacles)
     renderer.draw_elements(trajectories)
+    renderer.draw_elements(paths)
     renderer.draw_static_elements()
     renderer.draw_elements(apriltag_list)
+    renderer.draw_elements(notes)
     renderer.render_frame()

@@ -10,3 +10,4 @@ class Dimension(Enum):
     Energy = 3
     Temporal = 4
     Angular = 5
+    ElectricCurrent = 6

@@ -285,7 +285,7 @@ class ComplexDimension(np.ndarray):
         return obj
 
     def __str__(self):
-        return f"{self.get_symbol()}"
+        return super().__str__()
 
     def __repr__(self):
         return self.__str__()
@@ -316,6 +316,9 @@ class ComplexDimension(np.ndarray):
         """
 
         return ComplexDimension(super().__sub__(other))
+
+    def __truediv__(self, other: np.ndarray) -> np.ndarray:
+        return self.__div__(other)
 
     def __pow__(self, other) -> np.ndarray:
         """Raises the dimensions to the power of another value.
@@ -359,7 +362,10 @@ class ComplexDimension(np.ndarray):
         for i, pwr in enumerate(self):
             if pwr == 0:
                 continue
-            value /= map[i].get_scale() ** pwr
+            if not i in map:
+                Debug(f"Dimension {i} not in map")
+            else:
+                value /= map[i].get_scale() ** pwr
         return value
 
 
@@ -414,7 +420,7 @@ class ComplexDimensionMap(dict):
     def __repr__(self):
         return super().__repr__()
 
-    def merge_with(self, other: "ComplexDimensionMap") -> None:
+    def merge_with(self, other: "ComplexDimensionMap") -> "ComplexDimensionMap":
         """Merges the mapping with another mapping. If a dimension is not present in the current mapping, it is added. This is used when performing operations between different :class:`ComplexMeasurement` objects.
 
         :param other: The other mapping to merge with.
@@ -423,6 +429,7 @@ class ComplexDimensionMap(dict):
         for key, value in other.items():
             if not key in self:
                 self[key] = value
+        return self
 
     def get_symbol(self, dimension: ComplexDimension) -> str:
         """Returns the symbol of the dimension, based on the degrees of dimensions in the provided :class:`ComplexDimension`. For example, meters per second squared would be represented with a symbol of m/s^2.
@@ -438,7 +445,7 @@ class ComplexDimensionMap(dict):
         for i, pwr in enumerate(dimension):
             if pwr == 0:
                 continue
-            symbol = self.units[i].get_symbol()
+            symbol = self[i].get_symbol()
             if pwr > 0:
                 if pwr == 1:
                     num.append(symbol)
@@ -472,17 +479,17 @@ class ComplexUnit(Unit):
 
     def __init__(
         self,
-        units: Dict[Unit, int],
+        units_table: Dict[Unit, int],
     ) -> None:
 
         dimensionality = ComplexDimension.zeroes(len(Dimension))
         units: Dict[int, Unit] = {}
-        for unit, power in units.items():
+        for unit, power in units_table.items():
             dimension = unit.get_dimension()
             index = dimension.value
             dimensionality[index] += power
 
-            if not index in self.units:
+            if not index in units:
                 units[index] = unit
 
         self.units = ComplexDimensionMap(units)
@@ -700,7 +707,7 @@ class ComplexMeasurement(float):
                     None,
                     base_magnitude=float(self) * float(other),
                     dimension=self.dimension * other.dimension,
-                    dimension_map=self.dimension_map,
+                    dimension_map=self.dimension_map.merge_with(other.dimension_map),
                 )
         return ComplexMeasurement(
             0,
@@ -729,7 +736,7 @@ class ComplexMeasurement(float):
                     None,
                     base_magnitude=float(self) / float(other),
                     dimension=self.dimension / other.dimension,
-                    dimension_map=self.dimension_map,
+                    dimension_map=self.dimension_map.merge_with(other.dimension_map),
                 )
         return ComplexMeasurement(
             0,
@@ -757,7 +764,7 @@ class ComplexMeasurement(float):
                     None,
                     base_magnitude=float(self) // float(other),
                     dimension=self.dimension / other.dimension,
-                    dimension_map=self.dimension_map,
+                    dimension_map=self.dimension_map.merge_with(other.dimension_map),
                 )
         return ComplexMeasurement(
             0,

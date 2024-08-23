@@ -149,7 +149,7 @@ class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
             # Space Out
             trajectory_problem.subject_to(
                 (next_x - curr_x) ** 2 + (next_y - curr_y) ** 2
-                > (self.units_per_node.to(Meter) / 3) ** 2
+                > (self.units_per_node.to(Meter) / 10) ** 2
             )
 
             # Not too much though

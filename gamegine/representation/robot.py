@@ -1,10 +1,13 @@
 from dataclasses import dataclass
-from typing import List
+from typing import Dict, List
 
+from gamegine.first.alliance import Alliance
+from gamegine.representation import gamepiece
 from gamegine.representation.base import NamedObject
-from gamegine.representation.bounds import Boundary3D
+from gamegine.representation.bounds import Boundary, Boundary3D
 from dataclasses import dataclass
 
+from gamegine.utils.NCIM.Dimensions.angular import AngularMeasurement
 from gamegine.utils.NCIM.ncim import (
     MOI,
     ComplexMeasurement,
@@ -60,3 +63,13 @@ class SwerveRobot(Robot):
         physics: PhysicalParameters = None,
     ) -> None:
         super().__init__(name, structure, physics)
+
+
+@dataclass
+class RobotGamestate:
+    x: SpatialMeasurement
+    y: SpatialMeasurement
+    theta: AngularMeasurement
+    alliance: Alliance
+    bounds: Boundary
+    gamepieces: Dict[str, int]

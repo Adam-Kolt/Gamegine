@@ -12,6 +12,7 @@ class Palette(Enum):
     BLUE = [0, 0, 200]
     YELLOW = [200, 200, 0]
     PINK = [218, 112, 214]
+    ORANGE = [255, 165, 0]
 
     def get_color_array(self) -> np.ndarray:
         return np.array(self.value)

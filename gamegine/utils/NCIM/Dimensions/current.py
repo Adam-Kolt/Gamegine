@@ -2,8 +2,8 @@ from gamegine.utils.NCIM.basic import Measurement, Unit
 from gamegine.utils.NCIM.dimension import Dimension
 
 
-class AngularUnit(Unit):
-    """A class representing an angular unit of measurement, in addition to creating a :class:`AngularMeasurement` of the same type when called. Inherits from the :class:`Unit` class.
+class CurrentUnit(Unit):
+    """A class representing an current unit of measurement, in addition to creating a :class:`CurrentMeasurement` of the same type when called. Inherits from the :class:`Unit` class.
 
     :param scale: The scale of the unit.
     :type scale: float, optional
@@ -14,37 +14,38 @@ class AngularUnit(Unit):
     """
 
     def __init__(self, scale: float = 0, display="", shift: float = 0) -> None:
-        super().__init__(Dimension.Angular, scale, display, shift)
+        super().__init__(Dimension.ElectricCurrent, scale, display, shift)
 
     def __call__(self, magnitude: float):
-        """Creates a new :class:`AngularMeasurement` with the given magnitude.
+        """Creates a new energy measurement with the given magnitude.
 
         :param magnitude: The magnitude of the measurement.
         :type magnitude: float
-        :return: A new angular measurement.
-        :rtype: :class:`AngularMeasurement`
+        :return: A new energy measurement.
+        :rtype: :class:`EnergyMeasurement`
         """
-        return AngularMeasurement(magnitude, self)
+        return CurrentMeasurement(magnitude, self)
 
 
-class AngularMeasurement(Measurement):
-    """A class representing an angular measurement. Inherits from the :class:`Measurement` class.
+class CurrentMeasurement(Measurement):
+    """A class representing an :class:`CurrentMeasurement`. Inherits from the :class:`Measurement` class.
 
     :param magnitude: The magnitude of the measurement.
     :type magnitude: float
     :param unit: The unit of the measurement.
-    :type unit: :class:`AngularUnit`
+    :type unit: :class:`CurrentUnit`
     :param base_magnitude: The base magnitude of the measurement, used for internal creation. Defaults to None.
     :type base_magnitude: float, optional
     """
 
     def __init__(
-        self, magnitude: float, unit: AngularUnit, base_magnitude=None
+        self, magnitude: float, unit: CurrentUnit, base_magnitude=None
     ) -> None:
         super().__init__(magnitude, unit, base_magnitude)
 
 
-Radian = AngularUnit(1, "rad")
-Degree = AngularUnit(0.0174533, "°")
-Grad = AngularUnit(0.01570796, "grad")
-Rotation = AngularUnit(6.28319, "rot")
+Ampere = CurrentUnit(1, "A")
+Milliampere = CurrentUnit(0.001, "mA")
+Kiloampere = CurrentUnit(1000, "kA")
+Microampere = CurrentUnit(1e-6, "µA")
+Nanoampere = CurrentUnit(1e-9, "nA")
