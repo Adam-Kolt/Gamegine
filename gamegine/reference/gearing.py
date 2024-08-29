@@ -106,6 +106,7 @@ class GearSeries:
 
 class MK4I:
     __STAGE1A = Gear(14) + Gear(50)
+    __STAGE1B = Gear(16) + Gear(50)
     __STAGE2A = Gear(25) + Gear(19)
     __STAGE2B = Gear(27) + Gear(17)
     __STAGE2C = Gear(28) + Gear(16)

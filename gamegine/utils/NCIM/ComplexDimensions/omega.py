@@ -16,6 +16,13 @@ class OmegaUnit(ComplexUnit):
         super().__init__({angles: 1, time: -1})
 
     def __call__(self, magnitude: float):
+        """Creates a new :class:`Omega` object with the given magnitude and this unit.
+
+        :param magnitude: The magnitude of the measurement.
+        :type magnitude: float
+        :return: A new :class:`Omega` object.
+        :rtype: :class:`Omega`
+        """
         return Omega(magnitude, self)
 
 

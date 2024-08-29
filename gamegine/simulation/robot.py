@@ -1,0 +1,43 @@
+from typing import Dict
+from gamegine.first.alliance import Alliance
+from gamegine.representation.gamepiece import Gamepiece
+from gamegine.simulation.state import StateSpace, ValueEntry
+from gamegine.utils.NCIM.Dimensions.angular import AngularMeasurement, Radian
+from gamegine.utils.NCIM.Dimensions.spatial import Meter, SpatialMeasurement
+
+
+class RobotState(StateSpace):
+    def __init__(
+        self,
+        x: SpatialMeasurement = Meter(0),
+        y: SpatialMeasurement = Meter(0),
+        heading: AngularMeasurement = Radian(0),
+        alliance: Alliance = Alliance.RED,
+        gamepieces: Dict[Gamepiece, int] = {},
+    ):
+        super().__init__()
+        self.setValue("x", x)
+        self.setValue("y", y)
+        self.setValue("heading", heading)
+        self.setValue("gamepieces", gamepieces)
+        self.setValue("alliance", alliance)
+
+    @property
+    def x(self) -> ValueEntry[SpatialMeasurement]:
+        return self.getValue("x")
+
+    @property
+    def y(self) -> ValueEntry[SpatialMeasurement]:
+        return self.getValue("y")
+
+    @property
+    def heading(self) -> ValueEntry[AngularMeasurement]:
+        return self.getValue("heading")
+
+    @property
+    def alliance(self) -> ValueEntry[Alliance]:
+        return self.getValue("alliance")
+
+    @property
+    def gamepieces(self) -> ValueEntry[Dict[Gamepiece, int]]:
+        return self.getValue("gamepieces")

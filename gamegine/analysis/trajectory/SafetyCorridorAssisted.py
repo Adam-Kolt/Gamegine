@@ -171,7 +171,7 @@ class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
 
         trajectory_problem.minimize(total)
 
-        trajectory_problem.solve(tolerance=1e-11)
+        trajectory_problem.solve(tolerance=1e-11, timeout=0.1)
 
         points = []
         total_time = 0

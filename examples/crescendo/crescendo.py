@@ -289,6 +289,7 @@ while loop != False:
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_c:
                 trajectories = []
+                paths = []
 
     renderer.draw_element(map)
 
