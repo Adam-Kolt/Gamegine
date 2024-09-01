@@ -45,3 +45,46 @@ class StateSpace(object):
 
     def __setitem__(self, key: str, value) -> ValueEntry:
         return self.setValue(key, value)
+
+
+class ValueChange(object):
+    def __init__(self, entry: ValueEntry, value) -> None:
+        self.entry = entry
+        self.value = value
+
+    def __str__(self):
+        return f"{self.entry} -> {self.value}"
+
+    def apply(self) -> ValueEntry:
+        self.entry.set(self.value)
+        return self.entry.get()
+
+    def requested(self):
+        return self.value
+
+    def current(self):
+        return self.entry.get()
+
+
+class ValueDecrease(ValueChange):
+    def apply(self) -> ValueEntry:
+        self.entry.set(self.entry.get() - self.value)
+        return self.entry.get()
+
+    def requested(self):
+        return self.entry.get() - self.value
+
+    def __str__(self):
+        return f"{self.entry} -= {self.value}"
+
+
+class ValueIncrease(ValueChange):
+    def apply(self) -> ValueEntry:
+        self.entry.set(self.entry.get() + self.value)
+        return self.entry.get()
+
+    def requested(self):
+        return self.entry.get() + self.value
+
+    def __str__(self):
+        return f"{self.entry} += {self.value}"
