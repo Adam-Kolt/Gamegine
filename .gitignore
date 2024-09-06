@@ -36,3 +36,4 @@ Thumbs.db
 /gamegine/representation/__pycache__
 /gamegine/representation/__pycache__
 *.pyc
+.venv/

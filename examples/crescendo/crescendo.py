@@ -4,6 +4,7 @@ from typing import List, Tuple
 import pint
 import pygame
 from examples.crescendo.gamepieces import Note
+from examples.crescendo.scoring import Speaker
 from gamegine.analysis.meshing import TriangulatedGraph, VisibilityGraph
 from gamegine.analysis.trajectory.SafetyCorridorAssisted import SafetyCorridorAssisted
 from gamegine.analysis.trajectory.generation import (
@@ -17,6 +18,7 @@ from gamegine.representation.bounds import (
     Circle,
     ExpandedObjectBounds,
     Point,
+    Rectangle,
     SymmetricalX,
     CircularPattern,
 )
@@ -274,6 +276,18 @@ notes = [
     Note(Inch(114), Inch(161.62) - Inch(57) * 2),
 ]
 
+x_r, y_r = test_game.half_field_x(), test_game.half_field_y()
+test_robot_bounds = [
+    Rectangle(
+        x_r - Inch(30 + 4) / 2, y_r - Inch(30 + 4) / 2, Inch(30 + 4), Inch(30 + 4)
+    ).get_3d(Inch(1), Inch(5)),
+    Rectangle(x_r - Inch(30) / 2, y_r - Inch(30) / 2, Inch(30), Inch(30)).get_3d(
+        Inch(5), Feet(3)
+    ),
+]
+
+test_speaker = Speaker(Inch(0), Inch(64.081) + Inch(82.645) / 2, Feet(3), "Red Speaker")
+
 loop = True
 while loop != False:
     loop = renderer.loop()
@@ -299,4 +313,6 @@ while loop != False:
     renderer.draw_static_elements()
     renderer.draw_elements(apriltag_list)
     renderer.draw_elements(notes)
+    renderer.draw_elements(test_robot_bounds)
+    renderer.draw_element(test_speaker)
     renderer.render_frame()

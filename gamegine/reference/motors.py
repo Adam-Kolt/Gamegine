@@ -19,6 +19,19 @@ class MotorSpecification:
     kV: ComplexMeasurement
 
 
+@dataclass
+class PowerConfig:
+    supply_current_limit: CurrentMeasurement = Ampere(40)
+    stator_current_limit: CurrentMeasurement = Ampere(0)
+    max_power_percentage: float = 1.0
+
+
+@dataclass
+class MotorConfig:
+    motor: MotorSpecification
+    power: PowerConfig
+
+
 KrakenX60 = MotorSpecification(
     Pound(1.20),
     RotationsPerSecond(6000),

@@ -3,6 +3,14 @@ from jormungandr.optimization import OptimizationProblem
 from dataclasses import dataclass
 
 from gamegine.analysis.pathfinding import Path
+from gamegine.reference.swerve import SwerveConfig
+from gamegine.utils.NCIM.ComplexDimensions.acceleration import (
+    Acceleration,
+    MeterPerSecondSquared,
+)
+from gamegine.utils.NCIM.ComplexDimensions.alpha import Alpha, RadiansPerSecondSquared
+from gamegine.utils.NCIM.ComplexDimensions.omega import Omega, RadiansPerSecond
+from gamegine.utils.NCIM.ComplexDimensions.velocity import MetersPerSecond, Velocity
 
 
 @dataclass
@@ -38,13 +46,29 @@ class SwervePointVariables(PointVariables):
     BR: ModuleVariables
 
 
-class TrajectoryProblem:
+@dataclass
+class TrajectoryRobotConstraints:
+    """Dataclass used to store robot constraints for a trajectory optimization problem."""
 
+    max_acceleration: Acceleration = MeterPerSecondSquared(0)
+    max_velocity: Velocity = MetersPerSecond(0)
+    max_angular_acceleration: Alpha = RadiansPerSecondSquared(0)
+    max_angular_velocity: Omega = RadiansPerSecond(0)
+
+
+@dataclass
+class SwerveRobotConstraints(TrajectoryRobotConstraints):
+    """Dataclass used to store swerve drive robot constraints for a trajectory optimization problem."""
+
+    swerve_config: SwerveConfig
+
+
+class TrajectoryProblem:
     def __init__(self, problem: OptimizationProblem) -> None:
         self.problem = problem
         pass
 
-    def solve(self):
+    def solve(self, robot_constraints):
         """Solves the optimization problem and returns the solution."""
         pass
 

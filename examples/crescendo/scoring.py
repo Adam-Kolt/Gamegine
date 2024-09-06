@@ -1,13 +1,17 @@
 from typing import List
 from examples.crescendo.gamepieces import Note
+from gamegine.render import helpers
+from gamegine.render.style import Palette
+from gamegine.representation.bounds import DiscreteBoundary, Point
 from gamegine.representation.interactable import InteractionOption, RobotInteractable
 from gamegine.simulation.game import GameState
 from gamegine.simulation.robot import RobotState
 from gamegine.simulation.state import StateSpace, ValueChange, ValueEntry, ValueIncrease
+from gamegine.utils.NCIM.Dimensions.spatial import Inch, SpatialMeasurement
 
 
 class SpeakerState(StateSpace):
-    def __init__(self, volume: float = 0.0):
+    def __init__(self) -> None:
         super().__init__()
         self.setValue("note_count", 0)
         self.setValue("")
@@ -24,13 +28,22 @@ def robotHasNote(
 
 
 class Speaker(RobotInteractable):
+    def __init__(
+        self,
+        x: SpatialMeasurement,
+        y: SpatialMeasurement,
+        z: SpatialMeasurement,
+        name: str,
+    ) -> None:
+        super().__init__(Point(x, y, z), name)
+
     @staticmethod
     def initializeInteractableState() -> StateSpace:
         return StateSpace()
 
     @staticmethod
     def __shoot_into(
-        interactableState: StateSpace, robotState: RobotState, gameState: StateSpace
+        interactableState: SpeakerState, robotState: RobotState, gameState: StateSpace
     ) -> List[ValueChange]:
         robotState.gamepieces.get()[Note] -= 1
         interactableState.notes.set(interactableState.notes.get() + 1)
@@ -46,6 +59,25 @@ class Speaker(RobotInteractable):
                 Speaker.__shoot_into,
             )
         ]
+
+    def draw(self, render_scale: SpatialMeasurement):
+        point: Point = self.bounds
+        helpers.draw_point(point.x, point.y, Inch(3), Palette.BLUE, render_scale)
+
+
+class AmplifierState(StateSpace):
+    def __init__(self) -> None:
+        super().__init__()
+        self.setValue("current_note_count", 0)
+        self.setValue("total_note_count", 0)
+
+    @property
+    def notes(self) -> ValueEntry[int]:
+        return self.getValue("note_count")
+
+    @property
+    def total_notes(self) -> ValueEntry[int]:
+        return self.getValue("total_note_count")
 
 
 class Amplifier(RobotInteractable):
@@ -69,7 +101,7 @@ class Amplifier(RobotInteractable):
 
     @staticmethod
     def __amplify(
-        interactableState: StateSpace, robotState: RobotState, gameState: StateSpace
+        interactableState: AmplifierState, robotState: RobotState, gameState: StateSpace
     ) -> List[ValueChange]:
         gameState.setValue("amplification", 10)
         interactableState.notes.set(interactableState.notes.get() - 3)

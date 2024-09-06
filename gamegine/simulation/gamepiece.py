@@ -1,0 +1,52 @@
+from __future__ import annotations
+
+from gamegine.render.drawable import Drawable
+from gamegine.representation.bounds import BoundedObject
+from gamegine.simulation.state import StateSpace, ValueEntry
+from gamegine.utils.NCIM.Dimensions.spatial import SpatialMeasurement
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from gamegine.representation.gamepiece import Gamepiece
+
+
+class GamepieceState(StateSpace):
+    def __init__(
+        self,
+        x: SpatialMeasurement,
+        y: SpatialMeasurement,
+    ):
+        super().__init__()
+        self.setValue("x", x)
+        self.setValue("y", y)
+
+    @property
+    def x(self) -> ValueEntry[SpatialMeasurement]:
+        return self.getValue("x")
+
+    @x.setter
+    def x(self, x: SpatialMeasurement) -> GamepieceState:
+        self.setValue("x", x)
+        return self
+
+    @property
+    def y(self) -> ValueEntry[SpatialMeasurement]:
+        return self.getValue("y")
+
+    @y.setter
+    def y(self, y: SpatialMeasurement) -> GamepieceState:
+        self.setValue("y", y)
+        return self
+
+
+class GamepieceInstance(BoundedObject, Drawable):
+    def __init__(
+        self, gamepiece: Gamepiece, x: SpatialMeasurement, y: SpatialMeasurement
+    ):
+        super().__init__(gamepiece.bounds)
+        self.gamepiece = gamepiece
+        self.x = x
+        self.y = y
+
+    def draw(self, render_scale: SpatialMeasurement):
+        self.gamepiece.display(self.x, self.y, render_scale)

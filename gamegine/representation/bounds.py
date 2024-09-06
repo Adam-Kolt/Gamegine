@@ -9,6 +9,7 @@ import pygame
 from gamegine.render.drawable import Drawable
 from gamegine.render.style import Palette
 from gamegine.representation.base import NamedObject
+from gamegine.utils.NCIM.Dimensions.spatial import Feet
 from gamegine.utils.logging import Debug
 from gamegine.utils.matematika import ReflectValue1D, RotateAboutOrigin
 import shapely.geometry as sg
@@ -298,6 +299,23 @@ class DiscreteBoundary3D(DiscreteBoundary):
         :rtype: :class:`DiscreteBoundary3D`
         """
         return self
+
+    def draw(self, render_scale: SpatialMeasurement) -> None:
+        """Draws the boundary, used by the :class:`Renderer` to draw the boundary.
+
+        :param render_scale: The scale to render the boundary at.
+        :type render_scale: :class:`SpatialMeasurement`
+        """
+
+        color_scale = 255 - int(255 * self.get_z_interval()[1] / Feet(10))
+        pygame.draw.polygon(
+            pygame.display.get_surface(),
+            (color_scale, color_scale, 0),
+            [
+                (RatioOf(point[0], render_scale), RatioOf(point[1], render_scale))
+                for point in self.get_vertices()
+            ],
+        )
 
 
 class Boundary3D(Boundary):
@@ -687,7 +705,8 @@ class Point(DiscreteBoundary3D):
 class BoundedObject(NamedObject):
     """Base class for representing game objects which occupy a space on the field. Contain a boundary which indicates the space the object occupies."""
 
-    def __init__(self, bounds: Boundary) -> None:
+    def __init__(self, bounds: Boundary, name: str = "") -> None:
+        super().__init__(name)
         self.bounds = bounds
 
     def mirrored_over_horizontal(self, axis: SpatialMeasurement) -> "BoundedObject":

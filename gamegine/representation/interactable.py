@@ -2,22 +2,31 @@ from enum import Enum
 from abc import ABC, abstractmethod
 from typing import Callable, List
 
+from gamegine.render import helpers
+from gamegine.render.drawable import Drawable
+from gamegine.representation.bounds import BoundedObject, DiscreteBoundary
 from gamegine.simulation.robot import RobotState
 from gamegine.simulation.state import StateSpace, ValueChange
+from gamegine.utils.NCIM.Dimensions.spatial import SpatialMeasurement
 
 # IN PROGRESSS
 
 
-class RobotInteractable(ABC):
-    @abstractmethod
+class RobotInteractable(BoundedObject, Drawable):
+    def __init__(self, boundary: DiscreteBoundary, name="") -> None:
+        super().__init__(boundary, name)
+
     @staticmethod
+    @abstractmethod
     def initializeInteractableState() -> StateSpace:
         pass
 
     @abstractmethod
-    @staticmethod
-    def get_interactions() -> List["InteractionOption"]:
+    def get_interactions(self) -> List["InteractionOption"]:
         pass
+
+    def draw(self, render_scale: SpatialMeasurement):
+        self.bounds.draw(render_scale)
 
 
 class InteractionOption(object):
