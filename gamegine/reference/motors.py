@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 
-from gamegine.utils.NCIM.ComplexDimensions.electricpot import Volt
+from gamegine.utils.NCIM.ComplexDimensions.electricpot import ElectricPot, Volt
 from gamegine.utils.NCIM.ComplexDimensions.omega import Omega, RotationsPerSecond
 from gamegine.utils.NCIM.ComplexDimensions.torque import Torque
 from gamegine.utils.NCIM.Dimensions.current import Ampere, CurrentMeasurement
 from gamegine.utils.NCIM.Dimensions.mass import MassMeasurement, Pound
-from gamegine.utils.NCIM.basic import ComplexMeasurement
+from gamegine.utils.NCIM.basic import ComplexMeasurement, ComplexUnit
 
 
 @dataclass
@@ -17,6 +17,27 @@ class MotorSpecification:
     free_current: CurrentMeasurement
     kT: ComplexMeasurement
     kV: ComplexMeasurement
+    maxVoltage: ElectricPot = Volt(12)
+
+    def get_torque_at(
+        self,
+        speed: Omega,
+        max_current: CurrentMeasurement,
+        max_stator_current: CurrentMeasurement,
+    ) -> Torque:
+        # Kinda a cooked implementation, idk if the model is even correct TODO: Verify, Fix, Refactor Plz
+        if speed == 0:
+            return self.stall_torque
+        voltage = speed / self.kV
+        stator = self.maxVoltage / voltage * max_current
+        if stator > max_stator_current:
+            stator = max_stator_current
+        max_torque_possible = self.kT * stator
+        torque = self.stall_torque * (1 - speed / self.free_speed)
+        if torque > max_torque_possible:
+            torque = max_torque_possible
+
+        return torque
 
 
 @dataclass
@@ -30,6 +51,11 @@ class PowerConfig:
 class MotorConfig:
     motor: MotorSpecification
     power: PowerConfig
+
+    def get_torque_at(self, speed: Omega) -> Torque:
+        return self.motor.get_torque_at(
+            speed, self.power.supply_current_limit, self.power.stator_current_limit
+        )
 
 
 KrakenX60 = MotorSpecification(

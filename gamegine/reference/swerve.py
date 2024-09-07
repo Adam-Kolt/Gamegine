@@ -23,24 +23,6 @@ class SwerveModule:
     )
 
 
-fiftyTenSpecial = SwerveModule(
-    MotorConfig(
-        motors.KrakenX60_FOC,
-        PowerConfig(
-            Ampere(40),
-            Ampere(120),
-        ),
-    ),
-    gearing.MK4I.L2,
-    MotorConfig(
-        motors.NEO,
-        PowerConfig(Ampere(40)),
-    ),
-    gearing.MK4I.L2,
-    Wheel(Inch(4), TreadDB.vexPro_versawheel),
-)
-
-
 @dataclass
 class SwerveConfig:
     """Dataclass used to store the configuration of a swerve drive."""

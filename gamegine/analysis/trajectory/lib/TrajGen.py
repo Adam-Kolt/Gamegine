@@ -68,7 +68,17 @@ class TrajectoryProblem:
         self.problem = problem
         pass
 
-    def solve(self, robot_constraints):
+    def solve(self, robot_constraints: TrajectoryRobotConstraints):
+        """Solves the optimization problem and returns the solution."""
+        pass
+
+
+class SwerveTrajectoryProblem(TrajectoryProblem):
+    def __init__(self, problem: OptimizationProblem) -> None:
+        super().__init__(problem)
+        pass
+
+    def solve(self, robot_constraints: SwerveRobotConstraints):
         """Solves the optimization problem and returns the solution."""
         pass
 
@@ -113,7 +123,7 @@ class SwerveTrajectoryProblemBuilder(TrajectoryProblemBuilder):
         self.point_vars: SwervePointVariables = None
         pass
 
-    def generate(self) -> TrajectoryProblem:
+    def generate(self) -> SwerveTrajectoryProblem:
         """Sets up and generates the optimization problem, based on the constraints and objectives currently added to the problem."""
         self.problem = OptimizationProblem()
         pass
