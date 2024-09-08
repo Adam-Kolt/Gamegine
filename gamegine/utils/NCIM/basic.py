@@ -562,7 +562,7 @@ class ComplexMeasurement(float):
         dimension=None,
         dimension_map=None,
     ):
-        if base_magnitude:
+        if not base_magnitude is None:
             return float.__new__(cls, base_magnitude)
         if isinstance(magnitude, ComplexMeasurement):
             return magnitude

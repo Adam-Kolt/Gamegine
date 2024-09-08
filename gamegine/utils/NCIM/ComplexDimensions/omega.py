@@ -1,5 +1,5 @@
 from gamegine.utils.NCIM.Dimensions.angular import AngularUnit, Degree, Radian, Rotation
-from gamegine.utils.NCIM.Dimensions.temporal import Second, TemporalUnit
+from gamegine.utils.NCIM.Dimensions.temporal import Minute, Second, TemporalUnit
 from gamegine.utils.NCIM.basic import ComplexMeasurement, ComplexUnit
 
 
@@ -57,3 +57,4 @@ class Omega(ComplexMeasurement):
 RadiansPerSecond = OmegaUnit(Radian, Second)
 DegreesPerSecond = OmegaUnit(Degree, Second)
 RotationsPerSecond = OmegaUnit(Rotation, Second)
+RotationsPerMinute = OmegaUnit(Rotation, Minute)
