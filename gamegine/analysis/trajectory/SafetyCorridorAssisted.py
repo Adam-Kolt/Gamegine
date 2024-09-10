@@ -5,7 +5,7 @@ import pint
 from gamegine.analysis.pathfinding import Path
 from gamegine.analysis.trajectory.generation import (
     GuidedSwerveTrajectoryGenerator,
-    InterpolatedSwerveTrajectory,
+    SwerveTrajectory,
     SwerveTrajectory,
     TrajectoryKeypoint,
     TrajectoryState,
@@ -198,7 +198,7 @@ class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
         end_parameters: TrajectoryKeypoint,
         physical_parameters: PhysicalParameters,
         drivetrain_parameters: SwerveDrivetrainCharacteristics,
-    ) -> InterpolatedSwerveTrajectory:
+    ) -> SwerveTrajectory:
         self.dissected_path = guide_path.dissected(units_per_node=self.units_per_node)
         self.drivetrain = drivetrain_parameters
         self.start = start_parameters
@@ -220,7 +220,7 @@ class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
             drivetrain_parameters,
         )
 
-        return InterpolatedSwerveTrajectory(trajectory_path)
+        return SwerveTrajectory(trajectory_path)
 
     def __GetExpandedRectangle(
         self,

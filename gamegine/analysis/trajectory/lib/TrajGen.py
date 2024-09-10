@@ -5,6 +5,12 @@ from dataclasses import dataclass, field
 
 from gamegine.analysis.pathfinding import Path
 from gamegine.analysis.trajectory.lib import CALCULATION_UNIT_SPATIAL
+from gamegine.analysis.trajectory.lib.constraints.kinematics import (
+    OmegaKinematicsConstraint,
+    PositionKinematicsConstraint,
+    ThetaKinematicsConstraint,
+    VelocityKinematicsConstraint,
+)
 from gamegine.reference.swerve import SwerveConfig
 from gamegine.utils.NCIM.ComplexDimensions.acceleration import (
     Acceleration,
@@ -171,6 +177,16 @@ class Waypoint:
             raise ValueError("Waypoint y must be positive.")
 
 
+@dataclass
+class TrajectoryBuilderConfig:
+    """Dataclass used to store configuration information for a trajectory optimization problem."""
+
+    trajectory_resolution: SpatialMeasurement = Centimeter(10)
+    stretch_factor: float = 1.1
+    min_spacing: SpatialMeasurement = Centimeter(1)
+    apply_kinematic_constraints: bool = True
+
+
 class TrajectoryProblemBuilder:
     """Class used to build a trajectory optimization problem and generate a solution. Allows for constraints and objectives to be added and setup."""
 
@@ -186,14 +202,9 @@ class TrajectoryProblemBuilder:
     def __generate_point_vars(self, num_points: int):
         return PointVariables.with_initial_variables(self.problem, len(num_points))
 
-    def generate(
-        self, resolution: SpatialMeasurement = Centimeter(10)
-    ) -> TrajectoryProblem:
-        """Sets up and generates the optimization problem, based on the constraints and objectives currently added to the problem."""
-        self.problem = OptimizationProblem()
-        if len(self.waypoints) < 2:
-            raise ValueError("Trajectory must have at least two waypoints.")
-
+    def __initialize_state_variables_with_initial_pathes(
+        self, initial_pathes: List[Path], resolution: SpatialMeasurement
+    ) -> int:
         X_nodes = []
         Y_nodes = []
 
@@ -227,10 +238,46 @@ class TrajectoryProblemBuilder:
             self.point_vars.POS_X[i].set_value(X_nodes[i])
             self.point_vars.POS_Y[i].set_value(Y_nodes[i])
 
-        # Apply constraints for each waypoint
-        for i, (order, waypoint) in enumerate(waypoints):
+        self.__apply_waypoint_constraints()
+
+        return len(X_nodes)
+
+    def __apply_waypoint_constraints(self):
+        for order, waypoint in self.waypoints.items():
             for constraint in waypoint.constraints:
-                constraint(self.point_vars, waypoint.control_point_index)
+                constraint(self.problem, self.point_vars, waypoint.control_point_index)
+
+    def __apply_kinematic_constraints(self):
+        PositionKinematicsConstraint(self.problem, self.point_vars)
+        VelocityKinematicsConstraint(self.problem, self.point_vars)
+        OmegaKinematicsConstraint(self.problem, self.point_vars)
+        ThetaKinematicsConstraint(self.problem, self.point_vars)
+
+    def __apply_spacing_constraints(self, config: TrajectoryBuilderConfig):
+        pass
+
+    def __apply_config_constraints(self, config: TrajectoryBuilderConfig):
+        if config.apply_kinematic_constraints:
+            self.__apply_kinematic_constraints
+
+        if config.min_spacing > 0 or config.stretch_factor > 1:
+            self.__apply_spacing_constraints(
+                config.min_spacing, config.stretch_factor, config
+            )
+
+    def generate(
+        self, config: TrajectoryBuilderConfig = TrajectoryBuilderConfig()
+    ) -> TrajectoryProblem:
+        """Sets up and generates the optimization problem, based on the constraints and objectives currently added to the problem."""
+        self.problem = OptimizationProblem()
+        if len(self.waypoints) < 2:
+            raise ValueError("Trajectory must have at least two waypoints.")
+
+        steps = self.__initialize_state_variables_with_initial_pathes(
+            self.initial_pathes, config.trajectory_resolution
+        )
+
+        self.__apply_config_constraints(config)
 
         # Apply constraints for all points
         for constraint in self.point_constraints:
