@@ -1,7 +1,7 @@
 import logging
 
 logger = logging.getLogger("gamegine")
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 # TODO: Add custom exceptions which when raised log to logger while also throwing descriptive error
 

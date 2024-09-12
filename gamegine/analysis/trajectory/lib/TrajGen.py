@@ -1,3 +1,4 @@
+from enum import Enum
 import logging
 from typing import Callable, List
 from jormungandr.optimization import OptimizationProblem
@@ -5,13 +6,25 @@ from dataclasses import dataclass, field
 
 from gamegine.analysis.pathfinding import Path
 from gamegine.analysis.trajectory.lib import CALCULATION_UNIT_SPATIAL
+from gamegine.analysis.trajectory.lib.constraints.constraints import (
+    AccelerationLessThan,
+    AngularAccelerationLessThan,
+    AngularVelocityLessThan,
+    VelocityLessThan,
+)
 from gamegine.analysis.trajectory.lib.constraints.kinematics import (
     OmegaKinematicsConstraint,
     PositionKinematicsConstraint,
     ThetaKinematicsConstraint,
     VelocityKinematicsConstraint,
 )
+from gamegine.analysis.trajectory.lib.problemVariables import (
+    PointVariables,
+    SwervePointVariables,
+)
+from gamegine.analysis.trajectory.lib.trajectoryStates import TrajectoryState
 from gamegine.reference.swerve import SwerveConfig
+from gamegine.render.drawable import Drawable
 from gamegine.utils.NCIM.ComplexDimensions.acceleration import (
     Acceleration,
     MeterPerSecondSquared,
@@ -21,97 +34,6 @@ from gamegine.utils.NCIM.ComplexDimensions.omega import Omega, RadiansPerSecond
 from gamegine.utils.NCIM.ComplexDimensions.velocity import MetersPerSecond, Velocity
 from gamegine.utils.NCIM.Dimensions.spatial import Centimeter, Meter, SpatialMeasurement
 from sortedcontainers import SortedDict
-
-
-@dataclass
-class PointVariables:
-    """Dataclass used to store the state variables at all discrete points in a trajectory."""
-
-    POS_X: list
-    POS_Y: list
-    VEL_X: list
-    VEL_Y: list
-    ACCEL_X: list
-    ACCEL_Y: list
-    THETA: list
-    OMEGA: list
-    ALPHA: list
-    DT: list
-
-    @classmethod
-    def with_initial_variables(cls, problem: OptimizationProblem, num_points: int):
-        """Initializes the state variables for all points in the trajectory."""
-
-        return cls(
-            POS_X=problem.decision_variable(num_points),
-            POS_Y=problem.decision_variable(num_points),
-            VEL_X=problem.decision_variable(num_points),
-            VEL_Y=problem.decision_variable(num_points),
-            ACCEL_X=problem.decision_variable(num_points),
-            ACCEL_Y=problem.decision_variable(num_points),
-            THETA=problem.decision_variable(num_points),
-            OMEGA=problem.decision_variable(num_points - 1),
-            ALPHA=problem.decision_variable(num_points - 1),
-            DT=problem.decision_variable(num_points - 1),
-        )
-
-
-@dataclass
-class ModuleVariables:
-    FX: list
-    FY: list
-    VX: list
-    VY: list
-
-
-class SwervePointVariables(PointVariables):
-    """Dataclass used to store the state variables at all discrete points in a swerve drive trajectory."""
-
-    TL: ModuleVariables
-    TR: ModuleVariables
-    BL: ModuleVariables
-    BR: ModuleVariables
-
-    @classmethod
-    def with_initial_variables(cls, problem: OptimizationProblem, num_points: int):
-        """Initializes the state variables for all points in the trajectory."""
-
-        return cls(
-            POS_X=problem.decision_variable(num_points),
-            POS_Y=problem.decision_variable(num_points),
-            VEL_X=problem.decision_variable(num_points),
-            VEL_Y=problem.decision_variable(num_points),
-            ACCEL_X=problem.decision_variable(num_points),
-            ACCEL_Y=problem.decision_variable(num_points),
-            THETA=problem.decision_variable(num_points),
-            OMEGA=problem.decision_variable(num_points - 1),
-            ALPHA=problem.decision_variable(num_points - 1),
-            DT=problem.decision_variable(num_points - 1),
-            TL=ModuleVariables(
-                FX=problem.decision_variable(num_points - 1),
-                FY=problem.decision_variable(num_points - 1),
-                VX=problem.decision_variable(num_points),
-                VY=problem.decision_variable(num_points),
-            ),
-            TR=ModuleVariables(
-                FX=problem.decision_variable(num_points - 1),
-                FY=problem.decision_variable(num_points - 1),
-                VX=problem.decision_variable(num_points),
-                VY=problem.decision_variable(num_points),
-            ),
-            BL=ModuleVariables(
-                FX=problem.decision_variable(num_points - 1),
-                FY=problem.decision_variable(num_points - 1),
-                VX=problem.decision_variable(num_points),
-                VY=problem.decision_variable(num_points),
-            ),
-            BR=ModuleVariables(
-                FX=problem.decision_variable(num_points - 1),
-                FY=problem.decision_variable(num_points - 1),
-                VX=problem.decision_variable(num_points),
-                VY=problem.decision_variable(num_points),
-            ),
-        )
 
 
 @dataclass
@@ -131,15 +53,89 @@ class SwerveRobotConstraints(TrajectoryRobotConstraints):
     swerve_config: SwerveConfig
 
 
+@dataclass
+class SolverConfig:
+    solution_tolerance: float = 1e-6
+    max_iterations: int = 1000
+    timeout: float = 100.0
+
+
+class Trajectory(Drawable):
+    def __init__(self, points: List[TrajectoryState]) -> None:
+        self.points = points
+        pass
+
+
 class TrajectoryProblem:
-    def __init__(self, problem: OptimizationProblem) -> None:
-        self.problem = problem
+    def __init__(
+        self, intialized_problem: OptimizationProblem, point_vars: PointVariables
+    ):
+        self.point_vars = point_vars
+        self.problem = intialized_problem
 
         pass
 
-    def solve(self, robot_constraints: TrajectoryRobotConstraints):
+    def __apply_constraints(self, robot_constraints: TrajectoryRobotConstraints):
+        AccelerationLessThan(robot_constraints.max_acceleration)(
+            self.problem, self.point_vars
+        )
+
+        VelocityLessThan(robot_constraints.max_velocity)(self.problem, self.point_vars)
+
+        AngularVelocityLessThan(robot_constraints.max_angular_velocity)(
+            self.problem, self.point_vars
+        )
+
+        AngularAccelerationLessThan(robot_constraints.max_angular_acceleration)(
+            self.problem, self.point_vars
+        )
+
+    def get_trajectory_states(self) -> List[TrajectoryState]:
+        vars = self.point_vars
+
+        states = []
+
+        for i in range(len(vars.ACCEL_X)):
+            states.append(
+                TrajectoryState(
+                    x=vars.POS_X[i],
+                    y=vars.POS_Y[i],
+                    theta=vars.THETA[i],
+                    vel_x=vars.VEL_X[i],
+                    vel_y=vars.VEL_Y[i],
+                    acc_x=vars.ACCEL_X[i],
+                    acc_y=vars.ACCEL_Y[i],
+                    omega=vars.OMEGA[i],
+                    alpha=vars.ALPHA[i],
+                )
+            )
+
+        # Add final state
+        states.append(
+            TrajectoryState(
+                x=CALCULATION_UNIT_SPATIAL(vars.POS_X[-1]),
+                y=CALCULATION_UNIT_SPATIAL(vars.POS_Y[-1]),
+                theta=vars.THETA[-1],
+                vel_x=vars.VEL_X[-1],
+                vel_y=vars.VEL_Y[-1],
+                acc_x=vars.ACCEL_X[-1],
+                acc_y=vars.ACCEL_Y[-1],
+                omega=vars.OMEGA[-1],
+                alpha=None,
+            )
+        )
+
+    def solve(
+        self, robot_constraints: TrajectoryRobotConstraints, config: SolverConfig
+    ) -> Trajectory:
         """Solves the optimization problem and returns the solution."""
-        pass
+        self.__apply_constraints(robot_constraints)
+
+        self.problem.solve(
+            tolerance=config.solution_tolerance,
+            max_iterations=config.max_iterations,
+            timeout=config.timeout,
+        )
 
 
 class SwerveTrajectoryProblem(TrajectoryProblem):
@@ -177,6 +173,11 @@ class Waypoint:
             raise ValueError("Waypoint y must be positive.")
 
 
+class MinimizationStrategy(Enum):
+    TIME = 0
+    DISTANCE = 1
+
+
 @dataclass
 class TrajectoryBuilderConfig:
     """Dataclass used to store configuration information for a trajectory optimization problem."""
@@ -185,6 +186,7 @@ class TrajectoryBuilderConfig:
     stretch_factor: float = 1.1
     min_spacing: SpatialMeasurement = Centimeter(1)
     apply_kinematic_constraints: bool = True
+    minimization_strategy: MinimizationStrategy = MinimizationStrategy.TIME
 
 
 class TrajectoryProblemBuilder:
@@ -265,6 +267,21 @@ class TrajectoryProblemBuilder:
                 config.min_spacing, config.stretch_factor, config
             )
 
+    def __apply_minimization_objective(self, config: TrajectoryBuilderConfig):
+        total = 0
+        match config.minimization_strategy:
+            case MinimizationStrategy.TIME:
+                for i in range(len(self.point_vars.DT)):
+                    total += self.point_vars.DT[i]
+            case MinimizationStrategy.DISTANCE:
+                for i in range(len(self.point_vars.POS_X) - 1):
+                    total += (
+                        (self.point_vars.POS_X[i + 1] - self.point_vars.POS_X[i]) ** 2
+                        + (self.point_vars.POS_Y[i + 1] - self.point_vars.POS_Y[i]) ** 2
+                    ) ** 0.5
+
+        self.problem.minimize(total)
+
     def generate(
         self, config: TrajectoryBuilderConfig = TrajectoryBuilderConfig()
     ) -> TrajectoryProblem:
@@ -282,6 +299,9 @@ class TrajectoryProblemBuilder:
         # Apply constraints for all points
         for constraint in self.point_constraints:
             constraint(self.point_vars)
+
+        # Minimization objective
+        self.__apply_minimization_objective(config)
 
         return TrajectoryProblem(self.problem)
 

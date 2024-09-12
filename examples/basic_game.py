@@ -50,7 +50,7 @@ renderer.set_render_scale(Centimeter(1.5))
 renderer.init_display()
 print("Game set and display initialized")
 
-while renderer.loop():
+while renderer.loop() != False:
     renderer.draw_static_elements()
     renderer.draw_element(visibility_map)
     time.sleep(0.1)
