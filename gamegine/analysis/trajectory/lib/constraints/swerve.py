@@ -35,7 +35,7 @@ def SwerveModuleConstraints(
 
             for i in range(len(module.FX)):
                 V_mag_square = module.VX[i] ** 2 + module.VY[i] ** 2
-                max_force_surface = max_torque
+                max_force_surface = max_torque / wheel_radius
                 force_mag_squared = module.FX[i] ** 2 + module.FY[i] ** 2
                 problem.subject_to(force_mag_squared <= max_force_surface**2)
 

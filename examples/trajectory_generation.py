@@ -30,12 +30,15 @@ from gamegine.representation.robot import (
     PhysicalParameters,
     SwerveDrivetrainCharacteristics,
 )
-from gamegine.utils.NCIM.ComplexDimensions.MOI import KilogramMetersSquared
+from gamegine.utils.NCIM.ComplexDimensions.MOI import (
+    KilogramMetersSquared,
+    PoundsInchesSquared,
+)
 from gamegine.utils.NCIM.ComplexDimensions.acceleration import MeterPerSecondSquared
 from gamegine.utils.NCIM.ComplexDimensions.alpha import RadiansPerSecondSquared
 from gamegine.utils.NCIM.ComplexDimensions.omega import RadiansPerSecond
 from gamegine.utils.NCIM.ComplexDimensions.velocity import MetersPerSecond
-from gamegine.utils.NCIM.Dimensions.angular import Degree
+from gamegine.utils.NCIM.Dimensions.angular import AngularMeasurement, Degree
 from gamegine.utils.NCIM.Dimensions.current import Ampere
 from gamegine.utils.NCIM.Dimensions.mass import Pound
 from gamegine.utils.NCIM.Dimensions.spatial import (
@@ -85,22 +88,25 @@ paths = []
 def CreateTrajectory(
     start: Tuple[SpatialMeasurement, SpatialMeasurement],
     end: Tuple[SpatialMeasurement, SpatialMeasurement],
+    start_angle: AngularMeasurement = Degree(0),
+    end_angle: AngularMeasurement = Degree(0),
 ):
     path = CreatePath(start, end)
 
     builder = SwerveTrajectoryProblemBuilder()
     builder.waypoint(
         Waypoint(start[0], start[1]).given(
-            VelocityEquals(MetersPerSecond(-2), MeterPerSecondSquared(3)),
-            AngleEquals(Degree(0)),
+            VelocityEquals(MetersPerSecond(0), MeterPerSecondSquared(-3)),
+            AngleEquals(start_angle),
         )
     )
     builder.waypoint(
         Waypoint(end[0], end[1]).given(
-            VelocityEquals(MetersPerSecond(2), MeterPerSecondSquared(0)),
-            AngleEquals(Degree(180)),
+            VelocityEquals(MetersPerSecond(0), MeterPerSecondSquared(3)),
+            AngleEquals(end_angle),
         )
     )
+    builder.guide_pathes([path])
 
     trajectory = builder.generate(
         TrajectoryBuilderConfig(
@@ -108,7 +114,7 @@ def CreateTrajectory(
         )
     ).solve(
         SwerveRobotConstraints(
-            MeterPerSecondSquared(5),
+            MeterPerSecondSquared(8),
             MetersPerSecond(10),
             RadiansPerSecondSquared(3.14),
             RadiansPerSecond(3.14),
@@ -128,10 +134,10 @@ def CreateTrajectory(
             ),
             physical_parameters=PhysicalParameters(
                 mass=Pound(120),
-                moi=KilogramMetersSquared(10),
+                moi=PoundsInchesSquared(21327.14),
             ),
         ),
-        SolverConfig(),
+        SolverConfig(timeout=1),
     )
 
     return trajectory
@@ -156,8 +162,8 @@ renderer.init_display()
 
 
 trajectories = [
-    CreateTrajectory((Feet(6), Feet(20)), (Feet(20), Feet(6))),
-    CreateTrajectory((Feet(20), Feet(6)), (Feet(20), Feet(20))),
+    CreateTrajectory((Feet(6), Feet(20)), (Feet(20), Feet(6)), Degree(0), Degree(270)),
+    CreateTrajectory((Feet(20), Feet(6)), (Feet(20), Feet(20)), Degree(270), Degree(0)),
 ]
 
 while renderer.loop() != False:

@@ -12,6 +12,23 @@ from gamegine.analysis.trajectory.generation import (
     Trajectory,
     TrajectoryKeypoint,
 )
+from gamegine.analysis.trajectory.lib.TrajGen import (
+    SolverConfig,
+    SwerveRobotConstraints,
+    SwerveTrajectoryProblemBuilder,
+    TrajectoryBuilderConfig,
+    Waypoint,
+)
+from gamegine.analysis.trajectory.lib.constraints.avoidance import (
+    SAFETY_CORRIDOR_DEBUG,
+    SafetyCorridor,
+)
+from gamegine.analysis.trajectory.lib.constraints.constraints import (
+    AngleEquals,
+    VelocityEquals,
+)
+from gamegine.reference import gearing, motors
+from gamegine.reference.swerve import SwerveConfig, SwerveModule
 from gamegine.render.renderer import Renderer
 from gamegine.representation.apriltag import AprilTag, AprilTagFamily
 from gamegine.representation.bounds import (
@@ -28,9 +45,16 @@ from gamegine.representation.robot import (
     PhysicalParameters,
     SwerveDrivetrainCharacteristics,
 )
+from gamegine.utils.NCIM.ComplexDimensions.MOI import PoundsInchesSquared
+from gamegine.utils.NCIM.ComplexDimensions.acceleration import MeterPerSecondSquared
+from gamegine.utils.NCIM.ComplexDimensions.alpha import RadiansPerSecondSquared
 from gamegine.utils.NCIM.ComplexDimensions.electricpot import Volt
-from gamegine.utils.NCIM.ComplexDimensions.omega import RotationsPerSecond
-from gamegine.utils.NCIM.Dimensions.angular import Radian
+from gamegine.utils.NCIM.ComplexDimensions.omega import (
+    RadiansPerSecond,
+    RotationsPerSecond,
+)
+from gamegine.utils.NCIM.Dimensions.angular import AngularMeasurement, Radian
+from gamegine.utils.NCIM.Dimensions.current import Ampere
 from gamegine.utils.NCIM.ncim import (
     Degree,
     Kilogram,
@@ -100,11 +124,18 @@ expanded_obstacles = ExpandedObjectBounds(
     robot_radius=Inch(20),
     discretization_quality=16,  # 24.075
 )
+slightly_more_expanded_obstacles = ExpandedObjectBounds(
+    test_game.get_obstacles(),
+    robot_radius=Inch(20) + Inch(2),
+    discretization_quality=16,  # 24.075
+)
 expanded_obstacles_block = [
     obstacle.get_bounded_rectangle() for obstacle in expanded_obstacles
 ]
 # map = VisibilityGraph(expanded_obstacles_v, points, test_game.field_size)
-map = TriangulatedGraph(expanded_obstacles_block, Feet(2), test_game.get_field_size())
+map = TriangulatedGraph(
+    slightly_more_expanded_obstacles, Feet(2), test_game.get_field_size()
+)
 
 
 def CreatePath(
@@ -129,23 +160,60 @@ paths = []
 def CreateTrajectory(
     start: Tuple[SpatialMeasurement, SpatialMeasurement],
     end: Tuple[SpatialMeasurement, SpatialMeasurement],
+    start_angle: AngularMeasurement = Degree(0),
+    end_angle: AngularMeasurement = Degree(0),
 ):
     path = CreatePath(start, end)
-    paths.append(path)
-    trajectory_generator = SafetyCorridorAssisted(Centimeter(10))
-    traj = trajectory_generator.calculate_trajectory(
-        path,
-        expanded_obstacles,
-        TrajectoryKeypoint(),
-        TrajectoryKeypoint(),
-        PhysicalParameters(Pound(120), KilogramMetersSquared(5)),
-        SwerveDrivetrainCharacteristics(),
+
+    builder = SwerveTrajectoryProblemBuilder()
+    builder.waypoint(
+        Waypoint(start[0], start[1]).given(
+            VelocityEquals(MetersPerSecond(0), MeterPerSecondSquared(0)),
+            AngleEquals(start_angle),
+        )
     )
-    states = traj.get_points()
-    path = pathfinding.Path([(state.x, state.y) for state in states])
-    corridors.clear()
-    corridors.extend(trajectory_generator.GetSafeCorridor())
-    return traj
+    builder.waypoint(
+        Waypoint(end[0], end[1]).given(
+            VelocityEquals(MetersPerSecond(0), MeterPerSecondSquared(-2)),
+            AngleEquals(end_angle),
+        )
+    )
+    builder.guide_pathes([path])
+    builder.points_constraint(SafetyCorridor(expanded_obstacles))
+
+    trajectory = builder.generate(
+        TrajectoryBuilderConfig(
+            trajectory_resolution=Centimeter(15), stretch_factor=1.5
+        )
+    ).solve(
+        SwerveRobotConstraints(
+            MeterPerSecondSquared(8),
+            MetersPerSecond(10),
+            RadiansPerSecondSquared(3.14),
+            RadiansPerSecond(3.14),
+            SwerveConfig(
+                module=SwerveModule(
+                    motors.MotorConfig(
+                        motors.KrakenX60,
+                        motors.PowerConfig(Ampere(60), Ampere(360), 1.0),
+                    ),
+                    gearing.MK4I.L1,
+                    motors.MotorConfig(
+                        motors.KrakenX60,
+                        motors.PowerConfig(Ampere(60), Ampere(360), 1.0),
+                    ),
+                    gearing.MK4I.L1,
+                )
+            ),
+            physical_parameters=PhysicalParameters(
+                mass=Pound(110),
+                moi=PoundsInchesSquared(21327.14),
+            ),
+        ),
+        SolverConfig(timeout=10),
+    )
+
+    return trajectory
 
 
 def Destinations(
@@ -296,9 +364,11 @@ while loop != False:
     for event in loop:
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
-            x, y = pos[0] * Renderer.render_scale, pos[1] * Renderer.render_scale
+            x, y = Renderer.render_scale * pos[0], Renderer.render_scale * pos[1]
 
-            trajectories.append(CreateTrajectory(Current, (x, y)))
+            trajectories.append(
+                CreateTrajectory(Current, (x, y), Degree(180), Degree(0))
+            )
             Current = (x, y)
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_c:
@@ -315,4 +385,5 @@ while loop != False:
     renderer.draw_elements(notes)
     renderer.draw_elements(test_robot_bounds)
     renderer.draw_element(test_speaker)
+
     renderer.render_frame()

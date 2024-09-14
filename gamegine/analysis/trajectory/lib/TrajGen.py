@@ -229,7 +229,7 @@ class SwerveTrajectory(Trajectory):
                 (255, 100, 0),
                 (RatioOf(point.x, render_scale), RatioOf(point.y, render_scale)),
                 (RatioOf(point2.x, render_scale), RatioOf(point2.y, render_scale)),
-                width=int(RatioOf(Inch(3), render_scale)),
+                width=int(RatioOf(Inch(2), render_scale)),
             )
             angle = point.theta
 
@@ -248,37 +248,37 @@ class SwerveTrajectory(Trajectory):
                 field_relative_module_points.append((x, y))
                 helpers.draw_point(x, y, Inch(1), colors[i], render_scale)
 
-            for i, module_point in enumerate(field_relative_module_points[:-1]):
-                pygame.draw.line(
-                    pygame.display.get_surface(),
-                    colors[i].get_color_array(),
-                    (
-                        RatioOf(field_relative_module_points[i][0], render_scale),
-                        RatioOf(field_relative_module_points[i][1], render_scale),
-                    ),
-                    (
-                        RatioOf(field_relative_module_points[i + 1][0], render_scale),
-                        RatioOf(field_relative_module_points[i + 1][1], render_scale),
-                    ),
-                    width=int(RatioOf(Inch(2), render_scale)),
-                )
+            # for i, module_point in enumerate(field_relative_module_points[:-1]):
+            #     pygame.draw.line(
+            #         pygame.display.get_surface(),
+            #         colors[i].get_color_array(),
+            #         (
+            #             RatioOf(field_relative_module_points[i][0], render_scale),
+            #             RatioOf(field_relative_module_points[i][1], render_scale),
+            #         ),
+            #         (
+            #             RatioOf(field_relative_module_points[i + 1][0], render_scale),
+            #             RatioOf(field_relative_module_points[i + 1][1], render_scale),
+            #         ),
+            #         width=int(RatioOf(Inch(2), render_scale)),
+            #     )
 
-            pygame.draw.line(
-                pygame.display.get_surface(),
-                colors[3].get_color_array(),
-                (
-                    RatioOf(field_relative_module_points[3][0], render_scale),
-                    RatioOf(field_relative_module_points[3][1], render_scale),
-                ),
-                (
-                    RatioOf(field_relative_module_points[0][0], render_scale),
-                    RatioOf(field_relative_module_points[0][1], render_scale),
-                ),
-                width=int(RatioOf(Inch(2), render_scale)),
-            )
+            # pygame.draw.line(
+            #     pygame.display.get_surface(),
+            #     colors[3].get_color_array(),
+            #     (
+            #         RatioOf(field_relative_module_points[3][0], render_scale),
+            #         RatioOf(field_relative_module_points[3][1], render_scale),
+            #     ),
+            #     (
+            #         RatioOf(field_relative_module_points[0][0], render_scale),
+            #         RatioOf(field_relative_module_points[0][1], render_scale),
+            #     ),
+            #     width=int(RatioOf(Inch(2), render_scale)),
+            # )
 
             # Draw the robot center
-            helpers.draw_point(point.x, point.y, Inch(4), Palette.PINK, render_scale)
+            helpers.draw_point(point.x, point.y, Inch(2), Palette.PINK, render_scale)
 
             # Draw the robot heading
             pygame.draw.line(
@@ -290,15 +290,15 @@ class SwerveTrajectory(Trajectory):
                 ),
                 (
                     RatioOf(
-                        point.x + Inch(24) * math.cos(point.theta.to(Radian)),
+                        point.x + Inch(12) * math.cos(point.theta.to(Radian)),
                         render_scale,
                     ),
                     RatioOf(
-                        point.y + Inch(24) * math.sin(point.theta.to(Radian)),
+                        point.y + Inch(12) * math.sin(point.theta.to(Radian)),
                         render_scale,
                     ),
                 ),
-                width=int(RatioOf(Inch(3), render_scale)),
+                width=int(RatioOf(Inch(2), render_scale)),
             )
 
 
@@ -582,7 +582,7 @@ class TrajectoryProblemBuilder:
 
         # Apply constraints for all points
         for constraint in self.point_constraints:
-            constraint(self.point_vars)
+            constraint(self.problem, self.point_vars)
 
         # Minimization objective
         self.apply_minimization_objective(config)
@@ -611,11 +611,9 @@ class TrajectoryProblemBuilder:
 
     def guide_pathes(self, guide_pathes: List[Path]):
         """Adds guide pathes that aid the trajectory in reaching its waypoints."""
-        if len(guide_pathes) != len(self.waypoints):
-            logging.warning(
-                "Number of guide pathes does not match number of waypoints."
-            )
-        self.intial_pathes = guide_pathes
+        if len(guide_pathes) != len(self.waypoints) - 1:
+            logging.Warn("Number of guide pathes does not match number of waypoints.")
+        self.initial_pathes = guide_pathes
 
 
 class SwerveTrajectoryProblemBuilder(TrajectoryProblemBuilder):
@@ -647,7 +645,7 @@ class SwerveTrajectoryProblemBuilder(TrajectoryProblemBuilder):
 
         # Apply constraints for all points
         for constraint in self.point_constraints:
-            constraint(self.point_vars)
+            constraint(self.problem, self.point_vars)
 
         # Minimization objective
         self.apply_minimization_objective(config)

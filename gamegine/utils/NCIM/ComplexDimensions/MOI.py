@@ -1,10 +1,10 @@
-from gamegine.utils.NCIM.Dimensions.mass import Kilogram, MassUnit
-from gamegine.utils.NCIM.Dimensions.spatial import Meter, SpatialUnit
+from gamegine.utils.NCIM.Dimensions.mass import Kilogram, MassUnit, Pound
+from gamegine.utils.NCIM.Dimensions.spatial import Inch, Meter, SpatialUnit
 from gamegine.utils.NCIM.basic import ComplexMeasurement, ComplexUnit
 
 
 class MOIUnit(ComplexUnit):
-    """A class representing a moment of inertia complex unit, composed of a spatial and mass element in the form spatial^1 * mass^2, in addition to creating a :class:`MOI` of the same type when called. Inherits from the :class:`ComplexUnit` class.
+    """A class representing a moment of inertia complex unit, composed of a spatial and mass element in the form spatial^2 * mass^1, in addition to creating a :class:`MOI` of the same type when called. Inherits from the :class:`ComplexUnit` class.
 
     :param mass: The mass unit of the
     :type mass: :class:`MassUnit`
@@ -13,7 +13,7 @@ class MOIUnit(ComplexUnit):
     """
 
     def __init__(self, mass: MassUnit, spatial: SpatialUnit) -> None:
-        super().__init__({spatial: 1, mass: 2})
+        super().__init__({spatial: 2, mass: 1})
 
     def __call__(self, magnitude: float):
         """Creates a new :class:`MOI` with the given magnitude.
@@ -27,7 +27,7 @@ class MOIUnit(ComplexUnit):
 
 
 class MOI(ComplexMeasurement):
-    """A class representing a moment of inertia complex measurement, composed of a spatial and mass element in the form spatial^1 * mass^2. Inherits from the :class:`ComplexMeasurement` class.
+    """A class representing a moment of inertia complex measurement, composed of a spatial and mass element in the form spatial^2 * mass^1. Inherits from the :class:`ComplexMeasurement` class.
 
     :param magnitude: The magnitude of the measurement.
     :type magnitude: float
@@ -55,3 +55,4 @@ class MOI(ComplexMeasurement):
 
 
 KilogramMetersSquared = MOIUnit(Kilogram, Meter)
+PoundsInchesSquared = MOIUnit(Pound, Inch)
