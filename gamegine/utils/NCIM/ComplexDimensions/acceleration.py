@@ -43,7 +43,7 @@ class Acceleration(ComplexMeasurement):
         unit: AccelerationUnit,
         base_magnitude=None,
     ):
-        return ComplexMeasurement.__new__(magnitude, unit, base_magnitude)
+        return ComplexMeasurement.__new__(cls, magnitude, unit, base_magnitude)
 
     def __init__(
         self,

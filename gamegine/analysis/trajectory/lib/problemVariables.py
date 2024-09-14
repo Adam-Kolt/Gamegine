@@ -26,10 +26,10 @@ class PointVariables:
             POS_Y=problem.decision_variable(num_points),
             VEL_X=problem.decision_variable(num_points),
             VEL_Y=problem.decision_variable(num_points),
-            ACCEL_X=problem.decision_variable(num_points),
-            ACCEL_Y=problem.decision_variable(num_points),
+            ACCEL_X=problem.decision_variable(num_points - 1),
+            ACCEL_Y=problem.decision_variable(num_points - 1),
             THETA=problem.decision_variable(num_points),
-            OMEGA=problem.decision_variable(num_points - 1),
+            OMEGA=problem.decision_variable(num_points),
             ALPHA=problem.decision_variable(num_points - 1),
             DT=problem.decision_variable(num_points - 1),
         )
@@ -43,6 +43,7 @@ class ModuleVariables:
     VY: list
 
 
+@dataclass
 class SwervePointVariables(PointVariables):
     """Dataclass used to store the state variables at all discrete points in a swerve drive trajectory."""
 
@@ -60,10 +61,10 @@ class SwervePointVariables(PointVariables):
             POS_Y=problem.decision_variable(num_points),
             VEL_X=problem.decision_variable(num_points),
             VEL_Y=problem.decision_variable(num_points),
-            ACCEL_X=problem.decision_variable(num_points),
-            ACCEL_Y=problem.decision_variable(num_points),
+            ACCEL_X=problem.decision_variable(num_points - 1),
+            ACCEL_Y=problem.decision_variable(num_points - 1),
             THETA=problem.decision_variable(num_points),
-            OMEGA=problem.decision_variable(num_points - 1),
+            OMEGA=problem.decision_variable(num_points),
             ALPHA=problem.decision_variable(num_points - 1),
             DT=problem.decision_variable(num_points - 1),
             TL=ModuleVariables(

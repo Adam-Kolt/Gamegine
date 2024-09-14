@@ -1,3 +1,6 @@
+from gamegine.utils import logging
+
+
 def get_magnitude_squared(var1, var2):
     return var1**2 + var2**2
 
@@ -29,6 +32,9 @@ def __VectorMagnitudeGreaterThanConstraint(
 
 def __MagnitudeEqualityConstraint(problem, vars, magnitude: float, index: int = -1):
     for i in __get_indices(index, len(vars)):
+        logging.Debug(
+            f"Adding magnitude equality constraint of {magnitude} to control point {i}"
+        )
         problem.subject_to(vars[i] == magnitude)
 
 
@@ -37,7 +43,7 @@ def __MagnitudeLessThanConstraint(problem, vars, magnitude: float, index: int = 
         problem.subject_to(vars[i] < magnitude)
 
 
-def __MagnitudeGreaterThanConstraint(problem, vars, magnitude: float, index: int = -1):
+def MagnitudeGreaterThanConstraint(problem, vars, magnitude: float, index: int = -1):
     for i in __get_indices(index, len(vars)):
         problem.subject_to(vars[i] > magnitude)
 

@@ -5,6 +5,23 @@ from gamegine.analysis import pathfinding
 from gamegine.analysis.meshing import TriangulatedGraph
 from gamegine.analysis.trajectory.SafetyCorridorAssisted import SafetyCorridorAssisted
 from gamegine.analysis.trajectory.generation import TrajectoryKeypoint
+from gamegine.analysis.trajectory.lib.TrajGen import (
+    SolverConfig,
+    SwerveRobotConstraints,
+    SwerveTrajectoryProblemBuilder,
+    TrajectoryBuilderConfig,
+    TrajectoryProblemBuilder,
+    TrajectoryRobotConstraints,
+    Waypoint,
+)
+from gamegine.analysis.trajectory.lib.constraints.constraints import (
+    AngleEquals,
+    VelocityEquals,
+    VelocityMagnitudeEquals,
+)
+from gamegine.reference import gearing, motors
+from gamegine.reference.motors import MotorConfig
+from gamegine.reference.swerve import SwerveConfig, SwerveModule
 from gamegine.render.renderer import Renderer
 from gamegine.representation.bounds import ExpandedObjectBounds
 from gamegine.representation.game import Game
@@ -14,6 +31,12 @@ from gamegine.representation.robot import (
     SwerveDrivetrainCharacteristics,
 )
 from gamegine.utils.NCIM.ComplexDimensions.MOI import KilogramMetersSquared
+from gamegine.utils.NCIM.ComplexDimensions.acceleration import MeterPerSecondSquared
+from gamegine.utils.NCIM.ComplexDimensions.alpha import RadiansPerSecondSquared
+from gamegine.utils.NCIM.ComplexDimensions.omega import RadiansPerSecond
+from gamegine.utils.NCIM.ComplexDimensions.velocity import MetersPerSecond
+from gamegine.utils.NCIM.Dimensions.angular import Degree
+from gamegine.utils.NCIM.Dimensions.current import Ampere
 from gamegine.utils.NCIM.Dimensions.mass import Pound
 from gamegine.utils.NCIM.Dimensions.spatial import (
     Centimeter,
@@ -64,18 +87,54 @@ def CreateTrajectory(
     end: Tuple[SpatialMeasurement, SpatialMeasurement],
 ):
     path = CreatePath(start, end)
-    trajectory_generator = SafetyCorridorAssisted(Centimeter(10))
-    traj = trajectory_generator.calculate_trajectory(
-        path,
-        expanded_obstacles,
-        TrajectoryKeypoint(),
-        TrajectoryKeypoint(),
-        PhysicalParameters(Pound(120), KilogramMetersSquared(5)),
-        SwerveDrivetrainCharacteristics(),
+
+    builder = SwerveTrajectoryProblemBuilder()
+    builder.waypoint(
+        Waypoint(start[0], start[1]).given(
+            VelocityEquals(MetersPerSecond(-2), MeterPerSecondSquared(3)),
+            AngleEquals(Degree(0)),
+        )
     )
-    states = traj.get_points()
-    path = pathfinding.Path([(state.x, state.y) for state in states])
-    return traj
+    builder.waypoint(
+        Waypoint(end[0], end[1]).given(
+            VelocityEquals(MetersPerSecond(2), MeterPerSecondSquared(0)),
+            AngleEquals(Degree(180)),
+        )
+    )
+
+    trajectory = builder.generate(
+        TrajectoryBuilderConfig(
+            trajectory_resolution=Centimeter(15), stretch_factor=1.5
+        )
+    ).solve(
+        SwerveRobotConstraints(
+            MeterPerSecondSquared(5),
+            MetersPerSecond(10),
+            RadiansPerSecondSquared(3.14),
+            RadiansPerSecond(3.14),
+            SwerveConfig(
+                module=SwerveModule(
+                    MotorConfig(
+                        motors.KrakenX60,
+                        motors.PowerConfig(Ampere(40), Ampere(360), 1.0),
+                    ),
+                    gearing.MK4I.L1,
+                    MotorConfig(
+                        motors.KrakenX60,
+                        motors.PowerConfig(Ampere(40), Ampere(360), 1.0),
+                    ),
+                    gearing.MK4I.L1,
+                )
+            ),
+            physical_parameters=PhysicalParameters(
+                mass=Pound(120),
+                moi=KilogramMetersSquared(10),
+            ),
+        ),
+        SolverConfig(),
+    )
+
+    return trajectory
 
 
 trajectory_test.add_obstacles(obstacles)
@@ -97,7 +156,8 @@ renderer.init_display()
 
 
 trajectories = [
-    CreateTrajectory((Feet(2), Feet(6)), (Feet(6), Feet(44))),
+    CreateTrajectory((Feet(6), Feet(20)), (Feet(20), Feet(6))),
+    CreateTrajectory((Feet(20), Feet(6)), (Feet(20), Feet(20))),
 ]
 
 while renderer.loop() != False:

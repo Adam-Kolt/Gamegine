@@ -62,6 +62,12 @@ class MotorConfig:
             speed, self.power.supply_current_limit, self.power.stator_current_limit
         )
 
+    def get_max_speed(self) -> Omega:
+        return self.motor.free_speed
+
+    def get_max_torque(self) -> Torque:
+        return self.motor.stall_torque
+
 
 KrakenX60 = MotorSpecification(
     Pound(1.20),

@@ -63,7 +63,7 @@ class GearSeries:
     def get_output_gear(self):
         return self.output_gear
 
-    def get_ratio(self):
+    def get_ratio(self) -> float:
         return self.ratio
 
     def __mul__(self, other):

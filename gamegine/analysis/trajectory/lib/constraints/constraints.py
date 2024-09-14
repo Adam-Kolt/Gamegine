@@ -4,6 +4,7 @@ from gamegine.analysis.trajectory.lib import (
     CALCULATION_UNIT_TEMPORAL,
 )
 from gamegine.analysis.trajectory.lib.constraints.base import (
+    __MagnitudeEqualityConstraint,
     __VectorMagnitudeEqualityConstraint,
     get_magnitude_squared,
 )
@@ -14,10 +15,11 @@ from gamegine.utils.NCIM.ComplexDimensions.acceleration import (
 from gamegine.utils.NCIM.ComplexDimensions.alpha import Alpha, AlphaUnit
 from gamegine.utils.NCIM.ComplexDimensions.omega import Omega, OmegaUnit
 from gamegine.utils.NCIM.ComplexDimensions.velocity import Velocity, VelocityUnit
+from gamegine.utils.NCIM.Dimensions.angular import AngularMeasurement
 from gamegine.utils.NCIM.Dimensions.spatial import SpatialMeasurement
 
 
-def VelocityEquals(velocity: Velocity):
+def VelocityMagnitudeEquals(velocity: Velocity):
     vel = velocity.to(VelocityUnit(CALCULATION_UNIT_SPATIAL, CALCULATION_UNIT_TEMPORAL))
 
     def _velocity_equals(problem, point_variables, index: int = -1):
@@ -26,6 +28,27 @@ def VelocityEquals(velocity: Velocity):
         )
 
     return _velocity_equals
+
+
+def VelocityEquals(x: Velocity, y: Velocity):
+    x = x.to(VelocityUnit(CALCULATION_UNIT_SPATIAL, CALCULATION_UNIT_TEMPORAL))
+    y = y.to(VelocityUnit(CALCULATION_UNIT_SPATIAL, CALCULATION_UNIT_TEMPORAL))
+
+    def _velocity_equals(problem, point_variables, index: int = -1):
+
+        __MagnitudeEqualityConstraint(problem, point_variables.VEL_X, x, index)
+        __MagnitudeEqualityConstraint(problem, point_variables.VEL_Y, y, index)
+
+    return _velocity_equals
+
+
+def AngleEquals(angle: AngularMeasurement):
+    angle = angle.to(CALCULATION_UNIT_ANGULAR)
+
+    def _angle_equals(problem, point_variables, index: int = -1):
+        __MagnitudeEqualityConstraint(problem, point_variables.THETA, angle, index)
+
+    return _angle_equals
 
 
 def VelocityLessThan(velocity: Velocity):
@@ -46,13 +69,13 @@ def VelocityLessThan(velocity: Velocity):
 
 
 def PositionEquals(x: SpatialMeasurement, y: SpatialMeasurement):
-    def _position_equals(problem, point_variables, index: int):
-        x = x.to(CALCULATION_UNIT_SPATIAL)
-        y = y.to(CALCULATION_UNIT_SPATIAL)
+    x = x.to(CALCULATION_UNIT_SPATIAL)
+    y = y.to(CALCULATION_UNIT_SPATIAL)
 
-        __VectorMagnitudeEqualityConstraint(
-            problem, point_variables.POS_X, point_variables.POS_Y, x, index
-        )
+    def _position_equals(problem, point_variables, index: int):
+
+        __MagnitudeEqualityConstraint(problem, point_variables.POS_X, x, index)
+        __MagnitudeEqualityConstraint(problem, point_variables.POS_Y, y, index)
 
     return _position_equals
 
