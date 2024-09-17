@@ -290,15 +290,15 @@ class SwerveTrajectory(Trajectory):
                 ),
                 (
                     RatioOf(
-                        point.x + Inch(12) * math.cos(point.theta.to(Radian)),
+                        point.x + Inch(6) * math.cos(point.theta.to(Radian)),
                         render_scale,
                     ),
                     RatioOf(
-                        point.y + Inch(12) * math.sin(point.theta.to(Radian)),
+                        point.y + Inch(6) * math.sin(point.theta.to(Radian)),
                         render_scale,
                     ),
                 ),
-                width=int(RatioOf(Inch(2), render_scale)),
+                width=int(RatioOf(Inch(1), render_scale)),
             )
 
 
@@ -395,9 +395,10 @@ class SwerveTrajectoryProblem(TrajectoryProblem):
         pass
 
     def apply_swerve_constraints(self, robot_constraints: SwerveRobotConstraints):
-        SwerveModuleConstraints(robot_constraints.swerve_config)(
-            self.problem, self.point_vars
-        )
+        # FIXME: This screws up the solvers feasability
+        SwerveModuleConstraints(
+            robot_constraints.swerve_config, robot_constraints.physical_parameters
+        )(self.problem, self.point_vars)
 
         SwerveKinematicConstraints(
             robot_constraints.swerve_config, robot_constraints.physical_parameters
@@ -409,10 +410,11 @@ class SwerveTrajectoryProblem(TrajectoryProblem):
         self.apply_constraints(robot_constraints)
         self.apply_swerve_constraints(robot_constraints)
 
-        self.problem.solve(
+        status = self.problem.solve(
             tolerance=config.solution_tolerance,
             max_iterations=config.max_iterations,
             timeout=config.timeout,
+            diagnostics=True,
         )
 
         return SwerveTrajectory(self.get_trajectory_states(), robot_constraints)
@@ -498,7 +500,9 @@ class TrajectoryProblemBuilder:
                         (waypoints[i + 1][1].x, waypoints[i + 1][1].y),
                     ]
                 )
-            dissected_path = path.dissected(units_per_node=resolution)
+            dissected_path = Path(
+                path.dissected(units_per_node=resolution).get_points()[1:]
+            )  # TODO: Do this better. This is done to ensure first point is not in same position as last point of previous path, which cooks the solver
 
             for node in dissected_path.get_points():
                 X_nodes.append(node[0].to(CALCULATION_UNIT_SPATIAL))
@@ -510,12 +514,14 @@ class TrajectoryProblemBuilder:
 
         # Initialize state variables to inital pathes
         for i in range(len(X_nodes)):
+
             self.point_vars.POS_X[i].set_value(X_nodes[i])
             self.point_vars.POS_Y[i].set_value(Y_nodes[i])
 
         # Initialize time steps
+        init_dt = (resolution / MetersPerSecond(4)).to(CALCULATION_UNIT_TEMPORAL)
         for i in range(len(X_nodes) - 1):
-            self.point_vars.DT[i].set_value(0.2)
+            self.point_vars.DT[i].set_value(init_dt)
 
         self.__apply_waypoint_constraints()
 
@@ -559,9 +565,10 @@ class TrajectoryProblemBuilder:
             case MinimizationStrategy.DISTANCE:
                 for i in range(len(self.point_vars.POS_X) - 1):
                     total += (
-                        (self.point_vars.POS_X[i + 1] - self.point_vars.POS_X[i]) ** 2
-                        + (self.point_vars.POS_Y[i + 1] - self.point_vars.POS_Y[i]) ** 2
-                    ) ** 0.5
+                        self.point_vars.POS_X[i + 1] - self.point_vars.POS_X[i]
+                    ) ** 2 + (
+                        self.point_vars.POS_Y[i + 1] - self.point_vars.POS_Y[i]
+                    ) ** 2
 
         self.problem.minimize(total)
 

@@ -12,9 +12,12 @@ from gamegine.utils.NCIM.ComplexDimensions.MOI import MOIUnit
 from gamegine.utils.NCIM.ComplexDimensions.omega import OmegaUnit
 from gamegine.utils.NCIM.ComplexDimensions.torque import TorqueUnit
 
+GRAVITY = 9.81
+
 
 def SwerveModuleConstraints(
     swerve_config: SwerveConfig,
+    robot_parameters: PhysicalParameters,
 ):  # TODO: These sections are really thrown together, clean up once working
     max_speed = swerve_config.module.get_max_speed().to(
         OmegaUnit(CALCULATION_UNIT_ANGULAR, CALCULATION_UNIT_TEMPORAL)
@@ -32,10 +35,18 @@ def SwerveModuleConstraints(
             point_variables.BL,
             point_variables.BR,
         ]:
+            max_force_surface = max_torque / wheel_radius
+            max_friction_force = (
+                swerve_config.module.wheel.grip()
+                * GRAVITY
+                * robot_parameters.mass.to(CALCULATION_UNIT_MASS)
+            )
+            if max_force_surface > max_friction_force:
+                max_force_surface = max_friction_force
 
             for i in range(len(module.FX)):
                 V_mag_square = module.VX[i] ** 2 + module.VY[i] ** 2
-                max_force_surface = max_torque / wheel_radius
+
                 force_mag_squared = module.FX[i] ** 2 + module.FY[i] ** 2
                 problem.subject_to(force_mag_squared <= max_force_surface**2)
 
@@ -79,25 +90,28 @@ def SwerveKinematicConstraints(
                 net_force_x += module.FX[i]
                 net_force_y += module.FY[i]
 
-                net_speed_x += module.VX[i]
-                net_speed_y += module.VY[i]
+                speed_x = module.VX[i]
+                speed_y = module.VY[i]
+
+                problem.subject_to(point_variables.VEL_X[i] == speed_x)
+                problem.subject_to(point_variables.VEL_Y[i] == speed_y)
 
                 offset = offsets[i]
                 offset_x = CALCULATION_UNIT_SPATIAL(offset[0])
                 offset_y = CALCULATION_UNIT_SPATIAL(offset[1])
                 # Torque is the cross product of the force and the offset
                 net_torque += module.FY[i] * offset_x - module.FX[i] * offset_y
-                net_angular_speed += module.VY[i] * offset_x - module.VX[i] * offset_y
+                angular_speed = module.VY[i] * offset_x - module.VX[i] * offset_y
+                problem.subject_to(point_variables.OMEGA[i] == angular_speed)
 
+            problem.subject_to(
+                point_variables.ACCEL_X[i] ** 2 + point_variables.ACCEL_Y[i] ** 2
+                <= (swerve_config.module.wheel.grip() * GRAVITY) ** 2
+            )
             problem.subject_to(point_variables.ACCEL_X[i] == net_force_x / mass)
 
             problem.subject_to(point_variables.ACCEL_Y[i] == net_force_y / mass)
 
             problem.subject_to(point_variables.ALPHA[i] == net_torque / moi)
-
-            problem.subject_to(point_variables.VEL_X[i] == net_speed_x)
-            problem.subject_to(point_variables.VEL_Y[i] == net_speed_y)
-
-            problem.subject_to(point_variables.OMEGA[i] == net_angular_speed)
 
     return __swerve_kinematic_constraints
