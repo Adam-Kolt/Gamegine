@@ -1,7 +1,6 @@
 # {node_id : ((x, y), [(neighbour_id, distance), ...]), ...}
 import math
 from typing import List, Set, Tuple
-import pint
 from enum import Enum
 
 import pygame
@@ -17,7 +16,6 @@ from gamegine.representation.bounds import (
 from gamegine.utils.NCIM.Dimensions import spatial
 from gamegine.utils.logging import Debug
 from gamegine.utils.matematika import CoordinateInRectangle, GetDistanceBetween
-from gamegine import ureg
 from gamegine.utils.NCIM.ncim import (
     Centimeter,
     Inch,

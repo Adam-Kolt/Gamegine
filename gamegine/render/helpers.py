@@ -1,4 +1,3 @@
-import pint
 from gamegine.representation.bounds import Circle, DiscreteBoundary, Polygon, Rectangle
 import pygame
 

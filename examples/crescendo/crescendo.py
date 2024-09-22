@@ -1,7 +1,7 @@
 import math
 from typing import List, Tuple
 
-import pint
+
 import pygame
 from examples.crescendo.gamepieces import Note
 from examples.crescendo.scoring import Speaker

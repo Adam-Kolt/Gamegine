@@ -1,5 +1,5 @@
 import pygame
-import pint
+
 
 from gamegine.render.drawable import Drawable
 from gamegine.render.helpers import draw_obstacle

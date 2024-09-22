@@ -97,13 +97,13 @@ def CreateTrajectory(
     trajectory = builder.generate(
         TrajectoryBuilderConfig(
             trajectory_resolution=Centimeter(15),
-            stretch_factor=1.2,
-            min_spacing=Centimeter(1),
+            stretch_factor=1.5,
+            min_spacing=Centimeter(5),
         )
     ).solve(
         SwerveRobotConstraints(
-            MeterPerSecondSquared(5),
-            MetersPerSecond(5),
+            MeterPerSecondSquared(8),
+            MetersPerSecond(6),
             RadiansPerSecondSquared(3.14),
             RadiansPerSecond(3.14),
             SwerveConfig(

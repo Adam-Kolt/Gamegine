@@ -1,6 +1,5 @@
 import math
 from typing import Dict, List, Tuple
-import pint
 
 from gamegine.analysis.pathfinding import Path
 from gamegine.analysis.trajectory.generation import (

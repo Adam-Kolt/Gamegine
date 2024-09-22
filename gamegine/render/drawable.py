@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 
-import pint
 
 from gamegine.utils.NCIM.ncim import SpatialMeasurement
 

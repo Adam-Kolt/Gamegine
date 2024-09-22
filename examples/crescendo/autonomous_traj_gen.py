@@ -24,8 +24,14 @@ from gamegine.representation.bounds import ExpandedObjectBounds
 from gamegine.representation.robot import PhysicalParameters
 from gamegine.utils.NCIM.ComplexDimensions.MOI import PoundsInchesSquared
 from gamegine.utils.NCIM.ComplexDimensions.acceleration import MeterPerSecondSquared
-from gamegine.utils.NCIM.ComplexDimensions.alpha import RadiansPerSecondSquared
-from gamegine.utils.NCIM.ComplexDimensions.omega import RadiansPerSecond
+from gamegine.utils.NCIM.ComplexDimensions.alpha import (
+    RadiansPerSecondSquared,
+    RotationsPerSecondSquared,
+)
+from gamegine.utils.NCIM.ComplexDimensions.omega import (
+    RadiansPerSecond,
+    RotationsPerSecond,
+)
 from gamegine.utils.NCIM.ComplexDimensions.velocity import MetersPerSecond
 from gamegine.utils.NCIM.Dimensions.angular import AngularMeasurement, Degree
 from gamegine.utils.NCIM.Dimensions.current import Ampere
@@ -75,14 +81,13 @@ def CreatePath(
 corridors = []
 paths = []
 
-start = (Feet(6), Inch(64.081) + Inch(82.645) / 2)
+start = (Inch(35.695) + Inch(25), Inch(64.081) + Inch(20.825))
 note_locations = [
-    (Inch(114), Inch(161.62) - Inch(57) - Inch(57)),
-    (Inch(114), Inch(161.62) - Inch(57)),
-    (Inch(90), Inch(161.62)),
+    (Feet(50), Feet(3)),
+    (Crescendo.half_field_x(), Crescendo.half_field_y()),
 ]
 
-shot_location = start
+shot_location = (Inch(35.695) + Inch(30), Inch(64.081) + Inch(82.645) / 2)
 
 # Auto Trajectory:
 
@@ -91,8 +96,8 @@ builder = SwerveTrajectoryProblemBuilder()
 
 builder.waypoint(
     Waypoint(start[0], start[1]).given(
-        VelocityEquals(MetersPerSecond(0), MetersPerSecond(-2)),
-        AngleEquals(Degree(0)),
+        VelocityEquals(MetersPerSecond(0), MetersPerSecond(0)),
+        AngleEquals(Degree(180)),
     )
 )
 curr = start
@@ -133,10 +138,10 @@ trajectory = builder.generate(
     )
 ).solve(
     SwerveRobotConstraints(
-        MeterPerSecondSquared(5),
-        MetersPerSecond(5),
-        RadiansPerSecondSquared(3.14),
-        RadiansPerSecond(3.14),
+        MeterPerSecondSquared(10),
+        MetersPerSecond(10),
+        RotationsPerSecond(3),
+        RotationsPerSecondSquared(3),
         SwerveConfig(
             module=SwerveModule(
                 motors.MotorConfig(
@@ -156,7 +161,7 @@ trajectory = builder.generate(
             moi=PoundsInchesSquared(21327.14),
         ),
     ),
-    SolverConfig(timeout=100, max_iterations=10000, solution_tolerance=1e-9),
+    SolverConfig(timeout=5, max_iterations=1000, solution_tolerance=1e-4),
 )
 
 

@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Tuple
 from dataclasses import dataclass
-import pint
 import pygame
 
 from gamegine.analysis.pathfinding import Path

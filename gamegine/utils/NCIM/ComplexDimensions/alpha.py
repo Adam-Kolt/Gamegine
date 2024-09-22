@@ -1,4 +1,4 @@
-from gamegine.utils.NCIM.Dimensions.angular import AngularUnit, Degree, Radian
+from gamegine.utils.NCIM.Dimensions.angular import AngularUnit, Degree, Radian, Rotation
 from gamegine.utils.NCIM.Dimensions.temporal import Second, TemporalUnit
 from gamegine.utils.NCIM.basic import ComplexMeasurement, ComplexUnit
 
@@ -21,3 +21,4 @@ class Alpha(ComplexMeasurement):
 
 RadiansPerSecondSquared = AlphaUnit(Radian, Second)
 DegreesPerSecondSquared = AlphaUnit(Degree, Second)
+RotationsPerSecondSquared = AlphaUnit(Rotation, Second)

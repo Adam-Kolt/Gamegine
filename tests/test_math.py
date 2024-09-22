@@ -37,7 +37,7 @@ def test_reflect_over_line_simple():
 def test_rotate_about_origin_simple():
     import gamegine.utils.matematika as m
     import numpy as np
-    import pint
+
     import gamegine.utils.NCIM.ncim as u
 
     point = [1, 0]
