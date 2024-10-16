@@ -13,10 +13,10 @@ class BulletSwerveDrivetrain(GeneratedBody):
         super().__init__(base, base.createMultiBody())
 
     def get_rotation_joints(self) -> List[int]:
-        return [module.link_index for module in self.module_objects]
+        return [module.link_index - 1 for module in self.module_objects]
 
     def get_wheel_joints(self) -> List[int]:
-        return [module.link_index + 1 for module in self.module_objects]
+        return [module.link_index for module in self.module_objects]
 
 
 def create_module(
@@ -36,11 +36,13 @@ def create_module(
         mass=Kilogram(0.5),
         collision_shape=wheel_geometry,
         visual_shape=wheel_geometry,
-        position=[Inch(0), Inch(0), -module.wheel.diameter / 2],
+        position=[Inch(0), Inch(0), -module.wheel.diameter / 2 - Inch(0.5)],
         orientation=[0, 0.707, 0, 0.707],
     )
-    wheel.get_dynamics().set_lateral_friction(module.wheel.tread.coefficientOfFriction)
-    wheel.get_dynamics().set_rolling_friction(0.05)
+    wheel.get_dynamics().set_lateral_friction(module.wheel.grip() * 10)
+    wheel.get_dynamics().set_rolling_friction(2)
+    wheel.get_dynamics().set_contact_damping(1)
+    wheel.get_dynamics().set_contact_stiffness(1000)
 
     rotation_plate.link(wheel, Joint(p.JOINT_REVOLUTE, [0, 0, 1]))
 

@@ -3,6 +3,7 @@ from typing import List
 from gamegine.reference import gearing, motors
 from gamegine.reference.motors import MotorConfig
 from gamegine.reference.swerve import SwerveConfig, SwerveModule
+from gamegine.reference.wheels import TreadDB, Wheel
 from gamegine.simulation.environment.object import ObjectNode
 from gamegine.simulation.environment.shape import BulletBox, BulletPlane
 from gamegine.simulation.environment.swerve import (
@@ -55,6 +56,7 @@ swerve = SwerveConfig(
             motors.PowerConfig(Ampere(60), Ampere(360), 1.0),
         ),
         gearing.MK4I.L3,
+        wheel=Wheel(Inch(4), TreadDB.am_blue_nitrile_roughtop_tread, Inch(3)),
     )
 )
 
@@ -80,9 +82,9 @@ swerve_drivetrain = BulletSwerveDrivetrain(robot_base, swerve)
 
 ground = ground.generate_bullet_object()
 
-targetVelocitySlider = p.addUserDebugParameter("wheelVelocity", -10, 10, 0)
+targetVelocitySlider = p.addUserDebugParameter("wheelVelocity", -5, 5, 0)
 targetAngleSlider = p.addUserDebugParameter("targetAngle", -1, 1, 0)
-force = 1000
+force = 30
 while True:
     try:
         targetVelocity = p.readUserDebugParameter(targetVelocitySlider)
@@ -92,24 +94,23 @@ while True:
         targetAngle = 0
 
     radian_velocity = targetVelocity / (wheel_diameter.to(Meter) / 2)
-    for module in swerve_drivetrain.get_rotation_joints():
 
-        p.setJointMotorControl2(
-            swerve_drivetrain.bullet_id,
-            module - 1,
-            p.POSITION_CONTROL,
-            targetPosition=targetAngle * 3.14,
-            force=force,
-        )
+    p.setJointMotorControlArray(
+        swerve_drivetrain.bullet_id,
+        swerve_drivetrain.get_rotation_joints(),
+        controlMode=p.POSITION_CONTROL,
+        targetPositions=[targetAngle * 3.14] * 4,
+        forces=[1000] * 4,
+    )
 
-    for module in swerve_drivetrain.get_wheel_joints():
-        p.setJointMotorControl2(
-            swerve_drivetrain.bullet_id,
-            module - 1,
-            p.VELOCITY_CONTROL,
-            targetVelocity=radian_velocity,
-            force=force,
-        )
+    # Array Set
+    p.setJointMotorControlArray(
+        swerve_drivetrain.bullet_id,
+        swerve_drivetrain.get_wheel_joints(),
+        controlMode=p.VELOCITY_CONTROL,
+        targetVelocities=[radian_velocity] * 4,
+        forces=[force] * 4,
+    )
 
 
 p.disconnect()

@@ -60,7 +60,7 @@ class ObjectDynamics:
     )
     collision_margin: float = 0.0
     anisotropic_friction: List[float] = field(default_factory=lambda: [1.0, 1.0, 1.0])
-    max_joint_velocity: float = 100.0
+    max_joint_velocity: float = 1000.0
     coulomb_friction: float = 0.5
     friction_ce: float = 0.0
     friction_erp: float = 0.2
