@@ -2,6 +2,7 @@ from gamegine.utils.NCIM.basic import Measurement, Unit
 from gamegine.utils.NCIM.dimension import Dimension
 
 
+# TODO: Technically, force is not an SI base units, but it is a derived unit from mass and acceleration.
 class ForceUnit(Unit):
     """A class representing a force unit of measurement, in addition to creating a :class:`ForceMeasurement` of the same type when called. Inherits from the :class:`Unit` class.
 

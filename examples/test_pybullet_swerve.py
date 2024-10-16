@@ -1,20 +1,21 @@
 from dataclasses import dataclass
 from typing import List
+from gamegine.utils.NCIM.ComplexDimensions.acceleration import MeterPerSecondSquared
 from gamegine.utils.NCIM.Dimensions.mass import Kilogram, Pound
 from gamegine.utils.NCIM.Dimensions.spatial import Inch, Meter
+from gamegine.simulation.environment import mybullet as mb
 import pybullet as p
+
 import time
 
 
-cid = p.connect(p.SHARED_MEMORY)
-if cid < 0:
-    p.connect(p.GUI)
+mb.connect()
 
-GRAVITY = -9.8
+GRAVITY = MeterPerSecondSquared(-9.8)
 
 
 p.resetSimulation()
-p.setGravity(0, 0, GRAVITY)
+mb.setGravity(GRAVITY)
 
 # Parameters
 mass = Pound(120)

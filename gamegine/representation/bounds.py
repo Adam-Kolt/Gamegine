@@ -9,6 +9,7 @@ import pygame
 from gamegine.render.drawable import Drawable
 from gamegine.render.style import Palette
 from gamegine.representation.base import NamedObject
+from gamegine.simulation.environment.shape import BulletShape
 from gamegine.utils.NCIM.Dimensions.spatial import Feet
 from gamegine.utils.logging import Debug
 from gamegine.utils.matematika import ReflectValue1D, RotateAboutOrigin
@@ -332,6 +333,9 @@ class Boundary3D(Boundary):
         """
 
         pass
+
+    def get_bullet_shape(self) -> BulletShape:
+        raise NotImplementedError
 
     @abstractmethod
     def discretized(self, curve_segments: int = 5) -> DiscreteBoundary3D:

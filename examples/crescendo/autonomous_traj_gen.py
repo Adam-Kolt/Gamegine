@@ -84,10 +84,9 @@ paths = []
 start = (Inch(35.695) + Inch(25), Inch(64.081) + Inch(20.825))
 note_locations = [
     (Feet(50), Feet(3)),
-    (Crescendo.half_field_x(), Crescendo.half_field_y()),
 ]
 
-shot_location = (Inch(35.695) + Inch(30), Inch(64.081) + Inch(82.645) / 2)
+shot_location = (Inch(35.695) + Inch(30), Inch(64.081) + Inch(82.645))
 
 # Auto Trajectory:
 
@@ -96,7 +95,7 @@ builder = SwerveTrajectoryProblemBuilder()
 
 builder.waypoint(
     Waypoint(start[0], start[1]).given(
-        VelocityEquals(MetersPerSecond(0), MetersPerSecond(0)),
+        VelocityEquals(MetersPerSecond(1), MetersPerSecond(-3)),
         AngleEquals(Degree(180)),
     )
 )
@@ -120,7 +119,7 @@ for i, note in enumerate(note_locations):
     builder.waypoint(
         Waypoint(shot_location[0], shot_location[1]).given(
             VelocityEquals(MetersPerSecond(0), MetersPerSecond(0)),
-            AngleEquals(Degree(0)),
+            AngleEquals(Degree(90)),
         )
     )
     curr = shot_location
@@ -161,7 +160,7 @@ trajectory = builder.generate(
             moi=PoundsInchesSquared(21327.14),
         ),
     ),
-    SolverConfig(timeout=5, max_iterations=1000, solution_tolerance=1e-4),
+    SolverConfig(timeout=10, max_iterations=1000, solution_tolerance=1e-4),
 )
 
 

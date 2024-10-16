@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
-from gamegine.utils.NCIM.Dimensions.spatial import SpatialMeasurement
+from gamegine.utils.NCIM.Dimensions.mass import Kilogram, MassMeasurement, Pound
+from gamegine.utils.NCIM.Dimensions.spatial import Inch, SpatialMeasurement
 
 
 @dataclass
@@ -30,6 +31,8 @@ class Wheel:
 
     diameter: SpatialMeasurement
     tread: Tread
+    width: SpatialMeasurement = Inch(1)
+    mass: MassMeasurement = Pound(0.3)
 
     def __post_init__(self):
         if self.diameter <= 0:

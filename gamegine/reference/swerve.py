@@ -45,18 +45,18 @@ class SwerveConfig:
 
     module: SwerveModule
     top_left_offset: Tuple[SpatialMeasurement, SpatialMeasurement] = (
-        Inch(-15),
-        Inch(15),
+        Inch(-13),
+        Inch(13),
     )
     top_right_offset: Tuple[SpatialMeasurement, SpatialMeasurement] = (
-        Inch(15),
-        Inch(15),
+        Inch(13),
+        Inch(13),
     )
     bottom_left_offset: Tuple[SpatialMeasurement, SpatialMeasurement] = (
-        Inch(-15),
-        Inch(-15),
+        Inch(-13),
+        Inch(-13),
     )
     bottom_right_offset: Tuple[SpatialMeasurement, SpatialMeasurement] = (
-        Inch(15),
-        Inch(-15),
+        Inch(13),
+        Inch(-13),
     )

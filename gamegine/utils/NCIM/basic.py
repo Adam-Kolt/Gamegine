@@ -7,6 +7,7 @@ from gamegine.utils.NCIM.dimension import Dimension
 from gamegine.utils.logging import Debug, Error, Warn
 import numpy as np
 
+# TODO: Implement generics for units, measurements, complex units, and complex measurements
 
 class Unit(object):
     """A class representing a simple unit, defined as being made up of a single dimension with a power of 1, such as meters or seconds. Contains information about scale and shift in relation to a base unit in the same dimension to allow for conversions.

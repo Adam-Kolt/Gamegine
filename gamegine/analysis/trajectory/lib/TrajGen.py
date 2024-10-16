@@ -74,7 +74,7 @@ from gamegine.utils.NCIM.Dimensions.spatial import (
 )
 from sortedcontainers import SortedDict
 
-from gamegine.utils.NCIM.Dimensions.temporal import TemporalMeasurement
+from gamegine.utils.NCIM.Dimensions.temporal import Second, TemporalMeasurement
 from gamegine.utils.NCIM.ncim import RatioOf
 
 
@@ -105,8 +105,10 @@ class SolverConfig:
 
 class Trajectory(Drawable):
     def __compute_trajectory_parameters(self):
-        self.travel_time = sum([point.dt for point in self.points[:-1]])
-        self.path_length = 0
+        self.travel_time = sum(
+            [point.dt for point in self.points[:-1]], start=Second(0)
+        )
+        self.path_length = Meter(0)
         max_velocity = max(
             [point.get_velocity_magnitude() for point in self.points[:-1]]
         )
@@ -174,25 +176,6 @@ class Trajectory(Drawable):
 
 
 class SwerveTrajectory(Trajectory):
-    def __compute_trajectory_parameters(self):
-        self.travel_time = sum([point.dt for point in self.points[:-1]])
-        self.path_length = 0
-        max_velocity = max(
-            [point.get_velocity_magnitude() for point in self.points[:-1]]
-        )
-        max_acceleration = max(
-            [point.get_acceleration_magnitude() for point in self.points[:-1]]
-        )
-        for i in range(len(self.points) - 1):
-            point = self.points[i]
-            point2 = self.points[i + 1]
-            self.path_length += (
-                (point2.x - point.x) ** 2 + (point2.y - point.y) ** 2
-            ) ** 0.5
-
-        logging.Info(
-            f"Computed trajectory parameters: {self.get_length()} length, {self.get_travel_time()} time, {max_velocity} max velocity, {max_acceleration} max acceleration."
-        )
 
     def __init__(
         self,
@@ -204,7 +187,6 @@ class SwerveTrajectory(Trajectory):
         self.points = points
         self.travel_time = 0
         self.path_length = 0
-        self.__compute_trajectory_parameters()
         pass
 
     def get_robot_constraints(self) -> SwerveRobotConstraints:
