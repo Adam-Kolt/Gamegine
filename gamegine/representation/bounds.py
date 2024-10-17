@@ -9,7 +9,9 @@ import pygame
 from gamegine.render.drawable import Drawable
 from gamegine.render.style import Palette
 from gamegine.representation.base import NamedObject
-from gamegine.simulation.environment.shape import BulletShape
+from gamegine.simulation.environment import shape
+from gamegine.simulation.environment.shape import BulletBox, BulletCylinder, BulletShape
+from gamegine.utils import logging
 from gamegine.utils.NCIM.Dimensions.spatial import Feet
 from gamegine.utils.logging import Debug
 from gamegine.utils.matematika import ReflectValue1D, RotateAboutOrigin
@@ -355,6 +357,12 @@ class Transform3D:
             self.position[2],
         )
 
+        self.scale = (
+            -self.scale[0],
+            self.scale[1],
+            self.scale[2],
+        )
+
     def reflect_pos_y(self) -> None:
         """Reflects the position over the y-axis."""
         self.position = (
@@ -363,12 +371,24 @@ class Transform3D:
             self.position[2],
         )
 
+        self.scale = (
+            self.scale[0],
+            -self.scale[1],
+            self.scale[2],
+        )
+
     def reflect_pos_z(self) -> None:
         """Reflects the position over the z-axis."""
         self.position = (
             self.position[0],
             self.position[1],
             -self.position[2],
+        )
+
+        self.scale = (
+            self.scale[0],
+            self.scale[1],
+            -self.scale[2],
         )
 
 
@@ -386,6 +406,14 @@ class Boundary3D(Boundary):
     @abstractmethod
     def discretized(self, curve_segments: int = 5) -> "DiscreteBoundary3D":
         pass
+
+    def get_bullet_shape(self) -> BulletShape:
+        logging.Warn("No bullet shape defined for this boundary.")
+        return BulletBox(Feet(1), Feet(1), Feet(1))
+
+    def get_transform(self) -> Transform3D:
+        """Returns the transform of the boundary."""
+        return copy.deepcopy(self.transform)
 
     def get_3d(
         self, z_start: SpatialMeasurement = Inch(0), z_end: SpatialMeasurement = Inch(0)
@@ -623,7 +651,7 @@ class Rectangle(DiscreteBoundary):
         return PolygonalPrism(
             centered_vertices,
             z_end - z_start,
-            Transform3D((center[0], center[1], z_end - z_start)),
+            Transform3D((center[0], center[1], Feet(0))),
         )
 
 
@@ -744,6 +772,9 @@ class Cylinder(DiscreteBoundary3D):
         )
         return transformed_points
 
+    def get_bullet_shape(self):
+        return BulletCylinder(self.radius, self.height)
+
 
 class Polygon(DiscreteBoundary):
     """Class for representing a polygon boundary, extending the :class:`DiscreteBoundary` class. Polygons can be used to represent the shape of an object in 2D space.
@@ -808,10 +839,30 @@ class PolygonalPrism(DiscreteBoundary3D):
     def get_vertices(self) -> List[Tuple[SpatialMeasurement, SpatialMeasurement]]:
         return self.project_to_2d().get_vertices()
 
+    def get_2d_local_points(
+        self,
+    ) -> List[Tuple[SpatialMeasurement, SpatialMeasurement]]:
+        return [(p[0], p[1]) for p in self.local_points]
+
     def project_to_2d(self) -> "Polygon":
         transformed_points = self.transform.apply(self.local_points)
         points_2d = [(p[0], p[1]) for p in transformed_points]
         return Polygon(points_2d)
+
+    def get_max_x(self) -> SpatialMeasurement:
+        return max([point[0] for point in self.local_points])
+
+    def get_min_x(self) -> SpatialMeasurement:
+        return min([point[0] for point in self.local_points])
+
+    def get_max_y(self) -> SpatialMeasurement:
+        return max([point[1] for point in self.local_points])
+
+    def get_min_y(self) -> SpatialMeasurement:
+        return min([point[1] for point in self.local_points])
+
+    def get_bullet_shape(self):
+        return shape.PolygonalPrism(self.get_2d_local_points(), self.height)
 
 
 class Line(DiscreteBoundary):

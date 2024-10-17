@@ -149,16 +149,9 @@ class Game(object):
 
     def __recompute_field_border_obstacles(self) -> "Game":
         """Recomputes the field border obstacles based on the current field size."""
-        thickness = Meter(0.00001)  # In order to make the border a valid obstacle
+        thickness = Meter(0.1)  # In order to make the border a valid obstacle
         self.modify_obstacles(
             [
-                obstacle.Rectangular(
-                    "Field Border Top",
-                    Zero(),
-                    Zero() - thickness,
-                    self.field_size[0],
-                    thickness,
-                ).invisible(),
                 obstacle.Obstacle(
                     "Field Border Top",
                     Rectangle(

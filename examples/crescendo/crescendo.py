@@ -36,6 +36,7 @@ from gamegine.representation.bounds import (
     Cylinder,
     ExpandedObjectBounds,
     Point,
+    Polygon,
     Rectangle,
     SymmetricalX,
     CircularPattern,
@@ -97,22 +98,26 @@ objs = SymmetricalX(
             3,
             lambda i: str(i),
         ),
-        Polygonal(
+        Obstacle(
             "Subwoofer",
-            [
-                (Inch(0), Inch(64.081)),
-                (Inch(0), Inch(64.081) + Inch(82.645)),
-                (Inch(35.695), Inch(64.081) + Inch(82.645) - Inch(20.825)),
-                (Inch(35.695), Inch(64.081) + Inch(20.825)),
-            ],
+            Polygon(
+                [
+                    (Inch(0), Inch(64.081)),
+                    (Inch(0), Inch(64.081) + Inch(82.645)),
+                    (Inch(35.695), Inch(64.081) + Inch(82.645) - Inch(20.825)),
+                    (Inch(35.695), Inch(64.081) + Inch(20.825)),
+                ]
+            ).get_3d(z_end=Feet(2)),
         ),
-        Polygonal(
+        Obstacle(
             "Source",
-            [
-                (Inch(0), Inch(281.5)),
-                (Inch(0), Crescendo.full_field_y()),
-                (Inch(72.111), Crescendo.full_field_y()),
-            ],
+            Polygon(
+                [
+                    (Inch(0), Inch(281.5)),
+                    (Inch(0), Crescendo.full_field_y()),
+                    (Inch(72.111), Crescendo.full_field_y()),
+                ]
+            ).get_3d(z_end=Feet(4)),
         ),
         # Circular("Note 1", Inch(114.010), Inch(47.638), Inch(7)),
         # Circular("Note 2", Inch(114.010), Inch(47.638) + Inch(43.000), Inch(7)),

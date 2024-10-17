@@ -4,8 +4,9 @@ from gamegine.reference import gearing, motors
 from gamegine.reference.motors import MotorConfig
 from gamegine.reference.swerve import SwerveConfig, SwerveModule
 from gamegine.reference.wheels import TreadDB, Wheel
-from gamegine.simulation.environment.object import ObjectNode
-from gamegine.simulation.environment.shape import BulletBox, BulletPlane
+from gamegine.representation.bounds import Transform3D
+from gamegine.simulation.environment.object import Joint, ObjectNode
+from gamegine.simulation.environment.shape import BulletBox, BulletPlane, BulletShape
 from gamegine.simulation.environment.swerve import (
     BulletSwerveDrivetrain,
     construct_swerve,
@@ -16,6 +17,7 @@ from gamegine.utils.NCIM.Dimensions.spatial import Inch, Feet, Meter
 from gamegine.utils.NCIM.Dimensions.current import Ampere
 from gamegine.simulation.environment import mybullet as mb
 import pybullet as p
+from examples.crescendo.crescendo import Crescendo
 
 import time
 
@@ -33,7 +35,7 @@ mb.setGravity(GRAVITY)
 mass = Pound(120)
 width = Inch(30)
 length = Inch(30)
-base_thickness = Inch(1)
+base_thickness = Inch(2)
 wheel_diameter = Inch(4)
 ground_clearance = Inch(20)
 
@@ -73,11 +75,35 @@ robot_base = ObjectNode(
     mass=mass,
     collision_shape=BulletBox(length, width, base_thickness),
     visual_shape=BulletBox(length, width, base_thickness),
-    position=[Feet(0), Feet(0), ground_clearance],
+    position=[Feet(3), Feet(3), ground_clearance],
     orientation=[0, 0, 0, 1],
 )
 
 swerve_drivetrain = BulletSwerveDrivetrain(robot_base, swerve)
+
+
+obstacles = Crescendo.get_obstacles()
+
+for obstacle in obstacles:
+    bound = obstacle.bounds
+
+    if not hasattr(bound, "get_bullet_shape"):
+        continue
+    shape: BulletShape = bound.get_bullet_shape()
+    transform: Transform3D = bound.get_transform()
+
+    bullet_object = ObjectNode(
+        mass=Kilogram(0),
+        collision_shape=shape,
+        visual_shape=shape,
+        position=transform.position,
+        orientation=[0, 0, 0, 1],
+    )
+
+    # Make object static and not clippable
+    bullet_object.get_dynamics().lateral_friction = 0.5
+
+    ground.link(bullet_object, Joint(p.JOINT_FIXED, [0, 0, 0]))
 
 
 ground = ground.generate_bullet_object()
