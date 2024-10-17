@@ -152,12 +152,6 @@ renderer.set_render_scale(Centimeter(1))
 renderer.init_display()
 print("Game set and display initialized")
 
-test_cylinder = Cylinder(
-    Inch(10),
-    Feet(10),
-    Transform3D((Feet(10), Feet(10), Feet(10)), (Degree(0), Degree(0), Degree(0))),
-)
-
 pitch = Degree(0)
 
 loop = True
