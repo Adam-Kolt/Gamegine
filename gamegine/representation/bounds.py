@@ -253,7 +253,11 @@ class DiscreteBoundary(Boundary, Drawable):
         :return: The 3D version of the boundary.
         :rtype: :class:`DiscreteBoundary3D`
         """
-        return PolygonalPrism(self.get_vertices(), z_end - z_start)
+        return PolygonalPrism(
+            self.get_vertices(),
+            z_end - z_start,
+            Transform3D((Feet(0), Feet(0), z_start)),
+        )
 
 
 import math

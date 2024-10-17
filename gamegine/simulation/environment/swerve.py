@@ -18,6 +18,12 @@ class BulletSwerveDrivetrain(GeneratedBody):
     def get_wheel_joints(self) -> List[int]:
         return [module.link_index for module in self.module_objects]
 
+    def set_module_states(self, states):
+        pass
+
+    def get_module_states(self):
+        pass
+
 
 def create_module(
     x: SpatialMeasurement, y: SpatialMeasurement, module: SwerveModule
@@ -40,9 +46,6 @@ def create_module(
         orientation=[0, 0.707, 0, 0.707],
     )
     wheel.get_dynamics().set_lateral_friction(module.wheel.grip() * 10)
-    wheel.get_dynamics().set_rolling_friction(2)
-    wheel.get_dynamics().set_contact_damping(1)
-    wheel.get_dynamics().set_contact_stiffness(1000)
 
     rotation_plate.link(wheel, Joint(p.JOINT_REVOLUTE, [0, 0, 1]))
 
