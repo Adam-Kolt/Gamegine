@@ -240,7 +240,7 @@ class DiscreteBoundary(Boundary, Drawable):
         return Polygon(coords)
 
     def get_3d(
-        self, z_start: SpatialMeasurement = 0, z_end: SpatialMeasurement = 0
+        self, z_start: SpatialMeasurement = Feet(0), z_end: SpatialMeasurement = Feet(0)
     ) -> "DiscreteBoundary3D":
         """Returns the 3D version of the boundary.
 
@@ -251,7 +251,7 @@ class DiscreteBoundary(Boundary, Drawable):
         :return: The 3D version of the boundary.
         :rtype: :class:`DiscreteBoundary3D`
         """
-        return PolygonalPrism(self.get_vertices(), z_start, z_end)
+        return PolygonalPrism(self.get_vertices(), z_end - z_start)
 
 
 import math
@@ -347,20 +347,29 @@ class Transform3D:
             transformed_points.append((Meter(px), Meter(py), Meter(pz)))
         return transformed_points
 
-    def reflect_x(self):
-        """Reflects the transform over the x-axis."""
-        self.scale = (-self.scale[0], self.scale[1], self.scale[2])
-        return self
+    def reflect_pos_x(self) -> None:
+        """Reflects the position over the x-axis."""
+        self.position = (
+            -self.position[0],
+            self.position[1],
+            self.position[2],
+        )
 
-    def reflect_y(self):
-        """Reflects the transform over the y-axis."""
-        self.scale = (self.scale[0], -self.scale[1], self.scale[2])
-        return self
+    def reflect_pos_y(self) -> None:
+        """Reflects the position over the y-axis."""
+        self.position = (
+            self.position[0],
+            -self.position[1],
+            self.position[2],
+        )
 
-    def reflect_z(self):
-        """Reflects the transform over the z-axis."""
-        self.scale = (self.scale[0], self.scale[1], -self.scale[2])
-        return self
+    def reflect_pos_z(self) -> None:
+        """Reflects the position over the z-axis."""
+        self.position = (
+            self.position[0],
+            self.position[1],
+            -self.position[2],
+        )
 
 
 class Boundary3D(Boundary):
@@ -379,13 +388,16 @@ class Boundary3D(Boundary):
         pass
 
     def get_3d(
-        self, z_start: SpatialMeasurement = 0, z_end: SpatialMeasurement = 0
+        self, z_start: SpatialMeasurement = Inch(0), z_end: SpatialMeasurement = Inch(0)
     ) -> "Boundary3D":
         """Returns the 3D version of the boundary. Simply returns self."""
         return self
 
     def translate(
-        self, x: SpatialMeasurement, y: SpatialMeasurement, z: SpatialMeasurement = 0
+        self,
+        x: SpatialMeasurement,
+        y: SpatialMeasurement,
+        z: SpatialMeasurement = Inch(0),
     ) -> "Boundary3D":
         """Translates the boundary by the given x, y, z values."""
         self.transform.position = (
@@ -394,6 +406,23 @@ class Boundary3D(Boundary):
             self.transform.position[2] + z,
         )
         return self
+
+    # Create properties for x and y
+    @property
+    def x(self):
+        return self.transform.position[0]
+
+    @x.setter
+    def x(self, value):
+        self.transform.position[0] = value
+
+    @property
+    def y(self):
+        return self.transform.position[1]
+
+    @y.setter
+    def y(self, value):
+        self.transform.position[1] = value
 
     def rotate(
         self,
@@ -418,25 +447,25 @@ class Boundary3D(Boundary):
         )
         return self
 
-    def reflect_x(self, axis: SpatialMeasurement = 0) -> "Boundary3D":
+    def reflect_x(self, axis: SpatialMeasurement = Inch(0)) -> "Boundary3D":
         """Reflects the boundary over the plane x = axis."""
-        self.translate(-axis, 0, 0)
-        self.transform.reflect_x()
-        self.translate(axis, 0, 0)
+        self.translate(-axis, Inch(0), Inch(0))
+        self.transform.reflect_pos_x()
+        self.translate(axis, Inch(0), Inch(0))
         return self
 
-    def reflect_y(self, axis: SpatialMeasurement = 0) -> "Boundary3D":
+    def reflect_y(self, axis: SpatialMeasurement = Inch(0)) -> "Boundary3D":
         """Reflects the boundary over the plane y = axis."""
-        self.translate(0, -axis, 0)
-        self.transform.reflect_y()
-        self.translate(0, axis, 0)
+        self.translate(Inch(0), -axis, Inch(0))
+        self.transform.reflect_pos_y()
+        self.translate(Inch(0), axis, Inch(0))
         return self
 
-    def reflect_z(self, axis: SpatialMeasurement = 0) -> "Boundary3D":
+    def reflect_z(self, axis: SpatialMeasurement = Inch(0)) -> "Boundary3D":
         """Reflects the boundary over the plane z = axis."""
-        self.translate(0, 0, -axis)
-        self.transform.reflect_z()
-        self.translate(0, 0, axis)
+        self.translate(Inch(0), Inch(0), -axis)
+        self.transform.reflect_pos_z()
+        self.translate(Inch(0), Inch(0), axis)
         return self
 
     @abstractmethod
@@ -576,6 +605,26 @@ class Rectangle(DiscreteBoundary):
         :rtype: :class:`SpatialMeasurement`
         """
         return self.y + self.height
+
+    def get_center(self) -> Tuple[SpatialMeasurement, SpatialMeasurement]:
+        """Returns the center of the rectangle.
+
+        :return: The center of the rectangle.
+        :rtype: Tuple[:class:`SpatialMeasurement`, :class:`SpatialMeasurement`]
+        """
+        return (self.x + self.width / 2, self.y + self.height / 2)
+
+    def get_3d(self, z_start=Feet(0), z_end=Feet(0)):
+        centered_vertices = self.get_vertices()
+        center = self.get_center()
+        centered_vertices = [
+            (x - center[0], y - center[1]) for x, y in centered_vertices
+        ]
+        return PolygonalPrism(
+            centered_vertices,
+            z_end - z_start,
+            Transform3D((center[0], center[1], z_end - z_start)),
+        )
 
 
 class Square(Rectangle):
@@ -746,7 +795,7 @@ class PolygonalPrism(DiscreteBoundary3D):
         transform: Transform3D = None,
     ):
         super().__init__(transform)
-        self.local_points = [(p[0], p[1], 0) for p in points]
+        self.local_points = [(p[0], p[1], Inch(0)) for p in points]
         self.height = height
 
     def get_z_interval(self) -> Tuple[SpatialMeasurement, SpatialMeasurement]:
@@ -836,33 +885,13 @@ class Point(DiscreteBoundary3D):
     def __init__(
         self, x: SpatialMeasurement, y: SpatialMeasurement, z: SpatialMeasurement = 0
     ):
-        self.x = x
-        self.y = y
-        self.z = z
+        super().__init__(Transform3D((x, y, z)))
 
     def get_z_interval(self) -> Tuple[SpatialMeasurement]:
         return (self.z, self.z)
 
     def __str__(self):
         return f"Point(x={self.x}, y={self.y}, z={self.z})"
-
-    def translate(self, x: SpatialMeasurement, y: SpatialMeasurement) -> "Point":
-        self.x += x
-        self.y += y
-        return self
-
-    def scale(self, factor: SpatialMeasurement) -> "Point":
-        self.x *= factor
-        self.y *= factor
-        return self
-
-    def reflect_y(self, axis: SpatialMeasurement) -> "Point":
-        self.y = ReflectValue1D(self.y, axis)
-        return self
-
-    def reflect_x(self, axis: SpatialMeasurement) -> "Point":
-        self.x = ReflectValue1D(self.x, axis)
-        return self
 
     def discretized(self, curve_segments: int = 5) -> DiscreteBoundary:
         return self

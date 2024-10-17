@@ -1,8 +1,9 @@
 from typing import List, Tuple
 
 
+from gamegine.representation.bounds import Rectangle
 from gamegine.utils.logging import Debug
-from gamegine.utils.NCIM.ncim import Meter, SpatialMeasurement, Zero
+from gamegine.utils.NCIM.ncim import Meter, SpatialMeasurement, Zero, Feet
 import numpy as np
 from gamegine.representation import obstacle
 
@@ -158,26 +159,29 @@ class Game(object):
                     self.field_size[0],
                     thickness,
                 ).invisible(),
-                obstacle.Rectangular(
+                obstacle.Obstacle(
+                    "Field Border Top",
+                    Rectangle(
+                        Zero(), Zero() - thickness, self.field_size[0], thickness
+                    ).get_3d(Feet(0), Feet(3)),
+                ).invisible(),
+                obstacle.Obstacle(
                     "Field Border Bottom",
-                    Zero(),
-                    self.field_size[1],
-                    self.field_size[0],
-                    thickness,
+                    Rectangle(
+                        Zero(), self.field_size[1], self.field_size[0], thickness
+                    ).get_3d(Feet(0), Feet(3)),
                 ).invisible(),
-                obstacle.Rectangular(
+                obstacle.Obstacle(
                     "Field Border Left",
-                    Zero() - thickness,
-                    Zero(),
-                    thickness,
-                    self.field_size[1],
+                    Rectangle(
+                        Zero() - thickness, Zero(), thickness, self.field_size[1]
+                    ).get_3d(Feet(0), Feet(3)),
                 ).invisible(),
-                obstacle.Rectangular(
+                obstacle.Obstacle(
                     "Field Border Right",
-                    self.field_size[0],
-                    Zero(),
-                    thickness,
-                    self.field_size[1],
+                    Rectangle(
+                        self.field_size[0], Zero(), thickness, self.field_size[1]
+                    ).get_3d(Feet(0), Feet(3)),
                 ).invisible(),
             ]
         )

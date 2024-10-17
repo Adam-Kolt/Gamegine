@@ -33,14 +33,16 @@ from gamegine.render.renderer import Renderer
 from gamegine.representation.apriltag import AprilTag, AprilTagFamily
 from gamegine.representation.bounds import (
     Circle,
+    Cylinder,
     ExpandedObjectBounds,
     Point,
     Rectangle,
     SymmetricalX,
     CircularPattern,
+    Transform3D,
 )
 from gamegine.representation.game import Game
-from gamegine.representation.obstacle import Circular, Polygonal, Rectangular
+from gamegine.representation.obstacle import Circular, Obstacle, Polygonal, Rectangular
 from gamegine.representation.robot import (
     PhysicalParameters,
     SwerveDrivetrainCharacteristics,
@@ -80,7 +82,16 @@ Crescendo.set_field_size(Feet(54) + Inch(3.25), Feet(26) + Inch(11.25))
 objs = SymmetricalX(
     [
         *CircularPattern(
-            [Circular("Stage Leg", Inch(133), Inch(161.62), Inch(7))],
+            [
+                Obstacle(
+                    "Stage Leg",
+                    Cylinder(
+                        Inch(7),
+                        Inch(74.5),
+                        Transform3D((Inch(133), Inch(161.62), Inch(0))),
+                    ),
+                )
+            ],  # Circular("Stage Leg", Inch(133), Inch(161.62), Inch(7))
             (Inch(133) + Inch(59.771), Inch(161.62)),
             Degree(360),
             3,
