@@ -20,7 +20,7 @@ from gamegine.analysis.trajectory.lib.constraints.constraints import (
 from gamegine.reference import gearing, motors
 from gamegine.reference.swerve import SwerveConfig, SwerveModule
 from gamegine.render.renderer import Renderer
-from gamegine.representation.bounds import ExpandedObjectBounds
+from gamegine.representation.bounds import Cylinder, ExpandedObjectBounds, Transform3D
 from gamegine.representation.robot import PhysicalParameters
 from gamegine.utils.NCIM.ComplexDimensions.MOI import PoundsInchesSquared
 from gamegine.utils.NCIM.ComplexDimensions.acceleration import MeterPerSecondSquared
@@ -173,6 +173,7 @@ renderer.set_game(Crescendo)
 renderer.set_render_scale(Centimeter(1))
 renderer.init_display()
 print("Game set and display initialized")
+
 
 loop = True
 while loop != False:

@@ -16,7 +16,7 @@ from gamegine.analysis.trajectory.lib.constraints.constraints import VelocityEqu
 from gamegine.reference import gearing, motors
 from gamegine.reference.swerve import SwerveConfig, SwerveModule
 from gamegine.render.renderer import Renderer
-from gamegine.representation.bounds import ExpandedObjectBounds
+from gamegine.representation.bounds import Cylinder, ExpandedObjectBounds, Transform3D
 from gamegine.representation.robot import PhysicalParameters
 from gamegine.utils.NCIM.ComplexDimensions.MOI import PoundsInchesSquared
 from gamegine.utils.NCIM.ComplexDimensions.acceleration import MeterPerSecondSquared
@@ -152,6 +152,14 @@ renderer.set_render_scale(Centimeter(1))
 renderer.init_display()
 print("Game set and display initialized")
 
+test_cylinder = Cylinder(
+    Inch(10),
+    Feet(10),
+    Transform3D((Feet(10), Feet(10), Feet(10)), (Degree(0), Degree(0), Degree(0))),
+)
+
+pitch = Degree(0)
+
 loop = True
 while loop != False:
     loop = renderer.loop()
@@ -172,11 +180,15 @@ while loop != False:
                 trajectories = []
                 paths = []
 
+            pitch += Degree(10)
+            test_cylinder.transform.rotation = (Degree(0), pitch, Degree(0))
+
     renderer.draw_element(map)
 
     renderer.draw_elements(expanded_obstacles)
     renderer.draw_elements(trajectories)
     renderer.draw_elements(paths)
     renderer.draw_static_elements()
+    renderer.draw_element(test_cylinder)
 
     renderer.render_frame()

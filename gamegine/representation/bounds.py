@@ -20,6 +20,8 @@ from gamegine.utils.NCIM.ncim import (
     Inch,
     RatioOf,
     SpatialMeasurement,
+    Radian,
+    Meter,
 )
 
 
@@ -252,109 +254,237 @@ class DiscreteBoundary(Boundary, Drawable):
         return PolygonalPrism(self.get_vertices(), z_start, z_end)
 
 
-class DiscreteBoundary3D(DiscreteBoundary):
-    """Base class for representing discrete boundaries in 3D space, extending the :class:`DiscreteBoundary` class. Discrete 3D boundaries can be used to represent the shape of an object in 3D space. Can be used in all the manner of the base class, but also provides methods for getting the z interval of the boundary and for getting a slice of the 3D Shape at a certain z value."""
+import math
+import numpy as np
 
-    def get_slice(self, z: SpatialMeasurement) -> DiscreteBoundary:
-        """Returns a slice of the boundary at a certain z value.
 
-        :param z: The z value of the slice.
-        :type z: :class:`SpatialMeasurement`
-        :return: The 2-dimensional slice of the boundary at the given z value.
-        :rtype: :class:`DiscreteBoundary`
-        """
-        interval = self.get_z_interval()
-        if z < interval[0] or z > interval[1]:
-            return None
+class Transform3D:
+    """Class representing a 3D transformation including position, rotation, and scale."""
+
+    def __init__(
+        self,
+        position: Tuple[SpatialMeasurement, SpatialMeasurement, SpatialMeasurement] = (
+            Feet(0),
+            Feet(0),
+            Feet(0),
+        ),
+        rotation: Tuple[AngularMeasurement, AngularMeasurement, AngularMeasurement] = (
+            Radian(0),
+            Radian(0),
+            Radian(0),
+        ),  # Euler angles: (yaw, pitch, roll)
+        scale: Tuple[float, float, float] = (1, 1, 1),
+    ):
+        self.position = position
+        self.rotation = rotation
+        self.scale = scale
+
+    def apply(
+        self,
+        points: List[Tuple[SpatialMeasurement, SpatialMeasurement, SpatialMeasurement]],
+        center: Tuple[SpatialMeasurement, SpatialMeasurement, SpatialMeasurement] = (
+            Feet(0),
+            Feet(0),
+            Feet(0),
+        ),
+    ) -> List[Tuple[SpatialMeasurement, SpatialMeasurement, SpatialMeasurement]]:
+        """Applies the transformation to a list of 3D points."""
+
+        S = np.diag([self.scale[0], self.scale[1], self.scale[2]])
+        # Create rotation matrices
+        yaw, pitch, roll = self.rotation
+        yaw = yaw.to(Radian)
+        pitch = pitch.to(Radian)
+        roll = roll.to(Radian)
+
+        Rz = np.array(
+            [
+                [math.cos(yaw), -math.sin(yaw), 0],
+                [math.sin(yaw), math.cos(yaw), 0],
+                [0, 0, 1],
+            ]
+        )
+
+        Ry = np.array(
+            [
+                [math.cos(pitch), 0, math.sin(pitch)],
+                [0, 1, 0],
+                [-math.sin(pitch), 0, math.cos(pitch)],
+            ]
+        )
+        # Rotation around x-axis (roll)
+        Rx = np.array(
+            [
+                [1, 0, 0],
+                [0, math.cos(roll), -math.sin(roll)],
+                [0, math.sin(roll), math.cos(roll)],
+            ]
+        )
+
+        R = Rz @ Ry @ Rx
+
+        # Combine transformations
+        transformed_points = []
+        for point in points:
+            point_num = [component.to(Meter) for component in point]
+
+            # Apply scaling
+            p = np.array(point_num, dtype=float)
+            # Apply Centering
+            p = p - np.array([component.to(Meter) for component in center])
+
+            p = S @ p
+            # Apply rotation
+            p = R @ p
+
+            # Revert centering
+            p = p + np.array([component.to(Meter) for component in center])
+
+            # Apply translation
+            px = self.position[0].to(Meter) + p[0]
+            py = self.position[1].to(Meter) + p[1]
+            pz = self.position[2].to(Meter) + p[2]
+            transformed_points.append((Meter(px), Meter(py), Meter(pz)))
+        return transformed_points
+
+    def reflect_x(self):
+        """Reflects the transform over the x-axis."""
+        self.scale = (-self.scale[0], self.scale[1], self.scale[2])
         return self
 
-    def discretized(self, curve_segments: int = 5) -> "DiscreteBoundary3D":
-        """Discretizes the boundary into a series of points. Simply returns self for already discretized 3D boundaries.
-
-        :param curve_segments: The number of curve segments to use when discretizing the boundary.
-        :type curve_segments: int
-        :return: The discretized boundary.
-        :rtype: :class:`DiscreteBoundary3D`
-        """
+    def reflect_y(self):
+        """Reflects the transform over the y-axis."""
+        self.scale = (self.scale[0], -self.scale[1], self.scale[2])
         return self
+
+    def reflect_z(self):
+        """Reflects the transform over the z-axis."""
+        self.scale = (self.scale[0], self.scale[1], -self.scale[2])
+        return self
+
+
+class Boundary3D(Boundary):
+    """Base class for representing boundaries in 3D space."""
+
+    def __init__(self, transform: Transform3D = None):
+        self.transform = transform if transform else Transform3D()
 
     @abstractmethod
-    def get_z_interval(self) -> Tuple[SpatialMeasurement, SpatialMeasurement]:
-        """Returns the z interval of the boundary, indicating the range of z values the boundary occupies.
+    def get_slice(self, z: SpatialMeasurement) -> Boundary:
+        """Returns a slice of the boundary at a certain z value."""
+        pass
 
-        :return: The z interval of the boundary.
-        :rtype: Tuple[:class:`SpatialMeasurement`, :class:`SpatialMeasurement`]
-        """
+    @abstractmethod
+    def discretized(self, curve_segments: int = 5) -> "DiscreteBoundary3D":
         pass
 
     def get_3d(
         self, z_start: SpatialMeasurement = 0, z_end: SpatialMeasurement = 0
-    ) -> "DiscreteBoundary3D":
-        """Returns the 3D version of the boundary. Simply returns self for already 3D boundaries.
-
-        :param z_start: The starting z value of the boundary.
-        :type z_start: :class:`SpatialMeasurement`
-        :param z_end: The ending z value of the boundary.
-        :type z_end: :class:`SpatialMeasurement`
-        :return: The 3D version of the boundary.
-        :rtype: :class:`DiscreteBoundary3D`
-        """
-        return self
-
-    def draw(self, render_scale: SpatialMeasurement) -> None:
-        """Draws the boundary, used by the :class:`Renderer` to draw the boundary.
-
-        :param render_scale: The scale to render the boundary at.
-        :type render_scale: :class:`SpatialMeasurement`
-        """
-
-        color_scale = 255 - int(255 * self.get_z_interval()[1] / Feet(10))
-        pygame.draw.polygon(
-            pygame.display.get_surface(),
-            (color_scale, color_scale, 0),
-            [
-                (RatioOf(point[0], render_scale), RatioOf(point[1], render_scale))
-                for point in self.get_vertices()
-            ],
-        )
-
-
-class Boundary3D(Boundary):
-    """Base class for representing boundaries in 3D space, extending the :class:`Boundary` class. Boundaries in 3D space can be used to represent the shape of an object in 3D space. Can be used in all the manner of the base class, but also provides methods for getting the z interval of the boundary and for getting a slice of the 3D Shape at a certain z value."""
-
-    @abstractmethod
-    def get_slice(z: SpatialMeasurement) -> Boundary:
-        """Returns a slice of the boundary at a certain z value.
-
-        :param z: The z value of the slice.
-        :type z: :class:`SpatialMeasurement`
-        :return: The 2-dimensional slice of the boundary at the given z value.
-        :rtype: :class:`Boundary`
-        """
-
-        pass
-
-    def get_bullet_shape(self) -> BulletShape:
-        raise NotImplementedError
-
-    @abstractmethod
-    def discretized(self, curve_segments: int = 5) -> DiscreteBoundary3D:
-        pass
-
-    def get_3d(
-        self, z_start: SpatialMeasurement, z_end: SpatialMeasurement
     ) -> "Boundary3D":
-        """Returns the 3D version of the boundary. Simply returns self for already 3D boundaries.
-
-        :param z_start: The starting z value of the boundary.
-        :type z_start: :class:`SpatialMeasurement`
-        :param z_end: The ending z value of the boundary.
-        :type z_end: :class:`SpatialMeasurement`
-        :return: The 3D version of the boundary.
-        :rtype: :class:`Boundary3D`
-        """
-
+        """Returns the 3D version of the boundary. Simply returns self."""
         return self
+
+    def translate(
+        self, x: SpatialMeasurement, y: SpatialMeasurement, z: SpatialMeasurement = 0
+    ) -> "Boundary3D":
+        """Translates the boundary by the given x, y, z values."""
+        self.transform.position = (
+            self.transform.position[0] + x,
+            self.transform.position[1] + y,
+            self.transform.position[2] + z,
+        )
+        return self
+
+    def rotate(
+        self,
+        yaw: AngularMeasurement = 0,
+        pitch: AngularMeasurement = 0,
+        roll: AngularMeasurement = 0,
+    ) -> "Boundary3D":
+        """Rotates the boundary by the given yaw, pitch, and roll angles."""
+        self.transform.rotation = (
+            self.transform.rotation[0] + yaw,
+            self.transform.rotation[1] + pitch,
+            self.transform.rotation[2] + roll,
+        )
+        return self
+
+    def scale(self, sx: float = 1, sy: float = 1, sz: float = 1) -> "Boundary3D":
+        """Scales the boundary by the given factors."""
+        self.transform.scale = (
+            self.transform.scale[0] * sx,
+            self.transform.scale[1] * sy,
+            self.transform.scale[2] * sz,
+        )
+        return self
+
+    def reflect_x(self, axis: SpatialMeasurement = 0) -> "Boundary3D":
+        """Reflects the boundary over the plane x = axis."""
+        self.translate(-axis, 0, 0)
+        self.transform.reflect_x()
+        self.translate(axis, 0, 0)
+        return self
+
+    def reflect_y(self, axis: SpatialMeasurement = 0) -> "Boundary3D":
+        """Reflects the boundary over the plane y = axis."""
+        self.translate(0, -axis, 0)
+        self.transform.reflect_y()
+        self.translate(0, axis, 0)
+        return self
+
+    def reflect_z(self, axis: SpatialMeasurement = 0) -> "Boundary3D":
+        """Reflects the boundary over the plane z = axis."""
+        self.translate(0, 0, -axis)
+        self.transform.reflect_z()
+        self.translate(0, 0, axis)
+        return self
+
+    @abstractmethod
+    def project_to_2d(self) -> Boundary:
+        """Projects the 3D boundary onto the XY-plane."""
+        pass
+
+
+class DiscreteBoundary3D(Boundary3D, DiscreteBoundary):
+    """Base class for representing discrete boundaries in 3D space."""
+
+    def get_3d_vertices(
+        self,
+    ) -> List[Tuple[SpatialMeasurement, SpatialMeasurement, SpatialMeasurement]]:
+        """Returns the 3D vertices of the boundary."""
+        interval = self.get_z_interval()
+        twoD_vertices = super(Boundary3D, self).get_vertices()
+        vertices = [(x, y, interval[0]) for x, y in twoD_vertices]
+
+        vertices += [(x, y, interval[1]) for x, y in twoD_vertices]
+
+        return vertices
+
+    def discretized(self, curve_segments: int = 5) -> "DiscreteBoundary3D":
+        """Returns self for already discretized 3D boundaries."""
+        return self
+
+    @abstractmethod
+    def get_z_interval(self) -> Tuple[SpatialMeasurement, SpatialMeasurement]:
+        """Returns the z interval of the boundary."""
+        pass
+
+    def get_slice(self, z: SpatialMeasurement) -> DiscreteBoundary:
+        """Returns a slice of the boundary at a certain z value."""
+        interval = self.get_z_interval()
+        if z < interval[0] or z > interval[1]:
+            return None
+        return self.project_to_2d()
+
+    def project_to_2d(self) -> DiscreteBoundary:
+        """Projects the 3D boundary onto the XY-plane."""
+        transformed_points = self.transform.apply(self.get_3d_vertices())
+        points = [(p[0].to(Meter), p[1].to(Meter)) for p in transformed_points]
+        convex_hull = [
+            (Meter(x), Meter(y))
+            for x, y in sg.MultiPoint(points).convex_hull.exterior.coords
+        ]
+        return Polygon(convex_hull)
 
 
 class Rectangle(DiscreteBoundary):
@@ -514,28 +644,56 @@ class Circle(Boundary):
         return Cylinder(self.x, self.y, self.radius, z_start, z_end)
 
 
-class Cylinder(Circle, DiscreteBoundary3D):
-    """Class for representing the 3D-version of a circle, also known as a cylinder, extending the :class:`Circle` and :class:`DiscreteBoundary3D` classes."""
+class Cylinder(DiscreteBoundary3D):
+    """Class for representing a cylinder."""
 
     def __init__(
         self,
-        x: SpatialMeasurement,
-        y: SpatialMeasurement,
         radius: SpatialMeasurement,
-        z_start: SpatialMeasurement,
-        z_end: SpatialMeasurement,
+        height: SpatialMeasurement,
+        transform: Transform3D = None,
+        curve_segments: int = 16,
     ):
-        super().__init__(x, y, radius)
-        self.z_start = z_start
-        self.z_end = z_end
+        super().__init__(transform)
+        self.radius = radius
+        self.height = height
+        self.curve_segments = curve_segments
 
     def get_z_interval(self) -> Tuple[SpatialMeasurement, SpatialMeasurement]:
-        return (self.z_start, self.z_end)
+        z = self.transform.position[2]
+        return (z, z + self.height * self.transform.scale[2])
 
-    def get_slice(self, z: SpatialMeasurement) -> DiscreteBoundary:
-        if z < self.z_start or z > self.z_end:
-            return None
+    def discretized(self, curve_segments: int = None) -> "Cylinder":
+        if curve_segments is not None:
+            self.curve_segments = curve_segments
         return self
+
+    def get_vertices(self) -> List[Tuple[SpatialMeasurement, SpatialMeasurement]]:
+        return self.project_to_2d().get_vertices()
+
+    def project_to_2d(self) -> "Polygon":
+        points_3d = self.get_3d_vertices()
+        points_2d = [(p[0].to(Meter), p[1].to(Meter)) for p in points_3d]
+        convex_hull = [
+            (Meter(x), Meter(y))
+            for x, y in sg.MultiPoint(points_2d).convex_hull.exterior.coords
+        ]
+        return Polygon(convex_hull)
+
+    def get_3d_vertices(self):
+        points_3d = []
+        angle_step = 2 * math.pi / self.curve_segments
+        interval = self.get_z_interval()
+        for i in range(self.curve_segments):
+            angle = angle_step * i
+            x = self.radius * math.cos(angle)
+            y = self.radius * math.sin(angle)
+            points_3d.append((x, y, interval[0]))
+            points_3d.append((x, y, interval[1]))
+        transformed_points = self.transform.apply(
+            points_3d, center=(Feet(0), Feet(0), (interval[0] + interval[1]) / 2)
+        )
+        return transformed_points
 
 
 class Polygon(DiscreteBoundary):
@@ -578,26 +736,33 @@ class Polygon(DiscreteBoundary):
         return self.points
 
 
-class PolygonalPrism(Polygon, DiscreteBoundary3D):
-    """Class for representing the 3D-version of a polygon, also known as a polygonal prism, extending the :class:`Polygon` and :class:`DiscreteBoundary3D` classes."""
+class PolygonalPrism(DiscreteBoundary3D):
+    """Class for representing a polygonal prism."""
 
     def __init__(
         self,
         points: List[Tuple[SpatialMeasurement, SpatialMeasurement]],
-        z_start: SpatialMeasurement,
-        z_end: SpatialMeasurement,
+        height: SpatialMeasurement,
+        transform: Transform3D = None,
     ):
-        super().__init__(points)
-        self.z_start = z_start
-        self.z_end = z_end
+        super().__init__(transform)
+        self.local_points = [(p[0], p[1], 0) for p in points]
+        self.height = height
 
     def get_z_interval(self) -> Tuple[SpatialMeasurement, SpatialMeasurement]:
-        return (self.z_start, self.z_end)
+        z = self.transform.position[2]
+        return (z, z + self.height * self.transform.scale[2])
 
-    def get_slice(self, z: SpatialMeasurement) -> DiscreteBoundary:
-        if z < self.z_start or z > self.z_end:
-            return None
+    def discretized(self, curve_segments: int = 5) -> "PolygonalPrism":
         return self
+
+    def get_vertices(self) -> List[Tuple[SpatialMeasurement, SpatialMeasurement]]:
+        return self.project_to_2d().get_vertices()
+
+    def project_to_2d(self) -> "Polygon":
+        transformed_points = self.transform.apply(self.local_points)
+        points_2d = [(p[0], p[1]) for p in transformed_points]
+        return Polygon(points_2d)
 
 
 class Line(DiscreteBoundary):
@@ -704,6 +869,9 @@ class Point(DiscreteBoundary3D):
 
     def get_vertices(self) -> List[Tuple[SpatialMeasurement, SpatialMeasurement]]:
         return [(self.x, self.y)]
+
+    def project_to_2d(self) -> "Point":
+        return Point(self.x, self.y)
 
 
 class BoundedObject(NamedObject):
