@@ -150,6 +150,39 @@ class Trajectory(Drawable):
     def get_robot_constraints(self) -> TrajectoryRobotConstraints:
         return self.robot_constraints
 
+    def export_to_file(self, file_path: str):
+        with open(file_path, "w") as file:
+            file.write(
+                """
+                       {\n
+                       "samples": ["""
+            )
+            curr_time = Second(0)
+            for i in range(len(self.points)):
+                point = self.points[i]
+
+                file.write(
+                    f"""
+                    {{
+                        "x": {point.x.to(Meter)},
+                        "y": {point.y.to(Meter)},
+                        "heading": {point.theta.to(Radian)},
+                        "angularVelocity": {point.omega.to(RadiansPerSecond)},
+                        "velocityX": {point.vel_x.to(MetersPerSecond)},
+                        "velocityY": {point.vel_y.to(MetersPerSecond)},
+                        "timestamp": {curr_time.to(Second)}
+                    }}"""
+                )
+                curr_time += point.dt
+                if i < len(self.points) - 1:
+                    file.write(",")
+
+            file.write(
+                """
+                ]
+            }"""
+            )
+
     def __str__(self) -> str:
         return f"Trajectory: {len(self.points)} points, {self.get_length()} length, {self.get_travel_time()} time. Optimized for {self.robot_constraints}."
 
@@ -293,6 +326,9 @@ class TrajectoryProblem:
 
         pass
 
+    def set_solver_callback(self, callback: Callable):
+        self.problem.callback(callback)
+
     def apply_constraints(self, robot_constraints: TrajectoryRobotConstraints):
         AccelerationLessThan(robot_constraints.max_acceleration)(
             self.problem, self.point_vars
@@ -308,9 +344,8 @@ class TrajectoryProblem:
             self.problem, self.point_vars
         )
 
-    def get_trajectory_states(self) -> List[TrajectoryState]:
-        vars = self.point_vars
-
+    @staticmethod
+    def get_trajectory_states_from_vars(vars) -> List[TrajectoryState]:
         VEL_UNIT = VelocityUnit(CALCULATION_UNIT_SPATIAL, CALCULATION_UNIT_TEMPORAL)
         ACCEL_UNIT = AccelerationUnit(
             CALCULATION_UNIT_SPATIAL, CALCULATION_UNIT_TEMPORAL
@@ -355,6 +390,9 @@ class TrajectoryProblem:
         )
 
         return states
+
+    def get_trajectory_states(self) -> List[TrajectoryState]:
+        return self.get_trajectory_states_from_vars(self.point_vars)
 
     def solve(
         self, robot_constraints: TrajectoryRobotConstraints, config: SolverConfig

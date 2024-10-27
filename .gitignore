@@ -41,3 +41,11 @@ Thumbs.db
 *.pyc
 *.pyi
 /temp
+gamegine/render/__pycache__/drawable.cpython-310.pyc
+gamegine/render/__pycache__/helpers.cpython-310.pyc
+gamegine/render/__pycache__/renderer.cpython-310.pyc
+gamegine/representation/__pycache__/bounds.cpython-310.pyc
+gamegine/representation/__pycache__/game.cpython-310.pyc
+gamegine/representation/__pycache__/obstacle.cpython-310.pyc
+gamegine/analysis/__pycache__/pathfinding.cpython-310.pyc
+gamegine/analysis/__pycache__/meshing.cpython-310.pyc

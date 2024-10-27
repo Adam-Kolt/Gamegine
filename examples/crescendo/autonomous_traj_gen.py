@@ -10,6 +10,7 @@ from gamegine.analysis.trajectory.lib.TrajGen import (
     SwerveRobotConstraints,
     SwerveTrajectoryProblemBuilder,
     TrajectoryBuilderConfig,
+    TrajectoryProblem,
     Waypoint,
 )
 from gamegine.analysis.trajectory.lib.constraints.avoidance import SafetyCorridor
@@ -42,6 +43,7 @@ from gamegine.utils.NCIM.Dimensions.spatial import (
     Inch,
     SpatialMeasurement,
 )
+from gamegine.utils.NCIM.ncim import RatioOf
 
 
 expanded_obstacles = ExpandedObjectBounds(
@@ -82,9 +84,7 @@ corridors = []
 paths = []
 
 start = (Inch(35.695) + Inch(25), Inch(64.081) + Inch(20.825))
-note_locations = [
-    (Feet(50), Feet(3)),
-]
+note_locations = [(Feet(50), Feet(21))]
 
 shot_location = (Inch(35.695) + Inch(30), Inch(64.081) + Inch(82.645))
 
@@ -135,7 +135,55 @@ trajectory = builder.generate(
         min_spacing=Centimeter(5),
         minimization_strategy=MinimizationStrategy.TIME,
     )
-).solve(
+)
+
+
+def draw_cool_generation(
+    solverState,
+):  # Really Cool Feature TODO: Make it cleanly integrated, and less janky
+    variables = solverState.x
+
+    points = TrajectoryProblem.get_trajectory_states_from_vars(trajectory.point_vars)
+    renderer.loop()
+    renderer.draw_element(map)
+
+    renderer.draw_elements(expanded_obstacles)
+    renderer.draw_elements(paths)
+    renderer.draw_static_elements()
+
+    for i in range(len(points) - 1):
+        point = points[i]
+        point2 = points[i + 1]
+        pygame.draw.line(
+            pygame.display.get_surface(),
+            (255, 100, 0),
+            (
+                RatioOf(point.x, Renderer.render_scale),
+                RatioOf(point.y, Renderer.render_scale),
+            ),
+            (
+                RatioOf(point2.x, Renderer.render_scale),
+                RatioOf(point2.y, Renderer.render_scale),
+            ),
+            width=int(RatioOf(Inch(2), Renderer.render_scale)),
+        )
+
+    renderer.render_frame()
+    return False
+
+
+# safe_corridor = trajectory_generator.GetSafeCorridor()
+Current = (Feet(6), Inch(64.081) + Inch(82.645) / 2)
+trajectories = []
+renderer = Renderer()
+
+renderer.set_game(Crescendo)
+renderer.set_render_scale(Centimeter(1))
+renderer.init_display()
+print("Game set and display initialized")
+
+
+traj = trajectory.solve(
     SwerveRobotConstraints(
         MeterPerSecondSquared(10),
         MetersPerSecond(10),
@@ -160,20 +208,8 @@ trajectory = builder.generate(
             moi=PoundsInchesSquared(21327.14),
         ),
     ),
-    SolverConfig(timeout=10, max_iterations=1000, solution_tolerance=1e-4),
+    SolverConfig(timeout=20, max_iterations=1000, solution_tolerance=1e-4),
 )
-
-
-# safe_corridor = trajectory_generator.GetSafeCorridor()
-Current = (Feet(6), Inch(64.081) + Inch(82.645) / 2)
-trajectories = []
-renderer = Renderer()
-
-renderer.set_game(Crescendo)
-renderer.set_render_scale(Centimeter(1))
-renderer.init_display()
-print("Game set and display initialized")
-
 
 loop = True
 while loop != False:
@@ -182,7 +218,7 @@ while loop != False:
     renderer.draw_element(map)
 
     renderer.draw_elements(expanded_obstacles)
-    renderer.draw_element(trajectory)
+    renderer.draw_element(traj)
     renderer.draw_elements(paths)
     renderer.draw_static_elements()
 

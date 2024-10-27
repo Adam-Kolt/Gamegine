@@ -119,22 +119,22 @@ objs = SymmetricalX(
                 ]
             ).get_3d(z_end=Feet(4)),
         ),
-        Obstacle(
-            "Stage Base",
-            Polygon(
-                [
-                    (Inch(133), Inch(161.62)),
-                    (
-                        Inch(133) + Inch(29.855) + Inch(59.77),
-                        Inch(161.62) + Inch(51.76),
-                    ),
-                    (
-                        Inch(133) + Inch(29.855) + Inch(59.77),
-                        Inch(161.62) - Inch(51.76),
-                    ),
-                ]
-            ).get_3d(Inch(27.83), Inch(74.5)),
-        ),
+        # Obstacle(
+        #     "Stage Base",
+        #     Polygon(
+        #         [
+        #             (Inch(133), Inch(161.62)),
+        #             (
+        #                 Inch(133) + Inch(29.855) + Inch(59.77),
+        #                 Inch(161.62) + Inch(51.76),
+        #             ),
+        #             (
+        #                 Inch(133) + Inch(29.855) + Inch(59.77),
+        #                 Inch(161.62) - Inch(51.76),
+        #             ),
+        #         ]
+        #     ).get_3d(Inch(27.83), Inch(74.5)),
+        # ),
         # Circular("Note 1", Inch(114.010), Inch(47.638), Inch(7)),
         # Circular("Note 2", Inch(114.010), Inch(47.638) + Inch(43.000), Inch(7)),
         # Circular("Note 3", Inch(114.010), Inch(47.638) + Inch(43.000) * 2, Inch(7)),
