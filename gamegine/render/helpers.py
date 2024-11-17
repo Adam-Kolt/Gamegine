@@ -1,6 +1,6 @@
-from gamegine.representation.bounds import Circle, DiscreteBoundary, Polygon, Rectangle
 import pygame
 
+from gamegine.representation.boundary.shape2D import Circle, Polygon, Rectangle
 from gamegine.utils.NCIM.ncim import RatioOf, SpatialMeasurement
 from .style import get_color, Palette, Shade, Opacity
 
@@ -125,8 +125,6 @@ def draw_fancy_boundary(bounds, color: Palette, render_scale: SpatialMeasurement
         draw_fancy_rectangle(bounds, color, render_scale)
     elif isinstance(bounds, Polygon):
         draw_fancy_polygon(bounds, color, render_scale)
-    elif issubclass(bounds.__class__, DiscreteBoundary):
-        draw_fancy_discrete_boundary(bounds, color, render_scale)
     else:
         raise ValueError("Unknown boundary type")
 

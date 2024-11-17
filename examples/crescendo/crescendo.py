@@ -31,17 +31,10 @@ from gamegine.reference import gearing, motors
 from gamegine.reference.swerve import SwerveConfig, SwerveModule
 from gamegine.render.renderer import Renderer
 from gamegine.representation.apriltag import AprilTag, AprilTagFamily
-from gamegine.representation.bounds import (
-    Circle,
-    Cylinder,
-    ExpandedObjectBounds,
-    Point,
-    Polygon,
-    Rectangle,
-    SymmetricalX,
-    CircularPattern,
-    Transform3D,
-)
+
+from gamegine.representation.boundary.boundary import CircularPattern, SymmetricalX
+from gamegine.representation.boundary.shape2D import Polygon
+from gamegine.representation.boundary.shape3D import Cylinder
 from gamegine.representation.game import Game
 from gamegine.representation.obstacle import Circular, Obstacle, Polygonal, Rectangular
 from gamegine.representation.robot import (
@@ -74,6 +67,7 @@ from gamegine.analysis import pathfinding
 import time
 
 from gamegine.utils.logging import Debug
+from gamegine.utils.transform import Transform3D
 
 
 Crescendo = Game("FRC Crescendo 2024")
@@ -100,14 +94,14 @@ objs = SymmetricalX(
         ),
         Obstacle(
             "Subwoofer",
-            Polygon(
+            Polygon.createCenteredBound(
                 [
                     (Inch(0), Inch(64.081)),
                     (Inch(0), Inch(64.081) + Inch(82.645)),
                     (Inch(35.695), Inch(64.081) + Inch(82.645) - Inch(20.825)),
                     (Inch(35.695), Inch(64.081) + Inch(20.825)),
                 ]
-            ).get_3d(z_end=Feet(2)),
+            ),
         ),
         Obstacle(
             "Source",
@@ -260,13 +254,5 @@ notes = [
 ]
 
 x_r, y_r = Crescendo.half_field_x(), Crescendo.half_field_y()
-test_robot_bounds = [
-    Rectangle(
-        x_r - Inch(30 + 4) / 2, y_r - Inch(30 + 4) / 2, Inch(30 + 4), Inch(30 + 4)
-    ).get_3d(Inch(1), Inch(5)),
-    Rectangle(x_r - Inch(30) / 2, y_r - Inch(30) / 2, Inch(30), Inch(30)).get_3d(
-        Inch(5), Feet(3)
-    ),
-]
 
 test_speaker = Speaker(Inch(0), Inch(64.081) + Inch(82.645) / 2, Feet(3), "Red Speaker")

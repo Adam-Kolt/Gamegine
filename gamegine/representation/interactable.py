@@ -4,7 +4,7 @@ from typing import Callable, List
 
 from gamegine.render import helpers
 from gamegine.render.drawable import Drawable
-from gamegine.representation.bounds import BoundedObject, DiscreteBoundary
+from gamegine.representation.boundary.boundary import Boundary, BoundedObject
 from gamegine.simulation.robot import RobotState
 from gamegine.simulation.state import StateSpace, ValueChange
 from gamegine.utils.NCIM.Dimensions.spatial import SpatialMeasurement
@@ -13,7 +13,7 @@ from gamegine.utils.NCIM.Dimensions.spatial import SpatialMeasurement
 
 
 class RobotInteractable(BoundedObject, Drawable):
-    def __init__(self, boundary: DiscreteBoundary, name="") -> None:
+    def __init__(self, boundary: Boundary, name="") -> None:
         super().__init__(boundary, name)
 
     @staticmethod

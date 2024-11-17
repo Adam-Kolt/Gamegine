@@ -1,11 +1,13 @@
 from typing import List, Tuple
 
 
-from gamegine.representation.bounds import Rectangle
+from gamegine.representation.boundary.boundary import Boundary3D
+from gamegine.representation.boundary.shape3D import RectangularPrism
 from gamegine.utils.logging import Debug
 from gamegine.utils.NCIM.ncim import Meter, SpatialMeasurement, Zero, Feet
 import numpy as np
 from gamegine.representation import obstacle
+from gamegine.utils.transform import Transform3D, Translation3D
 
 
 class Game(object):
@@ -154,27 +156,31 @@ class Game(object):
             [
                 obstacle.Obstacle(
                     "Field Border Top",
-                    Rectangle(
-                        Zero(), Zero() - thickness, self.field_size[0], thickness
-                    ).get_3d(Feet(0), Feet(3)),
+                    Boundary3D(
+                        RectangularPrism(self.field_size[0], thickness, Feet(3)),
+                        Transform3D(Translation3D(Zero(), Zero(), Zero())),
+                    ),
                 ).invisible(),
                 obstacle.Obstacle(
                     "Field Border Bottom",
-                    Rectangle(
-                        Zero(), self.field_size[1], self.field_size[0], thickness
-                    ).get_3d(Feet(0), Feet(3)),
+                    Boundary3D(
+                        RectangularPrism(self.field_size[0], thickness, Feet(3)),
+                        Transform3D(Translation3D(Zero(), self.field_size[1], Zero())),
+                    ),
                 ).invisible(),
                 obstacle.Obstacle(
                     "Field Border Left",
-                    Rectangle(
-                        Zero() - thickness, Zero(), thickness, self.field_size[1]
-                    ).get_3d(Feet(0), Feet(3)),
+                    Boundary3D(
+                        RectangularPrism(thickness, self.field_size[1], Feet(3)),
+                        Transform3D(Translation3D(Zero(), Zero(), Zero())),
+                    ),
                 ).invisible(),
                 obstacle.Obstacle(
                     "Field Border Right",
-                    Rectangle(
-                        self.field_size[0], Zero(), thickness, self.field_size[1]
-                    ).get_3d(Feet(0), Feet(3)),
+                    Boundary3D(
+                        RectangularPrism(thickness, self.field_size[1], Feet(3)),
+                        Transform3D(Translation3D(self.field_size[0], Zero(), Zero())),
+                    ),
                 ).invisible(),
             ]
         )

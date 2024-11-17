@@ -9,7 +9,7 @@ import pygame
 from gamegine.analysis.meshing import Map
 from gamegine.render.drawable import Drawable
 from gamegine.render.renderer import Renderer
-from gamegine.representation.bounds import Boundary, DiscreteBoundary
+from gamegine.representation.boundary.boundary import Boundary
 from gamegine.utils.logging import Debug
 from gamegine.utils.matematika import AngleBetweenVectors, GetDistanceBetween
 from gamegine.utils.NCIM.ncim import SpatialMeasurement
@@ -39,7 +39,7 @@ class Path(Drawable):
         return self.path
 
     def shortcut(
-        self, discrete_obstacles: List[DiscreteBoundary], max_jump: int = -1
+        self, discrete_obstacles: List[Boundary], max_jump: int = -1
     ) -> "Path":
         if len(self.path) <= 2:
             return self.path
@@ -65,7 +65,7 @@ class Path(Drawable):
         self.path = out
         return self
 
-    def shortcutted(self, discrete_obstacles: List[DiscreteBoundary]) -> "Path":
+    def shortcutted(self, discrete_obstacles: List[Boundary]) -> "Path":
         return Path(shortcut_tuple_path(discrete_obstacles, self.path))
 
     def dissect(self, units_per_node: SpatialMeasurement) -> "Path":
@@ -219,7 +219,7 @@ class DirectedAStar(AStar):
 
 
 def shortcut_tuple_path(
-    discrete_obstacles: List[DiscreteBoundary],
+    discrete_obstacles: List[Boundary],
     path: List[Tuple[SpatialMeasurement, SpatialMeasurement]],
 ) -> List[Tuple[SpatialMeasurement, SpatialMeasurement]]:
     if len(path) <= 2:

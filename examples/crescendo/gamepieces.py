@@ -1,7 +1,8 @@
 from typing import Callable
 from gamegine.render import helpers
 from gamegine.render.style import Palette
-from gamegine.representation.bounds import Circle
+
+from gamegine.representation.boundary.shape2D import Circle
 from gamegine.representation.gamepiece import Gamepiece, GamepiecePhysicalProperties
 from gamegine.utils.NCIM.Dimensions.mass import Gram, MassMeasurement, Ounce
 from gamegine.utils.NCIM.Dimensions.spatial import Inch, SpatialMeasurement

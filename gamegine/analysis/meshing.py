@@ -7,12 +7,8 @@ import pygame
 
 from gamegine.render.drawable import Drawable
 from gamegine.render.renderer import Renderer
-from gamegine.representation.bounds import (
-    Boundary,
-    BoundedObject,
-    DiscreteBoundary,
-    LineIntersectsAnyBound,
-)
+
+from gamegine.representation.boundary.boundary import Boundary, LineIntersectsAnyBound
 from gamegine.utils.NCIM.Dimensions import spatial
 from gamegine.utils.logging import Debug
 from gamegine.utils.matematika import CoordinateInRectangle, GetDistanceBetween

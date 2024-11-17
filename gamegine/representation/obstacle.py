@@ -1,19 +1,12 @@
 from typing import List, Tuple
-from gamegine.representation.bounds import (
-    Boundary,
-    BoundedObject,
-    Line,
-    Polygon,
-    Rectangle,
-    Circle,
-)
+
+from gamegine.representation.boundary.boundary import Boundary, BoundedObject
 from gamegine.utils.NCIM.ncim import SpatialMeasurement
 
 
 class Obstacle(BoundedObject):
     def __init__(self, name: str, bounds: Boundary) -> None:
-        super().__init__(bounds)
-        self.name = name
+        super().__init__(bounds, name)
         self.rendering_visibility = True
         pass
 
@@ -32,33 +25,3 @@ class Obstacle(BoundedObject):
         return self
 
     # TODO: Move rendering visibility and settings to Drawable
-
-
-class Rectangular(Obstacle):
-    def __init__(
-        self,
-        name: str,
-        x: SpatialMeasurement,
-        y: SpatialMeasurement,
-        width: SpatialMeasurement,
-        height: SpatialMeasurement,
-    ) -> None:
-        super().__init__(name, Rectangle(x, y, width, height))
-
-
-class Circular(Obstacle):
-    def __init__(
-        self,
-        name: str,
-        x: SpatialMeasurement,
-        y: SpatialMeasurement,
-        radius: SpatialMeasurement,
-    ) -> None:
-        super().__init__(name, Circle(x, y, radius))
-
-
-class Polygonal(Obstacle):
-    def __init__(
-        self, name: str, points: List[Tuple[SpatialMeasurement, SpatialMeasurement]]
-    ) -> None:
-        super().__init__(name, Polygon(points))
