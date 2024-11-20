@@ -1,103 +1,9 @@
 import pygame
 
+from gamegine.render.renderer import Renderer
 from gamegine.representation.boundary.shape2D import Circle, Polygon, Rectangle
-from gamegine.utils.NCIM.ncim import RatioOf, SpatialMeasurement
-from .style import get_color, Palette, Shade, Opacity
-
-# TODO: Some of this is kinda cooked and should be configured elsewhere
-
-
-def draw_fancy_circle(circle: Circle, color: Palette, render_scale: SpatialMeasurement):
-    # Outer Circle
-    pygame.draw.circle(
-        pygame.display.get_surface(),
-        get_color(color, Shade.LIGHT, Opacity.TRANSPARENTISH),
-        (RatioOf(circle.x, render_scale), RatioOf(circle.y, render_scale)),
-        RatioOf(circle.radius, render_scale),
-    )
-
-    # Inner Circle
-    pygame.draw.circle(
-        pygame.display.get_surface(),
-        get_color(color, Shade.NORMAL, Opacity.TRANSLUCENT),
-        (RatioOf(circle.x, render_scale), RatioOf(circle.y, render_scale)),
-        RatioOf(circle.radius, render_scale) - 5,
-    )
-
-
-def draw_fancy_rectangle(
-    rectangle: Rectangle, color: Palette, render_scale: SpatialMeasurement
-):
-    border_width = 5
-    border_radius = 5
-
-    # Outer Rectangle
-    pygame.draw.rect(
-        pygame.display.get_surface(),
-        get_color(color, Shade.LIGHT, Opacity.TRANSPARENTISH),
-        pygame.Rect(
-            RatioOf(rectangle.x, render_scale),
-            RatioOf(rectangle.y, render_scale),
-            RatioOf(rectangle.width, render_scale),
-            RatioOf(rectangle.height, render_scale),
-        ),
-        border_radius=border_radius,
-    )
-
-    # Inner Rectangle
-    pygame.draw.rect(
-        pygame.display.get_surface(),
-        get_color(color, Shade.NORMAL, Opacity.TRANSPARENTISH),
-        pygame.Rect(
-            RatioOf(rectangle.x, render_scale) + border_width,
-            RatioOf(rectangle.y, render_scale) + border_width,
-            RatioOf(rectangle.width, render_scale) - border_width * 2,
-            RatioOf(rectangle.height, render_scale) - border_width * 2,
-        ),
-        border_radius=border_radius,
-    )
-
-
-def draw_fancy_polygon(
-    polygon: Polygon, color: Palette, render_scale: SpatialMeasurement
-):
-    # Outer Polygon
-    pygame.draw.polygon(
-        pygame.display.get_surface(),
-        get_color(color, Shade.LIGHT, Opacity.TRANSPARENTISH),
-        [
-            (RatioOf(point[0], render_scale), RatioOf(point[1], render_scale))
-            for point in polygon.points
-        ],
-    )
-
-
-def draw_fancy_discrete_boundary(
-    discrete_boundary, color: Palette, render_scale: SpatialMeasurement
-):
-    pygame.draw.polygon(
-        pygame.display.get_surface(),
-        get_color(color, Shade.LIGHT, Opacity.TRANSPARENTISH),
-        [
-            (RatioOf(point[0], render_scale), RatioOf(point[1], render_scale))
-            for point in discrete_boundary.get_vertices()
-        ],
-    )
-
-
-def draw_point(
-    x: SpatialMeasurement,
-    y: SpatialMeasurement,
-    radius: SpatialMeasurement,
-    color: Palette,
-    render_scale: SpatialMeasurement,
-):
-    pygame.draw.circle(
-        pygame.display.get_surface(),
-        get_color(color, Shade.LIGHT, Opacity.TRANSPARENTISH),
-        (RatioOf(x, render_scale), RatioOf(y, render_scale)),
-        RatioOf(radius, render_scale),
-    )
+from gamegine.utils.NCIM.ncim import RatioOf, SpatialMeasurement, Centimeter
+from .style import Base, Palette
 
 
 def draw_line(
@@ -105,29 +11,121 @@ def draw_line(
     y1: SpatialMeasurement,
     x2: SpatialMeasurement,
     y2: SpatialMeasurement,
-    thickness: SpatialMeasurement,
-    color: Palette,
-    render_scale: SpatialMeasurement,
-):
+    color: Base = Palette.BLACK,
+    thickness: SpatialMeasurement = Centimeter(1),
+    opacity=1.0,
+) -> None:
     pygame.draw.line(
         pygame.display.get_surface(),
-        get_color(color, Shade.LIGHT, Opacity.TRANSPARENTISH),
-        (RatioOf(x1, render_scale), RatioOf(y1, render_scale)),
-        (RatioOf(x2, render_scale), RatioOf(y2, render_scale)),
-        width=int(RatioOf(thickness, render_scale)),
+        color.get_color().get_pygame_color(),
+        (RatioOf(x1, Renderer.render_scale), RatioOf(y1, Renderer.render_scale)),
+        (RatioOf(x2, Renderer.render_scale), RatioOf(y2, Renderer.render_scale)),
+        RatioOf(thickness, Renderer.render_scale),
     )
 
 
-def draw_fancy_boundary(bounds, color: Palette, render_scale: SpatialMeasurement):
-    if isinstance(bounds, Circle):
-        draw_fancy_circle(bounds, color, render_scale)
-    elif isinstance(bounds, Rectangle):
-        draw_fancy_rectangle(bounds, color, render_scale)
-    elif isinstance(bounds, Polygon):
-        draw_fancy_polygon(bounds, color, render_scale)
-    else:
-        raise ValueError("Unknown boundary type")
+def draw_point(
+    x: SpatialMeasurement,
+    y: SpatialMeasurement,
+    radius: SpatialMeasurement,
+    color: Base = Palette.BLACK,
+    render_scale: SpatialMeasurement = Centimeter(10),
+    opacity=1.0,
+) -> None:
+    pygame.draw.circle(
+        pygame.display.get_surface(),
+        color.get_color().get_pygame_color(),
+        (
+            RatioOf(x, render_scale),
+            RatioOf(y, render_scale),
+        ),
+        RatioOf(radius, render_scale),
+    )
 
 
-def draw_obstacle(obstacle, render_scale: SpatialMeasurement):
-    draw_fancy_boundary(obstacle.bounds, Palette.RED, render_scale)
+def draw_circle(
+    x: SpatialMeasurement,
+    y: SpatialMeasurement,
+    radius: SpatialMeasurement,
+    color: Base = Palette.BLACK,
+    thickness: SpatialMeasurement = Centimeter(1),
+    opacity=1.0,
+) -> None:
+    pygame.draw.circle(
+        pygame.display.get_surface(),
+        color.get_color(-0.1).get_pygame_color(),
+        (RatioOf(x, Renderer.render_scale), RatioOf(y, Renderer.render_scale)),
+        RatioOf(radius, Renderer.render_scale),
+    )
+
+    pygame.draw.circle(
+        pygame.display.get_surface(),
+        color.get_color().get_pygame_color(),
+        (RatioOf(x, Renderer.render_scale), RatioOf(y, Renderer.render_scale)),
+        RatioOf(radius - thickness, Renderer.render_scale),
+    )
+
+
+def draw_rectangle(
+    x: SpatialMeasurement,
+    y: SpatialMeasurement,
+    width: SpatialMeasurement,
+    height: SpatialMeasurement,
+    color: Base = Palette.BLACK,
+    thickness: SpatialMeasurement = Centimeter(1),
+    opacity=1.0,
+) -> None:
+    pygame.draw.rect(
+        pygame.display.get_surface(),
+        color.get_color().get_pygame_color(),
+        (
+            RatioOf(x, Renderer.render_scale),
+            RatioOf(y, Renderer.render_scale),
+            RatioOf(width, Renderer.render_scale),
+            RatioOf(height, Renderer.render_scale),
+        ),
+    )
+
+    pygame.draw.rect(
+        pygame.display.get_surface(),
+        color.get_color(-0.1).get_pygame_color(),
+        (
+            RatioOf(x, Renderer.render_scale),
+            RatioOf(y, Renderer.render_scale),
+            RatioOf(width, Renderer.render_scale),
+            RatioOf(height, Renderer.render_scale),
+        ),
+        RatioOf(thickness, Renderer.render_scale),
+    )
+
+
+def draw_polygon(
+    vertices: list[tuple[SpatialMeasurement, SpatialMeasurement]],
+    color: Base = Palette.BLACK,
+    thickness: SpatialMeasurement = Centimeter(1),
+    opacity=1.0,
+) -> None:
+    pygame.draw.polygon(
+        pygame.display.get_surface(),
+        color.get_color().get_pygame_color(),
+        [
+            (
+                RatioOf(vertex[0], Renderer.render_scale),
+                RatioOf(vertex[1], Renderer.render_scale),
+            )
+            for vertex in vertices
+        ],
+    )
+
+    pygame.draw.polygon(
+        pygame.display.get_surface(),
+        color.get_color(-0.1).get_pygame_color(),
+        [
+            (
+                RatioOf(vertex[0], Renderer.render_scale),
+                RatioOf(vertex[1], Renderer.render_scale),
+            )
+            for vertex in vertices
+        ],
+        RatioOf(thickness, Renderer.render_scale),
+    )
