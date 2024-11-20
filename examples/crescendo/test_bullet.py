@@ -79,8 +79,6 @@ robot_base = ObjectNode(
     orientation=[0, 0, 0, 1],
 )
 
-swerve_drivetrain = BulletSwerveDrivetrain(robot_base, swerve)
-
 
 obstacles = Crescendo.get_obstacles()
 
@@ -107,6 +105,8 @@ for obstacle in obstacles:
 
 
 ground = ground.generate_bullet_object()
+
+swerve_drivetrain = BulletSwerveDrivetrain(robot_base, swerve)
 
 targetVelocitySlider = p.addUserDebugParameter("wheelVelocity", -5, 5, 0)
 targetAngleSlider = p.addUserDebugParameter("targetAngle", -1, 1, 0)
