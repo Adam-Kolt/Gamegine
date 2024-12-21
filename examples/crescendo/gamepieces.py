@@ -9,7 +9,7 @@ from gamegine.utils.NCIM.Dimensions.spatial import Inch, SpatialMeasurement
 
 class Note(Gamepiece):
     name = "Note"
-    bounds = Circle(Inch(0), Inch(0), Inch(7))
+    bounds = Circle(Inch(0), Inch(0), Inch(7)).get_3d(Inch(0), Inch(1))
     physical_properties = GamepiecePhysicalProperties(Ounce(8.3), 0.5)
 
     # AndyMark Note Dimensions

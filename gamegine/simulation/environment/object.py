@@ -4,6 +4,9 @@ from typing import List, Union
 from gamegine.representation.bounds import Boundary3D
 from gamegine.simulation.environment import PYBULLET_UNITS
 from gamegine.simulation.environment.shape import BulletShape, ShapeBuilder
+from gamegine.utils.NCIM.ComplexDimensions.omega import Omega
+from gamegine.utils.NCIM.ComplexDimensions.torque import Torque
+from gamegine.utils.NCIM.Dimensions.angular import AngularMeasurement
 from gamegine.utils.NCIM.Dimensions.mass import Kilogram, MassMeasurement
 from gamegine.utils.NCIM.Dimensions.spatial import Meter, SpatialMeasurement
 import pybullet as p
@@ -14,6 +17,19 @@ from enum import Enum
 class Joint:
     type: int
     axis: list[float]
+    joint_index: int = -1
+
+    def add_constraint(self):
+        pass
+
+    def set_position(self, position: AngularMeasurement):
+        pass
+
+    def set_velocity(self, velocity: Omega):
+        pass
+
+    def set_torque(self, torque: Torque):
+        pass
 
 
 @dataclass
