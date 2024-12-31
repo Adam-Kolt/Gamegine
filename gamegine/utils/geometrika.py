@@ -1,4 +1,11 @@
 def construct_faces_from_prism_vertices(vertices):
+    """Constructs the faces of a prism from all of its vertices. Used for converting gamegine's 3D shapes to PyBullet-Compatible meshes.
+
+    :param vertices: The vertices of the prism.
+    :type vertices: list
+    :return: The faces of the prism.
+    :rtype: list
+    """
     base_length = len(vertices) // 2
 
     faces = []

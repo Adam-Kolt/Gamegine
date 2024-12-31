@@ -11,6 +11,13 @@ from gamegine.utils.NCIM.ncim import SpatialMeasurement
 
 
 class Obstacle(BoundedObject):
+    """Represents a physical obstacle on the field.
+
+    :param name: The name of the obstacle.
+    :type name: str
+    :param bounds: The boundary of the obstacle.
+    :type bounds: :class:`Boundary`"""
+
     def __init__(self, name: str, bounds: Boundary) -> None:
         super().__init__(bounds)
         self.name = name
@@ -21,20 +28,45 @@ class Obstacle(BoundedObject):
         return f"{self.name} Obstacle with bounds: {self.bounds}"
 
     def invisible(self) -> "Obstacle":
+        """Sets the rendering visibility of the obstacle to False.
+
+        :return: The obstacle object with rendering visibility set to False.
+        :rtype: :class:`Obstacle`"""
         self.rendering_visibility = False
         return self
 
     def isVisible(self) -> bool:
+        """Returns whether the obstacle is visible or not.
+
+        :return: True if the obstacle is visible, False otherwise.
+        :rtype: bool"""
         return self.rendering_visibility
 
     def set_rendering_visibility(self, visibility: bool) -> "Obstacle":
+        """Sets the rendering visibility of the obstacle.
+
+        :param visibility: The rendering visibility of the obstacle.
+        :type visibility: bool
+        :return: The obstacle object with the rendering visibility set.
+        :rtype: :class:`Obstacle`"""
         self.rendering_visibility = visibility
         return self
 
-    # TODO: Move rendering visibility and settings to Drawable
-
 
 class Rectangular(Obstacle):
+    """Represents a rectangular obstacle on the field.
+
+    :param name: The name of the obstacle.
+    :type name: str
+    :param x: The x-coordinate of the obstacle.
+    :type x: :class:`SpatialMeasurement`
+    :param y: The y-coordinate of the obstacle.
+    :type y: :class:`SpatialMeasurement`
+    :param width: The width of the obstacle.
+    :type width: :class:`SpatialMeasurement`
+    :param height: The height of the obstacle.
+    :type height: :class:`SpatialMeasurement`"""
+
     def __init__(
         self,
         name: str,
@@ -47,6 +79,18 @@ class Rectangular(Obstacle):
 
 
 class Circular(Obstacle):
+    """Represents a circular obstacle on the field.
+
+    :param name: The name of the obstacle.
+    :type name: str
+    :param x: The x-coordinate of the obstacle.
+    :type x: :class:`SpatialMeasurement`
+    :param y: The y-coordinate of the obstacle.
+    :type y: :class:`SpatialMeasurement`
+    :param radius: The radius of the obstacle.
+    :type radius: :class:`SpatialMeasurement
+    """
+
     def __init__(
         self,
         name: str,
@@ -58,6 +102,13 @@ class Circular(Obstacle):
 
 
 class Polygonal(Obstacle):
+    """Represents a polygonal obstacle on the field.
+
+    :param name: The name of the obstacle.
+    :type name: str
+    :param points: The points that define the polygon.
+    :type points: List[Tuple[SpatialMeasurement, SpatialMeasurement]]"""
+
     def __init__(
         self, name: str, points: List[Tuple[SpatialMeasurement, SpatialMeasurement]]
     ) -> None:

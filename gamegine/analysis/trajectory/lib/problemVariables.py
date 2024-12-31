@@ -4,7 +4,29 @@ from jormungandr.optimization import OptimizationProblem
 
 @dataclass
 class PointVariables:
-    """Dataclass used to store the state variables at all discrete points in a trajectory."""
+    """Dataclass used to store the state variables at all discrete points in a trajectory.
+
+    :param POS_X: The x position of the robot.
+    :type POS_X: list containing Sleipnir decision variables
+    :param POS_Y: The y position of the robot.
+    :type POS_Y: list containing Sleipnir decision variables
+    :param VEL_X: The x velocity of the robot.
+    :type VEL_X: list containing Sleipnir decision variables
+    :param VEL_Y: The y velocity of the robot.
+    :type VEL_Y: list containing Sleipnir decision variables
+    :param ACCEL_X: The x acceleration of the robot.
+    :type ACCEL_X: list containing Sleipnir decision variables
+    :param ACCEL_Y: The y acceleration of the robot.
+    :type ACCEL_Y: list containing Sleipnir decision variables
+    :param THETA: The angle of the robot.
+    :type THETA: list containing Sleipnir decision variables
+    :param OMEGA: The angular velocity of the robot.
+    :type OMEGA: list containing Sleipnir decision variables
+    :param ALPHA: The angular acceleration of the robot.
+    :type ALPHA: list containing Sleipnir decision variables
+    :param DT: The time step between each point.
+    :type DT: list containing Sleipnir decision variables
+    """
 
     POS_X: list
     POS_Y: list
@@ -19,7 +41,15 @@ class PointVariables:
 
     @classmethod
     def with_initial_variables(cls, problem: OptimizationProblem, num_points: int):
-        """Initializes the state variables for all points in the trajectory."""
+        """Initializes the state variables for all points in the trajectory.
+
+        :param problem: The optimization problem to use to create the decision variables.
+        :type problem: :class:`OptimizationProblem`
+        :param num_points: The number of points in the trajectory.
+        :type num_points: int
+        :return: The state variables for all points in the trajectory.
+        :rtype: :class:`PointVariables`
+        """
 
         return cls(
             POS_X=problem.decision_variable(num_points),
@@ -45,7 +75,37 @@ class ModuleVariables:
 
 @dataclass
 class SwervePointVariables(PointVariables):
-    """Dataclass used to store the state variables at all discrete points in a swerve drive trajectory."""
+    """Dataclass used to store the state variables at all discrete points in a swerve drive trajectory.
+
+    :param POS_X: The x position of the robot.
+    :type POS_X: list containing Sleipnir decision variables
+    :param POS_Y: The y position of the robot.
+    :type POS_Y: list containing Sleipnir decision variables
+    :param VEL_X: The x velocity of the robot.
+    :type VEL_X: list containing Sleipnir decision variables
+    :param VEL_Y: The y velocity of the robot.
+    :type VEL_Y: list containing Sleipnir decision variables
+    :param ACCEL_X: The x acceleration of the robot.
+    :type ACCEL_X: list containing Sleipnir decision variables
+    :param ACCEL_Y: The y acceleration of the robot.
+    :type ACCEL_Y: list containing Sleipnir decision variables
+    :param THETA: The angle of the robot.
+    :type THETA: list containing Sleipnir decision variables
+    :param OMEGA: The angular velocity of the robot.
+    :type OMEGA: list containing Sleipnir decision variables
+    :param ALPHA: The angular acceleration of the robot.
+    :type ALPHA: list containing Sleipnir decision variables
+    :param DT: The time step between each point.
+    :type DT: list containing Sleipnir decision variables
+    :param TL: The state variables for the top left swerve module.
+    :type TL: :class:`ModuleVariables`
+    :param TR: The state variables for the top right swerve module.
+    :type TR: :class:`ModuleVariables`
+    :param BL: The state variables for the bottom left swerve module.
+    :type BL: :class:`ModuleVariables`
+    :param BR: The state variables for the bottom right swerve module.
+    :type BR: :class:`ModuleVariables
+    """
 
     TL: ModuleVariables
     TR: ModuleVariables

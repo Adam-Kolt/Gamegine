@@ -7,6 +7,20 @@ from gamegine.utils.NCIM.Dimensions.spatial import Meter, SpatialMeasurement
 
 
 class RobotState(StateSpace):
+    """Class for representing the state space of a robot, which includes the x and y coordinates of the robot on the field screen, the heading of the robot, the alliance of the robot, and the gamepieces the robot is holding.
+
+    :param x: The x-coordinate of the robot.
+    :type x: :class:`SpatialMeasurement`
+    :param y: The y-coordinate of the robot.
+    :type y: :class:`SpatialMeasurement`
+    :param heading: The heading of the robot.
+    :type heading: :class:`AngularMeasurement`
+    :param alliance: The alliance of the robot.
+    :type alliance: :class:`Alliance`
+    :param gamepieces: A dictionary of gamepieces the robot is holding.
+    :type gamepieces: Dict[:class:`Gamepiece`, int]
+    """
+
     def __init__(
         self,
         x: SpatialMeasurement = Meter(0),

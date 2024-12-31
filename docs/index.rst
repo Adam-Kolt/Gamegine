@@ -9,8 +9,10 @@ The Knowledge Bank
 .. toctree::
    :maxdepth: 2
    
-   reference_index
+   representation
+   reference
    ncim
+
    
 
 

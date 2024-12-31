@@ -8,6 +8,15 @@ from .style import get_color, Palette, Shade, Opacity
 
 
 def draw_fancy_circle(circle: Circle, color: Palette, render_scale: SpatialMeasurement):
+    """Draws a fancy circle with a light outer circle and a darker inner circle.
+
+    :param circle: The circle to draw.
+    :type circle: :class:`Circle`
+    :param color: The color of the circle.
+    :type color: :class:`Palette`
+    :param render_scale: The scale at which to render the circle.
+    :type render_scale: :class:`SpatialMeasurement`
+    """
     # Outer Circle
     pygame.draw.circle(
         pygame.display.get_surface(),
@@ -28,6 +37,15 @@ def draw_fancy_circle(circle: Circle, color: Palette, render_scale: SpatialMeasu
 def draw_fancy_rectangle(
     rectangle: Rectangle, color: Palette, render_scale: SpatialMeasurement
 ):
+    """Draws a fancy rectangle with a light outer rectangle and a darker inner rectangle.
+
+    :param rectangle: The rectangle to draw.
+    :type rectangle: :class:`Rectangle`
+    :param color: The color of the rectangle.
+    :type color: :class:`Palette`
+    :param render_scale: The scale at which to render the rectangle.
+    :type render_scale: :class:`SpatialMeasurement`
+    """
     border_width = 5
     border_radius = 5
 
@@ -61,6 +79,15 @@ def draw_fancy_rectangle(
 def draw_fancy_polygon(
     polygon: Polygon, color: Palette, render_scale: SpatialMeasurement
 ):
+    """Draws a polygon.
+
+    :param polygon: The polygon to draw.
+    :type polygon: :class:`Polygon`
+    :param color: The color of the polygon.
+    :type color: :class:`Palette`
+    :param render_scale: The scale at which to render the polygon.
+    :type render_scale: :class:`SpatialMeasurement`
+    """
     # Outer Polygon
     pygame.draw.polygon(
         pygame.display.get_surface(),
@@ -75,6 +102,15 @@ def draw_fancy_polygon(
 def draw_fancy_discrete_boundary(
     discrete_boundary, color: Palette, render_scale: SpatialMeasurement
 ):
+    """Draws a discrete boundary.
+
+    :param discrete_boundary: The discrete boundary to draw.
+    :type discrete_boundary: :class:`DiscreteBoundary`
+    :param color: The color of the discrete boundary.
+    :type color: :class:`Palette`
+    :param render_scale: The scale at which to render the discrete boundary.
+    :type render_scale: :class:`SpatialMeasurement`
+    """
     pygame.draw.polygon(
         pygame.display.get_surface(),
         get_color(color, Shade.LIGHT, Opacity.TRANSPARENTISH),
@@ -92,6 +128,19 @@ def draw_point(
     color: Palette,
     render_scale: SpatialMeasurement,
 ):
+    """Draws a point.
+
+    :param x: The x-coordinate of the point.
+    :type x: :class:`SpatialMeasurement`
+    :param y: The y-coordinate of the point.
+    :type y: :class:`SpatialMeasurement`
+    :param radius: The radius of the point.
+    :type radius: :class:`SpatialMeasurement`
+    :param color: The color of the point.
+    :type color: :class:`Palette`
+    :param render_scale: The scale at which to render the point.
+    :type render_scale: :class:`SpatialMeasurement`
+    """
     pygame.draw.circle(
         pygame.display.get_surface(),
         get_color(color, Shade.LIGHT, Opacity.TRANSPARENTISH),
@@ -109,6 +158,23 @@ def draw_line(
     color: Palette,
     render_scale: SpatialMeasurement,
 ):
+    """Draws a line.
+
+    :param x1: The x-coordinate of the start of the line.
+    :type x1: :class:`SpatialMeasurement`
+    :param y1: The y-coordinate of the start of the line.
+    :type y1: :class:`SpatialMeasurement`
+    :param x2: The x-coordinate of the end of the line.
+    :type x2: :class:`SpatialMeasurement`
+    :param y2: The y-coordinate of the end of the line.
+    :type y2: :class:`SpatialMeasurement`
+    :param thickness: The thickness of the line.
+    :type thickness: :class:`SpatialMeasurement`
+    :param color: The color of the line.
+    :type color: :class:`Palette`
+    :param render_scale: The scale at which to render the line.
+    :type render_scale: :class:`SpatialMeasurement`
+    """
     pygame.draw.line(
         pygame.display.get_surface(),
         get_color(color, Shade.LIGHT, Opacity.TRANSPARENTISH),
@@ -119,6 +185,15 @@ def draw_line(
 
 
 def draw_fancy_boundary(bounds, color: Palette, render_scale: SpatialMeasurement):
+    """Draws a fancy boundary.
+
+    :param bounds: The boundary to draw.
+    :type bounds: :class:`Circle`, :
+    :param color: The color of the boundary.
+    :type color: :class:`Palette`
+    :param render_scale: The scale at which to render the boundary.
+    :type render_scale: :class:`SpatialMeasurement`
+    """
     if isinstance(bounds, Circle):
         draw_fancy_circle(bounds, color, render_scale)
     elif isinstance(bounds, Rectangle):
@@ -132,4 +207,12 @@ def draw_fancy_boundary(bounds, color: Palette, render_scale: SpatialMeasurement
 
 
 def draw_obstacle(obstacle, render_scale: SpatialMeasurement):
+    """Draws an obstacle.
+
+    :param obstacle: The obstacle to draw.
+    :type obstacle: :class:`Obstacle`
+    :param render_scale: The scale at which to render the obstacle.
+    :type render_scale: :class:`SpatialMeasurement`
+    """
+
     draw_fancy_boundary(obstacle.bounds, Palette.RED, render_scale)

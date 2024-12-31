@@ -80,7 +80,16 @@ from gamegine.utils.NCIM.ncim import RatioOf
 
 @dataclass
 class TrajectoryRobotConstraints:
-    """Dataclass used to store robot constraints for a trajectory optimization problem."""
+    """Dataclass used to store robot constraints for a trajectory optimization problem.
+
+    :param max_acceleration: The maximum acceleration of the robot.
+    :type max_acceleration: :class:`Acceleration`
+    :param max_velocity: The maximum velocity of the robot.
+    :type max_velocity: :class:`Velocity`
+    :param max_angular_acceleration: The maximum angular acceleration of the robot.
+    :type max_angular_acceleration: :class:`Alpha`
+    :param max_angular_velocity: The maximum angular velocity of the robot.
+    :type max_angular_velocity: :class:`Omega`"""
 
     max_acceleration: Acceleration = MeterPerSecondSquared(0)
     max_velocity: Velocity = MetersPerSecond(0)
@@ -90,7 +99,12 @@ class TrajectoryRobotConstraints:
 
 @dataclass
 class SwerveRobotConstraints(TrajectoryRobotConstraints):
-    """Dataclass used to store swerve drive robot constraints for a trajectory optimization problem."""
+    """Dataclass used to store swerve drive robot constraints for a trajectory optimization problem.
+
+    :param swerve_config: The configuration of the swerve drive.
+    :type swerve_config: :class:`SwerveConfig`
+    :param physical_parameters: The physical parameters of the robot.
+    :type physical_parameters: :class:`PhysicalParameters`"""
 
     swerve_config: SwerveConfig = None
     physical_parameters: PhysicalParameters = None
@@ -98,12 +112,28 @@ class SwerveRobotConstraints(TrajectoryRobotConstraints):
 
 @dataclass
 class SolverConfig:
+    """Dataclass used to store configuration information for a trajectory optimization solver. This decides how accurately the solver attempts to solve the problem, in addition to allowing for a time limit on the solver.
+
+    :param solution_tolerance: The tolerance of the solution.
+    :type solution_tolerance: float
+    :param max_iterations: The maximum number of iterations the solver will run.
+    :type max_iterations: int
+    :param timeout: The maximum time the solver will run before stopping.
+    :type timeout: float"""
+
     solution_tolerance: float = 1e-6
     max_iterations: int = 1000
     timeout: float = 100.0
 
 
 class Trajectory(Drawable):
+    """Class used to store a trajectory generated from an optimization problem. Contains information about the trajectory, including length, time, and robot constraints.
+
+    :param points: The points along the trajectory.
+    :type points: List[:class:`TrajectoryState`]
+    :param robot_constraints: The constraints of the robot.
+    :type robot_constraints: :class:`TrajectoryRobotConstraints`"""
+
     def __compute_trajectory_parameters(self):
         self.travel_time = sum(
             [point.dt for point in self.points[:-1]], start=Second(0)
@@ -139,18 +169,42 @@ class Trajectory(Drawable):
         pass
 
     def get_travel_time(self) -> TemporalMeasurement:
+        """Returns the total travel time of the trajectory.
+
+        :return: The total travel time of the trajectory.
+        :rtype: :class:`TemporalMeasurement`"""
         return self.travel_time
 
     def get_length(self) -> SpatialMeasurement:
+        """Returns the total length of the trajectory.
+
+        :return: The total length of the trajectory.
+        :rtype: :class:`SpatialMeasurement`"""
         return self.path_length
 
     def get_at_time(self, time: TemporalMeasurement) -> TrajectoryState:
+        """Returns the state of the robot at a given time.
+
+        :param time: The time at which to get the state of the robot.
+        :type time: :class:`TemporalMeasurement`
+        :return: The state of the robot at the given time.
+        :rtype: :class:`TrajectoryState`"""
         pass
 
     def get_robot_constraints(self) -> TrajectoryRobotConstraints:
+        """Returns the robot constraints of the trajectory.
+
+        :return: The robot constraints of the trajectory.
+        :rtype: :class:`TrajectoryRobotConstraints`"""
         return self.robot_constraints
 
     def export_to_file(self, file_path: str):
+        # TODO: Change to new Choreo Format
+        """Exports the trajectory to a JSON file, formatted in the Choreo structure.
+
+        :param file_path: The path to the file to export the trajectory to.
+        :type file_path: str"""
+
         with open(file_path, "w") as file:
             file.write(
                 """
@@ -187,6 +241,11 @@ class Trajectory(Drawable):
         return f"Trajectory: {len(self.points)} points, {self.get_length()} length, {self.get_travel_time()} time. Optimized for {self.robot_constraints}."
 
     def draw(self, render_scale: SpatialMeasurement):
+        """Draws the trajectory on the screen.
+
+        :param render_scale: The scale at which to render the trajectory.
+        :type render_scale: :class:`SpatialMeasurement`"""
+
         for i in range(len(self.points) - 1):
             point = self.points[i]
             point2 = self.points[i + 1]
@@ -209,6 +268,12 @@ class Trajectory(Drawable):
 
 
 class SwerveTrajectory(Trajectory):
+    """Class used to store a swerve drive trajectory generated from an optimization problem. Contains information about the trajectory, including length, time, and robot constraints.
+
+    :param points: The points along the trajectory.
+    :type points: List[:class:`TrajectoryState`]
+    :param robot_constraints: The constraints of the robot.
+    :type robot_constraints: :class:`SwerveRobotConstraints`"""
 
     def __init__(
         self,
@@ -318,6 +383,13 @@ class SwerveTrajectory(Trajectory):
 
 
 class TrajectoryProblem:
+    """Class for defining the optimization problem for a trajectory. Contains the problem and the point variables used in the problem.
+
+    :param intialized_problem: The optimization problem to solve.
+    :type intialized_problem: :class:`OptimizationProblem`
+    :param point_vars: The state variables at all discrete points in the trajectory.
+    :type point_vars: :class:`PointVariables`"""
+
     def __init__(
         self, intialized_problem: OptimizationProblem, point_vars: PointVariables
     ):
@@ -327,9 +399,18 @@ class TrajectoryProblem:
         pass
 
     def set_solver_callback(self, callback: Callable):
+        """Sets a callback function to be called for each solver iteration.
+
+        :param callback: The callback function to call.
+        :type callback: Callable"""
         self.problem.callback(callback)
 
     def apply_constraints(self, robot_constraints: TrajectoryRobotConstraints):
+        """Applies constraints to the optimization problem based on the robot constraints.
+
+        :param robot_constraints: The constraints of the robot.
+        :type robot_constraints: :class:`TrajectoryRobotConstraints`"""
+
         AccelerationLessThan(robot_constraints.max_acceleration)(
             self.problem, self.point_vars
         )
@@ -346,6 +427,13 @@ class TrajectoryProblem:
 
     @staticmethod
     def get_trajectory_states_from_vars(vars) -> List[TrajectoryState]:
+        """Returns a list of trajectory states from the point variables.
+
+        :param vars: The point variables to get the trajectory states from.
+        :type vars: :class:`PointVariables`
+        :return: A list of trajectory states from the point variables.
+        :rtype: List[:class:`TrajectoryState`]"""
+
         VEL_UNIT = VelocityUnit(CALCULATION_UNIT_SPATIAL, CALCULATION_UNIT_TEMPORAL)
         ACCEL_UNIT = AccelerationUnit(
             CALCULATION_UNIT_SPATIAL, CALCULATION_UNIT_TEMPORAL
@@ -392,12 +480,23 @@ class TrajectoryProblem:
         return states
 
     def get_trajectory_states(self) -> List[TrajectoryState]:
+        """Returns a list of trajectory states from the point variables.
+
+        :return: A list of trajectory states from the point variables.
+        :rtype: List[:class:`TrajectoryState`]"""
         return self.get_trajectory_states_from_vars(self.point_vars)
 
     def solve(
         self, robot_constraints: TrajectoryRobotConstraints, config: SolverConfig
     ) -> Trajectory:
-        """Solves the optimization problem and returns the solution."""
+        """Solves the optimization problem and returns the solution.
+
+        :param robot_constraints: The constraints of the robot.
+        :type robot_constraints: :class:`TrajectoryRobotConstraints`
+        :param config: The configuration of the solver.
+        :type config: :class:`SolverConfig`
+        :return: The solution to the optimization problem.
+        :rtype: :class:`Trajectory`"""
         self.apply_constraints(robot_constraints)
 
         self.problem.solve(
@@ -410,11 +509,23 @@ class TrajectoryProblem:
 
 
 class SwerveTrajectoryProblem(TrajectoryProblem):
+    """Class for defining the optimization problem for a swerve drive trajectory. Contains the problem and the point variables used in the problem.
+
+    :param problem: The optimization problem to solve.
+    :type problem: :class:`OptimizationProblem`
+    :param point_vars: The state variables at all discrete points in the trajectory.
+    :type point_vars: :class:`SwervePointVariables`"""
+
     def __init__(self, problem: OptimizationProblem, point_vars: SwervePointVariables):
         super().__init__(problem, point_vars)
         pass
 
     def apply_swerve_constraints(self, robot_constraints: SwerveRobotConstraints):
+        """Applies constraints to the optimization problem based on the swerve drive robot constraints.
+
+        :param robot_constraints: The constraints of the robot.
+        :type robot_constraints: :class:`SwerveRobotConstraints`"""
+
         # FIXME: This screws up the solvers feasability
         SwerveModuleConstraints(
             robot_constraints.swerve_config, robot_constraints.physical_parameters
@@ -442,7 +553,12 @@ class SwerveTrajectoryProblem(TrajectoryProblem):
 
 @dataclass
 class Waypoint:
-    """Dataclass used to store a waypoint that the trajectory must pass through."""
+    """Dataclass used to store a waypoint that the trajectory must pass through.
+
+    :param x: The x position of the waypoint.
+    :type x: :class:`SpatialMeasurement`
+    :param y: The y position of the waypoint.
+    :type y: :class:`SpatialMeasurement`"""
 
     x: SpatialMeasurement
     y: SpatialMeasurement
@@ -455,7 +571,12 @@ class Waypoint:
         self,
         *constraints: List[Callable[[OptimizationProblem, PointVariables, int], None]],
     ) -> "Waypoint":
-        """Adds constraints to the waypoint."""
+        """Adds constraints to the waypoint.
+
+        :param constraints: The constraints to add to the waypoint.
+        :type constraints: List[Callable[[OptimizationProblem, PointVariables, int], None]]
+        :return: The waypoint with the added constraints.
+        :rtype: :class:`Waypoint`"""
         self.constraints.extend(constraints)
         return self
 
@@ -469,13 +590,29 @@ class Waypoint:
 
 
 class MinimizationStrategy(Enum):
+    """Enum used to define the minimization strategy for a trajectory optimization problem.
+
+    :param TIME: Minimize the time taken to complete the trajectory.
+    :param DISTANCE: Minimize the distance traveled in the trajectory."""
+
     TIME = 0
     DISTANCE = 1
 
 
 @dataclass
 class TrajectoryBuilderConfig:
-    """Dataclass used to store configuration information for a trajectory optimization problem."""
+    """Dataclass used to store configuration information for a trajectory optimization problem.
+
+    :param trajectory_resolution: The resolution of the trajectory.
+    :type trajectory_resolution: :class:`SpatialMeasurement`
+    :param stretch_factor: Factor which controls how much the trajectory can "stretch" from its initial path.
+    :type stretch_factor: float
+    :param min_spacing: The minimum spacing between points in the trajectory, can help space out points and keep them from clumping up.
+    :type min_spacing: :class:`SpatialMeasurement`
+    :param apply_kinematic_constraints: Whether to apply kinematic constraints to the trajectory.
+    :type apply_kinematic_constraints: bool
+    :param minimization_strategy: The minimization strategy for the trajectory.
+    :type minimization_strategy: :class:`MinimizationStrategy`"""
 
     trajectory_resolution: SpatialMeasurement = Centimeter(10)
     stretch_factor: float = 1.1
@@ -485,7 +622,13 @@ class TrajectoryBuilderConfig:
 
 
 class TrajectoryProblemBuilder:
-    """Class used to build a trajectory optimization problem and generate a solution. Allows for constraints and objectives to be added and setup."""
+    """Class used to build a trajectory optimization problem and generate a solution. Allows for constraints and objectives to be added and setup.
+
+    :param initial_pathes: The initial pathes to use for the trajectory.
+    :type initial_pathes: List[:class:`Path`]
+    :param point_constraints: The constraints that apply to all points in the trajectory.
+    :type point_constraints: List[Callable[[OptimizationProblem, PointVariables], None]
+    """
 
     def __init__(self) -> None:
         self.problem = None
@@ -497,11 +640,26 @@ class TrajectoryProblemBuilder:
         pass
 
     def generate_point_vars(self, num_points: int):
+        """Initializes the state variables for all points in the trajectory.
+
+        :param num_points: The number of points in the trajectory.
+        :type num_points: int
+        :return: The state variables at all discrete points in the trajectory.
+        :rtype: :class:`PointVariables`"""
         return PointVariables.with_initial_variables(self.problem, num_points)
 
     def initialize_state_variables_with_initial_pathes(
         self, initial_pathes: List[Path], resolution: SpatialMeasurement
     ) -> int:
+        """Initializes the state variables for all points in the trajectory based on the initial pathes.
+
+        :param initial_pathes: The initial pathes to use for the trajectory.
+        :type initial_pathes: List[:class:`Path`]
+        :param resolution: The resolution of the trajectory.
+        :type resolution: :class:`SpatialMeasurement`
+        :return: The number of points in the trajectory.
+        :rtype: int"""
+
         X_nodes = []
         Y_nodes = []
 
@@ -561,6 +719,7 @@ class TrajectoryProblemBuilder:
         ThetaKinematicsConstraint(self.problem, self.point_vars)
 
     def apply_basic_constraints(self):
+        """Applies basic constraints to the optimization problem."""
         base.MagnitudeGreaterThanConstraint(self.problem, self.point_vars.DT, 0)
 
     def __apply_spacing_constraints(self, config: TrajectoryBuilderConfig):
@@ -570,6 +729,11 @@ class TrajectoryProblemBuilder:
         )(self.problem, self.point_vars)
 
     def apply_config_constraints(self, config: TrajectoryBuilderConfig):
+        """Applies constraints to the optimization problem based on the configuration.
+
+        :param config: The configuration of the trajectory optimization problem.
+        :type config: :class:`TrajectoryBuilderConfig`"""
+
         if config.apply_kinematic_constraints:
             self.__apply_kinematic_constraints()
 
@@ -577,6 +741,11 @@ class TrajectoryProblemBuilder:
             self.__apply_spacing_constraints(config)
 
     def apply_minimization_objective(self, config: TrajectoryBuilderConfig):
+        """Applies the minimization objective to the optimization problem based on the configuration.
+
+        :param config: The configuration of the trajectory optimization problem.
+        :type config: :class:`TrajectoryBuilderConfig`"""
+
         total = 0
         match config.minimization_strategy:
             case MinimizationStrategy.TIME:
@@ -595,7 +764,12 @@ class TrajectoryProblemBuilder:
     def generate(
         self, config: TrajectoryBuilderConfig = TrajectoryBuilderConfig()
     ) -> TrajectoryProblem:
-        """Sets up and generates the optimization problem, based on the constraints and objectives currently added to the problem."""
+        """Sets up and generates the optimization problem, based on the constraints and objectives currently added to the problem.
+
+        :param config: The configuration of the trajectory optimization problem.
+        :type config: :class:`Trajectory
+        :return: The optimization problem for the trajectory.
+        :rtype: :class:`TrajectoryProblem`"""
         self.problem = OptimizationProblem()
         if len(self.waypoints) < 2:
             raise ValueError("Trajectory must have at least two waypoints.")
@@ -625,19 +799,33 @@ class TrajectoryProblemBuilder:
     def points_constraint(
         self, constraint: Callable[[OptimizationProblem, PointVariables], None]
     ):
-        """Adds a constraint that applies to all points in the trajectory."""
+        """Adds a constraint that applies to all points in the trajectory.
+
+        :param constraint: The constraint to add.
+        :type constraint: Callable[[OptimizationProblem, PointVariables], None]"""
+
         self.point_constraints.append(constraint)
         pass
 
     def waypoint(self, waypoint: Waypoint, order: int = -1):
-        """Adds a waypoint that the trajectory must pass through."""
+        """Adds a waypoint that the trajectory must pass through.
+
+        :param waypoint: The waypoint to add.
+        :type waypoint: :class:`Waypoint`
+        :param order: The order of the waypoint in the trajectory.
+        :type order: int"""
+
         if order == -1:
             order = len(self.waypoints)
         self.waypoints[order] = waypoint
         pass
 
     def guide_pathes(self, guide_pathes: List[Path]):
-        """Adds guide pathes that aid the trajectory in reaching its waypoints."""
+        """Adds guide pathes that aid the trajectory in reaching its waypoints.
+
+        :param guide_pathes: The guide pathes to add.
+        :type guide_pathes: List[:class:`Path`]"""
+
         if len(guide_pathes) != len(self.waypoints) - 1:
             logging.Warn("Number of guide pathes does not match number of waypoints.")
         self.initial_pathes = guide_pathes
@@ -652,12 +840,24 @@ class SwerveTrajectoryProblemBuilder(TrajectoryProblemBuilder):
         pass
 
     def generate_point_vars(self, num_points: int):
+        """Initializes the state variables for all points in the trajectory.
+
+        :param num_points: The number of points in the trajectory.
+        :type num_points: int
+        :return: The state variables at all discrete points in the trajectory.
+        :rtype: :class:`SwervePointVariables`"""
+
         return SwervePointVariables.with_initial_variables(self.problem, num_points)
 
     def generate(
         self, config: TrajectoryBuilderConfig = TrajectoryBuilderConfig()
     ) -> SwerveTrajectoryProblem:
-        """Sets up and generates the optimization problem, based on the constraints and objectives currently added to the problem."""
+        """Sets up and generates the optimization problem, based on the constraints and objectives currently added to the problem.
+
+        :param config: The configuration of the trajectory optimization problem.
+        :type config: :class:`TrajectoryBuilderConfig`
+        :return: The optimization problem for the trajectory.
+        :rtype: :class:`SwerveTrajectoryProblem`"""
         self.problem = OptimizationProblem()
 
         if len(self.waypoints) < 2:

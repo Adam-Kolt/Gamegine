@@ -34,6 +34,11 @@ class DrivetrainParameters(ABC):
     pass
 
 
+"""
+Class for storing data about individual waypoints in a trajectory, including position, velocity, and the angular counterpart of each. It describes the states the robot should reach sequentially in a trajectory.
+"""
+
+
 @dataclass
 class TrajectoryKeypoint:
     x: SpatialMeasurement = None
@@ -42,6 +47,11 @@ class TrajectoryKeypoint:
     velocity_x: Velocity = MetersPerSecond(0.0)
     velocity_y: Velocity = MetersPerSecond(0.0)
     omega: Omega = RadiansPerSecond(0.0)
+
+
+"""
+Abstract class for a trajectory generator which bases output on an initial guide path, usually generated from running a pathfinding algorithm, obstacles, and start and end parameters.
+"""
 
 
 class GuidedTrajectoryGenerator(ABC):
@@ -58,6 +68,11 @@ class GuidedTrajectoryGenerator(ABC):
         pass
 
 
+"""
+Abstract class for a trajectory generator which bases output on an initial guide path, usually generated from running a pathfinding algorithm, obstacles, and start and end parameters. This class is specifically for swerve drivetrains.
+"""
+
+
 class GuidedSwerveTrajectoryGenerator(GuidedTrajectoryGenerator):
     @abstractmethod
     def calculate_trajectory(
@@ -72,6 +87,10 @@ class GuidedSwerveTrajectoryGenerator(GuidedTrajectoryGenerator):
         pass
 
 
+"""Class for storing data about each discrete point in a trajectory, including position, velocity, and acceleration of a robot at that point.
+"""
+
+
 @dataclass
 class TrajectoryState:
     x: SpatialMeasurement
@@ -82,8 +101,18 @@ class TrajectoryState:
     acc_x: Velocity = MetersPerSecond(0.0)
     acc_y: Velocity = MetersPerSecond(0.0)
 
+    """Returns the magnitude of the velocity vector at the current state.
+    
+    :return: The magnitude of the velocity vector at the current state.
+    :rtype: :class:`Velocity`
+    """
+
     def get_velocity_magnitude(self) -> Velocity:
         return (self.vel_x**2 + self.vel_y**2) ** 0.5
+
+
+"""Abstract class for a trajectory, which is defined as a series of states which the robot travels through. Includes methods for getting the length and travel time of the trajectory.
+"""
 
 
 class Trajectory(Drawable):
@@ -110,10 +139,18 @@ class Trajectory(Drawable):
         pass
 
 
-class SwerveTrajectory(
-    Trajectory
-):  # TODO: Return SwerveTrajectoryState with additional module state info
+"""
+Class for storing data about each discrete point in a trajectory, including position, velocity, and acceleration of a robot at that point. This class is specifically for swerve drivetrains.
+"""
+
+
+class SwerveTrajectory(Trajectory):
     pass
+
+
+"""
+Stores individual states of a swerve trajectory, including position, velocity, and acceleration of a robot at that point.
+"""
 
 
 class SwerveTrajectoryState(TrajectoryState):

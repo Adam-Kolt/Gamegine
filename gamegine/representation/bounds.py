@@ -722,7 +722,9 @@ class Circle(Boundary):
     def get_3d(
         self, z_start: SpatialMeasurement = 0, z_end: SpatialMeasurement = 0
     ) -> "Cylinder":
-        return Cylinder(self.x, self.y, self.radius, z_start, z_end)
+        return Cylinder(
+            self.radius, z_end - z_start, Transform3D((self.x, self.y, z_start))
+        )
 
 
 class Cylinder(DiscreteBoundary3D):

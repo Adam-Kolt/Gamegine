@@ -17,10 +17,12 @@ class Gear:
         """
         return GearSeries(self, other)
 
-    def get_input_gear(self):
+    def get_input_gear(self) -> "Gear":
+        """Returns the input gear of the gear system."""
         return self
 
-    def get_output_gear(self):
+    def get_output_gear(self) -> "Gear":
+        """Returns the output gear of the gear system."""
         return self
 
     def get_ratio(self):
@@ -45,9 +47,16 @@ class Gear:
         return self.teeth * other.teeth
 
 
-# TODO: Fix to actually make it make sense
 class GearSeries:
-    """Dataclass used to store the gear ratio of a gear system."""
+    """Class used to store the gear ratio of a gear system. Used in order to create compound gears. To apply the gear ratio to a value, multiply or divide the value by the GearSeries object.
+
+    :param input_gear: The input gear of the gear system.
+    :type input_gear: Gear
+    :param output_gear: The output gear of the gear system.
+    :type output_gear: Gear
+    :param ratio: The gear ratio of the gear system.
+    :type ratio: float
+    """
 
     def __init__(self, input_gear: Gear, output_gear: Gear, ratio=None) -> None:
         self.input_gear = input_gear
@@ -57,13 +66,28 @@ class GearSeries:
         else:
             self.ratio = output_gear / input_gear
 
-    def get_input_gear(self):
+    def get_input_gear(self) -> Gear:
+        """Returns the input gear of the gear system.
+
+        :return: The input gear of the gear system.
+        :rtype: Gear
+        """
         return self.input_gear
 
-    def get_output_gear(self):
+    def get_output_gear(self) -> Gear:
+        """Returns the output gear of the gear system.
+
+        :return: The output gear of the gear system.
+        :rtype: Gear
+        """
         return self.output_gear
 
     def get_ratio(self) -> float:
+        """Returns the gear ratio of the gear system.
+
+        :return: The gear ratio of the gear system.
+        :rtype: float
+        """
         return self.ratio
 
     def __mul__(self, other):
@@ -105,6 +129,8 @@ class GearSeries:
 
 
 class MK4I:
+    """Class for storing the gear ratios of the MK4I Swerve."""
+
     __STAGE1A = Gear(14) + Gear(50)
     __STAGE1B = Gear(16) + Gear(50)
     __STAGE2A = Gear(25) + Gear(19)

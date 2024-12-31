@@ -20,6 +20,13 @@ from gamegine.utils.NCIM.Dimensions.spatial import SpatialMeasurement
 
 
 def VelocityMagnitudeEquals(velocity: Velocity):
+    """Constraint for setting the magnitude of the velocity vector to a specific value.
+
+    :param velocity: The desired velocity magnitude.
+    :type velocity: :class:`Velocity`
+    :return: The constraint function.
+    :rtype: Callable[[Problem, PointVariables, int], None]
+    """
     vel = velocity.to(VelocityUnit(CALCULATION_UNIT_SPATIAL, CALCULATION_UNIT_TEMPORAL))
 
     def _velocity_equals(problem, point_variables, index: int = -1):
@@ -31,6 +38,16 @@ def VelocityMagnitudeEquals(velocity: Velocity):
 
 
 def VelocityEquals(x: Velocity, y: Velocity):
+    """Constraint for setting the velocity vector to a specific value.
+
+    :param x: The desired x velocity.
+    :type x: :class:`Velocity`
+    :param y: The desired y velocity.
+    :type y: :class:`Velocity`
+    :return: The constraint function.
+    :rtype: Callable[[Problem, PointVariables, int], None]
+    """
+
     x = x.to(VelocityUnit(CALCULATION_UNIT_SPATIAL, CALCULATION_UNIT_TEMPORAL))
     y = y.to(VelocityUnit(CALCULATION_UNIT_SPATIAL, CALCULATION_UNIT_TEMPORAL))
 
@@ -43,6 +60,14 @@ def VelocityEquals(x: Velocity, y: Velocity):
 
 
 def AngleEquals(angle: AngularMeasurement):
+    """Constraint for setting the angle of the robot to a specific value.
+
+    :param angle: The desired angle.
+    :type angle: :class:`AngularMeasurement`
+    :return: The constraint function.
+    :rtype: Callable[[Problem, PointVariables, int], None]
+    """
+
     angle = angle.to(CALCULATION_UNIT_ANGULAR)
 
     def _angle_equals(problem, point_variables, index: int = -1):
@@ -52,6 +77,14 @@ def AngleEquals(angle: AngularMeasurement):
 
 
 def VelocityLessThan(velocity: Velocity):
+    """Constraint for setting the magnitude of the velocity vector to be less than a specific value.
+
+    :param velocity: The desired maximum velocity magnitude.
+    :type velocity: :class:`Velocity`
+    :return: The constraint function.
+    :rtype: Callable[[Problem, PointVariables, int], None]
+    """
+
     vel = velocity.to(VelocityUnit(CALCULATION_UNIT_SPATIAL, CALCULATION_UNIT_TEMPORAL))
 
     def _velocity_less_than(problem, point_variables, index: int = -1):
@@ -69,6 +102,15 @@ def VelocityLessThan(velocity: Velocity):
 
 
 def PositionEquals(x: SpatialMeasurement, y: SpatialMeasurement):
+    """Constraint for setting the position of the robot to a specific value.
+
+    :param x: The desired x position.
+    :type x: :class:`SpatialMeasurement`
+    :param y: The desired y position.
+    :type y: :class:`SpatialMeasurement`
+    :return: The constraint function.
+    :rtype: Callable[[Problem, PointVariables, int], None]
+    """
     x = x.to(CALCULATION_UNIT_SPATIAL)
     y = y.to(CALCULATION_UNIT_SPATIAL)
 
@@ -81,6 +123,13 @@ def PositionEquals(x: SpatialMeasurement, y: SpatialMeasurement):
 
 
 def AccelerationLessThan(acceleration: Acceleration):
+    """Constraint for setting the magnitude of the acceleration vector to be less than a specific value.
+
+    :param acceleration: The desired maximum acceleration magnitude.
+    :type acceleration: :class:`Acceleration`
+    :return: The constraint function.
+    :rtype: Callable[[Problem, PointVariables, int], None]
+    """
     acc = acceleration.to(
         AccelerationUnit(CALCULATION_UNIT_SPATIAL, CALCULATION_UNIT_TEMPORAL)
     )
@@ -100,6 +149,14 @@ def AccelerationLessThan(acceleration: Acceleration):
 
 
 def AngularVelocityLessThan(angular_velocity: Omega):
+    """Constraint for setting the angular velocity of the robot to be less than a specific value.
+
+    :param angular_velocity: The desired maximum angular velocity.
+    :type angular_velocity: :class:`Omega`
+    :return: The constraint function.
+    :rtype: Callable[[Problem, PointVariables, int], None]
+    """
+
     omega = angular_velocity.to(
         OmegaUnit(CALCULATION_UNIT_ANGULAR, CALCULATION_UNIT_TEMPORAL)
     )
@@ -114,6 +171,14 @@ def AngularVelocityLessThan(angular_velocity: Omega):
 
 
 def AngularAccelerationLessThan(angular_acceleration: Alpha):
+    """Constraint for setting the angular acceleration of the robot to be less than a specific value.
+
+    :param angular_acceleration: The desired maximum angular acceleration.
+    :type angular_acceleration: :class:`Alpha`
+    :return: The constraint function.
+    :rtype: Callable[[Problem, PointVariables, int], None]
+    """
+
     alpha = angular_acceleration.to(
         AlphaUnit(CALCULATION_UNIT_ANGULAR, CALCULATION_UNIT_TEMPORAL)
     )

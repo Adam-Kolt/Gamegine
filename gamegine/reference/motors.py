@@ -10,6 +10,26 @@ from gamegine.utils.NCIM.basic import ComplexMeasurement, ComplexUnit
 
 @dataclass
 class MotorSpecification:
+    """Stores the specifications of a motor, including weight, free speed, stall torque, stall current, free current, kT, kV, and max voltage.
+
+    :param weight: The weight of the motor.
+    :type weight: :class:`MassMeasurement`
+    :param free_speed: The free speed of the motor.
+    :type free_speed: :class:`Omega`
+    :param stall_torque: The stall torque of the motor.
+    :type stall_torque: :class:`Torque`
+    :param stall_current: The stall current of the motor.
+    :type stall_current: :class:`CurrentMeasurement`
+    :param free_current: The free current of the motor.
+    :type free_current: :class:`CurrentMeasurement`
+    :param kT: The torque constant of the motor.
+    :type kT: :class:`ComplexMeasurement`
+    :param kV: The velocity constant of the motor.
+    :type kV: :class:`ComplexMeasurement`
+    :param maxVoltage: The maximum voltage of the motor.
+    :type maxVoltage: :class:`ElectricPot`
+    """
+
     weight: MassMeasurement
     free_speed: Omega
     stall_torque: Torque
@@ -25,7 +45,17 @@ class MotorSpecification:
         max_current: CurrentMeasurement,
         max_stator_current: CurrentMeasurement = Ampere(0),
     ) -> Torque:
-        # Kinda a cooked implementation, idk if the model is even correct TODO: Verify, Fix, Refactor Plz
+        """Calculates the torque output of the motor at a given speed, with a given current limit.
+
+        :param speed: The speed at which to calculate the torque.
+        :type speed: :class:`Omega`
+        :param max_current: The maximum current limit of the motor.
+        :type max_current: :class:`CurrentMeasurement`
+        :param max_stator_current: The maximum stator current limit of the motor. Defaults to Ampere(0).
+        :type max_stator_current: :class:`CurrentMeasurement`, optional
+        :return: The torque output of the motor at the given speed.
+        :rtype: :class:`Torque`"""
+        # Kinda a cooked implementation TODO: Verify, Fix, Refactor Plz
         if speed > self.free_speed:
             speed = self.free_speed
 
@@ -47,6 +77,16 @@ class MotorSpecification:
 
 @dataclass
 class PowerConfig:
+    """Stores the power configuration of a motor, including supply current limit, stator current limit, and max power percentage.
+
+    :param supply_current_limit: The supply current limit of the motor.
+    :type supply_current_limit: :class:`CurrentMeasurement`
+    :param stator_current_limit: The stator current limit of the motor.
+    :type stator_current_limit: :class:`CurrentMeasurement`
+    :param max_power_percentage: The maximum power percentage of the motor. Defaults to 1.0.
+    :type max_power_percentage: float, optional
+    """
+
     supply_current_limit: CurrentMeasurement = Ampere(40)
     stator_current_limit: CurrentMeasurement = Ampere(0)
     max_power_percentage: float = 1.0
@@ -54,18 +94,40 @@ class PowerConfig:
 
 @dataclass
 class MotorConfig:
+    """Stores the configuration of a motor, including motor specification and power configuration.
+
+    :param motor: The motor specification of the motor.
+    :type motor: :class:`MotorSpecification`
+    :param power: The power configuration of the motor.
+    :type power: :class:`PowerConfig`
+    """
+
     motor: MotorSpecification
     power: PowerConfig
 
     def get_torque_at(self, speed: Omega) -> Torque:
+        """Calculates the torque output of the motor at a given speed.
+
+        :param speed: The speed at which to calculate the torque.
+        :type speed: :class:`Omega`
+        :return: The torque output of the motor at the given speed.
+        :rtype: :class:`Torque`"""
         return self.motor.get_torque_at(
             speed, self.power.supply_current_limit, self.power.stator_current_limit
         )
 
     def get_max_speed(self) -> Omega:
+        """Returns the maximum speed of the motor.
+
+        :return: The maximum speed of the motor.
+        :rtype: :class:`Omega`"""
         return self.motor.free_speed
 
     def get_max_torque(self) -> Torque:
+        """Returns the maximum torque of the motor.
+
+        :return: The maximum torque of the motor.
+        :rtype: :class:`Torque`"""
         return self.motor.stall_torque
 
 

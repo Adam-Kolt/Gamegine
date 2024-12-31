@@ -19,6 +19,15 @@ def SwerveModuleConstraints(
     swerve_config: SwerveConfig,
     robot_parameters: PhysicalParameters,
 ):  # TODO: These sections are really thrown together, clean up once working
+    """Constraints for the swerve module. Including its max speed, max torque, and wheel radius.
+
+    :param swerve_config: The configuration of the swerve module.
+    :type swerve_config: :class:`SwerveConfig`
+    :param robot_parameters: The physical parameters of the robot.
+    :type robot_parameters: :class:`PhysicalParameters`
+    :return: The constraint function.
+    :rtype: Callable[[Problem, SwervePointVariables], None]
+    """
     max_speed = swerve_config.module.get_max_speed().to(
         OmegaUnit(CALCULATION_UNIT_ANGULAR, CALCULATION_UNIT_TEMPORAL)
     )
@@ -58,6 +67,15 @@ def SwerveModuleConstraints(
 def SwerveKinematicConstraints(
     swerve_config: SwerveConfig, robot_parameters: PhysicalParameters
 ):
+    """Constraints for the swerve kinematics. Including the robot's mass and moment of inertia.
+
+    :param swerve_config: The configuration of the swerve module.
+    :type swerve_config: :class:`SwerveConfig`
+    :param robot_parameters: The physical parameters of the robot.
+    :type robot_parameters: :class:`PhysicalParameters`
+    :return: The constraint function.
+    :rtype: Callable[[Problem, SwervePointVariables], None]"""
+
     mass = robot_parameters.mass.to(CALCULATION_UNIT_MASS)
     moi = robot_parameters.moi.to(
         MOIUnit(CALCULATION_UNIT_MASS, CALCULATION_UNIT_SPATIAL)

@@ -11,6 +11,14 @@ if TYPE_CHECKING:
 
 
 class GamepieceState(StateSpace):
+    """Class for representing the state space of a gamepiece, which includes the x and y coordinates of the gamepiece on the field screen.
+
+    :param x: The x-coordinate of the gamepiece.
+    :type x: :class:`SpatialMeasurement`
+    :param y: The y-coordinate of the gamepiece.
+    :type y: :class:`SpatialMeasurement`
+    """
+
     def __init__(
         self,
         x: SpatialMeasurement,

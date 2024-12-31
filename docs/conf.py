@@ -41,4 +41,5 @@ html_theme_options = {
 import os
 import sys
 
+print("Sphinx is using this Python executable:", sys.executable)
 sys.path.insert(0, os.path.abspath("../gamegine"))

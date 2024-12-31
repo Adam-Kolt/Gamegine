@@ -9,6 +9,8 @@ from gamegine.utils.logging import Debug, Warn
 
 
 class SafeCorridor(Rectangle):
+    """Class for representing a safe corridor for the robot to travel through. Wraps around a rectangle to provide a safe corridor for the robot to travel through."""
+
     def draw(self, render_scale: SpatialMeasurement):
         helpers.draw_fancy_rectangle(self, Palette.BLUE, render_scale)
 
@@ -122,6 +124,12 @@ SAFETY_CORRIDOR_DEBUG = []
 
 
 def SafetyCorridor(obstacles: List[DiscreteBoundary]):
+    """Returns a contraint function that ensures that the robot's path is within a safe corridor.
+
+    :param obstacles: The obstacles that the robot must avoid.
+    :type obstacles: List[:class:`DiscreteBoundary`]
+    :return: The constraint function that ensures the robot's path is within a safe corridor.
+    :rtype: Callable[[Problem, PointVariables], None]"""
 
     def __safety_corridor(problem, point_variables: PointVariables):
         safe_corridor: List[Rectangle] = []

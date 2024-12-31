@@ -1,4 +1,5 @@
 # Import Units for Easy Access
+# TODO: Make classes into generics
 from enum import Enum
 from gamegine.utils.NCIM.Dimensions.spatial import *
 from gamegine.utils.NCIM.Dimensions.temporal import *

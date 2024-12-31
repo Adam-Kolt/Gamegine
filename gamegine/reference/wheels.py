@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import math
 
 from gamegine.utils.NCIM.Dimensions.mass import Kilogram, MassMeasurement, Pound
 from gamegine.utils.NCIM.Dimensions.spatial import Inch, SpatialMeasurement
@@ -6,7 +7,12 @@ from gamegine.utils.NCIM.Dimensions.spatial import Inch, SpatialMeasurement
 
 @dataclass
 class Tread:
-    """Dataclass used to store the coefficient of friction of a wheel tread."""
+    """Dataclass used to store the coefficient of friction of a wheel tread.
+
+    :param coefficientOfFriction: The coefficient of friction of the tread.
+    :type coefficientOfFriction: float
+    :param sideCoF: The coefficient of friction of the side of the tread. Defaults to 0.
+    :type sideCoF: float, optional"""
 
     coefficientOfFriction: float
     sideCoF: float = 0.0
@@ -27,7 +33,16 @@ class Tread:
 
 @dataclass
 class Wheel:
-    """Dataclass used to store the diameter of a wheel."""
+    """Dataclass used to store the diameter of a wheel.
+
+    :param diameter: The diameter of the wheel.
+    :type diameter: :class:`SpatialMeasurement`
+    :param tread: The tread of the wheel.
+    :type tread: :class:`Tread`
+    :param width: The width of the wheel. Defaults to Inch(1).
+    :type width: :class:`SpatialMeasurement`, optional
+    :param mass: The mass of the wheel. Defaults to Pound(0.3).
+    :type mass: :class:`MassMeasurement`, optional"""
 
     diameter: SpatialMeasurement
     tread: Tread
@@ -39,11 +54,17 @@ class Wheel:
             raise ValueError("Wheel diameter must be positive.")
 
     def circumference(self) -> SpatialMeasurement:
-        """Calculate the circumference of the wheel."""
-        return self.diameter * 3.14159
+        """Calculate the circumference of the wheel.
+
+        :return: The circumference of the wheel.
+        """
+        return self.diameter * math.pi
 
     def grip(self) -> float:
-        """Calculate the grip of the wheel."""
+        """Calculate the grip of the wheel.
+
+        :return: The coefficient of friction of the wheel tread.
+        :rtype: float"""
         return self.tread.coefficientOfFriction
 
     def __str__(self) -> str:
@@ -54,6 +75,8 @@ class Wheel:
 
 
 class TreadDB:
+    """Class used to store the coefficient of friction of various wheel treads available in the FRC game. Including different types of VexPro wheels, Colson Performa wheels, AM wheels, AM FIRST wheels, AM Stealth wheels, AM Mecanum wheels, and AM Dualie Omni wheels."""
+
     # VexPro wheels
     vexPro_traction_tires = Tread(1.1)
     vexPro_versawheel = Tread(1.2)
