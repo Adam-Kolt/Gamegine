@@ -203,17 +203,22 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
 <li class="toctree-l1"><a class="reference internal" href="representation.html">Game</a></li>
-<li class="toctree-l1"><a class="reference internal" href="representation.html#bounds">Bounds</a></li>
-<li class="toctree-l1"><a class="reference internal" href="representation.html#frc-elements">FRC Elements</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html#motors">Motors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html#gear-ratio">Gear ratio</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html#drive-train">Drive Train</a></li>
+<li class="toctree-l1"><a class="reference internal" href="representation.html#module-gamegine.representation.bounds">Bounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="representation.html#module-gamegine.representation.apriltag">FRC Elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Motors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html#module-gamegine.reference.gearing">Gear ratio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html#module-gamegine.reference.swerve">Drive Train</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ncim.html">NCIM Units Library</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ncim.html#module-gamegine.utils.NCIM.ncim">Generic NCIM Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ncim.html#module-gamegine.utils.NCIM.basic">Base Measurements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ncim.html#standard-dimensions">Standard Dimensions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ncim.html#complex-dimensions">Complex Dimensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trajectorylib.html">TrajGen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trajectorylib.html#module-gamegine.analysis.trajectory.lib.problemVariables">Problem Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trajectorylib.html#module-gamegine.analysis.trajectory.lib.trajectoryStates">Trajectory States</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trajectorylib.html#module-gamegine.analysis.trajectory.lib.constraints.avoidance">Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pathfinding.html">Meshing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pathfinding.html#module-gamegine.analysis.pathfinding">Pathfinding</a></li>
 </ul>
 
 </div>
@@ -254,17 +259,77 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="the-knowledge-bank">
-<h1>The Knowledge Bank<a class="headerlink" href="#the-knowledge-bank" title="Link to this heading">¶</a></h1>
+          <section id="library-overview">
+<h1>Library Overview<a class="headerlink" href="#library-overview" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="representation.html">Game</a></li>
-<li class="toctree-l1"><a class="reference internal" href="representation.html#bounds">Bounds</a></li>
-<li class="toctree-l1"><a class="reference internal" href="representation.html#frc-elements">FRC Elements</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html#motors">Motors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html#gear-ratio">Gear ratio</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html#drive-train">Drive Train</a></li>
+<li class="toctree-l1"><a class="reference internal" href="representation.html">Game</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.game.Game"><code class="docutils literal notranslate"><span class="pre">Game</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="representation.html#module-gamegine.representation.bounds">Bounds</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.bounds.Boundary"><code class="docutils literal notranslate"><span class="pre">Boundary</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.bounds.Boundary3D"><code class="docutils literal notranslate"><span class="pre">Boundary3D</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.bounds.BoundedObject"><code class="docutils literal notranslate"><span class="pre">BoundedObject</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.bounds.Circle"><code class="docutils literal notranslate"><span class="pre">Circle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.bounds.CircularPattern"><code class="docutils literal notranslate"><span class="pre">CircularPattern()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.bounds.Cylinder"><code class="docutils literal notranslate"><span class="pre">Cylinder</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.bounds.DiscreteBoundary"><code class="docutils literal notranslate"><span class="pre">DiscreteBoundary</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.bounds.DiscreteBoundary3D"><code class="docutils literal notranslate"><span class="pre">DiscreteBoundary3D</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.bounds.ExpandedBounds"><code class="docutils literal notranslate"><span class="pre">ExpandedBounds()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.bounds.ExpandedObjectBounds"><code class="docutils literal notranslate"><span class="pre">ExpandedObjectBounds()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.bounds.Line"><code class="docutils literal notranslate"><span class="pre">Line</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.bounds.LineIntersectsAnyBound"><code class="docutils literal notranslate"><span class="pre">LineIntersectsAnyBound()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.bounds.Point"><code class="docutils literal notranslate"><span class="pre">Point</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.bounds.Polygon"><code class="docutils literal notranslate"><span class="pre">Polygon</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.bounds.PolygonalPrism"><code class="docutils literal notranslate"><span class="pre">PolygonalPrism</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.bounds.Rectangle"><code class="docutils literal notranslate"><span class="pre">Rectangle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.bounds.Square"><code class="docutils literal notranslate"><span class="pre">Square</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.bounds.SymmetricalX"><code class="docutils literal notranslate"><span class="pre">SymmetricalX()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.bounds.SymmetricalXY"><code class="docutils literal notranslate"><span class="pre">SymmetricalXY()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.bounds.SymmetricalY"><code class="docutils literal notranslate"><span class="pre">SymmetricalY()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.bounds.Transform3D"><code class="docutils literal notranslate"><span class="pre">Transform3D</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.obstacle.Circular"><code class="docutils literal notranslate"><span class="pre">Circular</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.obstacle.Obstacle"><code class="docutils literal notranslate"><span class="pre">Obstacle</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.obstacle.Polygonal"><code class="docutils literal notranslate"><span class="pre">Polygonal</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.obstacle.Rectangular"><code class="docutils literal notranslate"><span class="pre">Rectangular</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="representation.html#module-gamegine.representation.apriltag">FRC Elements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.apriltag.AprilTag"><code class="docutils literal notranslate"><span class="pre">AprilTag</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.apriltag.AprilTagFamily"><code class="docutils literal notranslate"><span class="pre">AprilTagFamily</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.gamepiece.Gamepiece"><code class="docutils literal notranslate"><span class="pre">Gamepiece</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.gamepiece.GamepiecePhysicalProperties"><code class="docutils literal notranslate"><span class="pre">GamepiecePhysicalProperties</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.interactable.InteractionOption"><code class="docutils literal notranslate"><span class="pre">InteractionOption</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.interactable.RobotInteractable"><code class="docutils literal notranslate"><span class="pre">RobotInteractable</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.robot.PhysicalParameters"><code class="docutils literal notranslate"><span class="pre">PhysicalParameters</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.robot.Robot"><code class="docutils literal notranslate"><span class="pre">Robot</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.robot.RobotGamestate"><code class="docutils literal notranslate"><span class="pre">RobotGamestate</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.robot.SwerveDrivetrainCharacteristics"><code class="docutils literal notranslate"><span class="pre">SwerveDrivetrainCharacteristics</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.robot.SwerveModuleCharacteristics"><code class="docutils literal notranslate"><span class="pre">SwerveModuleCharacteristics</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="representation.html#gamegine.representation.robot.SwerveRobot"><code class="docutils literal notranslate"><span class="pre">SwerveRobot</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Motors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#gamegine.reference.motors.MotorConfig"><code class="docutils literal notranslate"><span class="pre">MotorConfig</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#gamegine.reference.motors.MotorSpecification"><code class="docutils literal notranslate"><span class="pre">MotorSpecification</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#gamegine.reference.motors.PowerConfig"><code class="docutils literal notranslate"><span class="pre">PowerConfig</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html#module-gamegine.reference.gearing">Gear ratio</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#gamegine.reference.gearing.Gear"><code class="docutils literal notranslate"><span class="pre">Gear</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#gamegine.reference.gearing.GearSeries"><code class="docutils literal notranslate"><span class="pre">GearSeries</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#gamegine.reference.gearing.MK4I"><code class="docutils literal notranslate"><span class="pre">MK4I</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html#module-gamegine.reference.swerve">Drive Train</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#gamegine.reference.swerve.SwerveConfig"><code class="docutils literal notranslate"><span class="pre">SwerveConfig</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#gamegine.reference.swerve.SwerveModule"><code class="docutils literal notranslate"><span class="pre">SwerveModule</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#gamegine.reference.wheels.Tread"><code class="docutils literal notranslate"><span class="pre">Tread</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#gamegine.reference.wheels.TreadDB"><code class="docutils literal notranslate"><span class="pre">TreadDB</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference.html#gamegine.reference.wheels.Wheel"><code class="docutils literal notranslate"><span class="pre">Wheel</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="ncim.html">NCIM Units Library</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ncim.html#module-gamegine.utils.NCIM.ncim">Generic NCIM Functions</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="ncim.html#gamegine.utils.NCIM.ncim.RatioOf"><code class="docutils literal notranslate"><span class="pre">RatioOf()</span></code></a></li>
@@ -314,8 +379,77 @@
 <li class="toctree-l2"><a class="reference internal" href="ncim.html#gamegine.utils.NCIM.ComplexDimensions.velocity.VelocityUnit"><code class="docutils literal notranslate"><span class="pre">VelocityUnit</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="trajectorylib.html">TrajGen</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.MinimizationStrategy"><code class="docutils literal notranslate"><span class="pre">MinimizationStrategy</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.SolverConfig"><code class="docutils literal notranslate"><span class="pre">SolverConfig</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.SwerveRobotConstraints"><code class="docutils literal notranslate"><span class="pre">SwerveRobotConstraints</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectory"><code class="docutils literal notranslate"><span class="pre">SwerveTrajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectoryProblem"><code class="docutils literal notranslate"><span class="pre">SwerveTrajectoryProblem</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectoryProblemBuilder"><code class="docutils literal notranslate"><span class="pre">SwerveTrajectoryProblemBuilder</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.Trajectory"><code class="docutils literal notranslate"><span class="pre">Trajectory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryBuilderConfig"><code class="docutils literal notranslate"><span class="pre">TrajectoryBuilderConfig</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblem"><code class="docutils literal notranslate"><span class="pre">TrajectoryProblem</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblemBuilder"><code class="docutils literal notranslate"><span class="pre">TrajectoryProblemBuilder</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryRobotConstraints"><code class="docutils literal notranslate"><span class="pre">TrajectoryRobotConstraints</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.Waypoint"><code class="docutils literal notranslate"><span class="pre">Waypoint</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="trajectorylib.html#module-gamegine.analysis.trajectory.lib.problemVariables">Problem Variables</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.problemVariables.ModuleVariables"><code class="docutils literal notranslate"><span class="pre">ModuleVariables</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.problemVariables.PointVariables"><code class="docutils literal notranslate"><span class="pre">PointVariables</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.problemVariables.SwervePointVariables"><code class="docutils literal notranslate"><span class="pre">SwervePointVariables</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="trajectorylib.html#module-gamegine.analysis.trajectory.lib.trajectoryStates">Trajectory States</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.trajectoryStates.SwerveModuleState"><code class="docutils literal notranslate"><span class="pre">SwerveModuleState</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.trajectoryStates.SwerveTrajectoryState"><code class="docutils literal notranslate"><span class="pre">SwerveTrajectoryState</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.trajectoryStates.TrajectoryState"><code class="docutils literal notranslate"><span class="pre">TrajectoryState</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="trajectorylib.html#module-gamegine.analysis.trajectory.lib.constraints.avoidance">Constraints</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.constraints.avoidance.SafeCorridor"><code class="docutils literal notranslate"><span class="pre">SafeCorridor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.constraints.avoidance.SafetyCorridor"><code class="docutils literal notranslate"><span class="pre">SafetyCorridor()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.constraints.constraints.AccelerationLessThan"><code class="docutils literal notranslate"><span class="pre">AccelerationLessThan()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.constraints.constraints.AngleEquals"><code class="docutils literal notranslate"><span class="pre">AngleEquals()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.constraints.constraints.AngularAccelerationLessThan"><code class="docutils literal notranslate"><span class="pre">AngularAccelerationLessThan()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.constraints.constraints.AngularVelocityLessThan"><code class="docutils literal notranslate"><span class="pre">AngularVelocityLessThan()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.constraints.constraints.PositionEquals"><code class="docutils literal notranslate"><span class="pre">PositionEquals()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.constraints.constraints.VelocityEquals"><code class="docutils literal notranslate"><span class="pre">VelocityEquals()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.constraints.constraints.VelocityLessThan"><code class="docutils literal notranslate"><span class="pre">VelocityLessThan()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.constraints.constraints.VelocityMagnitudeEquals"><code class="docutils literal notranslate"><span class="pre">VelocityMagnitudeEquals()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.constraints.kinematics.OmegaKinematicsConstraint"><code class="docutils literal notranslate"><span class="pre">OmegaKinematicsConstraint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.constraints.kinematics.PositionKinematicsConstraint"><code class="docutils literal notranslate"><span class="pre">PositionKinematicsConstraint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.constraints.kinematics.ThetaKinematicsConstraint"><code class="docutils literal notranslate"><span class="pre">ThetaKinematicsConstraint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.constraints.kinematics.VelocityKinematicsConstraint"><code class="docutils literal notranslate"><span class="pre">VelocityKinematicsConstraint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.constraints.spacing.PositionMaxSpacingConstraint"><code class="docutils literal notranslate"><span class="pre">PositionMaxSpacingConstraint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.constraints.spacing.PositionMinSpacingConstraint"><code class="docutils literal notranslate"><span class="pre">PositionMinSpacingConstraint()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.constraints.swerve.SwerveKinematicConstraints"><code class="docutils literal notranslate"><span class="pre">SwerveKinematicConstraints()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectorylib.html#gamegine.analysis.trajectory.lib.constraints.swerve.SwerveModuleConstraints"><code class="docutils literal notranslate"><span class="pre">SwerveModuleConstraints()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pathfinding.html">Meshing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pathfinding.html#gamegine.analysis.meshing.ConnectionStrategy"><code class="docutils literal notranslate"><span class="pre">ConnectionStrategy</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pathfinding.html#gamegine.analysis.meshing.Map"><code class="docutils literal notranslate"><span class="pre">Map</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pathfinding.html#gamegine.analysis.meshing.TriangulatedGraph"><code class="docutils literal notranslate"><span class="pre">TriangulatedGraph()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pathfinding.html#gamegine.analysis.meshing.VisibilityGraph"><code class="docutils literal notranslate"><span class="pre">VisibilityGraph()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pathfinding.html#module-gamegine.analysis.pathfinding">Pathfinding</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pathfinding.html#gamegine.analysis.pathfinding.AStar"><code class="docutils literal notranslate"><span class="pre">AStar</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pathfinding.html#gamegine.analysis.pathfinding.DirectedAStar"><code class="docutils literal notranslate"><span class="pre">DirectedAStar</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pathfinding.html#gamegine.analysis.pathfinding.Heuristics"><code class="docutils literal notranslate"><span class="pre">Heuristics</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pathfinding.html#gamegine.analysis.pathfinding.InitialConnectionPolicy"><code class="docutils literal notranslate"><span class="pre">InitialConnectionPolicy</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pathfinding.html#gamegine.analysis.pathfinding.Path"><code class="docutils literal notranslate"><span class="pre">Path</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pathfinding.html#gamegine.analysis.pathfinding.Pathfinder"><code class="docutils literal notranslate"><span class="pre">Pathfinder</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pathfinding.html#gamegine.analysis.pathfinding.findPath"><code class="docutils literal notranslate"><span class="pre">findPath()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="pathfinding.html#gamegine.analysis.pathfinding.shortcut_tuple_path"><code class="docutils literal notranslate"><span class="pre">shortcut_tuple_path()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
+</section>
+<section id="rendering">
+<h1>Rendering<a class="headerlink" href="#rendering" title="Link to this heading">¶</a></h1>
 </section>
 <section id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading">¶</a></h1>

@@ -37,9 +37,14 @@ html_theme_options = {
     "navigation_with_keys": True,
 }
 
+autodoc_typehints = "description"
+
+# Don't show class signature with the class' name.
+autodoc_class_signature = "separated"
+
 
 import os
 import sys
 
 print("Sphinx is using this Python executable:", sys.executable)
-sys.path.insert(0, os.path.abspath("../gamegine"))
+sys.path.insert(0, os.path.abspath("../"))

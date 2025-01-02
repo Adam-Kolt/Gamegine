@@ -88,7 +88,7 @@ class Circular(Obstacle):
     :param y: The y-coordinate of the obstacle.
     :type y: :class:`SpatialMeasurement`
     :param radius: The radius of the obstacle.
-    :type radius: :class:`SpatialMeasurement
+    :type radius: :class:`SpatialMeasurement`
     """
 
     def __init__(

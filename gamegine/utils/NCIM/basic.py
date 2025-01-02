@@ -9,6 +9,7 @@ import numpy as np
 
 # TODO: Implement generics for units, measurements, complex units, and complex measurements
 
+
 class Unit(object):
     """A class representing a simple unit, defined as being made up of a single dimension with a power of 1, such as meters or seconds. Contains information about scale and shift in relation to a base unit in the same dimension to allow for conversions.
 
@@ -608,7 +609,6 @@ class ComplexMeasurement(float):
         return self.dimension.from_base(float(self), self.dimension_map)
 
     def __str__(self) -> str:
-        Debug(f"Dimension: {self.dimension_map}")
         return f"{self.get_unit_magnitude()} {self.dimension_map.get_symbol(self.dimension)}"
 
     def __repr__(self) -> str:

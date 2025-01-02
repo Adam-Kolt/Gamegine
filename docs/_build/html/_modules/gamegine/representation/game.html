@@ -201,13 +201,18 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference_index.html">Representation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference_index.html#module-gamegine.representation.game">Game</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference_index.html#module-gamegine.representation.bounds">Bounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../representation.html">Game</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../representation.html#module-gamegine.representation.bounds">Bounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../representation.html#module-gamegine.representation.apriltag">FRC Elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference.html#module-gamegine.reference.motors">Motors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference.html#module-gamegine.reference.gearing">Gear ratio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference.html#module-gamegine.reference.swerve">Drive Train</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../ncim.html">NCIM Units Library</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../ncim.html#module-gamegine.utils.NCIM.ncim">Generic NCIM Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../ncim.html#module-gamegine.utils.NCIM.basic">Base Measurements</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../ncim.html#module-gamegine.utils.NCIM.Dimensions.spatial">Spatial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ncim.html#standard-dimensions">Standard Dimensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ncim.html#complex-dimensions">Complex Dimensions</a></li>
 </ul>
 
 </div>
@@ -262,6 +267,8 @@
 <span class="sd">    :type name: str, optional</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="Game.__init__">
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.game.Game.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;FRC Game&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructor method for the Game class. Initializes the game with a name and default field size of 15m x 15m.&quot;&quot;&quot;</span>
         <span class="n">Debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Creating new game: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -272,7 +279,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">interactables</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zones</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">global_states</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">field_borders</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field_borders</span> <span class="o">=</span> <span class="kc">False</span></div>
+
 
 <div class="viewcode-block" id="Game.set_field_size">
 <a class="viewcode-back" href="../../../representation.html#gamegine.representation.game.Game.set_field_size">[docs]</a>
@@ -339,7 +347,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the size of the field along the y-axis.</span>
 
 <span class="sd">        :return: The size of the field along the y-axis.</span>
-<span class="sd">        :rtype: :class:`SpatialMeasurement</span>
+<span class="sd">        :rtype: :class:`SpatialMeasurement`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
 

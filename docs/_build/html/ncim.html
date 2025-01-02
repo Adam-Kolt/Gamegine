@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Representation" href="reference_index.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Reference" href="reference.html" />
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>NCIM Units Library - FRC Gamegine 0.1.0 documentation</title>
@@ -202,9 +202,13 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="reference_index.html">Representation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference_index.html#module-gamegine.representation.game">Game</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference_index.html#module-gamegine.representation.bounds">Bounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="representation.html">Game</a></li>
+<li class="toctree-l1"><a class="reference internal" href="representation.html#module-gamegine.representation.bounds">Bounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="representation.html#module-gamegine.representation.apriltag">FRC Elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html#module-gamegine.reference.motors">Motors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html#module-gamegine.reference.gearing">Gear ratio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html#module-gamegine.reference.swerve">Drive Train</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">NCIM Units Library</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#module-gamegine.utils.NCIM.ncim">Generic NCIM Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#module-gamegine.utils.NCIM.basic">Base Measurements</a></li>
@@ -295,7 +299,7 @@
 <span id="base-measurements"></span><h1>Base Measurements<a class="headerlink" href="#module-gamegine.utils.NCIM.basic" title="Link to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.ComplexDimension">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.basic.</span></span><span class="sig-name descname"><span class="pre">ComplexDimension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dimension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexDimension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexDimension" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.basic.</span></span><span class="sig-name descname"><span class="pre">ComplexDimension</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexDimension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexDimension" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing a complex dimension. Stores information about dimensionality of a unit or measurement in the form of an array of powers of dimensions. Wraps a numpy array to allow for easy manipulation and comparison of dimensions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -303,8 +307,18 @@
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.ComplexDimension.__new__">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimension</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexDimension.__new__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexDimension.__new__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dimension</strong> (<em>ndarray</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.ComplexDimension.from_base">
-<span class="sig-name descname"><span class="pre">from_base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.basic.ComplexDimensionMap" title="gamegine.utils.NCIM.basic.ComplexDimensionMap"><span class="pre">ComplexDimensionMap</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexDimension.from_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexDimension.from_base" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">from_base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexDimension.from_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexDimension.from_base" title="Link to this definition">¶</a></dt>
 <dd><p>Converts a value from the base unit in the same dimension to the unit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -324,7 +338,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.ComplexDimension.zeroes">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">zeroes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexDimension.zeroes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexDimension.zeroes" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">zeroes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexDimension.zeroes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexDimension.zeroes" title="Link to this definition">¶</a></dt>
 <dd><p>Returns a dimension with all values set to zero.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -343,7 +357,7 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.ComplexDimensionMap">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.basic.</span></span><span class="sig-name descname"><span class="pre">ComplexDimensionMap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexDimensionMap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexDimensionMap" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.basic.</span></span><span class="sig-name descname"><span class="pre">ComplexDimensionMap</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexDimensionMap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexDimensionMap" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing a mapping of dimensions to singular units. Contains information which maps dimensions to units, allowing for maintaining provided units in the creation of <a class="reference internal" href="#gamegine.utils.NCIM.basic.ComplexUnit" title="gamegine.utils.NCIM.basic.ComplexUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexUnit</span></code></a> and <a class="reference internal" href="#gamegine.utils.NCIM.basic.ComplexMeasurement" title="gamegine.utils.NCIM.basic.ComplexMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexMeasurement</span></code></a> objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -351,8 +365,13 @@
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.ComplexDimensionMap.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexDimensionMap.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexDimensionMap.__init__" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.ComplexDimensionMap.get_symbol">
-<span class="sig-name descname"><span class="pre">get_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dimension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.basic.ComplexDimension" title="gamegine.utils.NCIM.basic.ComplexDimension"><span class="pre">ComplexDimension</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexDimensionMap.get_symbol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexDimensionMap.get_symbol" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dimension</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexDimensionMap.get_symbol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexDimensionMap.get_symbol" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the symbol of the dimension, based on the degrees of dimensions in the provided <a class="reference internal" href="#gamegine.utils.NCIM.basic.ComplexDimension" title="gamegine.utils.NCIM.basic.ComplexDimension"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexDimension</span></code></a>. For example, meters per second squared would be represented with a symbol of m/s^2.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -369,11 +388,14 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.ComplexDimensionMap.merge_with">
-<span class="sig-name descname"><span class="pre">merge_with</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.basic.ComplexDimensionMap" title="gamegine.utils.NCIM.basic.ComplexDimensionMap"><span class="pre">ComplexDimensionMap</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gamegine.utils.NCIM.basic.ComplexDimensionMap" title="gamegine.utils.NCIM.basic.ComplexDimensionMap"><span class="pre">ComplexDimensionMap</span></a></span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexDimensionMap.merge_with"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexDimensionMap.merge_with" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">merge_with</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexDimensionMap.merge_with"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexDimensionMap.merge_with" title="Link to this definition">¶</a></dt>
 <dd><p>Merges the mapping with another mapping. If a dimension is not present in the current mapping, it is added. This is used when performing operations between different <a class="reference internal" href="#gamegine.utils.NCIM.basic.ComplexMeasurement" title="gamegine.utils.NCIM.basic.ComplexMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexMeasurement</span></code></a> objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.basic.ComplexDimensionMap" title="gamegine.utils.NCIM.basic.ComplexDimensionMap"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexDimensionMap</span></code></a>) – The other mapping to merge with.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#gamegine.utils.NCIM.basic.ComplexDimensionMap" title="gamegine.utils.NCIM.basic.ComplexDimensionMap"><em>ComplexDimensionMap</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -382,7 +404,7 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.ComplexMeasurement">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.basic.</span></span><span class="sig-name descname"><span class="pre">ComplexMeasurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.basic.ComplexUnit" title="gamegine.utils.NCIM.basic.ComplexUnit"><span class="pre">ComplexUnit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimension_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexMeasurement" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.basic.</span></span><span class="sig-name descname"><span class="pre">ComplexMeasurement</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexMeasurement" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing a complex measurement, which is defined with a magnitude and a complex unit. Contains information about the dimension and unit of the measurement. Represents a value in multiple dimensions, such as 5 meters per second squared or 10 Nm.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -395,6 +417,35 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.ComplexMeasurement.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimension_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexMeasurement.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexMeasurement.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.basic.ComplexUnit" title="gamegine.utils.NCIM.basic.ComplexUnit"><em>ComplexUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.ComplexMeasurement.__new__">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimension</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimension_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexMeasurement.__new__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexMeasurement.__new__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.basic.ComplexUnit" title="gamegine.utils.NCIM.basic.ComplexUnit"><em>ComplexUnit</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.ComplexMeasurement.get_dimension">
 <span class="sig-name descname"><span class="pre">get_dimension</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexMeasurement.get_dimension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexMeasurement.get_dimension" title="Link to this definition">¶</a></dt>
@@ -411,7 +462,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.ComplexMeasurement.get_unit_magnitude">
-<span class="sig-name descname"><span class="pre">get_unit_magnitude</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexMeasurement.get_unit_magnitude"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexMeasurement.get_unit_magnitude" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_unit_magnitude</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexMeasurement.get_unit_magnitude"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexMeasurement.get_unit_magnitude" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the magnitude of the measurement in the unit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -425,7 +476,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.ComplexMeasurement.to">
-<span class="sig-name descname"><span class="pre">to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.basic.ComplexUnit" title="gamegine.utils.NCIM.basic.ComplexUnit"><span class="pre">ComplexUnit</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexMeasurement.to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexMeasurement.to" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexMeasurement.to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexMeasurement.to" title="Link to this definition">¶</a></dt>
 <dd><p>Converts the measurement to a different unit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -450,7 +501,7 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.ComplexUnit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.basic.</span></span><span class="sig-name descname"><span class="pre">ComplexUnit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">units_table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#gamegine.utils.NCIM.basic.Unit" title="gamegine.utils.NCIM.basic.Unit"><span class="pre">Unit</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexUnit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.basic.</span></span><span class="sig-name descname"><span class="pre">ComplexUnit</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexUnit" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing a complex unit, defined as being made up of multiple dimensions with arbitrary powers, such as meters per second squared. Contains information about scale and shift in relation to a base unit in the same dimension to allow for conversions.  Used during the initial creation of a <a class="reference internal" href="#gamegine.utils.NCIM.basic.ComplexMeasurement" title="gamegine.utils.NCIM.basic.ComplexMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexMeasurement</span></code></a> and for converting out of a base <a class="reference internal" href="#gamegine.utils.NCIM.basic.ComplexMeasurement" title="gamegine.utils.NCIM.basic.ComplexMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexMeasurement</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -458,14 +509,35 @@
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.ComplexUnit.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">units_table</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexUnit.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexUnit.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>units_table</strong> (<em>Dict</em><em>[</em><a class="reference internal" href="#gamegine.utils.NCIM.basic.Unit" title="gamegine.utils.NCIM.basic.Unit"><em>Unit</em></a><em>, </em><em>int</em><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.ComplexUnit.from_base">
-<span class="sig-name descname"><span class="pre">from_base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexUnit.from_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexUnit.from_base" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">from_base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexUnit.from_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexUnit.from_base" title="Link to this definition">¶</a></dt>
 <dd><p>Converts from the base value to the <a class="reference internal" href="#gamegine.utils.NCIM.basic.ComplexUnit" title="gamegine.utils.NCIM.basic.ComplexUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexUnit</span></code></a>. Additionally, the value is rounded in order to prevent floating point errors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>float</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.ComplexUnit.get_dimension">
-<span class="sig-name descname"><span class="pre">get_dimension</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gamegine.utils.NCIM.basic.ComplexDimension" title="gamegine.utils.NCIM.basic.ComplexDimension"><span class="pre">ComplexDimension</span></a></span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexUnit.get_dimension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexUnit.get_dimension" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_dimension</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexUnit.get_dimension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexUnit.get_dimension" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the dimension of the unit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -479,7 +551,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.ComplexUnit.get_dimension_map">
-<span class="sig-name descname"><span class="pre">get_dimension_map</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gamegine.utils.NCIM.basic.ComplexDimensionMap" title="gamegine.utils.NCIM.basic.ComplexDimensionMap"><span class="pre">ComplexDimensionMap</span></a></span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexUnit.get_dimension_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexUnit.get_dimension_map" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_dimension_map</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexUnit.get_dimension_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexUnit.get_dimension_map" title="Link to this definition">¶</a></dt>
 <dd><p>Returns copy of the mapping of dimensions to units.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -493,7 +565,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.ComplexUnit.to_base">
-<span class="sig-name descname"><span class="pre">to_base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexUnit.to_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexUnit.to_base" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#ComplexUnit.to_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.ComplexUnit.to_base" title="Link to this definition">¶</a></dt>
 <dd><p>Converts a value from the <a class="reference internal" href="#gamegine.utils.NCIM.basic.ComplexUnit" title="gamegine.utils.NCIM.basic.ComplexUnit"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexUnit</span></code></a> to the base unit in the same dimension. Additionally, the value is rounded in order to prevent floating point errors.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -512,7 +584,7 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.Measurement">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.basic.</span></span><span class="sig-name descname"><span class="pre">Measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.basic.Unit" title="gamegine.utils.NCIM.basic.Unit"><span class="pre">Unit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Measurement" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.basic.</span></span><span class="sig-name descname"><span class="pre">Measurement</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Measurement" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing a simple measurement, defined as a value with a unit. Contains information about the dimension and unit of the measurement. Represent a value in a single dimension, such as 5 meters or 10 seconds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -524,8 +596,37 @@
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.Measurement.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Measurement.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Measurement.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.basic.Unit" title="gamegine.utils.NCIM.basic.Unit"><em>Unit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.Measurement.__new__">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Measurement.__new__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Measurement.__new__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.basic.Unit" title="gamegine.utils.NCIM.basic.Unit"><em>Unit</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.Measurement.get_dimension">
-<span class="sig-name descname"><span class="pre">get_dimension</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dimension</span></span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Measurement.get_dimension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Measurement.get_dimension" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_dimension</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Measurement.get_dimension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Measurement.get_dimension" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the dimension of the measurement.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -539,7 +640,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.Measurement.get_unit">
-<span class="sig-name descname"><span class="pre">get_unit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gamegine.utils.NCIM.basic.Unit" title="gamegine.utils.NCIM.basic.Unit"><span class="pre">Unit</span></a></span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Measurement.get_unit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Measurement.get_unit" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_unit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Measurement.get_unit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Measurement.get_unit" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the unit of the measurement.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -553,7 +654,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.Measurement.get_unit_magnitude">
-<span class="sig-name descname"><span class="pre">get_unit_magnitude</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Measurement.get_unit_magnitude"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Measurement.get_unit_magnitude" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_unit_magnitude</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Measurement.get_unit_magnitude"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Measurement.get_unit_magnitude" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the magnitude of the measurement in the unit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -567,7 +668,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.Measurement.to">
-<span class="sig-name descname"><span class="pre">to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.basic.Unit" title="gamegine.utils.NCIM.basic.Unit"><span class="pre">Unit</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Measurement.to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Measurement.to" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Measurement.to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Measurement.to" title="Link to this definition">¶</a></dt>
 <dd><p>Converts the measurement to a different unit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -586,7 +687,7 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.Unit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.basic.</span></span><span class="sig-name descname"><span class="pre">Unit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dimension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dimension</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Unit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Unit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.basic.</span></span><span class="sig-name descname"><span class="pre">Unit</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Unit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Unit" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing a simple unit, defined as being made up of a single dimension with a power of 1, such as meters or seconds. Contains information about scale and shift in relation to a base unit in the same dimension to allow for conversions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -599,8 +700,25 @@
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.Unit.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dimension</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Unit.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Unit.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dimension</strong> (<em>Dimension</em>)</p></li>
+<li><p><strong>scale</strong> (<em>float</em>)</p></li>
+<li><p><strong>shift</strong> (<em>float</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.Unit.from_base">
-<span class="sig-name descname"><span class="pre">from_base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Unit.from_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Unit.from_base" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">from_base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Unit.from_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Unit.from_base" title="Link to this definition">¶</a></dt>
 <dd><p>Converts a value from the base unit in the same dimension to the unit. Additionally, the value is rounded in order to prevent floating point errors.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -617,7 +735,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.Unit.get_dimension">
-<span class="sig-name descname"><span class="pre">get_dimension</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dimension</span></span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Unit.get_dimension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Unit.get_dimension" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_dimension</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Unit.get_dimension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Unit.get_dimension" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the dimension of the unit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -645,7 +763,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.Unit.get_symbol">
-<span class="sig-name descname"><span class="pre">get_symbol</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Unit.get_symbol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Unit.get_symbol" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_symbol</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Unit.get_symbol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Unit.get_symbol" title="Link to this definition">¶</a></dt>
 <dd><p>Returns the symbol of the unit. Used when printing measurements.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -659,7 +777,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.basic.Unit.to_base">
-<span class="sig-name descname"><span class="pre">to_base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Unit.to_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Unit.to_base" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/basic.html#Unit.to_base"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.basic.Unit.to_base" title="Link to this definition">¶</a></dt>
 <dd><p>Converts a value from the unit to the base unit in the same dimension. Additionally, the value is rounded in order to prevent floating point errors.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -681,7 +799,7 @@
 <h1>Standard Dimensions<a class="headerlink" href="#standard-dimensions" title="Link to this heading">¶</a></h1>
 <dl class="py class" id="module-gamegine.utils.NCIM.Dimensions.spatial">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.spatial.</span></span><span class="sig-name descname"><span class="pre">SpatialMeasurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.basic.Unit" title="gamegine.utils.NCIM.basic.Unit"><span class="pre">Unit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/spatial.html#SpatialMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.spatial.</span></span><span class="sig-name descname"><span class="pre">SpatialMeasurement</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/spatial.html#SpatialMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing a spatial measurement</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -692,11 +810,27 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/spatial.html#SpatialMeasurement.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit" title="gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit"><em>SpatialUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.spatial.</span></span><span class="sig-name descname"><span class="pre">SpatialUnit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/spatial.html#SpatialUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.spatial.</span></span><span class="sig-name descname"><span class="pre">SpatialUnit</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/spatial.html#SpatialUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing a spatial unit of measurement, in addition to creating a <a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement" title="gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpatialMeasurement</span></code></a> of the same type when called. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -707,11 +841,27 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/spatial.html#SpatialUnit.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scale</strong> (<em>float</em>)</p></li>
+<li><p><strong>shift</strong> (<em>float</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class" id="module-gamegine.utils.NCIM.Dimensions.temporal">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.temporal.TemporalMeasurement">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.temporal.</span></span><span class="sig-name descname"><span class="pre">TemporalMeasurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.basic.Unit" title="gamegine.utils.NCIM.basic.Unit"><span class="pre">Unit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/temporal.html#TemporalMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.temporal.TemporalMeasurement" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.temporal.</span></span><span class="sig-name descname"><span class="pre">TemporalMeasurement</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/temporal.html#TemporalMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.temporal.TemporalMeasurement" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing a temporal measurement. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">Measurement</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -722,11 +872,27 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.temporal.TemporalMeasurement.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/temporal.html#TemporalMeasurement.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.temporal.TemporalMeasurement.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit" title="gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit"><em>TemporalUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.temporal.</span></span><span class="sig-name descname"><span class="pre">TemporalUnit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/temporal.html#TemporalUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.temporal.</span></span><span class="sig-name descname"><span class="pre">TemporalUnit</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/temporal.html#TemporalUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing a temporal unit of measurement, in addition to creating a <a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.temporal.TemporalMeasurement" title="gamegine.utils.NCIM.Dimensions.temporal.TemporalMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemporalMeasurement</span></code></a> of the same type when called. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -737,11 +903,27 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/temporal.html#TemporalUnit.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scale</strong> (<em>float</em>)</p></li>
+<li><p><strong>shift</strong> (<em>float</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class" id="module-gamegine.utils.NCIM.Dimensions.angular">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.angular.</span></span><span class="sig-name descname"><span class="pre">AngularMeasurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.basic.Unit" title="gamegine.utils.NCIM.basic.Unit"><span class="pre">Unit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/angular.html#AngularMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.angular.</span></span><span class="sig-name descname"><span class="pre">AngularMeasurement</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/angular.html#AngularMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing an angular measurement. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">Measurement</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -752,11 +934,27 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/angular.html#AngularMeasurement.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.angular.AngularUnit" title="gamegine.utils.NCIM.Dimensions.angular.AngularUnit"><em>AngularUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.angular.AngularUnit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.angular.</span></span><span class="sig-name descname"><span class="pre">AngularUnit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/angular.html#AngularUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.angular.AngularUnit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.angular.</span></span><span class="sig-name descname"><span class="pre">AngularUnit</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/angular.html#AngularUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.angular.AngularUnit" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing an angular unit of measurement, in addition to creating a <a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement" title="gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">AngularMeasurement</span></code></a> of the same type when called. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -767,11 +965,27 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.angular.AngularUnit.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/angular.html#AngularUnit.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.angular.AngularUnit.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scale</strong> (<em>float</em>)</p></li>
+<li><p><strong>shift</strong> (<em>float</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class" id="module-gamegine.utils.NCIM.Dimensions.current">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.current.CurrentMeasurement">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.current.</span></span><span class="sig-name descname"><span class="pre">CurrentMeasurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.basic.Unit" title="gamegine.utils.NCIM.basic.Unit"><span class="pre">Unit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/current.html#CurrentMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.current.CurrentMeasurement" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.current.</span></span><span class="sig-name descname"><span class="pre">CurrentMeasurement</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/current.html#CurrentMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.current.CurrentMeasurement" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing an <a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.current.CurrentMeasurement" title="gamegine.utils.NCIM.Dimensions.current.CurrentMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">CurrentMeasurement</span></code></a>. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">Measurement</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -782,11 +996,27 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.current.CurrentMeasurement.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/current.html#CurrentMeasurement.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.current.CurrentMeasurement.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.current.CurrentUnit" title="gamegine.utils.NCIM.Dimensions.current.CurrentUnit"><em>CurrentUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.current.CurrentUnit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.current.</span></span><span class="sig-name descname"><span class="pre">CurrentUnit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/current.html#CurrentUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.current.CurrentUnit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.current.</span></span><span class="sig-name descname"><span class="pre">CurrentUnit</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/current.html#CurrentUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.current.CurrentUnit" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing an current unit of measurement, in addition to creating a <a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.current.CurrentMeasurement" title="gamegine.utils.NCIM.Dimensions.current.CurrentMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">CurrentMeasurement</span></code></a> of the same type when called. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -797,11 +1027,27 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.current.CurrentUnit.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/current.html#CurrentUnit.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.current.CurrentUnit.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scale</strong> (<em>float</em>)</p></li>
+<li><p><strong>shift</strong> (<em>float</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class" id="module-gamegine.utils.NCIM.Dimensions.energy">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.energy.EnergyMeasurement">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.energy.</span></span><span class="sig-name descname"><span class="pre">EnergyMeasurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.basic.Unit" title="gamegine.utils.NCIM.basic.Unit"><span class="pre">Unit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/energy.html#EnergyMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.energy.EnergyMeasurement" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.energy.</span></span><span class="sig-name descname"><span class="pre">EnergyMeasurement</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/energy.html#EnergyMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.energy.EnergyMeasurement" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing an <a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.energy.EnergyMeasurement" title="gamegine.utils.NCIM.Dimensions.energy.EnergyMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">EnergyMeasurement</span></code></a>. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">Measurement</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -812,11 +1058,27 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.energy.EnergyMeasurement.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/energy.html#EnergyMeasurement.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.energy.EnergyMeasurement.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.energy.EnergyUnit" title="gamegine.utils.NCIM.Dimensions.energy.EnergyUnit"><em>EnergyUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.energy.EnergyUnit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.energy.</span></span><span class="sig-name descname"><span class="pre">EnergyUnit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/energy.html#EnergyUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.energy.EnergyUnit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.energy.</span></span><span class="sig-name descname"><span class="pre">EnergyUnit</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/energy.html#EnergyUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.energy.EnergyUnit" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing an energy unit of measurement, in addition to creating a <a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.energy.EnergyMeasurement" title="gamegine.utils.NCIM.Dimensions.energy.EnergyMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">EnergyMeasurement</span></code></a> of the same type when called. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -827,11 +1089,27 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.energy.EnergyUnit.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/energy.html#EnergyUnit.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.energy.EnergyUnit.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scale</strong> (<em>float</em>)</p></li>
+<li><p><strong>shift</strong> (<em>float</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class" id="module-gamegine.utils.NCIM.Dimensions.force">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.force.ForceMeasurement">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.force.</span></span><span class="sig-name descname"><span class="pre">ForceMeasurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.basic.Unit" title="gamegine.utils.NCIM.basic.Unit"><span class="pre">Unit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/force.html#ForceMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.force.ForceMeasurement" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.force.</span></span><span class="sig-name descname"><span class="pre">ForceMeasurement</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/force.html#ForceMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.force.ForceMeasurement" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing a force measurement. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">Measurement</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -842,11 +1120,27 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.force.ForceMeasurement.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/force.html#ForceMeasurement.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.force.ForceMeasurement.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.force.ForceUnit" title="gamegine.utils.NCIM.Dimensions.force.ForceUnit"><em>ForceUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.force.ForceUnit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.force.</span></span><span class="sig-name descname"><span class="pre">ForceUnit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/force.html#ForceUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.force.ForceUnit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.force.</span></span><span class="sig-name descname"><span class="pre">ForceUnit</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/force.html#ForceUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.force.ForceUnit" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing a force unit of measurement, in addition to creating a <a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.force.ForceMeasurement" title="gamegine.utils.NCIM.Dimensions.force.ForceMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForceMeasurement</span></code></a> of the same type when called. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -857,11 +1151,27 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.force.ForceUnit.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/force.html#ForceUnit.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.force.ForceUnit.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scale</strong> (<em>float</em>)</p></li>
+<li><p><strong>shift</strong> (<em>float</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class" id="module-gamegine.utils.NCIM.Dimensions.mass">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.mass.MassMeasurement">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.mass.</span></span><span class="sig-name descname"><span class="pre">MassMeasurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.basic.Unit" title="gamegine.utils.NCIM.basic.Unit"><span class="pre">Unit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/mass.html#MassMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.mass.MassMeasurement" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.mass.</span></span><span class="sig-name descname"><span class="pre">MassMeasurement</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/mass.html#MassMeasurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.mass.MassMeasurement" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing a mass measurement</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -872,11 +1182,27 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.mass.MassMeasurement.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/mass.html#MassMeasurement.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.mass.MassMeasurement.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.mass.MassUnit" title="gamegine.utils.NCIM.Dimensions.mass.MassUnit"><em>MassUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.mass.MassUnit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.mass.</span></span><span class="sig-name descname"><span class="pre">MassUnit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/mass.html#MassUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.mass.MassUnit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.Dimensions.mass.</span></span><span class="sig-name descname"><span class="pre">MassUnit</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/mass.html#MassUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.mass.MassUnit" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing a mass unit of measurement, in addition to creating a <a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.mass.MassMeasurement" title="gamegine.utils.NCIM.Dimensions.mass.MassMeasurement"><code class="xref py py-class docutils literal notranslate"><span class="pre">MassMeasurement</span></code></a> of the same type when called. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">Unit</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -887,6 +1213,22 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.Dimensions.mass.MassUnit.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/Dimensions/mass.html#MassUnit.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.Dimensions.mass.MassUnit.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scale</strong> (<em>float</em>)</p></li>
+<li><p><strong>shift</strong> (<em>float</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -894,7 +1236,7 @@
 <h1>Complex Dimensions<a class="headerlink" href="#complex-dimensions" title="Link to this heading">¶</a></h1>
 <dl class="py class" id="module-gamegine.utils.NCIM.ComplexDimensions.acceleration">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.acceleration.Acceleration">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.acceleration.</span></span><span class="sig-name descname"><span class="pre">Acceleration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.acceleration.AccelerationUnit" title="gamegine.utils.NCIM.ComplexDimensions.acceleration.AccelerationUnit"><span class="pre">AccelerationUnit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/acceleration.html#Acceleration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.acceleration.Acceleration" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.acceleration.</span></span><span class="sig-name descname"><span class="pre">Acceleration</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/acceleration.html#Acceleration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.acceleration.Acceleration" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing an acceleration complex measurement, composed of a spatial and temporal element in the form spatial^1 / temporal^2. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexMeasurement</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -905,11 +1247,40 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.acceleration.Acceleration.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/acceleration.html#Acceleration.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.acceleration.Acceleration.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.acceleration.AccelerationUnit" title="gamegine.utils.NCIM.ComplexDimensions.acceleration.AccelerationUnit"><em>AccelerationUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.acceleration.Acceleration.__new__">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/acceleration.html#Acceleration.__new__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.acceleration.Acceleration.__new__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.acceleration.AccelerationUnit" title="gamegine.utils.NCIM.ComplexDimensions.acceleration.AccelerationUnit"><em>AccelerationUnit</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.acceleration.AccelerationUnit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.acceleration.</span></span><span class="sig-name descname"><span class="pre">AccelerationUnit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spatial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit" title="gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit"><span class="pre">SpatialUnit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit" title="gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit"><span class="pre">TemporalUnit</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/acceleration.html#AccelerationUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.acceleration.AccelerationUnit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.acceleration.</span></span><span class="sig-name descname"><span class="pre">AccelerationUnit</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/acceleration.html#AccelerationUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.acceleration.AccelerationUnit" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing an acceleration complex unit, composed of a spatial and temporal element in the form spatial^1 / temporal^2, in addition to creating a <a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.acceleration.Acceleration" title="gamegine.utils.NCIM.ComplexDimensions.acceleration.Acceleration"><code class="xref py py-class docutils literal notranslate"><span class="pre">Acceleration</span></code></a> of the same type when called. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexUnit</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -919,21 +1290,82 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.acceleration.AccelerationUnit.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spatial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/acceleration.html#AccelerationUnit.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.acceleration.AccelerationUnit.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spatial</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit" title="gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit"><em>SpatialUnit</em></a>)</p></li>
+<li><p><strong>time</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit" title="gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit"><em>TemporalUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class" id="module-gamegine.utils.NCIM.ComplexDimensions.alpha">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.alpha.Alpha">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.alpha.</span></span><span class="sig-name descname"><span class="pre">Alpha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.alpha.AlphaUnit" title="gamegine.utils.NCIM.ComplexDimensions.alpha.AlphaUnit"><span class="pre">AlphaUnit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/alpha.html#Alpha"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.alpha.Alpha" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.alpha.</span></span><span class="sig-name descname"><span class="pre">Alpha</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/alpha.html#Alpha"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.alpha.Alpha" title="Link to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.alpha.Alpha.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/alpha.html#Alpha.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.alpha.Alpha.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.alpha.AlphaUnit" title="gamegine.utils.NCIM.ComplexDimensions.alpha.AlphaUnit"><em>AlphaUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.alpha.Alpha.__new__">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/alpha.html#Alpha.__new__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.alpha.Alpha.__new__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.alpha.AlphaUnit" title="gamegine.utils.NCIM.ComplexDimensions.alpha.AlphaUnit"><em>AlphaUnit</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.alpha.AlphaUnit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.alpha.</span></span><span class="sig-name descname"><span class="pre">AlphaUnit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.angular.AngularUnit" title="gamegine.utils.NCIM.Dimensions.angular.AngularUnit"><span class="pre">AngularUnit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit" title="gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit"><span class="pre">TemporalUnit</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/alpha.html#AlphaUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.alpha.AlphaUnit" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.alpha.</span></span><span class="sig-name descname"><span class="pre">AlphaUnit</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/alpha.html#AlphaUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.alpha.AlphaUnit" title="Link to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.alpha.AlphaUnit.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/alpha.html#AlphaUnit.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.alpha.AlphaUnit.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>angles</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.angular.AngularUnit" title="gamegine.utils.NCIM.Dimensions.angular.AngularUnit"><em>AngularUnit</em></a>)</p></li>
+<li><p><strong>time</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit" title="gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit"><em>TemporalUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
 
 <dl class="py class" id="module-gamegine.utils.NCIM.ComplexDimensions.electricpot">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.electricpot.ElectricPot">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.electricpot.</span></span><span class="sig-name descname"><span class="pre">ElectricPot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.electricpot.ElectricPotUnit" title="gamegine.utils.NCIM.ComplexDimensions.electricpot.ElectricPotUnit"><span class="pre">ElectricPotUnit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/electricpot.html#ElectricPot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.electricpot.ElectricPot" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.electricpot.</span></span><span class="sig-name descname"><span class="pre">ElectricPot</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/electricpot.html#ElectricPot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.electricpot.ElectricPot" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing an electric potential complex measurement, composed of kg m^2 / A s^3. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexMeasurement</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -944,11 +1376,40 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.electricpot.ElectricPot.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/electricpot.html#ElectricPot.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.electricpot.ElectricPot.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.electricpot.ElectricPotUnit" title="gamegine.utils.NCIM.ComplexDimensions.electricpot.ElectricPotUnit"><em>ElectricPotUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.electricpot.ElectricPot.__new__">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/electricpot.html#ElectricPot.__new__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.electricpot.ElectricPot.__new__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.electricpot.ElectricPotUnit" title="gamegine.utils.NCIM.ComplexDimensions.electricpot.ElectricPotUnit"><em>ElectricPotUnit</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.electricpot.ElectricPotUnit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.electricpot.</span></span><span class="sig-name descname"><span class="pre">ElectricPotUnit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.mass.MassUnit" title="gamegine.utils.NCIM.Dimensions.mass.MassUnit"><span class="pre">MassUnit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit" title="gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit"><span class="pre">SpatialUnit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">current</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.current.CurrentUnit" title="gamegine.utils.NCIM.Dimensions.current.CurrentUnit"><span class="pre">CurrentUnit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit" title="gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit"><span class="pre">TemporalUnit</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/electricpot.html#ElectricPotUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.electricpot.ElectricPotUnit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.electricpot.</span></span><span class="sig-name descname"><span class="pre">ElectricPotUnit</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/electricpot.html#ElectricPotUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.electricpot.ElectricPotUnit" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing an electric potential complex unit, composed kg m^2 / A s^3, in addition to creating a <a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.electricpot.ElectricPot" title="gamegine.utils.NCIM.ComplexDimensions.electricpot.ElectricPot"><code class="xref py py-class docutils literal notranslate"><span class="pre">ElectricPot</span></code></a> of the same type when called. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexUnit</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -960,11 +1421,29 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.electricpot.ElectricPotUnit.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/electricpot.html#ElectricPotUnit.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.electricpot.ElectricPotUnit.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mass</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.mass.MassUnit" title="gamegine.utils.NCIM.Dimensions.mass.MassUnit"><em>MassUnit</em></a>)</p></li>
+<li><p><strong>spatial</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit" title="gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit"><em>SpatialUnit</em></a>)</p></li>
+<li><p><strong>current</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.current.CurrentUnit" title="gamegine.utils.NCIM.Dimensions.current.CurrentUnit"><em>CurrentUnit</em></a>)</p></li>
+<li><p><strong>time</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit" title="gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit"><em>TemporalUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class" id="module-gamegine.utils.NCIM.ComplexDimensions.MOI">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.MOI.MOI">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.MOI.</span></span><span class="sig-name descname"><span class="pre">MOI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.MOI.MOIUnit" title="gamegine.utils.NCIM.ComplexDimensions.MOI.MOIUnit"><span class="pre">MOIUnit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/MOI.html#MOI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.MOI.MOI" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.MOI.</span></span><span class="sig-name descname"><span class="pre">MOI</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/MOI.html#MOI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.MOI.MOI" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing a moment of inertia complex measurement, composed of a spatial and mass element in the form spatial^2 * mass^1. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexMeasurement</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -975,11 +1454,40 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.MOI.MOI.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/MOI.html#MOI.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.MOI.MOI.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.MOI.MOIUnit" title="gamegine.utils.NCIM.ComplexDimensions.MOI.MOIUnit"><em>MOIUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.MOI.MOI.__new__">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/MOI.html#MOI.__new__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.MOI.MOI.__new__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.MOI.MOIUnit" title="gamegine.utils.NCIM.ComplexDimensions.MOI.MOIUnit"><em>MOIUnit</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.MOI.MOIUnit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.MOI.</span></span><span class="sig-name descname"><span class="pre">MOIUnit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.mass.MassUnit" title="gamegine.utils.NCIM.Dimensions.mass.MassUnit"><span class="pre">MassUnit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit" title="gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit"><span class="pre">SpatialUnit</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/MOI.html#MOIUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.MOI.MOIUnit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.MOI.</span></span><span class="sig-name descname"><span class="pre">MOIUnit</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/MOI.html#MOIUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.MOI.MOIUnit" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing a moment of inertia complex unit, composed of a spatial and mass element in the form spatial^2 * mass^1, in addition to creating a <a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.MOI.MOI" title="gamegine.utils.NCIM.ComplexDimensions.MOI.MOI"><code class="xref py py-class docutils literal notranslate"><span class="pre">MOI</span></code></a> of the same type when called. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexUnit</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -989,11 +1497,27 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.MOI.MOIUnit.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spatial</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/MOI.html#MOIUnit.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.MOI.MOIUnit.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mass</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.mass.MassUnit" title="gamegine.utils.NCIM.Dimensions.mass.MassUnit"><em>MassUnit</em></a>)</p></li>
+<li><p><strong>spatial</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit" title="gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit"><em>SpatialUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class" id="module-gamegine.utils.NCIM.ComplexDimensions.omega">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.omega.Omega">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.omega.</span></span><span class="sig-name descname"><span class="pre">Omega</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.omega.OmegaUnit" title="gamegine.utils.NCIM.ComplexDimensions.omega.OmegaUnit"><span class="pre">OmegaUnit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/omega.html#Omega"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.omega.Omega" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.omega.</span></span><span class="sig-name descname"><span class="pre">Omega</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/omega.html#Omega"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.omega.Omega" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing an angular velocity complex measurement, composed of an angular and temporal element in the form angular^1 / temporal^1. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexMeasurement</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1004,11 +1528,40 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.omega.Omega.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/omega.html#Omega.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.omega.Omega.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.omega.OmegaUnit" title="gamegine.utils.NCIM.ComplexDimensions.omega.OmegaUnit"><em>OmegaUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.omega.Omega.__new__">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/omega.html#Omega.__new__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.omega.Omega.__new__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.omega.OmegaUnit" title="gamegine.utils.NCIM.ComplexDimensions.omega.OmegaUnit"><em>OmegaUnit</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.omega.OmegaUnit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.omega.</span></span><span class="sig-name descname"><span class="pre">OmegaUnit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.angular.AngularUnit" title="gamegine.utils.NCIM.Dimensions.angular.AngularUnit"><span class="pre">AngularUnit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit" title="gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit"><span class="pre">TemporalUnit</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/omega.html#OmegaUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.omega.OmegaUnit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.omega.</span></span><span class="sig-name descname"><span class="pre">OmegaUnit</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/omega.html#OmegaUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.omega.OmegaUnit" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing an angular velocity complex unit, composed of an angular and temporal element in the form angular^1 / temporal^1, in addition to creating a <a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.omega.Omega" title="gamegine.utils.NCIM.ComplexDimensions.omega.Omega"><code class="xref py py-class docutils literal notranslate"><span class="pre">Omega</span></code></a> of the same type when called. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexUnit</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1018,11 +1571,27 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.omega.OmegaUnit.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/omega.html#OmegaUnit.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.omega.OmegaUnit.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>angles</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.angular.AngularUnit" title="gamegine.utils.NCIM.Dimensions.angular.AngularUnit"><em>AngularUnit</em></a>)</p></li>
+<li><p><strong>time</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit" title="gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit"><em>TemporalUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class" id="module-gamegine.utils.NCIM.ComplexDimensions.torque">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.torque.Torque">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.torque.</span></span><span class="sig-name descname"><span class="pre">Torque</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.torque.TorqueUnit" title="gamegine.utils.NCIM.ComplexDimensions.torque.TorqueUnit"><span class="pre">TorqueUnit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/torque.html#Torque"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.torque.Torque" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.torque.</span></span><span class="sig-name descname"><span class="pre">Torque</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/torque.html#Torque"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.torque.Torque" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing a torque complex measurement, composed of a spatial and force element in the form spatial^1 * force^1. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexMeasurement</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1033,11 +1602,40 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.torque.Torque.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/torque.html#Torque.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.torque.Torque.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.torque.TorqueUnit" title="gamegine.utils.NCIM.ComplexDimensions.torque.TorqueUnit"><em>TorqueUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.torque.Torque.__new__">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/torque.html#Torque.__new__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.torque.Torque.__new__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.torque.TorqueUnit" title="gamegine.utils.NCIM.ComplexDimensions.torque.TorqueUnit"><em>TorqueUnit</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.torque.TorqueUnit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.torque.</span></span><span class="sig-name descname"><span class="pre">TorqueUnit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spatial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit" title="gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit"><span class="pre">SpatialUnit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.force.ForceUnit" title="gamegine.utils.NCIM.Dimensions.force.ForceUnit"><span class="pre">ForceUnit</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/torque.html#TorqueUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.torque.TorqueUnit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.torque.</span></span><span class="sig-name descname"><span class="pre">TorqueUnit</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/torque.html#TorqueUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.torque.TorqueUnit" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing a torque complex unit, composed of a spatial and force element in the form spatial^1 * force^1, in addition to creating a <a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.torque.Torque" title="gamegine.utils.NCIM.ComplexDimensions.torque.Torque"><code class="xref py py-class docutils literal notranslate"><span class="pre">Torque</span></code></a> of the same type when called. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexUnit</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1047,11 +1645,27 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.torque.TorqueUnit.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spatial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/torque.html#TorqueUnit.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.torque.TorqueUnit.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spatial</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit" title="gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit"><em>SpatialUnit</em></a>)</p></li>
+<li><p><strong>force</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.force.ForceUnit" title="gamegine.utils.NCIM.Dimensions.force.ForceUnit"><em>ForceUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class" id="module-gamegine.utils.NCIM.ComplexDimensions.velocity">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.velocity.</span></span><span class="sig-name descname"><span class="pre">Velocity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.velocity.VelocityUnit" title="gamegine.utils.NCIM.ComplexDimensions.velocity.VelocityUnit"><span class="pre">VelocityUnit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/velocity.html#Velocity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.velocity.</span></span><span class="sig-name descname"><span class="pre">Velocity</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/velocity.html#Velocity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing a velocity complex measurement, composed of a spatial and temporal element in the form spatial^1 / temporal^1. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexMeasurement</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1062,11 +1676,40 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/velocity.html#Velocity.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.velocity.VelocityUnit" title="gamegine.utils.NCIM.ComplexDimensions.velocity.VelocityUnit"><em>VelocityUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity.__new__">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">magnitude</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/velocity.html#Velocity.__new__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity.__new__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>magnitude</strong> (<em>float</em>)</p></li>
+<li><p><strong>unit</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.velocity.VelocityUnit" title="gamegine.utils.NCIM.ComplexDimensions.velocity.VelocityUnit"><em>VelocityUnit</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.velocity.VelocityUnit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.velocity.</span></span><span class="sig-name descname"><span class="pre">VelocityUnit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spatial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit" title="gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit"><span class="pre">SpatialUnit</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit" title="gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit"><span class="pre">TemporalUnit</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/velocity.html#VelocityUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.velocity.VelocityUnit" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gamegine.utils.NCIM.ComplexDimensions.velocity.</span></span><span class="sig-name descname"><span class="pre">VelocityUnit</span></span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/velocity.html#VelocityUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.velocity.VelocityUnit" title="Link to this definition">¶</a></dt>
 <dd><p>A class representing a velocity complex unit, composed of a spatial and temporal element in the form spatial^1 / temporal^1, in addition to creating a <a class="reference internal" href="#gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity" title="gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity"><code class="xref py py-class docutils literal notranslate"><span class="pre">Velocity</span></code></a> of the same type when called. Inherits from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ComplexUnit</span></code> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1076,6 +1719,22 @@
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gamegine.utils.NCIM.ComplexDimensions.velocity.VelocityUnit.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spatial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gamegine/utils/NCIM/ComplexDimensions/velocity.html#VelocityUnit.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gamegine.utils.NCIM.ComplexDimensions.velocity.VelocityUnit.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spatial</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit" title="gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit"><em>SpatialUnit</em></a>)</p></li>
+<li><p><strong>time</strong> (<a class="reference internal" href="#gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit" title="gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit"><em>TemporalUnit</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -1086,14 +1745,14 @@
         
         <div class="related-pages">
           
-          <a class="prev-page" href="reference_index.html">
+          <a class="prev-page" href="reference.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Representation</div>
+                <div class="title">Reference</div>
                 
               </div>
             </a>

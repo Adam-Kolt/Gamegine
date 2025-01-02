@@ -2,6 +2,7 @@ from typing import List, Tuple
 
 
 from gamegine.representation.bounds import Rectangle
+from gamegine.simulation.game import GameState
 from gamegine.utils.logging import Debug
 from gamegine.utils.NCIM.ncim import Meter, SpatialMeasurement, Zero, Feet
 import numpy as np
@@ -75,7 +76,7 @@ class Game(object):
         """Returns the size of the field along the y-axis.
 
         :return: The size of the field along the y-axis.
-        :rtype: :class:`SpatialMeasurement
+        :rtype: :class:`SpatialMeasurement`
         """
         return self.field_size[1]
 
@@ -202,6 +203,16 @@ class Game(object):
 
         self.interactables[interactable.name] = interactable
         return self
+
+    def get_initial_state(self) -> GameState:
+        state = GameState()
+        state.auto_time = 15
+        state.teleop_time = 135
+        state.endgame_time = 30
+        state.current_time = 0
+        state.score = 0
+        state.setValue("amplification", 0)
+        return state
 
     def add_zone(self, zone) -> "Game":
         if zone.name in self.zones:

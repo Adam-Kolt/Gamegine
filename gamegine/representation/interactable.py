@@ -39,6 +39,19 @@ class RobotInteractable(BoundedObject, Drawable):
     def draw(self, render_scale: SpatialMeasurement):
         self.bounds.draw(render_scale)
 
+    def get_interaction(self, identifier: str) -> "InteractionOption":
+        """Gets the interaction option with the given identifier.
+
+        :param identifier: The unique identifier for the interaction option.
+        :type identifier: str
+        :return: The InteractionOption object with the given identifier.
+        :rtype: :class:`InteractionOption`
+        """
+        for interaction in self.get_interactions():
+            if interaction.identifier == identifier:
+                return interaction
+        return None
+
 
 class InteractionOption(object):
     """Class for representing an interaction option for a robot with an interactable object during the match.
@@ -99,7 +112,7 @@ class InteractionOption(object):
         :param gameState: The state space of the game.
         :type gameState: :class:`StateSpace`
         :return: A list of ValueChange objects representing the changes to the game state.
-        :rtype: List[:class:`ValueChange
+        :rtype: List[:class:`ValueChange`]
         """
         return self.action(interactableState, robotState, gameState)
 

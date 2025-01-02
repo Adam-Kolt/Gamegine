@@ -202,12 +202,12 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../representation.html">Game</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../representation.html#bounds">Bounds</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../representation.html#frc-elements">FRC Elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../representation.html#module-gamegine.representation.bounds">Bounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../representation.html#module-gamegine.representation.apriltag">FRC Elements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../reference.html">Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../reference.html#motors">Motors</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../reference.html#gear-ratio">Gear ratio</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../reference.html#drive-train">Drive Train</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../reference.html#module-gamegine.reference.motors">Motors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../reference.html#module-gamegine.reference.gearing">Gear ratio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../reference.html#module-gamegine.reference.swerve">Drive Train</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../ncim.html">NCIM Units Library</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../ncim.html#module-gamegine.utils.NCIM.ncim">Generic NCIM Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../ncim.html#module-gamegine.utils.NCIM.basic">Base Measurements</a></li>
@@ -259,6 +259,7 @@
 
 <span class="c1"># TODO: Implement generics for units, measurements, complex units, and complex measurements</span>
 
+
 <div class="viewcode-block" id="Unit">
 <a class="viewcode-back" href="../../../../ncim.html#gamegine.utils.NCIM.basic.Unit">[docs]</a>
 <span class="k">class</span> <span class="nc">Unit</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -276,13 +277,16 @@
 
     <span class="n">ROUNDING</span> <span class="o">=</span> <span class="mi">9</span>
 
+<div class="viewcode-block" id="Unit.__init__">
+<a class="viewcode-back" href="../../../../ncim.html#gamegine.utils.NCIM.basic.Unit.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">dimension</span><span class="p">:</span> <span class="s2">&quot;Dimension&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">shift</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">scale</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shift</span> <span class="o">=</span> <span class="n">shift</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">symbol</span> <span class="o">=</span> <span class="n">symbol</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="n">dimension</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="n">dimension</span></div>
+
 
 <div class="viewcode-block" id="Unit.to_base">
 <a class="viewcode-back" href="../../../../ncim.html#gamegine.utils.NCIM.basic.Unit.to_base">[docs]</a>
@@ -359,18 +363,24 @@
 <span class="sd">    :type base_magnitude: float, optional</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="Measurement.__new__">
+<a class="viewcode-back" href="../../../../ncim.html#gamegine.utils.NCIM.basic.Measurement.__new__">[docs]</a>
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">magnitude</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="n">Unit</span><span class="p">,</span> <span class="n">base_magnitude</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">base_magnitude</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">float</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">base_magnitude</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">Measurement</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">magnitude</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">to_base</span><span class="p">(</span><span class="n">magnitude</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">float</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="Measurement.__init__">
+<a class="viewcode-back" href="../../../../ncim.html#gamegine.utils.NCIM.basic.Measurement.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">magnitude</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">unit</span><span class="p">:</span> <span class="n">Unit</span><span class="p">,</span> <span class="n">base_magnitude</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">get_dimension</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span></div>
+
 
     <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">Measurement</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span> <span class="n">base_magnitude</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
@@ -566,9 +576,12 @@
 <span class="sd">    :type dimension: np.ndarray</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="ComplexDimension.__new__">
+<a class="viewcode-back" href="../../../../ncim.html#gamegine.utils.NCIM.basic.ComplexDimension.__new__">[docs]</a>
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dimension</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">dimension</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">obj</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
@@ -672,8 +685,11 @@
 <span class="sd">    :type units: Dict[:class:`Unit`, int]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="ComplexDimensionMap.__init__">
+<a class="viewcode-back" href="../../../../ncim.html#gamegine.utils.NCIM.basic.ComplexDimensionMap.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Dimension</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Unit</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the unit associated with a dimension.</span>
@@ -781,6 +797,8 @@
 
     <span class="n">ALIASES</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Possible future speedup if necessary</span>
 
+<div class="viewcode-block" id="ComplexUnit.__init__">
+<a class="viewcode-back" href="../../../../ncim.html#gamegine.utils.NCIM.basic.ComplexUnit.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">units_table</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Unit</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
@@ -797,7 +815,8 @@
                 <span class="n">units</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">unit</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">ComplexDimensionMap</span><span class="p">(</span><span class="n">units</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="n">dimensionality</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="n">dimensionality</span></div>
+
 
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if another object is equal to this complex unit. If the other object is a complex unit, the dimensions are compared, returning True if they are the same.&quot;&quot;&quot;</span>
@@ -873,6 +892,8 @@
 <span class="sd">    :type dimension_map: :class:`ComplexDimensionMap`, optional</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="ComplexMeasurement.__new__">
+<a class="viewcode-back" href="../../../../ncim.html#gamegine.utils.NCIM.basic.ComplexMeasurement.__new__">[docs]</a>
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">magnitude</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
@@ -886,8 +907,11 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">magnitude</span><span class="p">,</span> <span class="n">ComplexMeasurement</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">magnitude</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">to_base</span><span class="p">(</span><span class="n">magnitude</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">float</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="ComplexMeasurement.__init__">
+<a class="viewcode-back" href="../../../../ncim.html#gamegine.utils.NCIM.basic.ComplexMeasurement.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">magnitude</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
@@ -902,7 +926,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">dimension_map</span> <span class="o">=</span> <span class="n">dimension_map</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dimension</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">get_dimension</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dimension_map</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">get_dimension_map</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dimension_map</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">get_dimension_map</span><span class="p">()</span></div>
+
 
     <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">ComplexMeasurement</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
@@ -932,7 +957,6 @@
 
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">Debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dimension: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dimension_map</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_unit_magnitude</span><span class="p">()</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dimension_map</span><span class="o">.</span><span class="n">get_symbol</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dimension</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>

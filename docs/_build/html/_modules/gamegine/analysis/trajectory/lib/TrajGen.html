@@ -1,0 +1,1306 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../../../genindex.html" /><link rel="search" title="Search" href="../../../../../search.html" />
+
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>gamegine.analysis.trajectory.lib.TrajGen - FRC Gamegine 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../../../index.html"><div class="brand">FRC Gamegine 0.1.0 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../../../../../_static/GamegineDark.png" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../../../../../_static/GamegineLight.png" alt="Dark Logo"/>
+  </div>
+  
+  
+</a><form class="sidebar-search-container" method="get" action="../../../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../representation.html">Game</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../representation.html#module-gamegine.representation.bounds">Bounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../representation.html#module-gamegine.representation.apriltag">FRC Elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../reference.html">Motors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../reference.html#module-gamegine.reference.gearing">Gear ratio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../reference.html#module-gamegine.reference.swerve">Drive Train</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../ncim.html">NCIM Units Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../ncim.html#module-gamegine.utils.NCIM.ncim">Generic NCIM Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../ncim.html#module-gamegine.utils.NCIM.basic">Base Measurements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../ncim.html#standard-dimensions">Standard Dimensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../ncim.html#complex-dimensions">Complex Dimensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../trajectorylib.html">TrajGen</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for gamegine.analysis.trajectory.lib.TrajGen</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">jormungandr.optimization</span> <span class="kn">import</span> <span class="n">OptimizationProblem</span>
+<span class="kn">from</span> <span class="nn">gamegine.analysis.trajectory.lib.constraints</span> <span class="kn">import</span> <span class="n">base</span>
+<span class="kn">from</span> <span class="nn">gamegine.analysis.trajectory.lib.constraints.spacing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PositionMaxSpacingConstraint</span><span class="p">,</span>
+    <span class="n">PositionMinSpacingConstraint</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">gamegine.analysis.trajectory.lib.constraints.swerve</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SwerveKinematicConstraints</span><span class="p">,</span>
+    <span class="n">SwerveModuleConstraints</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">gamegine.render</span> <span class="kn">import</span> <span class="n">helpers</span>
+<span class="kn">from</span> <span class="nn">gamegine.render.style</span> <span class="kn">import</span> <span class="n">Palette</span>
+<span class="kn">import</span> <span class="nn">pygame</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+
+<span class="kn">from</span> <span class="nn">gamegine.analysis.pathfinding</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">gamegine.analysis.trajectory.lib</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CALCULATION_UNIT_ANGULAR</span><span class="p">,</span>
+    <span class="n">CALCULATION_UNIT_SPATIAL</span><span class="p">,</span>
+    <span class="n">CALCULATION_UNIT_TEMPORAL</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">gamegine.analysis.trajectory.lib.constraints.constraints</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AccelerationLessThan</span><span class="p">,</span>
+    <span class="n">AngularAccelerationLessThan</span><span class="p">,</span>
+    <span class="n">AngularVelocityLessThan</span><span class="p">,</span>
+    <span class="n">PositionEquals</span><span class="p">,</span>
+    <span class="n">VelocityLessThan</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">gamegine.analysis.trajectory.lib.constraints.kinematics</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">OmegaKinematicsConstraint</span><span class="p">,</span>
+    <span class="n">PositionKinematicsConstraint</span><span class="p">,</span>
+    <span class="n">ThetaKinematicsConstraint</span><span class="p">,</span>
+    <span class="n">VelocityKinematicsConstraint</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">gamegine.analysis.trajectory.lib.problemVariables</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PointVariables</span><span class="p">,</span>
+    <span class="n">SwervePointVariables</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">gamegine.analysis.trajectory.lib.trajectoryStates</span> <span class="kn">import</span> <span class="n">TrajectoryState</span>
+<span class="kn">from</span> <span class="nn">gamegine.reference.swerve</span> <span class="kn">import</span> <span class="n">SwerveConfig</span>
+<span class="kn">from</span> <span class="nn">gamegine.render.drawable</span> <span class="kn">import</span> <span class="n">Drawable</span>
+<span class="kn">from</span> <span class="nn">gamegine.representation.robot</span> <span class="kn">import</span> <span class="n">PhysicalParameters</span>
+<span class="kn">from</span> <span class="nn">gamegine.utils</span> <span class="kn">import</span> <span class="n">logging</span>
+<span class="kn">from</span> <span class="nn">gamegine.utils.NCIM.ComplexDimensions.acceleration</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Acceleration</span><span class="p">,</span>
+    <span class="n">AccelerationUnit</span><span class="p">,</span>
+    <span class="n">MeterPerSecondSquared</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">gamegine.utils.NCIM.ComplexDimensions.alpha</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Alpha</span><span class="p">,</span>
+    <span class="n">AlphaUnit</span><span class="p">,</span>
+    <span class="n">RadiansPerSecondSquared</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">gamegine.utils.NCIM.ComplexDimensions.omega</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Omega</span><span class="p">,</span>
+    <span class="n">OmegaUnit</span><span class="p">,</span>
+    <span class="n">RadiansPerSecond</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">gamegine.utils.NCIM.ComplexDimensions.velocity</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">MetersPerSecond</span><span class="p">,</span>
+    <span class="n">Velocity</span><span class="p">,</span>
+    <span class="n">VelocityUnit</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">gamegine.utils.NCIM.Dimensions.angular</span> <span class="kn">import</span> <span class="n">Radian</span>
+<span class="kn">from</span> <span class="nn">gamegine.utils.NCIM.Dimensions.spatial</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Centimeter</span><span class="p">,</span>
+    <span class="n">Inch</span><span class="p">,</span>
+    <span class="n">Meter</span><span class="p">,</span>
+    <span class="n">SpatialMeasurement</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">sortedcontainers</span> <span class="kn">import</span> <span class="n">SortedDict</span>
+
+<span class="kn">from</span> <span class="nn">gamegine.utils.NCIM.Dimensions.temporal</span> <span class="kn">import</span> <span class="n">Second</span><span class="p">,</span> <span class="n">TemporalMeasurement</span>
+<span class="kn">from</span> <span class="nn">gamegine.utils.NCIM.ncim</span> <span class="kn">import</span> <span class="n">RatioOf</span>
+
+
+<div class="viewcode-block" id="TrajectoryRobotConstraints">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryRobotConstraints">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">TrajectoryRobotConstraints</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataclass used to store robot constraints for a trajectory optimization problem.</span>
+
+<span class="sd">    :param max_acceleration: The maximum acceleration of the robot.</span>
+<span class="sd">    :type max_acceleration: :class:`Acceleration`</span>
+<span class="sd">    :param max_velocity: The maximum velocity of the robot.</span>
+<span class="sd">    :type max_velocity: :class:`Velocity`</span>
+<span class="sd">    :param max_angular_acceleration: The maximum angular acceleration of the robot.</span>
+<span class="sd">    :type max_angular_acceleration: :class:`Alpha`</span>
+<span class="sd">    :param max_angular_velocity: The maximum angular velocity of the robot.</span>
+<span class="sd">    :type max_angular_velocity: :class:`Omega`&quot;&quot;&quot;</span>
+
+    <span class="n">max_acceleration</span><span class="p">:</span> <span class="n">Acceleration</span> <span class="o">=</span> <span class="n">MeterPerSecondSquared</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">max_velocity</span><span class="p">:</span> <span class="n">Velocity</span> <span class="o">=</span> <span class="n">MetersPerSecond</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">max_angular_acceleration</span><span class="p">:</span> <span class="n">Alpha</span> <span class="o">=</span> <span class="n">RadiansPerSecondSquared</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">max_angular_velocity</span><span class="p">:</span> <span class="n">Omega</span> <span class="o">=</span> <span class="n">RadiansPerSecond</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SwerveRobotConstraints">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.SwerveRobotConstraints">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">SwerveRobotConstraints</span><span class="p">(</span><span class="n">TrajectoryRobotConstraints</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataclass used to store swerve drive robot constraints for a trajectory optimization problem.</span>
+
+<span class="sd">    :param swerve_config: The configuration of the swerve drive.</span>
+<span class="sd">    :type swerve_config: :class:`SwerveConfig`</span>
+<span class="sd">    :param physical_parameters: The physical parameters of the robot.</span>
+<span class="sd">    :type physical_parameters: :class:`PhysicalParameters`&quot;&quot;&quot;</span>
+
+    <span class="n">swerve_config</span><span class="p">:</span> <span class="n">SwerveConfig</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">physical_parameters</span><span class="p">:</span> <span class="n">PhysicalParameters</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="SolverConfig">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.SolverConfig">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">SolverConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataclass used to store configuration information for a trajectory optimization solver. This decides how accurately the solver attempts to solve the problem, in addition to allowing for a time limit on the solver.</span>
+
+<span class="sd">    :param solution_tolerance: The tolerance of the solution.</span>
+<span class="sd">    :type solution_tolerance: float</span>
+<span class="sd">    :param max_iterations: The maximum number of iterations the solver will run.</span>
+<span class="sd">    :type max_iterations: int</span>
+<span class="sd">    :param timeout: The maximum time the solver will run before stopping.</span>
+<span class="sd">    :type timeout: float&quot;&quot;&quot;</span>
+
+    <span class="n">solution_tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span>
+    <span class="n">max_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">100.0</span></div>
+
+
+
+<div class="viewcode-block" id="Trajectory">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.Trajectory">[docs]</a>
+<span class="k">class</span> <span class="nc">Trajectory</span><span class="p">(</span><span class="n">Drawable</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class used to store a trajectory generated from an optimization problem. Contains information about the trajectory, including length, time, and robot constraints.</span>
+
+<span class="sd">    :param points: The points along the trajectory.</span>
+<span class="sd">    :type points: List[:class:`TrajectoryState`]</span>
+<span class="sd">    :param robot_constraints: The constraints of the robot.</span>
+<span class="sd">    :type robot_constraints: :class:`TrajectoryRobotConstraints`&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__compute_trajectory_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">travel_time</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">point</span><span class="o">.</span><span class="n">dt</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="n">start</span><span class="o">=</span><span class="n">Second</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_length</span> <span class="o">=</span> <span class="n">Meter</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">max_velocity</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">point</span><span class="o">.</span><span class="n">get_velocity_magnitude</span><span class="p">()</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="p">)</span>
+        <span class="n">max_acceleration</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">point</span><span class="o">.</span><span class="n">get_acceleration_magnitude</span><span class="p">()</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">point2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">path_length</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="n">point2</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">point</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">point2</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">point</span><span class="o">.</span><span class="n">y</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Computed trajectory parameters: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_length</span><span class="p">()</span><span class="si">}</span><span class="s2"> length, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_travel_time</span><span class="p">()</span><span class="si">}</span><span class="s2"> time, </span><span class="si">{</span><span class="n">max_velocity</span><span class="si">}</span><span class="s2"> max velocity, </span><span class="si">{</span><span class="n">max_acceleration</span><span class="si">}</span><span class="s2"> max acceleration.&quot;</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Trajectory.__init__">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.Trajectory.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">points</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TrajectoryState</span><span class="p">],</span>
+        <span class="n">robot_constraints</span><span class="p">:</span> <span class="n">TrajectoryRobotConstraints</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot_constraints</span> <span class="o">=</span> <span class="n">robot_constraints</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">points</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">travel_time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_length</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__compute_trajectory_parameters</span><span class="p">()</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Trajectory.get_travel_time">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.Trajectory.get_travel_time">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_travel_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TemporalMeasurement</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the total travel time of the trajectory.</span>
+
+<span class="sd">        :return: The total travel time of the trajectory.</span>
+<span class="sd">        :rtype: :class:`TemporalMeasurement`&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">travel_time</span></div>
+
+
+<div class="viewcode-block" id="Trajectory.get_length">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.Trajectory.get_length">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SpatialMeasurement</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the total length of the trajectory.</span>
+
+<span class="sd">        :return: The total length of the trajectory.</span>
+<span class="sd">        :rtype: :class:`SpatialMeasurement`&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_length</span></div>
+
+
+<div class="viewcode-block" id="Trajectory.get_at_time">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.Trajectory.get_at_time">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_at_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">TemporalMeasurement</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrajectoryState</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the state of the robot at a given time.</span>
+
+<span class="sd">        :param time: The time at which to get the state of the robot.</span>
+<span class="sd">        :type time: :class:`TemporalMeasurement`</span>
+<span class="sd">        :return: The state of the robot at the given time.</span>
+<span class="sd">        :rtype: :class:`TrajectoryState`&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Trajectory.get_robot_constraints">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.Trajectory.get_robot_constraints">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_robot_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrajectoryRobotConstraints</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the robot constraints of the trajectory.</span>
+
+<span class="sd">        :return: The robot constraints of the trajectory.</span>
+<span class="sd">        :rtype: :class:`TrajectoryRobotConstraints`&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot_constraints</span></div>
+
+
+<div class="viewcode-block" id="Trajectory.export_to_file">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.Trajectory.export_to_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">export_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># TODO: Change to new Choreo Format</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Exports the trajectory to a JSON file, formatted in the Choreo structure.</span>
+
+<span class="sd">        :param file_path: The path to the file to export the trajectory to.</span>
+<span class="sd">        :type file_path: str&quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                       {\n</span>
+<span class="sd">                       &quot;samples&quot;: [&quot;&quot;&quot;</span>
+            <span class="p">)</span>
+            <span class="n">curr_time</span> <span class="o">=</span> <span class="n">Second</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)):</span>
+                <span class="n">point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+                <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                    </span><span class="se">{{</span>
+<span class="s2">                        &quot;x&quot;: </span><span class="si">{</span><span class="n">point</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">Meter</span><span class="p">)</span><span class="si">}</span><span class="s2">,</span>
+<span class="s2">                        &quot;y&quot;: </span><span class="si">{</span><span class="n">point</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">Meter</span><span class="p">)</span><span class="si">}</span><span class="s2">,</span>
+<span class="s2">                        &quot;heading&quot;: </span><span class="si">{</span><span class="n">point</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">Radian</span><span class="p">)</span><span class="si">}</span><span class="s2">,</span>
+<span class="s2">                        &quot;angularVelocity&quot;: </span><span class="si">{</span><span class="n">point</span><span class="o">.</span><span class="n">omega</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">RadiansPerSecond</span><span class="p">)</span><span class="si">}</span><span class="s2">,</span>
+<span class="s2">                        &quot;velocityX&quot;: </span><span class="si">{</span><span class="n">point</span><span class="o">.</span><span class="n">vel_x</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">MetersPerSecond</span><span class="p">)</span><span class="si">}</span><span class="s2">,</span>
+<span class="s2">                        &quot;velocityY&quot;: </span><span class="si">{</span><span class="n">point</span><span class="o">.</span><span class="n">vel_y</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">MetersPerSecond</span><span class="p">)</span><span class="si">}</span><span class="s2">,</span>
+<span class="s2">                        &quot;timestamp&quot;: </span><span class="si">{</span><span class="n">curr_time</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">Second</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">                    </span><span class="se">}}</span><span class="s2">&quot;&quot;&quot;</span>
+                <span class="p">)</span>
+                <span class="n">curr_time</span> <span class="o">+=</span> <span class="n">point</span><span class="o">.</span><span class="n">dt</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                ]</span>
+<span class="sd">            }&quot;&quot;&quot;</span>
+            <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Trajectory: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span><span class="si">}</span><span class="s2"> points, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_length</span><span class="p">()</span><span class="si">}</span><span class="s2"> length, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_travel_time</span><span class="p">()</span><span class="si">}</span><span class="s2"> time. Optimized for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_constraints</span><span class="si">}</span><span class="s2">.&quot;</span>
+
+<div class="viewcode-block" id="Trajectory.draw">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.Trajectory.draw">[docs]</a>
+    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">render_scale</span><span class="p">:</span> <span class="n">SpatialMeasurement</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Draws the trajectory on the screen.</span>
+
+<span class="sd">        :param render_scale: The scale at which to render the trajectory.</span>
+<span class="sd">        :type render_scale: :class:`SpatialMeasurement`&quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">point2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">(</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">get_surface</span><span class="p">(),</span>
+                <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                <span class="p">(</span><span class="n">RatioOf</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">render_scale</span><span class="p">),</span> <span class="n">RatioOf</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">render_scale</span><span class="p">)),</span>
+                <span class="p">(</span><span class="n">RatioOf</span><span class="p">(</span><span class="n">point2</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">render_scale</span><span class="p">),</span> <span class="n">RatioOf</span><span class="p">(</span><span class="n">point2</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">render_scale</span><span class="p">)),</span>
+                <span class="n">width</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">RatioOf</span><span class="p">(</span><span class="n">Inch</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">render_scale</span><span class="p">)),</span>
+            <span class="p">)</span>
+
+        <span class="n">helpers</span><span class="o">.</span><span class="n">draw_point</span><span class="p">(</span><span class="n">point2</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">point2</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">Inch</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">Palette</span><span class="o">.</span><span class="n">PINK</span><span class="p">,</span> <span class="n">render_scale</span><span class="p">)</span>
+        <span class="n">helpers</span><span class="o">.</span><span class="n">draw_point</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+            <span class="n">Inch</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">Palette</span><span class="o">.</span><span class="n">PINK</span><span class="p">,</span>
+            <span class="n">render_scale</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SwerveTrajectory">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectory">[docs]</a>
+<span class="k">class</span> <span class="nc">SwerveTrajectory</span><span class="p">(</span><span class="n">Trajectory</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class used to store a swerve drive trajectory generated from an optimization problem. Contains information about the trajectory, including length, time, and robot constraints.</span>
+
+<span class="sd">    :param points: The points along the trajectory.</span>
+<span class="sd">    :type points: List[:class:`TrajectoryState`]</span>
+<span class="sd">    :param robot_constraints: The constraints of the robot.</span>
+<span class="sd">    :type robot_constraints: :class:`SwerveRobotConstraints`&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SwerveTrajectory.__init__">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectory.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">points</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TrajectoryState</span><span class="p">],</span>
+        <span class="n">robot_constraints</span><span class="p">:</span> <span class="n">SwerveRobotConstraints</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">robot_constraints</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">robot_constraints</span> <span class="o">=</span> <span class="n">robot_constraints</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">points</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">travel_time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_length</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="SwerveTrajectory.get_robot_constraints">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectory.get_robot_constraints">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_robot_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SwerveRobotConstraints</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">robot_constraints</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Swerve Trajectory: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span><span class="si">}</span><span class="s2"> points, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_length</span><span class="p">()</span><span class="si">}</span><span class="s2"> length, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">get_travel_time</span><span class="p">()</span><span class="si">}</span><span class="s2"> time. Optimized for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">robot_constraints</span><span class="si">}</span><span class="s2">.&quot;</span>
+
+<div class="viewcode-block" id="SwerveTrajectory.draw">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectory.draw">[docs]</a>
+    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">render_scale</span><span class="p">:</span> <span class="n">SpatialMeasurement</span><span class="p">):</span>
+        <span class="n">module_points</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">robot_constraints</span><span class="o">.</span><span class="n">swerve_config</span><span class="o">.</span><span class="n">top_left_offset</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">robot_constraints</span><span class="o">.</span><span class="n">swerve_config</span><span class="o">.</span><span class="n">top_right_offset</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">robot_constraints</span><span class="o">.</span><span class="n">swerve_config</span><span class="o">.</span><span class="n">bottom_right_offset</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">robot_constraints</span><span class="o">.</span><span class="n">swerve_config</span><span class="o">.</span><span class="n">bottom_left_offset</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">point2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">(</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">get_surface</span><span class="p">(),</span>
+                <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                <span class="p">(</span><span class="n">RatioOf</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">render_scale</span><span class="p">),</span> <span class="n">RatioOf</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">render_scale</span><span class="p">)),</span>
+                <span class="p">(</span><span class="n">RatioOf</span><span class="p">(</span><span class="n">point2</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">render_scale</span><span class="p">),</span> <span class="n">RatioOf</span><span class="p">(</span><span class="n">point2</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">render_scale</span><span class="p">)),</span>
+                <span class="n">width</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">RatioOf</span><span class="p">(</span><span class="n">Inch</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">render_scale</span><span class="p">)),</span>
+            <span class="p">)</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">theta</span>
+
+            <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">Palette</span><span class="o">.</span><span class="n">RED</span><span class="p">,</span>
+                <span class="n">Palette</span><span class="o">.</span><span class="n">ORANGE</span><span class="p">,</span>
+                <span class="n">Palette</span><span class="o">.</span><span class="n">BLUE</span><span class="p">,</span>
+                <span class="n">Palette</span><span class="o">.</span><span class="n">YELLOW</span><span class="p">,</span>
+            <span class="p">]</span>
+            <span class="n">field_relative_module_points</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">offset</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">module_points</span><span class="p">):</span>
+                <span class="n">cos</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">Radian</span><span class="p">))</span>
+                <span class="n">sin</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">Radian</span><span class="p">))</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">offset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">cos</span> <span class="o">-</span> <span class="n">offset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">sin</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">point</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">offset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">sin</span> <span class="o">+</span> <span class="n">offset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">cos</span>
+                <span class="n">field_relative_module_points</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+                <span class="n">helpers</span><span class="o">.</span><span class="n">draw_point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">Inch</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">render_scale</span><span class="p">)</span>
+
+            <span class="c1"># for i, module_point in enumerate(field_relative_module_points[:-1]):</span>
+            <span class="c1">#     pygame.draw.line(</span>
+            <span class="c1">#         pygame.display.get_surface(),</span>
+            <span class="c1">#         colors[i].get_color_array(),</span>
+            <span class="c1">#         (</span>
+            <span class="c1">#             RatioOf(field_relative_module_points[i][0], render_scale),</span>
+            <span class="c1">#             RatioOf(field_relative_module_points[i][1], render_scale),</span>
+            <span class="c1">#         ),</span>
+            <span class="c1">#         (</span>
+            <span class="c1">#             RatioOf(field_relative_module_points[i + 1][0], render_scale),</span>
+            <span class="c1">#             RatioOf(field_relative_module_points[i + 1][1], render_scale),</span>
+            <span class="c1">#         ),</span>
+            <span class="c1">#         width=int(RatioOf(Inch(2), render_scale)),</span>
+            <span class="c1">#     )</span>
+
+            <span class="c1"># pygame.draw.line(</span>
+            <span class="c1">#     pygame.display.get_surface(),</span>
+            <span class="c1">#     colors[3].get_color_array(),</span>
+            <span class="c1">#     (</span>
+            <span class="c1">#         RatioOf(field_relative_module_points[3][0], render_scale),</span>
+            <span class="c1">#         RatioOf(field_relative_module_points[3][1], render_scale),</span>
+            <span class="c1">#     ),</span>
+            <span class="c1">#     (</span>
+            <span class="c1">#         RatioOf(field_relative_module_points[0][0], render_scale),</span>
+            <span class="c1">#         RatioOf(field_relative_module_points[0][1], render_scale),</span>
+            <span class="c1">#     ),</span>
+            <span class="c1">#     width=int(RatioOf(Inch(2), render_scale)),</span>
+            <span class="c1"># )</span>
+
+            <span class="c1"># Draw the robot center</span>
+            <span class="n">helpers</span><span class="o">.</span><span class="n">draw_point</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">point</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">Inch</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">Palette</span><span class="o">.</span><span class="n">PINK</span><span class="p">,</span> <span class="n">render_scale</span><span class="p">)</span>
+
+            <span class="c1"># Draw the robot heading</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">(</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">get_surface</span><span class="p">(),</span>
+                <span class="n">Palette</span><span class="o">.</span><span class="n">PINK</span><span class="o">.</span><span class="n">get_color_array</span><span class="p">(),</span>
+                <span class="p">(</span>
+                    <span class="n">RatioOf</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">render_scale</span><span class="p">),</span>
+                    <span class="n">RatioOf</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">render_scale</span><span class="p">),</span>
+                <span class="p">),</span>
+                <span class="p">(</span>
+                    <span class="n">RatioOf</span><span class="p">(</span>
+                        <span class="n">point</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">Inch</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">Radian</span><span class="p">)),</span>
+                        <span class="n">render_scale</span><span class="p">,</span>
+                    <span class="p">),</span>
+                    <span class="n">RatioOf</span><span class="p">(</span>
+                        <span class="n">point</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">Inch</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">theta</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">Radian</span><span class="p">)),</span>
+                        <span class="n">render_scale</span><span class="p">,</span>
+                    <span class="p">),</span>
+                <span class="p">),</span>
+                <span class="n">width</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">RatioOf</span><span class="p">(</span><span class="n">Inch</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">render_scale</span><span class="p">)),</span>
+            <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TrajectoryProblem">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblem">[docs]</a>
+<span class="k">class</span> <span class="nc">TrajectoryProblem</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for defining the optimization problem for a trajectory. Contains the problem and the point variables used in the problem.</span>
+
+<span class="sd">    :param intialized_problem: The optimization problem to solve.</span>
+<span class="sd">    :type intialized_problem: :class:`OptimizationProblem`</span>
+<span class="sd">    :param point_vars: The state variables at all discrete points in the trajectory.</span>
+<span class="sd">    :type point_vars: :class:`PointVariables`&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TrajectoryProblem.__init__">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblem.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">intialized_problem</span><span class="p">:</span> <span class="n">OptimizationProblem</span><span class="p">,</span> <span class="n">point_vars</span><span class="p">:</span> <span class="n">PointVariables</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span> <span class="o">=</span> <span class="n">point_vars</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">problem</span> <span class="o">=</span> <span class="n">intialized_problem</span>
+
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="TrajectoryProblem.set_solver_callback">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblem.set_solver_callback">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_solver_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets a callback function to be called for each solver iteration.</span>
+
+<span class="sd">        :param callback: The callback function to call.</span>
+<span class="sd">        :type callback: Callable&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">callback</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TrajectoryProblem.apply_constraints">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblem.apply_constraints">[docs]</a>
+    <span class="k">def</span> <span class="nf">apply_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_constraints</span><span class="p">:</span> <span class="n">TrajectoryRobotConstraints</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Applies constraints to the optimization problem based on the robot constraints.</span>
+
+<span class="sd">        :param robot_constraints: The constraints of the robot.</span>
+<span class="sd">        :type robot_constraints: :class:`TrajectoryRobotConstraints`&quot;&quot;&quot;</span>
+
+        <span class="n">AccelerationLessThan</span><span class="p">(</span><span class="n">robot_constraints</span><span class="o">.</span><span class="n">max_acceleration</span><span class="p">)(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span>
+        <span class="p">)</span>
+
+        <span class="n">VelocityLessThan</span><span class="p">(</span><span class="n">robot_constraints</span><span class="o">.</span><span class="n">max_velocity</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="p">)</span>
+
+        <span class="n">AngularVelocityLessThan</span><span class="p">(</span><span class="n">robot_constraints</span><span class="o">.</span><span class="n">max_angular_velocity</span><span class="p">)(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span>
+        <span class="p">)</span>
+
+        <span class="n">AngularAccelerationLessThan</span><span class="p">(</span><span class="n">robot_constraints</span><span class="o">.</span><span class="n">max_angular_acceleration</span><span class="p">)(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TrajectoryProblem.get_trajectory_states_from_vars">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblem.get_trajectory_states_from_vars">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_trajectory_states_from_vars</span><span class="p">(</span><span class="nb">vars</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TrajectoryState</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of trajectory states from the point variables.</span>
+
+<span class="sd">        :param vars: The point variables to get the trajectory states from.</span>
+<span class="sd">        :type vars: :class:`PointVariables`</span>
+<span class="sd">        :return: A list of trajectory states from the point variables.</span>
+<span class="sd">        :rtype: List[:class:`TrajectoryState`]&quot;&quot;&quot;</span>
+
+        <span class="n">VEL_UNIT</span> <span class="o">=</span> <span class="n">VelocityUnit</span><span class="p">(</span><span class="n">CALCULATION_UNIT_SPATIAL</span><span class="p">,</span> <span class="n">CALCULATION_UNIT_TEMPORAL</span><span class="p">)</span>
+        <span class="n">ACCEL_UNIT</span> <span class="o">=</span> <span class="n">AccelerationUnit</span><span class="p">(</span>
+            <span class="n">CALCULATION_UNIT_SPATIAL</span><span class="p">,</span> <span class="n">CALCULATION_UNIT_TEMPORAL</span>
+        <span class="p">)</span>
+        <span class="n">ALPHA_UNIT</span> <span class="o">=</span> <span class="n">AlphaUnit</span><span class="p">(</span><span class="n">CALCULATION_UNIT_ANGULAR</span><span class="p">,</span> <span class="n">CALCULATION_UNIT_TEMPORAL</span><span class="p">)</span>
+        <span class="n">OMEGA_UNIT</span> <span class="o">=</span> <span class="n">OmegaUnit</span><span class="p">(</span><span class="n">CALCULATION_UNIT_ANGULAR</span><span class="p">,</span> <span class="n">CALCULATION_UNIT_TEMPORAL</span><span class="p">)</span>
+
+        <span class="n">states</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">vars</span><span class="o">.</span><span class="n">ACCEL_X</span><span class="p">)):</span>
+
+            <span class="n">states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">TrajectoryState</span><span class="p">(</span>
+                    <span class="n">x</span><span class="o">=</span><span class="n">CALCULATION_UNIT_SPATIAL</span><span class="p">(</span><span class="nb">vars</span><span class="o">.</span><span class="n">POS_X</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span>
+                    <span class="n">y</span><span class="o">=</span><span class="n">CALCULATION_UNIT_SPATIAL</span><span class="p">(</span><span class="nb">vars</span><span class="o">.</span><span class="n">POS_Y</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span>
+                    <span class="n">theta</span><span class="o">=</span><span class="n">CALCULATION_UNIT_ANGULAR</span><span class="p">(</span><span class="nb">vars</span><span class="o">.</span><span class="n">THETA</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span>
+                    <span class="n">vel_x</span><span class="o">=</span><span class="n">VEL_UNIT</span><span class="p">(</span><span class="nb">vars</span><span class="o">.</span><span class="n">VEL_X</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span>
+                    <span class="n">vel_y</span><span class="o">=</span><span class="n">VEL_UNIT</span><span class="p">(</span><span class="nb">vars</span><span class="o">.</span><span class="n">VEL_Y</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span>
+                    <span class="n">acc_x</span><span class="o">=</span><span class="n">ACCEL_UNIT</span><span class="p">(</span><span class="nb">vars</span><span class="o">.</span><span class="n">ACCEL_X</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span>
+                    <span class="n">acc_y</span><span class="o">=</span><span class="n">ACCEL_UNIT</span><span class="p">(</span><span class="nb">vars</span><span class="o">.</span><span class="n">ACCEL_Y</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span>
+                    <span class="n">omega</span><span class="o">=</span><span class="n">OMEGA_UNIT</span><span class="p">(</span><span class="nb">vars</span><span class="o">.</span><span class="n">OMEGA</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span>
+                    <span class="n">alpha</span><span class="o">=</span><span class="n">ALPHA_UNIT</span><span class="p">(</span><span class="nb">vars</span><span class="o">.</span><span class="n">ALPHA</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span>
+                    <span class="n">dt</span><span class="o">=</span><span class="n">CALCULATION_UNIT_TEMPORAL</span><span class="p">(</span><span class="nb">vars</span><span class="o">.</span><span class="n">DT</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">final_pos</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">vars</span><span class="o">.</span><span class="n">POS_X</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="c1"># Add final state</span>
+        <span class="n">states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">TrajectoryState</span><span class="p">(</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">CALCULATION_UNIT_SPATIAL</span><span class="p">(</span><span class="nb">vars</span><span class="o">.</span><span class="n">POS_X</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">final_pos</span><span class="p">)),</span>
+                <span class="n">y</span><span class="o">=</span><span class="n">CALCULATION_UNIT_SPATIAL</span><span class="p">(</span><span class="nb">vars</span><span class="o">.</span><span class="n">POS_Y</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">final_pos</span><span class="p">)),</span>
+                <span class="n">theta</span><span class="o">=</span><span class="n">CALCULATION_UNIT_ANGULAR</span><span class="p">(</span><span class="nb">vars</span><span class="o">.</span><span class="n">THETA</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">final_pos</span><span class="p">)),</span>
+                <span class="n">vel_x</span><span class="o">=</span><span class="n">VEL_UNIT</span><span class="p">(</span><span class="nb">vars</span><span class="o">.</span><span class="n">VEL_X</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">final_pos</span><span class="p">)),</span>
+                <span class="n">vel_y</span><span class="o">=</span><span class="n">VEL_UNIT</span><span class="p">(</span><span class="nb">vars</span><span class="o">.</span><span class="n">VEL_Y</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">final_pos</span><span class="p">)),</span>
+                <span class="n">acc_x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">acc_y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">omega</span><span class="o">=</span><span class="n">OMEGA_UNIT</span><span class="p">(</span><span class="nb">vars</span><span class="o">.</span><span class="n">OMEGA</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="n">final_pos</span><span class="p">)),</span>
+                <span class="n">alpha</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">states</span></div>
+
+
+<div class="viewcode-block" id="TrajectoryProblem.get_trajectory_states">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblem.get_trajectory_states">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_trajectory_states</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TrajectoryState</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a list of trajectory states from the point variables.</span>
+
+<span class="sd">        :return: A list of trajectory states from the point variables.</span>
+<span class="sd">        :rtype: List[:class:`TrajectoryState`]&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_trajectory_states_from_vars</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TrajectoryProblem.solve">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblem.solve">[docs]</a>
+    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">robot_constraints</span><span class="p">:</span> <span class="n">TrajectoryRobotConstraints</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SolverConfig</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Trajectory</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Solves the optimization problem and returns the solution.</span>
+
+<span class="sd">        :param robot_constraints: The constraints of the robot.</span>
+<span class="sd">        :type robot_constraints: :class:`TrajectoryRobotConstraints`</span>
+<span class="sd">        :param config: The configuration of the solver.</span>
+<span class="sd">        :type config: :class:`SolverConfig`</span>
+<span class="sd">        :return: The solution to the optimization problem.</span>
+<span class="sd">        :rtype: :class:`Trajectory`&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apply_constraints</span><span class="p">(</span><span class="n">robot_constraints</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span>
+            <span class="n">tolerance</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">solution_tolerance</span><span class="p">,</span>
+            <span class="n">max_iterations</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">max_iterations</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Trajectory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_trajectory_states</span><span class="p">(),</span> <span class="n">robot_constraints</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SwerveTrajectoryProblem">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectoryProblem">[docs]</a>
+<span class="k">class</span> <span class="nc">SwerveTrajectoryProblem</span><span class="p">(</span><span class="n">TrajectoryProblem</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for defining the optimization problem for a swerve drive trajectory. Contains the problem and the point variables used in the problem.</span>
+
+<span class="sd">    :param problem: The optimization problem to solve.</span>
+<span class="sd">    :type problem: :class:`OptimizationProblem`</span>
+<span class="sd">    :param point_vars: The state variables at all discrete points in the trajectory.</span>
+<span class="sd">    :type point_vars: :class:`SwervePointVariables`&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SwerveTrajectoryProblem.__init__">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectoryProblem.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">problem</span><span class="p">:</span> <span class="n">OptimizationProblem</span><span class="p">,</span> <span class="n">point_vars</span><span class="p">:</span> <span class="n">SwervePointVariables</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">point_vars</span><span class="p">)</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="SwerveTrajectoryProblem.apply_swerve_constraints">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectoryProblem.apply_swerve_constraints">[docs]</a>
+    <span class="k">def</span> <span class="nf">apply_swerve_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_constraints</span><span class="p">:</span> <span class="n">SwerveRobotConstraints</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Applies constraints to the optimization problem based on the swerve drive robot constraints.</span>
+
+<span class="sd">        :param robot_constraints: The constraints of the robot.</span>
+<span class="sd">        :type robot_constraints: :class:`SwerveRobotConstraints`&quot;&quot;&quot;</span>
+
+        <span class="c1"># FIXME: This screws up the solvers feasability</span>
+        <span class="n">SwerveModuleConstraints</span><span class="p">(</span>
+            <span class="n">robot_constraints</span><span class="o">.</span><span class="n">swerve_config</span><span class="p">,</span> <span class="n">robot_constraints</span><span class="o">.</span><span class="n">physical_parameters</span>
+        <span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="p">)</span>
+
+        <span class="n">SwerveKinematicConstraints</span><span class="p">(</span>
+            <span class="n">robot_constraints</span><span class="o">.</span><span class="n">swerve_config</span><span class="p">,</span> <span class="n">robot_constraints</span><span class="o">.</span><span class="n">physical_parameters</span>
+        <span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SwerveTrajectoryProblem.solve">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectoryProblem.solve">[docs]</a>
+    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot_constraints</span><span class="p">:</span> <span class="n">SwerveRobotConstraints</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">SolverConfig</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Solves the optimization problem and returns the solution.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">apply_constraints</span><span class="p">(</span><span class="n">robot_constraints</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apply_swerve_constraints</span><span class="p">(</span><span class="n">robot_constraints</span><span class="p">)</span>
+
+        <span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span>
+            <span class="n">tolerance</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">solution_tolerance</span><span class="p">,</span>
+            <span class="n">max_iterations</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">max_iterations</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="n">diagnostics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">SwerveTrajectory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_trajectory_states</span><span class="p">(),</span> <span class="n">robot_constraints</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Waypoint">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.Waypoint">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Waypoint</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataclass used to store a waypoint that the trajectory must pass through.</span>
+
+<span class="sd">    :param x: The x position of the waypoint.</span>
+<span class="sd">    :type x: :class:`SpatialMeasurement`</span>
+<span class="sd">    :param y: The y position of the waypoint.</span>
+<span class="sd">    :type y: :class:`SpatialMeasurement`&quot;&quot;&quot;</span>
+
+    <span class="n">x</span><span class="p">:</span> <span class="n">SpatialMeasurement</span>
+    <span class="n">y</span><span class="p">:</span> <span class="n">SpatialMeasurement</span>
+    <span class="n">constraints</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">OptimizationProblem</span><span class="p">,</span> <span class="n">PointVariables</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">control_point_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+<div class="viewcode-block" id="Waypoint.given">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.Waypoint.given">[docs]</a>
+    <span class="k">def</span> <span class="nf">given</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">constraints</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">OptimizationProblem</span><span class="p">,</span> <span class="n">PointVariables</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="kc">None</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Waypoint&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds constraints to the waypoint.</span>
+
+<span class="sd">        :param constraints: The constraints to add to the waypoint.</span>
+<span class="sd">        :type constraints: List[Callable[[OptimizationProblem, PointVariables, int], None]]</span>
+<span class="sd">        :return: The waypoint with the added constraints.</span>
+<span class="sd">        :rtype: :class:`Waypoint`&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">constraints</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Waypoint x must be positive.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Waypoint y must be positive.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PositionEquals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="MinimizationStrategy">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.MinimizationStrategy">[docs]</a>
+<span class="k">class</span> <span class="nc">MinimizationStrategy</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enum used to define the minimization strategy for a trajectory optimization problem.</span>
+
+<span class="sd">    :param TIME: Minimize the time taken to complete the trajectory.</span>
+<span class="sd">    :param DISTANCE: Minimize the distance traveled in the trajectory.&quot;&quot;&quot;</span>
+
+    <span class="n">TIME</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">DISTANCE</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+
+
+<div class="viewcode-block" id="TrajectoryBuilderConfig">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryBuilderConfig">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">TrajectoryBuilderConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataclass used to store configuration information for a trajectory optimization problem.</span>
+
+<span class="sd">    :param trajectory_resolution: The resolution of the trajectory.</span>
+<span class="sd">    :type trajectory_resolution: :class:`SpatialMeasurement`</span>
+<span class="sd">    :param stretch_factor: Factor which controls how much the trajectory can &quot;stretch&quot; from its initial path.</span>
+<span class="sd">    :type stretch_factor: float</span>
+<span class="sd">    :param min_spacing: The minimum spacing between points in the trajectory, can help space out points and keep them from clumping up.</span>
+<span class="sd">    :type min_spacing: :class:`SpatialMeasurement`</span>
+<span class="sd">    :param apply_kinematic_constraints: Whether to apply kinematic constraints to the trajectory.</span>
+<span class="sd">    :type apply_kinematic_constraints: bool</span>
+<span class="sd">    :param minimization_strategy: The minimization strategy for the trajectory.</span>
+<span class="sd">    :type minimization_strategy: :class:`MinimizationStrategy`&quot;&quot;&quot;</span>
+
+    <span class="n">trajectory_resolution</span><span class="p">:</span> <span class="n">SpatialMeasurement</span> <span class="o">=</span> <span class="n">Centimeter</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">stretch_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.1</span>
+    <span class="n">min_spacing</span><span class="p">:</span> <span class="n">SpatialMeasurement</span> <span class="o">=</span> <span class="n">Centimeter</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">apply_kinematic_constraints</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">minimization_strategy</span><span class="p">:</span> <span class="n">MinimizationStrategy</span> <span class="o">=</span> <span class="n">MinimizationStrategy</span><span class="o">.</span><span class="n">TIME</span></div>
+
+
+
+<div class="viewcode-block" id="TrajectoryProblemBuilder">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblemBuilder">[docs]</a>
+<span class="k">class</span> <span class="nc">TrajectoryProblemBuilder</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class used to build a trajectory optimization problem and generate a solution. Allows for constraints and objectives to be added and setup.</span>
+
+<span class="sd">    :param initial_pathes: The initial pathes to use for the trajectory.</span>
+<span class="sd">    :type initial_pathes: List[:class:`Path`]</span>
+<span class="sd">    :param point_constraints: The constraints that apply to all points in the trajectory.</span>
+<span class="sd">    :type point_constraints: List[Callable[[OptimizationProblem, PointVariables], None]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TrajectoryProblemBuilder.__init__">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblemBuilder.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">problem</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="p">:</span> <span class="n">PointVariables</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">waypoints</span><span class="p">:</span> <span class="n">SortedDict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Waypoint</span><span class="p">]</span> <span class="o">=</span> <span class="n">SortedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_pathes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">point_constraints</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="TrajectoryProblemBuilder.generate_point_vars">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblemBuilder.generate_point_vars">[docs]</a>
+    <span class="k">def</span> <span class="nf">generate_point_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_points</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes the state variables for all points in the trajectory.</span>
+
+<span class="sd">        :param num_points: The number of points in the trajectory.</span>
+<span class="sd">        :type num_points: int</span>
+<span class="sd">        :return: The state variables at all discrete points in the trajectory.</span>
+<span class="sd">        :rtype: :class:`PointVariables`&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">PointVariables</span><span class="o">.</span><span class="n">with_initial_variables</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="n">num_points</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TrajectoryProblemBuilder.initialize_state_variables_with_initial_pathes">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblemBuilder.initialize_state_variables_with_initial_pathes">[docs]</a>
+    <span class="k">def</span> <span class="nf">initialize_state_variables_with_initial_pathes</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">initial_pathes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">],</span> <span class="n">resolution</span><span class="p">:</span> <span class="n">SpatialMeasurement</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes the state variables for all points in the trajectory based on the initial pathes.</span>
+
+<span class="sd">        :param initial_pathes: The initial pathes to use for the trajectory.</span>
+<span class="sd">        :type initial_pathes: List[:class:`Path`]</span>
+<span class="sd">        :param resolution: The resolution of the trajectory.</span>
+<span class="sd">        :type resolution: :class:`SpatialMeasurement`</span>
+<span class="sd">        :return: The number of points in the trajectory.</span>
+<span class="sd">        :rtype: int&quot;&quot;&quot;</span>
+
+        <span class="n">X_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">Y_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">waypoints</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">waypoints</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+
+        <span class="c1"># Set the control node for first waypoint</span>
+        <span class="n">waypoints</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">control_point_index</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">waypoint</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">waypoints</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_pathes</span><span class="p">):</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_pathes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="p">(</span><span class="n">waypoint</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">waypoint</span><span class="o">.</span><span class="n">y</span><span class="p">),</span>
+                        <span class="p">(</span><span class="n">waypoints</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">waypoints</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="p">),</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+            <span class="n">dissected_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span>
+                <span class="n">path</span><span class="o">.</span><span class="n">dissected</span><span class="p">(</span><span class="n">units_per_node</span><span class="o">=</span><span class="n">resolution</span><span class="p">)</span><span class="o">.</span><span class="n">get_points</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="p">)</span>  <span class="c1"># TODO: Do this better. This is done to ensure first point is not in same position as last point of previous path, which cooks the solver</span>
+
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">dissected_path</span><span class="o">.</span><span class="n">get_points</span><span class="p">():</span>
+                <span class="n">X_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">CALCULATION_UNIT_SPATIAL</span><span class="p">))</span>
+                <span class="n">Y_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">CALCULATION_UNIT_SPATIAL</span><span class="p">))</span>
+
+            <span class="n">waypoints</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">control_point_index</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X_nodes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_point_vars</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X_nodes</span><span class="p">))</span>
+
+        <span class="c1"># Initialize state variables to inital pathes</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X_nodes</span><span class="p">)):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="o">.</span><span class="n">POS_X</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">X_nodes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="o">.</span><span class="n">POS_Y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">Y_nodes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="c1"># Initialize time steps</span>
+        <span class="n">init_dt</span> <span class="o">=</span> <span class="p">(</span><span class="n">resolution</span> <span class="o">/</span> <span class="n">MetersPerSecond</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">CALCULATION_UNIT_TEMPORAL</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X_nodes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="o">.</span><span class="n">DT</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">init_dt</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__apply_waypoint_constraints</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">X_nodes</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__apply_waypoint_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">order</span><span class="p">,</span> <span class="n">waypoint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">waypoints</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="k">for</span> <span class="n">constraint</span> <span class="ow">in</span> <span class="n">waypoint</span><span class="o">.</span><span class="n">constraints</span><span class="p">:</span>
+                <span class="n">constraint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="p">,</span> <span class="n">waypoint</span><span class="o">.</span><span class="n">control_point_index</span><span class="p">)</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">Info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Applied waypoint constraint (</span><span class="si">{</span><span class="n">constraint</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__apply_kinematic_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">PositionKinematicsConstraint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="p">)</span>
+        <span class="n">VelocityKinematicsConstraint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="p">)</span>
+        <span class="n">OmegaKinematicsConstraint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="p">)</span>
+        <span class="n">ThetaKinematicsConstraint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TrajectoryProblemBuilder.apply_basic_constraints">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblemBuilder.apply_basic_constraints">[docs]</a>
+    <span class="k">def</span> <span class="nf">apply_basic_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Applies basic constraints to the optimization problem.&quot;&quot;&quot;</span>
+        <span class="n">base</span><span class="o">.</span><span class="n">MagnitudeGreaterThanConstraint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="o">.</span><span class="n">DT</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">__apply_spacing_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">TrajectoryBuilderConfig</span><span class="p">):</span>
+        <span class="n">PositionMinSpacingConstraint</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">min_spacing</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="p">)</span>
+        <span class="n">PositionMaxSpacingConstraint</span><span class="p">(</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">trajectory_resolution</span> <span class="o">*</span> <span class="n">config</span><span class="o">.</span><span class="n">stretch_factor</span>
+        <span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TrajectoryProblemBuilder.apply_config_constraints">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblemBuilder.apply_config_constraints">[docs]</a>
+    <span class="k">def</span> <span class="nf">apply_config_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">TrajectoryBuilderConfig</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Applies constraints to the optimization problem based on the configuration.</span>
+
+<span class="sd">        :param config: The configuration of the trajectory optimization problem.</span>
+<span class="sd">        :type config: :class:`TrajectoryBuilderConfig`&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">apply_kinematic_constraints</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__apply_kinematic_constraints</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">min_spacing</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">config</span><span class="o">.</span><span class="n">stretch_factor</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__apply_spacing_constraints</span><span class="p">(</span><span class="n">config</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TrajectoryProblemBuilder.apply_minimization_objective">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblemBuilder.apply_minimization_objective">[docs]</a>
+    <span class="k">def</span> <span class="nf">apply_minimization_objective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">TrajectoryBuilderConfig</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Applies the minimization objective to the optimization problem based on the configuration.</span>
+
+<span class="sd">        :param config: The configuration of the trajectory optimization problem.</span>
+<span class="sd">        :type config: :class:`TrajectoryBuilderConfig`&quot;&quot;&quot;</span>
+
+        <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">match</span> <span class="n">config</span><span class="o">.</span><span class="n">minimization_strategy</span><span class="p">:</span>
+            <span class="k">case</span> <span class="n">MinimizationStrategy</span><span class="o">.</span><span class="n">TIME</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="o">.</span><span class="n">DT</span><span class="p">)):</span>
+                    <span class="n">total</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="o">.</span><span class="n">DT</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">case</span> <span class="n">MinimizationStrategy</span><span class="o">.</span><span class="n">DISTANCE</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="o">.</span><span class="n">POS_X</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">total</span> <span class="o">+=</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="o">.</span><span class="n">POS_X</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="o">.</span><span class="n">POS_X</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="o">.</span><span class="n">POS_Y</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="o">.</span><span class="n">POS_Y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="o">.</span><span class="n">minimize</span><span class="p">(</span><span class="n">total</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TrajectoryProblemBuilder.generate">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblemBuilder.generate">[docs]</a>
+    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">TrajectoryBuilderConfig</span> <span class="o">=</span> <span class="n">TrajectoryBuilderConfig</span><span class="p">()</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrajectoryProblem</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets up and generates the optimization problem, based on the constraints and objectives currently added to the problem.</span>
+
+<span class="sd">        :param config: The configuration of the trajectory optimization problem.</span>
+<span class="sd">        :type config: :class:`Trajectory</span>
+<span class="sd">        :return: The optimization problem for the trajectory.</span>
+<span class="sd">        :rtype: :class:`TrajectoryProblem`&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">problem</span> <span class="o">=</span> <span class="n">OptimizationProblem</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waypoints</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Trajectory must have at least two waypoints.&quot;</span><span class="p">)</span>
+
+        <span class="n">steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialize_state_variables_with_initial_pathes</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initial_pathes</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">trajectory_resolution</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">apply_config_constraints</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apply_basic_constraints</span><span class="p">()</span>
+
+        <span class="c1"># Apply constraints for all points</span>
+        <span class="k">for</span> <span class="n">constraint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_constraints</span><span class="p">:</span>
+            <span class="n">constraint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="p">)</span>
+
+        <span class="c1"># Minimization objective</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apply_minimization_objective</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">TrajectoryProblem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TrajectoryProblemBuilder.solve">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblemBuilder.solve">[docs]</a>
+    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Solves the optimization problem and returns the solution.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="TrajectoryProblemBuilder.points_constraint">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblemBuilder.points_constraint">[docs]</a>
+    <span class="k">def</span> <span class="nf">points_constraint</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">constraint</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">OptimizationProblem</span><span class="p">,</span> <span class="n">PointVariables</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds a constraint that applies to all points in the trajectory.</span>
+
+<span class="sd">        :param constraint: The constraint to add.</span>
+<span class="sd">        :type constraint: Callable[[OptimizationProblem, PointVariables], None]&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">point_constraints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">constraint</span><span class="p">)</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="TrajectoryProblemBuilder.waypoint">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblemBuilder.waypoint">[docs]</a>
+    <span class="k">def</span> <span class="nf">waypoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">waypoint</span><span class="p">:</span> <span class="n">Waypoint</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds a waypoint that the trajectory must pass through.</span>
+
+<span class="sd">        :param waypoint: The waypoint to add.</span>
+<span class="sd">        :type waypoint: :class:`Waypoint`</span>
+<span class="sd">        :param order: The order of the waypoint in the trajectory.</span>
+<span class="sd">        :type order: int&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waypoints</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">waypoints</span><span class="p">[</span><span class="n">order</span><span class="p">]</span> <span class="o">=</span> <span class="n">waypoint</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="TrajectoryProblemBuilder.guide_pathes">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblemBuilder.guide_pathes">[docs]</a>
+    <span class="k">def</span> <span class="nf">guide_pathes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">guide_pathes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adds guide pathes that aid the trajectory in reaching its waypoints.</span>
+
+<span class="sd">        :param guide_pathes: The guide pathes to add.</span>
+<span class="sd">        :type guide_pathes: List[:class:`Path`]&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">guide_pathes</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waypoints</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">Warn</span><span class="p">(</span><span class="s2">&quot;Number of guide pathes does not match number of waypoints.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_pathes</span> <span class="o">=</span> <span class="n">guide_pathes</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SwerveTrajectoryProblemBuilder">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectoryProblemBuilder">[docs]</a>
+<span class="k">class</span> <span class="nc">SwerveTrajectoryProblemBuilder</span><span class="p">(</span><span class="n">TrajectoryProblemBuilder</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class used to build a swerve drive trajectory optimization problem and generate a solution. Allows for constraints and objectives to be added and setup.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SwerveTrajectoryProblemBuilder.__init__">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectoryProblemBuilder.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="p">:</span> <span class="n">SwervePointVariables</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="SwerveTrajectoryProblemBuilder.generate_point_vars">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectoryProblemBuilder.generate_point_vars">[docs]</a>
+    <span class="k">def</span> <span class="nf">generate_point_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_points</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes the state variables for all points in the trajectory.</span>
+
+<span class="sd">        :param num_points: The number of points in the trajectory.</span>
+<span class="sd">        :type num_points: int</span>
+<span class="sd">        :return: The state variables at all discrete points in the trajectory.</span>
+<span class="sd">        :rtype: :class:`SwervePointVariables`&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">SwervePointVariables</span><span class="o">.</span><span class="n">with_initial_variables</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="n">num_points</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SwerveTrajectoryProblemBuilder.generate">
+<a class="viewcode-back" href="../../../../../trajectorylib.html#gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectoryProblemBuilder.generate">[docs]</a>
+    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">TrajectoryBuilderConfig</span> <span class="o">=</span> <span class="n">TrajectoryBuilderConfig</span><span class="p">()</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SwerveTrajectoryProblem</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets up and generates the optimization problem, based on the constraints and objectives currently added to the problem.</span>
+
+<span class="sd">        :param config: The configuration of the trajectory optimization problem.</span>
+<span class="sd">        :type config: :class:`TrajectoryBuilderConfig`</span>
+<span class="sd">        :return: The optimization problem for the trajectory.</span>
+<span class="sd">        :rtype: :class:`SwerveTrajectoryProblem`&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">problem</span> <span class="o">=</span> <span class="n">OptimizationProblem</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waypoints</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Trajectory must have at least two waypoints.&quot;</span><span class="p">)</span>
+
+        <span class="n">steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialize_state_variables_with_initial_pathes</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initial_pathes</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">trajectory_resolution</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">apply_config_constraints</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apply_basic_constraints</span><span class="p">()</span>
+
+        <span class="c1"># Apply constraints for all points</span>
+        <span class="k">for</span> <span class="n">constraint</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_constraints</span><span class="p">:</span>
+            <span class="n">constraint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="p">)</span>
+
+        <span class="c1"># Minimization objective</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apply_minimization_objective</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">SwerveTrajectoryProblem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">point_vars</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Adam Koltuniuk
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../../../_static/documentation_options.js?v=38b66d78"></script>
+    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/scripts/furo.js?v=5fa4622c"></script>
+    </body>
+</html>

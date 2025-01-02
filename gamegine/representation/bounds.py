@@ -1232,7 +1232,7 @@ def SymmetricalXY(
     :param prefix_og: The prefix to add to the name of the original objects.
     :type prefix_og: str
     :return: The objects in the symmetrical pattern.
-    :rtype: List[:class:`BoundedObject
+    :rtype: List[:class:`BoundedObject`]
     """
 
     return [obj.prefix(prefix_og) for obj in objects] + [
@@ -1257,7 +1257,7 @@ def ExpandedObjectBounds(
     :param discretization_quality: The quality of discretization to use when expanding the bounds.
     :type discretization_quality: int
     :return: The expanded bounds of the objects.
-    :rtype: List[:class:`DiscreteBoundary
+    :rtype: List[:class:`DiscreteBoundary`]
     """
     return [
         object.bounds.discretized(discretization_quality).buffered(robot_radius)
@@ -1279,7 +1279,7 @@ def ExpandedBounds(
     :param discretization_quality: The quality of discretization to use when expanding the bounds.
     :type discretization_quality: int
     :return: The expanded bounds of the boundaries.
-    :rtype: List[:class:`DiscreteBoundary
+    :rtype: List[:class:`DiscreteBoundary`]
     """
 
     return [

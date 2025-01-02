@@ -201,13 +201,18 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference_index.html">Representation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference_index.html#module-gamegine.representation.game">Game</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../reference_index.html#module-gamegine.representation.bounds">Bounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../representation.html">Game</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../representation.html#module-gamegine.representation.bounds">Bounds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../representation.html#module-gamegine.representation.apriltag">FRC Elements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference.html#module-gamegine.reference.motors">Motors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference.html#module-gamegine.reference.gearing">Gear ratio</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference.html#module-gamegine.reference.swerve">Drive Train</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../ncim.html">NCIM Units Library</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../ncim.html#module-gamegine.utils.NCIM.ncim">Generic NCIM Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../ncim.html#module-gamegine.utils.NCIM.basic">Base Measurements</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../ncim.html#module-gamegine.utils.NCIM.Dimensions.spatial">Spatial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ncim.html#standard-dimensions">Standard Dimensions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ncim.html#complex-dimensions">Complex Dimensions</a></li>
 </ul>
 
 </div>
@@ -562,6 +567,8 @@
 <span class="k">class</span> <span class="nc">Transform3D</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class representing a 3D transformation including position, rotation, and scale.&quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="Transform3D.__init__">
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.bounds.Transform3D.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">position</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">SpatialMeasurement</span><span class="p">,</span> <span class="n">SpatialMeasurement</span><span class="p">,</span> <span class="n">SpatialMeasurement</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
@@ -578,7 +585,8 @@
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">position</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rotation</span> <span class="o">=</span> <span class="n">rotation</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">scale</span></div>
+
 
 <div class="viewcode-block" id="Transform3D.apply">
 <a class="viewcode-back" href="../../../representation.html#gamegine.representation.bounds.Transform3D.apply">[docs]</a>
@@ -709,8 +717,11 @@
 <span class="k">class</span> <span class="nc">Boundary3D</span><span class="p">(</span><span class="n">Boundary</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for representing boundaries in 3D space.&quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="Boundary3D.__init__">
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.bounds.Boundary3D.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transform</span><span class="p">:</span> <span class="n">Transform3D</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">transform</span> <span class="k">if</span> <span class="n">transform</span> <span class="k">else</span> <span class="n">Transform3D</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="n">transform</span> <span class="k">if</span> <span class="n">transform</span> <span class="k">else</span> <span class="n">Transform3D</span><span class="p">()</span></div>
+
 
 <div class="viewcode-block" id="Boundary3D.get_slice">
 <a class="viewcode-back" href="../../../representation.html#gamegine.representation.bounds.Boundary3D.get_slice">[docs]</a>
@@ -924,6 +935,8 @@
 <span class="sd">    :param height: The height of the rectangle.</span>
 <span class="sd">    :type height: :class:`SpatialMeasurement`&quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="Rectangle.__init__">
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.bounds.Rectangle.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">x</span><span class="p">:</span> <span class="n">SpatialMeasurement</span><span class="p">,</span>
@@ -934,7 +947,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span></div>
+
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Rectangle(x=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="s2">, y=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="s2">, width=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="si">}</span><span class="s2">, height=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="si">}</span><span class="s2">)&quot;</span>
@@ -1063,10 +1077,13 @@
 <div class="viewcode-block" id="Square">
 <a class="viewcode-back" href="../../../representation.html#gamegine.representation.bounds.Square">[docs]</a>
 <span class="k">class</span> <span class="nc">Square</span><span class="p">(</span><span class="n">Rectangle</span><span class="p">):</span>
+<div class="viewcode-block" id="Square.__init__">
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.bounds.Square.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">SpatialMeasurement</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">SpatialMeasurement</span><span class="p">,</span> <span class="n">side</span><span class="p">:</span> <span class="n">SpatialMeasurement</span>
     <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">side</span><span class="p">,</span> <span class="n">side</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">side</span><span class="p">,</span> <span class="n">side</span><span class="p">)</span></div>
+
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Square(x=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="s2">, y=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="s2">, side=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="si">}</span><span class="s2">)&quot;</span></div>
@@ -1085,12 +1102,15 @@
 <span class="sd">    :param radius: The radius of the circle.</span>
 <span class="sd">    :type radius: :class:`SpatialMeasurement`&quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="Circle.__init__">
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.bounds.Circle.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">SpatialMeasurement</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">SpatialMeasurement</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="n">SpatialMeasurement</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="n">radius</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="n">radius</span></div>
+
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Circle(x=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="s2">, y=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="s2">, radius=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="si">}</span><span class="s2">)&quot;</span>
@@ -1154,6 +1174,8 @@
 <span class="k">class</span> <span class="nc">Cylinder</span><span class="p">(</span><span class="n">DiscreteBoundary3D</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for representing a cylinder.&quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="Cylinder.__init__">
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.bounds.Cylinder.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">radius</span><span class="p">:</span> <span class="n">SpatialMeasurement</span><span class="p">,</span>
@@ -1164,7 +1186,8 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="n">radius</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">curve_segments</span> <span class="o">=</span> <span class="n">curve_segments</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curve_segments</span> <span class="o">=</span> <span class="n">curve_segments</span></div>
+
 
 <div class="viewcode-block" id="Cylinder.get_z_interval">
 <a class="viewcode-back" href="../../../representation.html#gamegine.representation.bounds.Cylinder.get_z_interval">[docs]</a>
@@ -1231,8 +1254,11 @@
 <span class="sd">    :type points: List[Tuple[:class:`SpatialMeasurement`, :class:`SpatialMeasurement`]]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="Polygon.__init__">
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.bounds.Polygon.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">SpatialMeasurement</span><span class="p">,</span> <span class="n">SpatialMeasurement</span><span class="p">]]):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">points</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">points</span></div>
+
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Polygon(points=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="si">}</span><span class="s2">)&quot;</span>
@@ -1288,6 +1314,8 @@
 <span class="k">class</span> <span class="nc">PolygonalPrism</span><span class="p">(</span><span class="n">DiscreteBoundary3D</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for representing a polygonal prism.&quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="PolygonalPrism.__init__">
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.bounds.PolygonalPrism.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">points</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">SpatialMeasurement</span><span class="p">,</span> <span class="n">SpatialMeasurement</span><span class="p">]],</span>
@@ -1296,7 +1324,8 @@
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">transform</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">local_points</span> <span class="o">=</span> <span class="p">[(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">Inch</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span></div>
+
 
 <div class="viewcode-block" id="PolygonalPrism.get_z_interval">
 <a class="viewcode-back" href="../../../representation.html#gamegine.representation.bounds.PolygonalPrism.get_z_interval">[docs]</a>
@@ -1361,6 +1390,8 @@
 <span class="sd">    :param y2: The y value of the second point of the line.</span>
 <span class="sd">    :type y2: :class:`SpatialMeasurement`&quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="Line.__init__">
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.bounds.Line.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">x1</span><span class="p">:</span> <span class="n">SpatialMeasurement</span><span class="p">,</span>
@@ -1371,7 +1402,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">x1</span> <span class="o">=</span> <span class="n">x1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y1</span> <span class="o">=</span> <span class="n">y1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x2</span> <span class="o">=</span> <span class="n">x2</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">y2</span> <span class="o">=</span> <span class="n">y2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y2</span> <span class="o">=</span> <span class="n">y2</span></div>
+
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Line(x1=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">x1</span><span class="si">}</span><span class="s2">, y1=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">y1</span><span class="si">}</span><span class="s2">, x2=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">x2</span><span class="si">}</span><span class="s2">, y2=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">y2</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -1438,10 +1470,13 @@
 <span class="sd">    :param z: The z value of the point.</span>
 <span class="sd">    :type z: :class:`SpatialMeasurement`&quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="Point.__init__">
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.bounds.Point.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">SpatialMeasurement</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">SpatialMeasurement</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">SpatialMeasurement</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">Transform3D</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)))</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">Transform3D</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)))</span></div>
+
 
 <div class="viewcode-block" id="Point.get_z_interval">
 <a class="viewcode-back" href="../../../representation.html#gamegine.representation.bounds.Point.get_z_interval">[docs]</a>
@@ -1477,9 +1512,12 @@
 <span class="k">class</span> <span class="nc">BoundedObject</span><span class="p">(</span><span class="n">NamedObject</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for representing game objects which occupy a space on the field. Contain a boundary which indicates the space the object occupies.&quot;&quot;&quot;</span>
 
+<div class="viewcode-block" id="BoundedObject.__init__">
+<a class="viewcode-back" href="../../../representation.html#gamegine.representation.bounds.BoundedObject.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bounds</span><span class="p">:</span> <span class="n">Boundary</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="n">bounds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="n">bounds</span></div>
+
 
 <div class="viewcode-block" id="BoundedObject.mirrored_over_horizontal">
 <a class="viewcode-back" href="../../../representation.html#gamegine.representation.bounds.BoundedObject.mirrored_over_horizontal">[docs]</a>
@@ -1788,7 +1826,7 @@
 <span class="sd">    :param prefix_og: The prefix to add to the name of the original objects.</span>
 <span class="sd">    :type prefix_og: str</span>
 <span class="sd">    :return: The objects in the symmetrical pattern.</span>
-<span class="sd">    :rtype: List[:class:`BoundedObject</span>
+<span class="sd">    :rtype: List[:class:`BoundedObject`]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">prefix</span><span class="p">(</span><span class="n">prefix_og</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objects</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
@@ -1816,7 +1854,7 @@
 <span class="sd">    :param discretization_quality: The quality of discretization to use when expanding the bounds.</span>
 <span class="sd">    :type discretization_quality: int</span>
 <span class="sd">    :return: The expanded bounds of the objects.</span>
-<span class="sd">    :rtype: List[:class:`DiscreteBoundary</span>
+<span class="sd">    :rtype: List[:class:`DiscreteBoundary`]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span>
         <span class="nb">object</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">discretized</span><span class="p">(</span><span class="n">discretization_quality</span><span class="p">)</span><span class="o">.</span><span class="n">buffered</span><span class="p">(</span><span class="n">robot_radius</span><span class="p">)</span>
@@ -1841,7 +1879,7 @@
 <span class="sd">    :param discretization_quality: The quality of discretization to use when expanding the bounds.</span>
 <span class="sd">    :type discretization_quality: int</span>
 <span class="sd">    :return: The expanded bounds of the boundaries.</span>
-<span class="sd">    :rtype: List[:class:`DiscreteBoundary</span>
+<span class="sd">    :rtype: List[:class:`DiscreteBoundary`]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="p">[</span>
