@@ -111,3 +111,10 @@ class RobotState(StateSpace, Drawable):
         pygame.draw.line(
             surface, (0, 0, 255), (center_x, center_y), (heading_x, heading_y), width
         )
+
+    def distance_to(
+        self, x: SpatialMeasurement, y: SpatialMeasurement
+    ) -> SpatialMeasurement:
+        dx = self.x.get() - x
+        dy = self.y.get() - y
+        return (dx**2 + dy**2) ** 0.5

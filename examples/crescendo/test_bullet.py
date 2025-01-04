@@ -4,7 +4,14 @@ from gamegine.reference import gearing, motors
 from gamegine.reference.motors import MotorConfig
 from gamegine.reference.swerve import SwerveConfig, SwerveModule
 from gamegine.reference.wheels import TreadDB, Wheel
-from gamegine.representation.bounds import Transform3D
+from gamegine.representation.bounds import (
+    CircularPattern,
+    Cylinder,
+    SymmetricalX,
+    Transform3D,
+)
+from gamegine.representation.game import Game
+from gamegine.representation.obstacle import Obstacle
 from gamegine.simulation.environment.object import Joint, ObjectNode
 from gamegine.simulation.environment.shape import BulletBox, BulletPlane, BulletShape
 from gamegine.simulation.environment.swerve import (
@@ -17,9 +24,146 @@ from gamegine.utils.NCIM.Dimensions.spatial import Inch, Feet, Meter
 from gamegine.utils.NCIM.Dimensions.current import Ampere
 from gamegine.simulation.environment import mybullet as mb
 import pybullet as p
-from examples.crescendo.crescendo import Crescendo
+import pygame
+
+from gamegine.analysis.meshing import TriangulatedGraph, VisibilityGraph
+
+
+from gamegine.analysis.trajectory.lib.TrajGen import (
+    SolverConfig,
+    SwerveRobotConstraints,
+    SwerveTrajectoryProblemBuilder,
+    TrajectoryBuilderConfig,
+    Waypoint,
+)
+from gamegine.analysis.trajectory.lib.constraints.avoidance import (
+    SAFETY_CORRIDOR_DEBUG,
+    SafetyCorridor,
+)
+from gamegine.analysis.trajectory.lib.constraints.constraints import (
+    AngleEquals,
+    VelocityEquals,
+)
+from gamegine.reference import gearing, motors
+from gamegine.reference.swerve import SwerveConfig, SwerveModule
+from gamegine.render.renderer import Renderer
+from gamegine.representation.apriltag import AprilTag, AprilTagFamily
+from gamegine.representation.bounds import (
+    Circle,
+    Cylinder,
+    ExpandedObjectBounds,
+    Point,
+    Polygon,
+    Rectangle,
+    SymmetricalX,
+    CircularPattern,
+    Transform3D,
+)
+from gamegine.representation.game import Game
+from gamegine.representation.obstacle import Circular, Obstacle, Polygonal, Rectangular
+from gamegine.representation.robot import (
+    PhysicalParameters,
+)
+from gamegine.utils.NCIM.ComplexDimensions.MOI import PoundsInchesSquared
+from gamegine.utils.NCIM.ComplexDimensions.acceleration import MeterPerSecondSquared
+from gamegine.utils.NCIM.ComplexDimensions.alpha import RadiansPerSecondSquared
+from gamegine.utils.NCIM.ComplexDimensions.electricpot import Volt
+from gamegine.utils.NCIM.ComplexDimensions.omega import (
+    RadiansPerSecond,
+    RotationsPerSecond,
+)
+from gamegine.utils.NCIM.Dimensions.angular import AngularMeasurement, Radian
+from gamegine.utils.NCIM.Dimensions.current import Ampere
+from gamegine.utils.NCIM.ncim import (
+    Degree,
+    Kilogram,
+    KilogramMetersSquared,
+    Meter,
+    Centimeter,
+    Feet,
+    Inch,
+    MetersPerSecond,
+    Pound,
+    SpatialMeasurement,
+)
+from gamegine.analysis import pathfinding
+import time
+
+from gamegine.utils.logging import Debug
 
 import time
+
+Crescendo = Game("FRC Crescendo 2024")
+
+print("Name:", Crescendo.name)
+Crescendo.set_field_size(Feet(54) + Inch(3.25), Feet(26) + Inch(11.25))
+objs = SymmetricalX(
+    [
+        *CircularPattern(
+            [
+                Obstacle(
+                    "Stage Leg",
+                    Cylinder(
+                        Inch(7),
+                        Inch(74.5),
+                        Transform3D((Inch(133), Inch(161.62), Inch(74.5) / 2)),
+                    ),
+                )
+            ],  # Circular("Stage Leg", Inch(133), Inch(161.62), Inch(7))
+            (Inch(133) + Inch(59.771), Inch(161.62)),
+            Degree(360),
+            3,
+            lambda i: str(i),
+        ),
+        Obstacle(
+            "Subwoofer",
+            Polygon(
+                [
+                    (Inch(0), Inch(64.081)),
+                    (Inch(0), Inch(64.081) + Inch(82.645)),
+                    (Inch(35.695), Inch(64.081) + Inch(82.645) - Inch(20.825)),
+                    (Inch(35.695), Inch(64.081) + Inch(20.825)),
+                ]
+            ).get_3d(z_end=Feet(2)),
+        ),
+        Obstacle(
+            "Source",
+            Polygon(
+                [
+                    (Inch(0), Inch(281.5)),
+                    (Inch(0), Crescendo.full_field_y()),
+                    (Inch(72.111), Crescendo.full_field_y()),
+                ]
+            ).get_3d(z_end=Feet(4)),
+        ),
+        Obstacle(
+            "Stage Base",
+            Polygon(
+                [
+                    (Inch(133), Inch(161.62)),
+                    (
+                        Inch(133) + Inch(29.855) + Inch(59.77),
+                        Inch(161.62) + Inch(51.76),
+                    ),
+                    (
+                        Inch(133) + Inch(29.855) + Inch(59.77),
+                        Inch(161.62) - Inch(51.76),
+                    ),
+                ]
+            ).get_3d(Inch(27.83), Inch(74.5)),
+        ),
+        # Circular("Note 1", Inch(114.010), Inch(47.638), Inch(7)),
+        # Circular("Note 2", Inch(114.010), Inch(47.638) + Inch(43.000), Inch(7)),
+        # Circular("Note 3", Inch(114.010), Inch(47.638) + Inch(43.000) * 2, Inch(7)),
+    ],
+    Crescendo.half_field_x(),
+    "Red ",
+    "Blue ",
+)
+
+
+Crescendo.add_obstacles(objs)
+Crescendo.enable_field_border_obstacles()
 
 
 mb.connect()

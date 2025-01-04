@@ -1,5 +1,6 @@
 import logging
 from typing import List
+import numpy as np
 import pygame
 from gamegine.reference import gearing, motors
 from gamegine.reference.swerve import SwerveConfig, SwerveModule
@@ -37,7 +38,8 @@ from gamegine.utils.NCIM.ncim import Inch, Pound, Ampere, Feet, Degree
 from gamegine.utils.logging import GetLogger
 
 Crescendo = Game("FRC Crescendo 2024")
-# GetLogger().setLevel(logging.CRITICAL)
+GetLogger().setLevel(logging.DEBUG)
+GetLogger().addFilter(lambda record: "gamegine" in record.name)
 
 print("Name:", Crescendo.name)
 Crescendo.set_field_size(Feet(54) + Inch(3.25), Feet(26) + Inch(11.25))
@@ -81,22 +83,22 @@ objs = SymmetricalX(
                 ]
             ).get_3d(z_end=Feet(4)),
         ),
-        Obstacle(
-            "Stage Base",
-            Polygon(
-                [
-                    (Inch(133), Inch(161.62)),
-                    (
-                        Inch(133) + Inch(29.855) + Inch(59.77),
-                        Inch(161.62) + Inch(51.76),
-                    ),
-                    (
-                        Inch(133) + Inch(29.855) + Inch(59.77),
-                        Inch(161.62) - Inch(51.76),
-                    ),
-                ]
-            ).get_3d(Inch(27.83), Inch(74.5)),
-        ),
+        # Obstacle(
+        #     "Stage Base",
+        #     Polygon(
+        #         [
+        #             (Inch(133), Inch(161.62)),
+        #             (
+        #                 Inch(133) + Inch(29.855) + Inch(59.77),
+        #                 Inch(161.62) + Inch(51.76),
+        #             ),
+        #             (
+        #                 Inch(133) + Inch(29.855) + Inch(59.77),
+        #                 Inch(161.62) - Inch(51.76),
+        #             ),
+        #         ]
+        #     ).get_3d(Inch(27.83), Inch(74.5)),
+        # ),
     ],
     Crescendo.half_field_x(),
     "Red ",
@@ -443,8 +445,8 @@ class Stage(RobotInteractable):
         ]
 
 
-ROBOT_WIDTH = Inch(27)
-ROBOT_LENGTH = Inch(27)
+ROBOT_WIDTH = Inch(25)
+ROBOT_LENGTH = Inch(25)
 ROBOT_MASS = Pound(120)
 ROBOT_MOI = Pound(120) * Inch(30) ** 2
 ROBOT_SWERVE = SwerveConfig(
@@ -490,7 +492,7 @@ SWERVE_ROBOT.add_interaction_config(
         "Red Speaker",
         "ShootNoteInto",
         lambda interactableState, robotState, gameState: True,
-        lambda interactableState, robotState, gameState: 5.0,
+        lambda interactableState, robotState, gameState: 2.4,
     )
 )
 
@@ -516,11 +518,7 @@ Crescendo.add_interactable(
     )
 )
 
-note_selections = [
-    (1, 2, 3),
-    (2, 3, 1),
-    (3, 1, 2),
-]
+note_selections = [(0, 3, 2), (2, 7, 6)]
 
 start_locations = [
     (Inch(114) - Inch(70), Inch(161.62)),
@@ -529,10 +527,17 @@ start_locations = [
 ]
 
 notes = [
-    (Inch(114), Inch(161.62)),
-    # (Inch(114), Inch(161.62) - Inch(57)),
-    # (Inch(114), Inch(161.62) - Inch(57) * 2),
+    (Inch(112), Inch(161.62) - Inch(57) * 2),
+    (Inch(112), Inch(161.62) - Inch(57)),
+    (Inch(112), Inch(161.62)),
+    (Crescendo.half_field_x(), Inch(161.62) - Inch(57) * 2),
+    (Crescendo.half_field_x(), Inch(161.62) - Inch(57)),
+    (Crescendo.half_field_x(), Inch(161.62)),
+    (Crescendo.half_field_x(), Inch(161.62) + Inch(57)),
+    (Crescendo.half_field_x(), Inch(161.62) + Inch(57) * 2),
 ]
+
+long_shoot_location = (Inch(133), Inch(161.62) - Inch(51.76))
 
 
 def is_auto_over(gameState: GameState) -> bool:
@@ -541,50 +546,128 @@ def is_auto_over(gameState: GameState) -> bool:
 
 test_results = {}
 game_server = GameServer()
-for i, start_location in enumerate(start_locations):
+# for i, start_location in enumerate(start_locations):
+#     for j, note_selection in enumerate(note_selections):
+#         game_server.add_robot(SWERVE_ROBOT)
 
-    game_server.add_robot(SWERVE_ROBOT)
+#         game_server.load_from_game(Crescendo)
+#         game_server.game_state.setValue("amplification", 0)
 
-    game_server.load_from_game(Crescendo)
-    game_server.game_state.setValue("amplification", 0)
+#         game_server.init_robot(
+#             "DaBot",
+#             RobotState(
+#                 *start_location,
+#                 Degree(0),
+#                 gamepieces={Note: 1},
+#             ),
+#         )
 
-    game_server.init_robot(
-        "DaBot",
-        RobotState(
-            *start_location,
-            Degree(0),
-            gamepieces={Note: 1},
-        ),
-    )
+#         pos = 0
+#         while (
+#             game_server.game_state.current_time.get()
+#             <= game_server.game_state.auto_time.get()
+#         ):
+#             game_server.drive_robot(
+#                 "DaBot",
+#                 notes[note_selection[pos]][0],
+#                 notes[note_selection[pos]][1],
+#                 Degree(0),
+#             )
+#             if is_auto_over(game_server.game_state):
+#                 break
+#             game_server.pickup_gamepiece("DaBot", Note)
+#             robot_state: RobotState = game_server.game_state.get("robots").get("DaBot")
+#             if robot_state.distance_to(
+#                 Inch(0), (Inch(64.081) * 2 + Inch(82.645)) / 2
+#             ) > Feet(5):
+#                 game_server.drive_robot(
+#                     "DaBot",
+#                     long_shoot_location[0],
+#                     long_shoot_location[1],
+#                     Degree(0),
+#                 )
 
-    pos = 0
-    while (
-        game_server.game_state.current_time.get()
-        <= game_server.game_state.auto_time.get()
-    ):
-        game_server.drive_robot("DaBot", notes[pos][0], notes[pos][1], Degree(180))
-        if is_auto_over(game_server.game_state):
-            break
-        game_server.pickup_gamepiece("DaBot", Note)
-        game_server.process_action("Red Speaker", "ShootNoteInto", "DaBot")
+#             game_server.process_action(
+#                 "Red Speaker",
+#                 "ShootNoteInto",
+#                 "DaBot",
+#                 time_cutoff=game_server.game_state.auto_time.get(),
+#             )
 
-        pos += 1
-        if pos >= len(notes):
-            break
-    final_auto_score = game_server.game_state.score.get()
+#             pos += 1
+#             if pos >= len(note_selection):
+#                 break
+#         final_auto_score = game_server.game_state.score.get()
 
-    if start_location not in test_results:
-        test_results[start_location] = []
+#         if start_location not in test_results:
+#             test_results[start_location] = []
 
-    test_results[start_location].append(
-        (final_auto_score, game_server.game_state.current_time.get())
-    )
+#         test_results[start_location].append(
+#             (final_auto_score, game_server.game_state.current_time.get())
+#         )
+
+game_server.add_robot(SWERVE_ROBOT)
+
+game_server.load_from_game(Crescendo)
+game_server.game_state.setValue("amplification", 0)
+
+game_server.init_robot(
+    "DaBot",
+    RobotState(
+        Inch(114) - Inch(50),
+        Inch(161.62) - Inch(57),
+        Degree(0),
+        gamepieces={Note: 1},
+    ),
+)
+
+game_server.drive_robot(
+    "DaBot",
+    Crescendo.half_field_x(),
+    Crescendo.half_field_y(),
+    Degree(0),
+)
+
+game_server.drive_robot(
+    "DaBot", Crescendo.half_field_x(), Crescendo.full_field_y() - Inch(50), Degree(90)
+)
 
 traversal_space = game_server.get_traversal_space("DaBot")
 
 print("Auto Test Results:")
 print(test_results)
 
+
+# Graph test results
+import matplotlib.pyplot as plt
+
+# Colors for the bars
+score_color = "blue"
+time_color = "orange"
+
+# Create grouped bar charts
+for start_location, results in test_results.items():
+    strategies = [f"Strategy {i} : {note_selections[i]}" for i in range(len(results))]
+    scores = [result[0] for result in results]
+    times = [result[1] for result in results]
+
+    x = np.arange(len(strategies))  # x locations for the groups
+    width = 0.4  # Width of the bars
+
+    fig, ax = plt.subplots()
+    ax.bar(x - width / 2, scores, width, label="Final Auto Score", color=score_color)
+    ax.bar(x + width / 2, times, width, label="Final Time", color=time_color)
+
+    # Add labels, title, and legend
+    ax.set_ylabel("Values")
+    ax.set_xlabel("Note Selection Strategy")
+    ax.set_title(f"Auto Test Results for Starting Location {start_location}")
+    ax.set_xticks(x)
+    ax.set_xticklabels(strategies)
+    ax.legend()
+
+    plt.tight_layout()
+    plt.show()
 
 # Drawing end visualization
 renderer = Renderer()

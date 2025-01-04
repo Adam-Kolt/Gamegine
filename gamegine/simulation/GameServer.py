@@ -114,8 +114,14 @@ class GameServer:
             self.config.discretization_quality,
         )
 
+        map_obstacles = ExpandedObjectBounds(
+            self.game.get_obstacles(),
+            Inch(2) + robot_object.get_bounding_radius(),
+            self.config.discretization_quality,
+        )
+
         triangle_map = TriangulatedGraph(
-            obstacles,
+            map_obstacles,
             self.config.mesh_resolution,
             self.game.get_field_size(),
             self.config.discretization_quality,
@@ -312,7 +318,7 @@ class GameServer:
             )
         ).solve(
             SwerveRobotConstraints(
-                MeterPerSecondSquared(8),
+                MeterPerSecondSquared(5),
                 MetersPerSecond(6),
                 RadiansPerSecondSquared(3.14),
                 RadiansPerSecond(3.14),
@@ -346,7 +352,9 @@ class GameServer:
     def get_traversal_space(self, robot_name) -> TraversalSpace:
         return self.robot_traversal_space.get(robot_name, None)
 
-    def process_action(self, interactable_name, interaction_name, robot_name) -> None:
+    def process_action(
+        self, interactable_name, interaction_name, robot_name, time_cutoff=None
+    ) -> None:
         """Processes an action by a robot on an interactable object.
 
         :param interactable_name: The name of the interactable object.
@@ -372,6 +380,12 @@ class GameServer:
             )
             time_change = ValueIncrease(self.game_state.current_time, time)
             self.process_value_changes([time_change])
+
+        if self.game_state.current_time.get() > time_cutoff:
+            Info(
+                f"Robot {robot_name} attempted to perform {interaction_name} on {interactable_name}, but the time cutoff was reached"
+            )
+            return
 
         changes = interaction.action(
             self.game_state.get("interactables").get(interactable_name),
