@@ -1,3 +1,4 @@
+import math
 from gamegine.utils.NCIM.basic import Measurement, Unit
 from gamegine.utils.NCIM.dimension import Dimension
 
@@ -42,6 +43,24 @@ class AngularMeasurement(Measurement):
         self, magnitude: float, unit: AngularUnit, base_magnitude=None
     ) -> None:
         super().__init__(magnitude, unit, base_magnitude)
+
+    def cos(self):
+        """Returns the cosine of the measurement.
+
+        :return: The cosine of the measurement.
+        :rtype: float
+        """
+        rad = self.to(Radian)
+        return math.cos(rad)
+
+    def sin(self):
+        """Returns the sine of the measurement.
+
+        :return: The sine of the measurement.
+        :rtype: float
+        """
+        rad = self.to(Radian)
+        return math.sin(rad)
 
 
 Radian = AngularUnit(1, "rad")

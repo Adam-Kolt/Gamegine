@@ -6,10 +6,10 @@ Home-page: https://github.com/yourusername/my_library
 Author: Adam Koltuniuk
 Author-email: adam@koltuni.uk
 Classifier: Programming Language :: Python :: 3
-Requires-Python: >=3.10.10
+Requires-Python: >=3.10
 Description-Content-Type: text/markdown
-Requires-Dist: numpy
-Requires-Dist: requests
+Requires-Dist: numpy>=1.21.0
+Requires-Dist: requests>=2.26.0
 
 **Gamegine**
 

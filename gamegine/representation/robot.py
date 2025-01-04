@@ -2,11 +2,13 @@ from dataclasses import dataclass, field
 from typing import Dict, List
 
 from gamegine.first.alliance import Alliance
+from gamegine.reference.swerve import SwerveConfig, SwerveModule
 from gamegine.representation import gamepiece
 from gamegine.representation.base import NamedObject
 from gamegine.representation.bounds import Boundary, Boundary3D
 from dataclasses import dataclass
 
+from gamegine.representation.interactable import RobotInteractionConfig
 from gamegine.utils.NCIM.Dimensions.angular import AngularMeasurement
 from gamegine.utils.NCIM.ncim import (
     MOI,
@@ -48,27 +50,42 @@ class Robot(NamedObject):
         physics: PhysicalParameters = None,
     ) -> None:
         super().__init__("Robot " + name)
+        self.structure = structure
+        self.physics = physics
+        self.interaction_configs = {}
 
+    def add_interaction_config(self, config: RobotInteractionConfig) -> None:
+        """Adds an interaction configuration to the robot.
 
-@dataclass
-class SwerveModuleCharacteristics:
-    """Stores the characteristics of a swerve module, including maximum speed, force, wheel radius, and rotation speed."""
+        :param config: The interaction configuration to add.
+        :type config: :class:`gamepiece.GamepieceConfig`"""
+        if not config.interactable_name in self.interaction_configs:
+            self.interaction_configs[config.interactable_name] = {}
+        self.interaction_configs[config.interactable_name][
+            config.interaction_identifier
+        ] = config
 
-    max_module_speed: Velocity = MetersPerSecond(6.0)
-    max_module_force: Torque = NewtonMeter(7.0)
-    wheel_radius: SpatialMeasurement = Inch(2)
-    rotation_speed: Omega = RadiansPerSecond(6.28)
+    def get_bounding_radius(self) -> SpatialMeasurement:
+        """Returns the bounding radius of the robot.
 
+        :return: The bounding radius of the robot.
+        :rtype: :class:`SpatialMeasurement`"""
+        max_radius = Inch(0)
+        for structure in self.structure:
+            points = structure.discretized().get_vertices()
+            for point in points:
+                radius = (point[0] ** 2 + point[1] ** 2) ** 0.5
+                if radius > max_radius:
+                    max_radius = radius
 
-@dataclass
-class SwerveDrivetrainCharacteristics:
-    """Stores the characteristics of a swerve drivetrain, including module characteristics, wheel base, and track width."""
+        return max_radius
 
-    module: SwerveModuleCharacteristics = field(
-        default_factory=SwerveModuleCharacteristics
-    )
-    wheel_base: SpatialMeasurement = Inch(30)
-    track_width: SpatialMeasurement = Inch(30)
+    def get_physics(self) -> PhysicalParameters:
+        """Returns the physical parameters of the robot.
+
+        :return: The physical parameters of the robot.
+        :rtype: :class:`PhysicalParameters`"""
+        return self.physics
 
 
 class SwerveRobot(Robot):
@@ -77,20 +94,23 @@ class SwerveRobot(Robot):
     def __init__(
         self,
         name: str,
-        drivetrain: SwerveDrivetrainCharacteristics,
+        drivetrain: SwerveConfig,
         structure: List[Boundary3D] = [],
         physics: PhysicalParameters = None,
     ) -> None:
         super().__init__(name, structure, physics)
+        self.drivetrain = drivetrain
 
+    def get_drivetrain(self) -> SwerveConfig:
+        """Returns the characteristics of the robot's drivetrain.
 
-@dataclass
-class RobotGamestate:
-    """Stores the gamestate of a robot, including position, orientation, alliance, bounds, and current gamepieces held."""
+        :return: The characteristics of the robot's drivetrain.
+        :rtype: :class:`SwerveDrivetrainCharacteristics`"""
+        return self.drivetrain
 
-    x: SpatialMeasurement
-    y: SpatialMeasurement
-    theta: AngularMeasurement
-    alliance: Alliance
-    bounds: Boundary
-    gamepieces: Dict[str, int]
+    def get_alliance(self) -> Alliance:
+        """Returns the alliance of the robot.
+
+        :return: The alliance of the robot.
+        :rtype: :class:`Alliance`"""
+        return self.alliance

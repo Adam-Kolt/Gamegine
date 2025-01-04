@@ -10,8 +10,9 @@ class ValueEntry(Generic[T]):
     :type value: T
     """
 
-    def __init__(self, value: T) -> None:
+    def __init__(self, value: T, name: str = "") -> None:
         self.value = value
+        self.name = name
 
     def get(self) -> T:
         """Returns the value stored in the entry.
@@ -28,6 +29,12 @@ class ValueEntry(Generic[T]):
         :type value: T
         """
         self.value = value
+
+    def __str__(self):
+        return self.name + ": " + str(self.value)
+
+    def __repr__(self):
+        return self.name + ": " + str(self.value)
 
 
 class StateSpace(object):
@@ -98,7 +105,7 @@ class StateSpace(object):
         :rtype: :class:`ValueEntry`
         """
         if name not in self.values:
-            self.values[name] = ValueEntry(value)
+            self.values[name] = ValueEntry(value, name)
         else:
             self.values[name].set(value)
         return self.values[name]
@@ -124,6 +131,12 @@ class StateSpace(object):
         """
         return self.setValue(key, value)
 
+    def __str__(self):
+        return f"StateSpace({self.values}, {self.spaces})"
+
+    def __repr__(self):
+        return f"StateSpace({self.values}, {self.spaces})"
+
 
 class ValueChange(object):
     """A class for representing a change to a value in a state space. Used as outputs of interactable objects.
@@ -136,6 +149,7 @@ class ValueChange(object):
     def __init__(self, entry: ValueEntry, value) -> None:
         self.entry = entry
         self.value = value
+        self.previous_value = entry.get()
 
     def __str__(self):
         return f"{self.entry} -> {self.value}"
@@ -163,6 +177,9 @@ class ValueChange(object):
         """
         return self.entry.get()
 
+    def __repr__(self):
+        return f"{self.previous_value} -> {self.value}"
+
 
 class ValueDecrease(ValueChange):
     """A class for representing a decrease in a value in a state space. Used as outputs of interactable objects.
@@ -180,7 +197,10 @@ class ValueDecrease(ValueChange):
         return self.entry.get() - self.value
 
     def __str__(self):
-        return f"{self.entry} -= {self.value}"
+        return f"{self.previous_value} -= {self.value}"
+
+    def __repr__(self):
+        return f"{self.previous_value} -= {self.value}"
 
 
 class ValueIncrease(ValueChange):
@@ -199,4 +219,7 @@ class ValueIncrease(ValueChange):
         return self.entry.get() + self.value
 
     def __str__(self):
-        return f"{self.entry} += {self.value}"
+        return f"{self.previous_value} += {self.value}"
+
+    def __repr__(self):
+        return f"{self.previous_value} += {self.value}"

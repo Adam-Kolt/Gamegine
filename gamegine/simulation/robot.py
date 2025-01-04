@@ -1,12 +1,16 @@
+import math
 from typing import Dict
+
+import pygame
 from gamegine.first.alliance import Alliance
+from gamegine.render.drawable import Drawable
 from gamegine.representation.gamepiece import Gamepiece
 from gamegine.simulation.state import StateSpace, ValueEntry
 from gamegine.utils.NCIM.Dimensions.angular import AngularMeasurement, Radian
 from gamegine.utils.NCIM.Dimensions.spatial import Meter, SpatialMeasurement
 
 
-class RobotState(StateSpace):
+class RobotState(StateSpace, Drawable):
     """Class for representing the state space of a robot, which includes the x and y coordinates of the robot on the field screen, the heading of the robot, the alliance of the robot, and the gamepieces the robot is holding.
 
     :param x: The x-coordinate of the robot.
@@ -55,3 +59,55 @@ class RobotState(StateSpace):
     @property
     def gamepieces(self) -> ValueEntry[Dict[Gamepiece, int]]:
         return self.getValue("gamepieces")
+
+    def draw(self, render_scale: SpatialMeasurement):
+        # Rotated rectangle with heading line
+        pygame.draw.rect(
+            pygame.display.get_surface(),
+            (255, 255, 255),
+            (
+                self.x.get() / render_scale,
+                self.y.get() / render_scale,
+                10,
+                10,
+            ),
+        )
+        pygame.draw.line(
+            pygame.display.get_surface(),
+            (0, 0, 0),
+            (
+                self.x.get() / render_scale + 5,
+                self.y.get() / render_scale + 5,
+            ),
+            (
+                self.x.get() / render_scale + 5 + 5 * self.heading.get().cos(),
+                self.y.get() / render_scale + 5 + 5 * self.heading.get().sin(),
+            ),
+        )
+
+    def draw_real(self, render_scale: SpatialMeasurement, robot):
+        surface = pygame.display.get_surface()
+        radius = robot.get_bounding_radius() / render_scale
+        center_x = self.x.get() / render_scale
+        center_y = self.y.get() / render_scale
+
+        diagonal = 2 * radius
+        half_side = diagonal / math.sqrt(2) / 2
+        angle_offset = Radian(math.pi / 4)
+
+        points = []
+        for i in range(4):
+            angle: AngularMeasurement = (
+                self.heading.get() + angle_offset + Radian(math.pi / 2) * i
+            )
+            x = center_x + half_side * math.cos(angle.to(Radian))
+            y = center_y + half_side * math.sin(angle.to(Radian))
+            points.append((x, y))
+        width = int(Meter(0.05) / render_scale)
+        pygame.draw.polygon(surface, (0, 0, 255), points, width)
+
+        heading_x = center_x + radius / 2 * math.cos(self.heading.get())
+        heading_y = center_y + radius / 2 * math.sin(self.heading.get())
+        pygame.draw.line(
+            surface, (0, 0, 255), (center_x, center_y), (heading_x, heading_y), width
+        )

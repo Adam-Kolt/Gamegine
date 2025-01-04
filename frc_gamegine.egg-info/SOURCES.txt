@@ -3,7 +3,6 @@ setup.py
 examples/__init__.py
 examples/basic_game.py
 examples/basic_pathfinding.py
-examples/recycle_rush_2015.py
 examples/test_pybullet.py
 examples/test_pybullet_swerve.py
 examples/trajectory_generation.py
@@ -19,7 +18,6 @@ gamegine/analysis/meshing.py
 gamegine/analysis/pathfinding.py
 gamegine/analysis/trajectory/SafetyCorridorAssisted.py
 gamegine/analysis/trajectory/__init__.py
-gamegine/analysis/trajectory/generation.py
 gamegine/analysis/trajectory/lib/TrajGen.py
 gamegine/analysis/trajectory/lib/__init__.py
 gamegine/analysis/trajectory/lib/problemVariables.py
@@ -50,6 +48,7 @@ gamegine/representation/gamepiece.py
 gamegine/representation/interactable.py
 gamegine/representation/obstacle.py
 gamegine/representation/robot.py
+gamegine/simulation/GameServer.py
 gamegine/simulation/__init__.py
 gamegine/simulation/game.py
 gamegine/simulation/gamepiece.py

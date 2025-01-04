@@ -1,7 +1,8 @@
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 
 from gamegine.representation.bounds import Rectangle
+from gamegine.representation.interactable import RobotInteractable
 from gamegine.simulation.game import GameState
 from gamegine.utils.logging import Debug
 from gamegine.utils.NCIM.ncim import Meter, SpatialMeasurement, Zero, Feet
@@ -23,7 +24,7 @@ class Game(object):
         self.field_size = (Meter(15.0), Meter(15.0))
 
         self.static_obstacles = {}
-        self.interactables = {}
+        self.interactables: Dict[str, RobotInteractable] = {}
         self.zones = {}
         self.global_states = {}
         self.field_borders = False
@@ -195,7 +196,7 @@ class Game(object):
 
         return self.static_obstacles.values()
 
-    def add_interactable(self, interactable) -> "Game":
+    def add_interactable(self, interactable: RobotInteractable) -> "Game":
         if interactable.name in self.interactables:
             raise Exception(
                 f"Interactable {interactable.name} already exists. Names must be unique."
@@ -204,14 +205,16 @@ class Game(object):
         self.interactables[interactable.name] = interactable
         return self
 
+    def get_interactables(self) -> List[RobotInteractable]:
+        return self.interactables.values()
+
     def get_initial_state(self) -> GameState:
         state = GameState()
-        state.auto_time = 15
-        state.teleop_time = 135
-        state.endgame_time = 30
-        state.current_time = 0
-        state.score = 0
-        state.setValue("amplification", 0)
+        state.auto_time.set(15)
+        state.teleop_time.set(135)
+        state.endgame_time.set(30)
+        state.current_time.set(0)
+        state.score.set(0)
         return state
 
     def add_zone(self, zone) -> "Game":

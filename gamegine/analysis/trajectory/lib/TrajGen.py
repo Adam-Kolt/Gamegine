@@ -281,10 +281,7 @@ class SwerveTrajectory(Trajectory):
         robot_constraints: SwerveRobotConstraints,
     ):
         super().__init__(points, robot_constraints)
-        self.robot_constraints = robot_constraints
-        self.points = points
-        self.travel_time = 0
-        self.path_length = 0
+
         pass
 
     def get_robot_constraints(self) -> SwerveRobotConstraints:
@@ -545,7 +542,6 @@ class SwerveTrajectoryProblem(TrajectoryProblem):
             tolerance=config.solution_tolerance,
             max_iterations=config.max_iterations,
             timeout=config.timeout,
-            diagnostics=True,
         )
 
         return SwerveTrajectory(self.get_trajectory_states(), robot_constraints)

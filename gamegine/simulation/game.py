@@ -27,5 +27,5 @@ class GameState(StateSpace):
         return self.getValue("endgame_time")
 
     @property
-    def current_time(self) -> ValueEntry[int]:
+    def current_time(self) -> ValueEntry[float]:
         return self.getValue("current_time")

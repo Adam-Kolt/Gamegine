@@ -81,6 +81,10 @@ class Renderer:
             if obstacle.isVisible():
                 draw_obstacle(obstacle, Renderer.render_scale)
 
+        for interactable in self.game.interactables.values():
+
+            interactable.draw(Renderer.render_scale)
+
     def draw_element(self, element: Drawable):
         """Draws a drawable element on the screen.
 

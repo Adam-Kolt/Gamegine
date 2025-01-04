@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from enum import Enum
 from abc import ABC, abstractmethod
 from typing import Callable, List
@@ -28,6 +29,7 @@ class RobotInteractable(BoundedObject, Drawable):
         """Abstract method for initializing the state space of the interactable object."""
         pass
 
+    @staticmethod
     @abstractmethod
     def get_interactions(self) -> List["InteractionOption"]:
         """Gets the available interactions for the robot with the interactable object.
@@ -39,7 +41,8 @@ class RobotInteractable(BoundedObject, Drawable):
     def draw(self, render_scale: SpatialMeasurement):
         self.bounds.draw(render_scale)
 
-    def get_interaction(self, identifier: str) -> "InteractionOption":
+    @classmethod
+    def get_interaction(cls, identifier: str) -> "InteractionOption":
         """Gets the interaction option with the given identifier.
 
         :param identifier: The unique identifier for the interaction option.
@@ -47,7 +50,7 @@ class RobotInteractable(BoundedObject, Drawable):
         :return: The InteractionOption object with the given identifier.
         :rtype: :class:`InteractionOption`
         """
-        for interaction in self.get_interactions():
+        for interaction in cls.get_interactions():
             if interaction.identifier == identifier:
                 return interaction
         return None
@@ -121,3 +124,13 @@ class InteractionOption(object):
 
     def __repr__(self):
         return f"{self.identifier}: {self.description}"
+
+
+@dataclass
+class RobotInteractionConfig(object):
+    """Class for representing the interaction configuration of a robot with an interactable object during the match."""
+
+    interactable_name: str
+    interaction_identifier: str
+    able_to_interact: Callable[[StateSpace, RobotState, StateSpace], bool]
+    time_to_interact: Callable[[StateSpace, RobotState, StateSpace], float]

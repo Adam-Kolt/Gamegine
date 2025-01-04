@@ -658,6 +658,31 @@ class Rectangle(DiscreteBoundary):
             Transform3D((center[0], center[1], Feet(0))),
         )
 
+    @classmethod
+    def from_center(
+        cls,
+        center: Tuple[SpatialMeasurement, SpatialMeasurement],
+        width: SpatialMeasurement,
+        height: SpatialMeasurement,
+    ) -> "Rectangle":
+        """Creates a rectangle from the center point, width, and height.
+
+        :param center: The center point of the rectangle.
+        :type center: Tuple[:class:`SpatialMeasurement`, :class:`SpatialMeasurement`]
+        :param width: The width of the rectangle.
+        :type width: :class:`SpatialMeasurement`
+        :param height: The height of the rectangle.
+        :type height: :class:`SpatialMeasurement`
+        :return: The rectangle.
+        :rtype: :class:`Rectangle`
+        """
+        return cls(
+            center[0] - width / 2,
+            center[1] - height / 2,
+            width,
+            height,
+        )
+
 
 class Square(Rectangle):
     def __init__(
@@ -958,6 +983,14 @@ class Point(DiscreteBoundary3D):
 
     def project_to_2d(self) -> "Point":
         return Point(self.x, self.y)
+
+    def draw(self, render_scale):
+        pygame.draw.circle(
+            pygame.display.get_surface(),
+            (255, 255, 0),
+            (RatioOf(self.x, render_scale), RatioOf(self.y, render_scale)),
+            5,
+        )
 
 
 class BoundedObject(NamedObject):

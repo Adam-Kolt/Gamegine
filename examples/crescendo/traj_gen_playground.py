@@ -3,10 +3,10 @@ import pygame
 from examples.crescendo.crescendo import Crescendo
 from gamegine.analysis import pathfinding
 from gamegine.analysis.meshing import TriangulatedGraph
-from gamegine.analysis.trajectory.generation import SwerveTrajectory
 from gamegine.analysis.trajectory.lib.TrajGen import (
     SolverConfig,
     SwerveRobotConstraints,
+    SwerveTrajectory,
     SwerveTrajectoryProblemBuilder,
     TrajectoryBuilderConfig,
     Waypoint,
