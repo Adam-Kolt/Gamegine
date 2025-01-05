@@ -94,7 +94,7 @@ def __MagnitudeEqualityConstraint(problem, vars, magnitude: float, index: int = 
         problem.subject_to(vars[i] == magnitude)
 
 
-def __MagnitudeLessThanConstraint(problem, vars, magnitude: float, index: int = -1):
+def MagnitudeLessThanConstraint(problem, vars, magnitude: float, index: int = -1):
     """Constraint for setting the magnitude of a scalar to be less than a specific value.
 
     :param problem: The optimization problem.

@@ -6,12 +6,8 @@ import pygame
 from examples.crescendo.gamepieces import Note
 from examples.crescendo.scoring import Speaker
 from gamegine.analysis.meshing import TriangulatedGraph, VisibilityGraph
-from gamegine.analysis.trajectory.SafetyCorridorAssisted import SafetyCorridorAssisted
-from gamegine.analysis.trajectory.generation import (
-    SwerveTrajectory,
-    Trajectory,
-    TrajectoryKeypoint,
-)
+
+
 from gamegine.analysis.trajectory.lib.TrajGen import (
     SolverConfig,
     SwerveRobotConstraints,
@@ -46,7 +42,6 @@ from gamegine.representation.game import Game
 from gamegine.representation.obstacle import Circular, Obstacle, Polygonal, Rectangular
 from gamegine.representation.robot import (
     PhysicalParameters,
-    SwerveDrivetrainCharacteristics,
 )
 from gamegine.utils.NCIM.ComplexDimensions.MOI import PoundsInchesSquared
 from gamegine.utils.NCIM.ComplexDimensions.acceleration import MeterPerSecondSquared

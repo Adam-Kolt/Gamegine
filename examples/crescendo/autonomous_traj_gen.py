@@ -3,7 +3,7 @@ import pygame
 from examples.crescendo.crescendo import Crescendo
 from gamegine.analysis import pathfinding
 from gamegine.analysis.meshing import TriangulatedGraph
-from gamegine.analysis.trajectory.generation import SwerveTrajectory
+
 from gamegine.analysis.trajectory.lib.TrajGen import (
     MinimizationStrategy,
     SolverConfig,
@@ -53,7 +53,7 @@ expanded_obstacles = ExpandedObjectBounds(
 )
 slightly_more_expanded_obstacles = ExpandedObjectBounds(
     Crescendo.get_obstacles(),
-    robot_radius=Inch(20) + Inch(2),
+    robot_radius=Inch(20) + Inch(5),
     discretization_quality=16,  # 24.075
 )
 expanded_obstacles_block = [
@@ -84,7 +84,7 @@ corridors = []
 paths = []
 
 start = (Inch(35.695) + Inch(25), Inch(64.081) + Inch(20.825))
-note_locations = [(Feet(50), Feet(21))]
+note_locations = [(Feet(30), Feet(21))]
 
 shot_location = (Inch(35.695) + Inch(30), Inch(64.081) + Inch(82.645))
 
@@ -182,15 +182,7 @@ renderer.set_render_scale(Centimeter(1))
 renderer.init_display()
 print("Game set and display initialized")
 
-
-traj = trajectory.solve(
-    SwerveRobotConstraints(
-        MeterPerSecondSquared(10),
-        MetersPerSecond(10),
-        RotationsPerSecond(3),
-        RotationsPerSecondSquared(3),
-        SwerveConfig(
-            module=SwerveModule(
+swerve_module = SwerveModule(
                 motors.MotorConfig(
                     motors.KrakenX60,
                     motors.PowerConfig(Ampere(60), Ampere(360), 1.0),
@@ -202,6 +194,15 @@ traj = trajectory.solve(
                 ),
                 gearing.MK4I.L3,
             )
+
+traj = trajectory.solve(
+    SwerveRobotConstraints(
+        MeterPerSecondSquared(6),
+        MetersPerSecond(6),
+        RotationsPerSecond(2),
+        RotationsPerSecondSquared(2),
+        SwerveConfig(
+            module=swerve_module
         ),
         physical_parameters=PhysicalParameters(
             mass=Pound(110),

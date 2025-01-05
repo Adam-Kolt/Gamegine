@@ -536,7 +536,8 @@ class SwerveTrajectoryProblem(TrajectoryProblem):
         """Solves the optimization problem and returns the solution."""
 
         self.apply_constraints(robot_constraints)
-        self.apply_swerve_constraints(robot_constraints)
+        #TODO: FIX SWERVE CONSTRAINTS
+        #self.apply_swerve_constraints(robot_constraints)
 
         status = self.problem.solve(
             tolerance=config.solution_tolerance,
@@ -693,7 +694,7 @@ class TrajectoryProblemBuilder:
             self.point_vars.POS_Y[i].set_value(Y_nodes[i])
 
         # Initialize time steps
-        init_dt = (resolution / MetersPerSecond(4)).to(CALCULATION_UNIT_TEMPORAL)
+        init_dt = (resolution / MetersPerSecond(8)).to(CALCULATION_UNIT_TEMPORAL)
         for i in range(len(X_nodes) - 1):
             self.point_vars.DT[i].set_value(init_dt)
 
@@ -717,6 +718,7 @@ class TrajectoryProblemBuilder:
     def apply_basic_constraints(self):
         """Applies basic constraints to the optimization problem."""
         base.MagnitudeGreaterThanConstraint(self.problem, self.point_vars.DT, 0)
+        base.MagnitudeLessThanConstraint(self.problem, self.point_vars.DT, 1)
 
     def __apply_spacing_constraints(self, config: TrajectoryBuilderConfig):
         PositionMinSpacingConstraint(config.min_spacing)(self.problem, self.point_vars)
