@@ -87,7 +87,7 @@ class RobotState(StateSpace, Drawable):
 
     def draw_real(self, render_scale: SpatialMeasurement, robot):
         surface = pygame.display.get_surface()
-        radius = robot.get_bounding_radius() / render_scale
+        radius = robot.true_radius() / render_scale
         center_x = self.x.get() / render_scale
         center_y = self.y.get() / render_scale
 
@@ -111,6 +111,11 @@ class RobotState(StateSpace, Drawable):
         pygame.draw.line(
             surface, (0, 0, 255), (center_x, center_y), (heading_x, heading_y), width
         )
+
+        # Draw gamepieces
+        for gamepiece, count in self.gamepieces.get().items():
+            if count > 0:
+                gamepiece.display(self.x.get(), self.y.get(), render_scale)
 
     def distance_to(
         self, x: SpatialMeasurement, y: SpatialMeasurement

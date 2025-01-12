@@ -458,9 +458,9 @@ class Boundary3D(Boundary):
 
     def rotate(
         self,
-        yaw: AngularMeasurement = 0,
-        pitch: AngularMeasurement = 0,
-        roll: AngularMeasurement = 0,
+        yaw: AngularMeasurement = Radian(0),
+        pitch: AngularMeasurement = Radian(0),
+        roll: AngularMeasurement = Radian(0),
     ) -> "Boundary3D":
         """Rotates the boundary by the given yaw, pitch, and roll angles."""
         self.transform.rotation = (
@@ -546,6 +546,31 @@ class DiscreteBoundary3D(Boundary3D, DiscreteBoundary):
             for x, y in sg.MultiPoint(points).convex_hull.exterior.coords
         ]
         return Polygon(convex_hull)
+
+
+def RegularPolygon(
+    center: Tuple[SpatialMeasurement, SpatialMeasurement],
+    radius: SpatialMeasurement,
+    num_sides: int,
+):
+    """Creates a regular polygon from the center, radius, and number of sides.
+
+    :param center: The center of the polygon.
+    :type center: Tuple[:class:`SpatialMeasurement`, :class:`SpatialMeasurement`]
+    :param radius: The radius of the polygon.
+    :type radius: :class:`SpatialMeasurement`
+    :param num_sides: The number of sides of the polygon.
+    :type num_sides: int
+    :return: The regular polygon.
+    :rtype: :class:`Polygon`
+    """
+    vertices = []
+    for i in range(num_sides):
+        angle = Radian(2 * math.pi * i / num_sides)
+        x = center[0] + radius * math.cos(angle)
+        y = center[1] + radius * math.sin(angle)
+        vertices.append((x, y))
+    return Polygon(vertices)
 
 
 class Rectangle(DiscreteBoundary):

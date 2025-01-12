@@ -30,6 +30,14 @@ class ValueEntry(Generic[T]):
         """
         self.value = value
 
+    def get_name(self) -> str:
+        """Returns the name of the entry.
+
+        :return: The name of the entry.
+        :rtype: str
+        """
+        return self.name
+
     def __str__(self):
         return self.name + ": " + str(self.value)
 
@@ -178,7 +186,7 @@ class ValueChange(object):
         return self.entry.get()
 
     def __repr__(self):
-        return f"{self.previous_value} -> {self.value}"
+        return f"{self.entry.get_name()} {self.previous_value} -> {self.value}"
 
 
 class ValueDecrease(ValueChange):
@@ -197,10 +205,10 @@ class ValueDecrease(ValueChange):
         return self.entry.get() - self.value
 
     def __str__(self):
-        return f"{self.previous_value} -= {self.value}"
+        return f"{self.entry.get_name()} {self.previous_value} -= {self.value}"
 
     def __repr__(self):
-        return f"{self.previous_value} -= {self.value}"
+        return f"{self.entry.get_name()} {self.previous_value} -= {self.value}"
 
 
 class ValueIncrease(ValueChange):
@@ -219,7 +227,7 @@ class ValueIncrease(ValueChange):
         return self.entry.get() + self.value
 
     def __str__(self):
-        return f"{self.previous_value} += {self.value}"
+        return f"{self.entry.get_name()} {self.previous_value} += {self.value}"
 
     def __repr__(self):
-        return f"{self.previous_value} += {self.value}"
+        return f"{self.entry.get_name()} {self.previous_value} += {self.value}"

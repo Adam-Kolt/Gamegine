@@ -53,6 +53,7 @@ class Robot(NamedObject):
         self.structure = structure
         self.physics = physics
         self.interaction_configs = {}
+        self.override_radius = None
 
     def add_interaction_config(self, config: RobotInteractionConfig) -> None:
         """Adds an interaction configuration to the robot.
@@ -70,6 +71,25 @@ class Robot(NamedObject):
 
         :return: The bounding radius of the robot.
         :rtype: :class:`SpatialMeasurement`"""
+        if self.override_radius is not None:
+            return self.override_radius
+
+        max_radius = Inch(0)
+        for structure in self.structure:
+            points = structure.discretized().get_vertices()
+            for point in points:
+                radius = (point[0] ** 2 + point[1] ** 2) ** 0.5
+                if radius > max_radius:
+                    max_radius = radius
+
+        return max_radius
+
+    def true_radius(self) -> SpatialMeasurement:
+        """Returns the true radius of the robot.
+
+        :return: The true radius of the robot.
+        :rtype: :class:`SpatialMeasurement`"""
+
         max_radius = Inch(0)
         for structure in self.structure:
             points = structure.discretized().get_vertices()
@@ -86,6 +106,13 @@ class Robot(NamedObject):
         :return: The physical parameters of the robot.
         :rtype: :class:`PhysicalParameters`"""
         return self.physics
+
+    def override_bounding_radius(self, radius: SpatialMeasurement) -> None:
+        """Overrides the bounding radius of the robot.
+
+        :param radius: The new bounding radius of the robot.
+        :type radius: :class:`SpatialMeasurement`"""
+        self.override_radius = radius
 
 
 class SwerveRobot(Robot):

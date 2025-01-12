@@ -55,7 +55,7 @@ class Game(object):
         :return: The half of the field size of the game.
         :rtype: Tuple[:class:`SpatialMeasurement`, :class:`SpatialMeasurement`]
         """
-        return (self.field_size[0] / 2, self.field_size[1])
+        return (self.field_size[0] / 2, self.field_size[1] / 2)
 
     def half_field_x(self) -> SpatialMeasurement:
         """Returns the half of the field size of the game along the x-axis.

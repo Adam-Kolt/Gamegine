@@ -29,3 +29,7 @@ class GameState(StateSpace):
     @property
     def current_time(self) -> ValueEntry[float]:
         return self.getValue("current_time")
+
+    @property
+    def total_time(self) -> float:
+        return self.auto_time.get() + self.teleop_time.get()

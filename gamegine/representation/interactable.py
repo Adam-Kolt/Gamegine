@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 from abc import ABC, abstractmethod
-from typing import Callable, List
+from typing import Callable, List, Tuple
 
 from gamegine.render import helpers
 from gamegine.render.drawable import Drawable
@@ -9,6 +9,7 @@ from gamegine.representation.bounds import BoundedObject, DiscreteBoundary
 from gamegine.simulation.robot import RobotState
 from gamegine.simulation.state import StateSpace, ValueChange
 from gamegine.utils.NCIM.Dimensions.spatial import SpatialMeasurement
+from gamegine.utils.NCIM.Dimensions.angular import AngularMeasurement
 
 
 class RobotInteractable(BoundedObject, Drawable):
@@ -20,8 +21,21 @@ class RobotInteractable(BoundedObject, Drawable):
     :type name: str, optional
     """
 
-    def __init__(self, boundary: DiscreteBoundary, name="") -> None:
+    def __init__(
+        self,
+        boundary: DiscreteBoundary,
+        name="",
+        navigation_point: Tuple[
+            SpatialMeasurement, SpatialMeasurement, AngularMeasurement
+        ] = None,
+    ):
         super().__init__(boundary, name)
+        self.navigation_point = navigation_point
+
+    def get_navigation_point(
+        self,
+    ) -> Tuple[SpatialMeasurement, SpatialMeasurement, AngularMeasurement]:
+        return self.navigation_point
 
     @staticmethod
     @abstractmethod
@@ -75,11 +89,15 @@ class InteractionOption(object):
         description: str,
         condition: Callable[[StateSpace, RobotState, StateSpace], bool],
         action: Callable[[StateSpace, RobotState, StateSpace], List[ValueChange]],
+        navigation_point: Tuple[
+            SpatialMeasurement, SpatialMeasurement, AngularMeasurement
+        ] = None,
     ) -> None:
         self.identifier = identifier
         self.description = description
         self.condition = condition
         self.action = action
+        self.navigation_point = navigation_point
 
     def ableToInteract(
         self,
@@ -125,6 +143,11 @@ class InteractionOption(object):
     def __repr__(self):
         return f"{self.identifier}: {self.description}"
 
+    def get_navigation_point(
+        self,
+    ) -> Tuple[SpatialMeasurement, SpatialMeasurement, AngularMeasurement]:
+        return self.navigation_point
+
 
 @dataclass
 class RobotInteractionConfig(object):
@@ -134,3 +157,6 @@ class RobotInteractionConfig(object):
     interaction_identifier: str
     able_to_interact: Callable[[StateSpace, RobotState, StateSpace], bool]
     time_to_interact: Callable[[StateSpace, RobotState, StateSpace], float]
+    navigation_point: Tuple[
+        SpatialMeasurement, SpatialMeasurement, AngularMeasurement
+    ] = None
