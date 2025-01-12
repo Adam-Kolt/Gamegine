@@ -290,6 +290,50 @@ class SwerveTrajectory(Trajectory):
     def __str__(self) -> str:
         return f"Swerve Trajectory: {len(self.points)} points, {self.get_length()} length, {self.get_travel_time()} time. Optimized for {self.robot_constraints}."
 
+    def interpolate_trajectory_states(
+        self, state1: TrajectoryState, state2: TrajectoryState, t: TemporalMeasurement
+    ) -> TrajectoryState:
+        """Interpolates between two trajectory states based on a given time.
+
+        :param state1: The first trajectory state to interpolate between.
+        :type state1: :class:`Trajectory
+        :param state2: The second trajectory state to interpolate between.
+        :type state2: :class:`Trajectory
+        :param t: The time at which to interpolate between the two states.
+        :type t: :class:`TemporalMeasurement`
+        :return: The interpolated trajectory state.
+        :rtype: :class:`TrajectoryState`"""
+
+        x = state1.x + (state2.x - state1.x) * (t / state1.dt)
+        y = state1.y + (state2.y - state1.y) * (t / state1.dt)
+        theta = state1.theta + (state2.theta - state1.theta) * (t / state1.dt)
+        vel_x = state1.vel_x + (state2.vel_x - state1.vel_x) * (t / state1.dt)
+        vel_y = state1.vel_y + (state2.vel_y - state1.vel_y) * (t / state1.dt)
+        omega = state1.omega + (state2.omega - state1.omega) * (t / state1.dt)
+        if state2.acc_x is None:
+            acc_x = state1.acc_x
+            acc_y = state1.acc_y
+            alpha = state1.alpha
+        else:
+            acc_x = state1.acc_x + (state2.acc_x - state1.acc_x) * (t / state1.dt)
+            acc_y = state1.acc_y + (state2.acc_y - state1.acc_y) * (t / state1.dt)
+            alpha = state1.alpha + (state2.alpha - state1.alpha) * (t / state1.dt)
+        dt = t
+
+        return TrajectoryState(
+            x, y, theta, vel_x, vel_y, acc_x, acc_y, omega, alpha, dt
+        )
+
+    def get_at_time(self, time):
+        cur = Second(0)
+        for i in range(len(self.points) - 1):
+            point = self.points[i]
+            point2 = self.points[i + 1]
+            if point.dt + cur > time:
+                return self.interpolate_trajectory_states(point, point2, time - cur)
+            cur += point.dt
+        return self.points[-1]
+
     def draw(self, render_scale: SpatialMeasurement):
         module_points = [
             self.robot_constraints.swerve_config.top_left_offset,
@@ -536,13 +580,14 @@ class SwerveTrajectoryProblem(TrajectoryProblem):
         """Solves the optimization problem and returns the solution."""
 
         self.apply_constraints(robot_constraints)
-        #TODO: FIX SWERVE CONSTRAINTS
-        #self.apply_swerve_constraints(robot_constraints)
+        # TODO: FIX SWERVE CONSTRAINTS
+        self.apply_swerve_constraints(robot_constraints)
 
         status = self.problem.solve(
             tolerance=config.solution_tolerance,
             max_iterations=config.max_iterations,
             timeout=config.timeout,
+            diagnostics=True,  # DIAGNOSTICS
         )
 
         return SwerveTrajectory(self.get_trajectory_states(), robot_constraints)
@@ -687,17 +732,57 @@ class TrajectoryProblemBuilder:
 
         self.point_vars = self.generate_point_vars(len(X_nodes))
 
+        # Initialize time steps
+        init_dt = (resolution / MetersPerSecond(5)).to(CALCULATION_UNIT_TEMPORAL)
+        for i in range(len(X_nodes) - 1):
+            self.point_vars.DT[i].set_value(init_dt)
+
         # Initialize state variables to inital pathes
         for i in range(len(X_nodes)):
 
             self.point_vars.POS_X[i].set_value(X_nodes[i])
             self.point_vars.POS_Y[i].set_value(Y_nodes[i])
 
-        # Initialize time steps
-        init_dt = (resolution / MetersPerSecond(8)).to(CALCULATION_UNIT_TEMPORAL)
-        for i in range(len(X_nodes) - 1):
-            self.point_vars.DT[i].set_value(init_dt)
+            # Initialize velocities
+            curr_velocity = 0
+            max_acceleration = 3
+            max_vel = 4
+            if i < len(X_nodes) - 1:
 
+                dx = X_nodes[i + 1] - X_nodes[i]
+                dy = Y_nodes[i + 1] - Y_nodes[i]
+                base_velocity = MetersPerSecond(5).to(MetersPerSecond)
+                self.point_vars.VEL_X[i].set_value(
+                    curr_velocity * (dx / (dx**2 + dy**2) ** 0.5)
+                )
+                self.point_vars.VEL_Y[i].set_value(
+                    curr_velocity * (dy / (dx**2 + dy**2) ** 0.5)
+                )
+                if curr_velocity < max_vel:
+                    curr_velocity += init_dt * max_acceleration
+                    if curr_velocity > max_vel:
+                        curr_velocity = max_vel
+
+        for i in range(len(X_nodes) - 1, 0, -1):
+            curr_velocity = 0
+            max_acceleration = 3
+            max_vel = 4
+
+            self.point_vars.VEL_X[i].set_value(
+                curr_velocity * (dx / (dx**2 + dy**2) ** 0.5)
+            )
+
+            self.point_vars.VEL_Y[i].set_value(
+                curr_velocity * (dy / (dx**2 + dy**2) ** 0.5)
+            )
+
+            if curr_velocity < max_vel:
+                curr_velocity += init_dt * max_acceleration
+                if curr_velocity > max_vel:
+                    curr_velocity = max_vel
+
+            if curr_velocity >= max_vel:
+                break
         self.__apply_waypoint_constraints()
 
         return len(X_nodes)
@@ -735,7 +820,7 @@ class TrajectoryProblemBuilder:
         if config.apply_kinematic_constraints:
             self.__apply_kinematic_constraints()
 
-        if config.min_spacing > 0 or config.stretch_factor > 1:
+        if config.min_spacing > Inch(0) or config.stretch_factor > 1:
             self.__apply_spacing_constraints(config)
 
     def apply_minimization_objective(self, config: TrajectoryBuilderConfig):

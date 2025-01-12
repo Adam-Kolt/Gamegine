@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 import math
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from gamegine.analysis import pathfinding
 from gamegine.analysis.meshing import Map, TriangulatedGraph
 from gamegine.analysis.trajectory.lib.TrajGen import (
@@ -41,7 +41,7 @@ from gamegine.utils.NCIM.ncim import (
     RadiansPerSecondSquared,
     Second,
 )
-from gamegine.utils.logging import Info, Warn
+from gamegine.utils.logging import Info, Warn, Debug
 
 
 @dataclass
@@ -70,6 +70,15 @@ class GameServer:
         self.field_obstacles = []
         self.robot_traversal_space = {}
         self.trajectories = {}
+        self.game_log = []
+        self.latest_trajectory = None
+
+    def clear_log(self):
+        self.game_log = []
+
+    def log(self, action, changes):
+
+        self.game_log.append((self.game_state.current_time.get(), action, changes))
 
     def __is_game_over(self) -> bool:
         """Determines whether the game is over.
@@ -79,9 +88,7 @@ class GameServer:
         """
         return (
             self.game_state.current_time.get()
-            >= self.game_state.endgame_time.get()
-            + self.game_state.teleop_time.get()
-            + self.game_state.auto_time.get()
+            >= self.game_state.teleop_time.get() + self.game_state.auto_time.get()
         )
 
     def update(self, dt: int) -> bool:
@@ -93,6 +100,7 @@ class GameServer:
         if self.game_state is None:
             raise ValueError("Game state not initialized")
         self.game_state.current_time.set(self.game_state.current_time.get() + dt)
+        self.log("Time Update", [ValueIncrease(self.game_state.current_time, dt)])
 
         return self.__is_game_over()
 
@@ -144,6 +152,7 @@ class GameServer:
         self.game = game
         self.init_game_state(game.get_initial_state())
         self.set_obstacles(game.get_obstacles())
+        self.clear_log()
 
         for interactable in game.get_interactables():
             self.add_interactable(interactable)
@@ -212,12 +221,27 @@ class GameServer:
             return None
         return robot.interaction_configs[interactable][interaction]
 
+    def get_actions_set(self, robot_name: str) -> List[Tuple[str, str]]:
+        robot = self.robots[robot_name]
+        configs: Dict[str, Dict[str, RobotInteractionConfig]] = (
+            robot.interaction_configs
+        )
+
+        actions = []
+        for interactable, interactions in configs.items():
+            for interaction_str, interaction in interactions.items():
+                actions.append(
+                    (interaction.interactable_name, interaction.interaction_identifier)
+                )
+        return actions
+
     def drive_robot(
         self,
         robot_name: str,
         x: SpatialMeasurement,
         y: SpatialMeasurement,
         theta: float,
+        no_safety_corridor=False,
     ) -> None:
         """Drives a robot to a new position.
 
@@ -236,8 +260,15 @@ class GameServer:
         robot = self.robots[robot_name]
         robot_state: RobotState = self.game_state.get("robots").get(robot_name)
 
+        if (x, y) == (robot_state.x.get(), robot_state.y.get()):
+            Debug(f"Robot {robot_name} is already at ({x}, {y}), no need to move")
+            return
+
         path = self.__pathfind(robot_name, x, y)
-        trajectory = self.__trajectory(robot_name, x, y, theta, path)
+        trajectory = self.__trajectory(
+            robot_name, x, y, theta, path, no_safety_corridor
+        )
+        self.latest_trajectory = trajectory
 
         changes = [
             ValueChange(robot_state.x, x),
@@ -253,6 +284,10 @@ class GameServer:
 
         Info(
             f"Robot {robot_name} moved to ({x}, {y}, {theta}), taking {trajectory.get_travel_time()} seconds, resulting in {changes}"
+        )
+        self.log(
+            f"Robot {robot_name} moved to ({x}, {y}, {theta}), taking {trajectory.get_travel_time()} seconds",
+            changes,
         )
 
     def __pathfind(
@@ -281,6 +316,7 @@ class GameServer:
         y: SpatialMeasurement,
         heading: AngularMeasurement,
         path: pathfinding.Path,
+        no_safety_corridor=False,
     ) -> SwerveTrajectory:
         robot = self.robots[robot_name]
         robot_state: RobotState = self.game_state.get("robots").get(robot_name)
@@ -292,7 +328,9 @@ class GameServer:
         if (start_x, start_y, start_heading, x, y, heading) in self.trajectories.get(
             robot_name, {}
         ):
-            return self.trajectories[robot_name][(start_x, start_y, x, y)]
+            return self.trajectories[robot_name][
+                (start_x, start_y, start_heading, x, y, heading)
+            ]
 
         builder = SwerveTrajectoryProblemBuilder()
         builder.waypoint(
@@ -308,20 +346,22 @@ class GameServer:
             )
         )
         builder.guide_pathes([path])
-        builder.points_constraint(SafetyCorridor(traversal_space.obstacles))
+        # TODO: JUST FOR TESTING
+        if not no_safety_corridor:
+            builder.points_constraint(SafetyCorridor(traversal_space.obstacles))
 
         trajectory = builder.generate(
             TrajectoryBuilderConfig(
-                trajectory_resolution=Centimeter(15),
+                trajectory_resolution=Centimeter(10),
                 stretch_factor=1.5,
-                min_spacing=Centimeter(5),
+                min_spacing=Centimeter(8),
             )
         ).solve(
             SwerveRobotConstraints(
-                MeterPerSecondSquared(5),
-                MetersPerSecond(6),
-                RadiansPerSecondSquared(3.14),
-                RadiansPerSecond(3.14),
+                MeterPerSecondSquared(6.5),
+                MetersPerSecond(6.1),
+                RadiansPerSecondSquared(7.5),
+                RadiansPerSecond(18),
                 robot.get_drivetrain(),
                 physical_parameters=robot.get_physics(),
             ),
@@ -332,7 +372,7 @@ class GameServer:
             self.trajectories[robot_name] = {}
 
         self.trajectories[robot_name][
-            (start_x, start_y, start_heading, x, y)
+            (start_x, start_y, start_heading, x, y, heading)
         ] = trajectory
 
         return trajectory
@@ -349,12 +389,14 @@ class GameServer:
 
         gamepiece_state[gamepiece] += 1
 
+        self.log(f"Robot {robot_name} picked up {gamepiece}", [])
+
     def get_traversal_space(self, robot_name) -> TraversalSpace:
         return self.robot_traversal_space.get(robot_name, None)
 
     def process_action(
         self, interactable_name, interaction_name, robot_name, time_cutoff=None
-    ) -> None:
+    ) -> bool:
         """Processes an action by a robot on an interactable object.
 
         :param interactable_name: The name of the interactable object.
@@ -372,6 +414,20 @@ class GameServer:
             robot_name, interactable_name, interaction_name
         )
 
+        if not interaction.ableToInteract(
+            self.game_state.get("interactables").get(interactable_name),
+            self.game_state.get("robots").get(robot_name),
+            self.game_state,
+        ):
+            Info(
+                f"Robot {robot_name} attempted to perform {interaction_name} on {interactable_name}, but was unable to"
+            )
+            self.log(
+                f"Robot {robot_name} attempted to perform {interaction_name} on {interactable_name}, but was unable to",
+                [],
+            )
+            return False
+
         if robot_config is not None:
             time = robot_config.time_to_interact(
                 self.game_state.get("interactables").get(interactable_name),
@@ -380,12 +436,16 @@ class GameServer:
             )
             time_change = ValueIncrease(self.game_state.current_time, time)
             self.process_value_changes([time_change])
-
-        if self.game_state.current_time.get() > time_cutoff:
-            Info(
-                f"Robot {robot_name} attempted to perform {interaction_name} on {interactable_name}, but the time cutoff was reached"
-            )
-            return
+        if time_cutoff is not None:
+            if self.game_state.current_time.get() > time_cutoff:
+                Info(
+                    f"Robot {robot_name} attempted to perform {interaction_name} on {interactable_name}, but the time cutoff was reached"
+                )
+                self.log(
+                    f"Robot {robot_name} attempted to perform {interaction_name} on {interactable_name}, but the time cutoff was reached",
+                    [],
+                )
+                return False
 
         changes = interaction.action(
             self.game_state.get("interactables").get(interactable_name),
@@ -397,6 +457,12 @@ class GameServer:
         Info(
             f"Robot {robot_name} performed {interaction_name} on {interactable_name}, taking {time} seconds, resulting in {changes}"
         )
+        self.log(
+            f"Robot {robot_name} performed {interaction_name} on {interactable_name}, taking {time} seconds",
+            changes,
+        )
+
+        return True
 
     def process_value_changes(self, changes: List[ValueChange]) -> None:
         """Processes a value change.
@@ -406,6 +472,58 @@ class GameServer:
         """
         for change in changes:
             change.apply()
+
+    def get_latest_trajectory(self) -> SwerveTrajectory:
+        return self.latest_trajectory
+
+    def get_log(self):
+        return self.game_log
+
+    def drive_and_process_action(
+        self,
+        interactable_name,
+        interaction_name,
+        robot_name,
+        time_cutoff=None,
+        no_safety_cooridor=False,
+    ) -> bool:
+        """Drives a robot to an interactable object and processes an action.
+
+        :param interactable_name: The name of the interactable object.
+        :type interactable_name: str
+        :param interaction_name: The name of the interaction.
+        :type interaction_name: str
+        :param robot_name: The name of the robot performing the interaction.
+        :type robot_name: str
+        """
+        interactable = self.interactables[interactable_name]
+
+        robot_config = self.__get_robot_action_config(
+            robot_name, interactable_name, interaction_name
+        )
+
+        drive_point = None
+        if robot_config is not None:
+            drive_point = robot_config.navigation_point
+        if drive_point is None:
+            drive_point = interactable.get_navigation_point()
+
+        if drive_point is None:
+            raise ValueError("Interactable does not have a navigation point")
+
+        robot = self.robots[robot_name]
+        robot_state: RobotState = self.game_state.get("robots").get(robot_name)
+
+        self.drive_robot(
+            robot_name,
+            drive_point[0],
+            drive_point[1],
+            drive_point[2],
+            no_safety_cooridor,
+        )
+        return self.process_action(
+            interactable_name, interaction_name, robot_name, time_cutoff
+        )
 
     def add_robot(self, robot: SwerveRobot) -> None:
         """Adds a robot to the game server.

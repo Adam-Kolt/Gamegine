@@ -31,13 +31,25 @@ def PositionKinematicsConstraint(problem, point_variables):
     :type point_variables: PointVariables
     """
 
-    __DerivativeAgreementConstraint(
-        problem, point_variables.VEL_X, point_variables.POS_X, point_variables.DT
-    )
+    for i in range(1, len(point_variables.POS_X)):
+        dt = point_variables.DT[i - 1]
+        curr_x = point_variables.POS_X[i]
+        prev_x = point_variables.POS_X[i - 1]
+        prev_vel_x = point_variables.VEL_X[i - 1]
+        prev_accel_x = point_variables.ACCEL_X[i - 1]
 
-    __DerivativeAgreementConstraint(
-        problem, point_variables.VEL_Y, point_variables.POS_Y, point_variables.DT
-    )
+        problem.subject_to(
+            curr_x == prev_x + prev_vel_x * dt + 0.5 * prev_accel_x * dt**2
+        )
+
+        curr_y = point_variables.POS_Y[i]
+        prev_y = point_variables.POS_Y[i - 1]
+        prev_vel_y = point_variables.VEL_Y[i - 1]
+        prev_accel_y = point_variables.ACCEL_Y[i - 1]
+
+        problem.subject_to(
+            curr_y == prev_y + prev_vel_y * dt + 0.5 * prev_accel_y * dt**2
+        )
 
 
 def OmegaKinematicsConstraint(problem, point_variables):
@@ -65,6 +77,14 @@ def ThetaKinematicsConstraint(problem, point_variables):
     :return: The constraint function.
     :rtype: Callable[[Problem, PointVariables], None]
     """
-    __DerivativeAgreementConstraint(
-        problem, point_variables.OMEGA, point_variables.THETA, point_variables.DT
-    )
+
+    for i in range(1, len(point_variables.THETA)):
+        dt = point_variables.DT[i - 1]
+        curr_theta = point_variables.THETA[i]
+        prev_theta = point_variables.THETA[i - 1]
+        prev_omega = point_variables.OMEGA[i - 1]
+        prev_alpha = point_variables.ALPHA[i - 1]
+
+        problem.subject_to(
+            curr_theta == prev_theta + prev_omega * dt + 0.5 * prev_alpha * dt**2
+        )
