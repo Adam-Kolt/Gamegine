@@ -1,0 +1,27 @@
+Metadata-Version: 2.2
+Name: Gamegine
+Version: 0.1.0
+Summary: A FRC game representation, analysis, and simulation engine for performing post-kickoff strategy and design evaluation and optimization 
+Author-email: "A. Random Developer" <author@example.com>
+Maintainer-email: "A. Great Maintainer" <maintainer@example.com>
+Keywords: sample,setuptools,development
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: numpy
+Requires-Dist: pint
+Requires-Dist: pygame
+Requires-Dist: setuptools
+Requires-Dist: Shapely
+Requires-Dist: sleipnirgroup-jormungandr
+Requires-Dist: pybullet
+Provides-Extra: dev
+Requires-Dist: check-manifest; extra == "dev"
+Provides-Extra: test
+Requires-Dist: coverage; extra == "test"
+
+**Gamegine**
+
+[alt gamegine_logo](https://github.com/Adam-Kolt/Gamegine/blob/main/docs/_static/GamegineLight.png?raw=True)
+
+A FRC game representation, analysis, and simulation engine for performing post-kickoff strategy and design evaluation and optimization alongside ML Agent training.

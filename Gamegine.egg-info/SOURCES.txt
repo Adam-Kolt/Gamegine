@@ -1,0 +1,10 @@
+README.md
+pyproject.toml
+Gamegine.egg-info/PKG-INFO
+Gamegine.egg-info/SOURCES.txt
+Gamegine.egg-info/dependency_links.txt
+Gamegine.egg-info/requires.txt
+Gamegine.egg-info/top_level.txt
+tests/test_mapping.py
+tests/test_math.py
+tests/test_unit.py

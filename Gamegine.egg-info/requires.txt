@@ -1,0 +1,13 @@
+numpy
+pint
+pygame
+setuptools
+Shapely
+sleipnirgroup-jormungandr
+pybullet
+
+[dev]
+check-manifest
+
+[test]
+coverage

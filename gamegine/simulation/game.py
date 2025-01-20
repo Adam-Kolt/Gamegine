@@ -1,3 +1,5 @@
+from gamegine.representation.interactable import RobotInteractable
+from gamegine.simulation.robot import RobotState
 from gamegine.simulation.state import StateSpace, ValueEntry
 
 
@@ -9,6 +11,8 @@ class GameState(StateSpace):
         self.setValue("teleop_time", 0)
         self.setValue("endgame_time", 0)
         self.setValue("current_time", 0)
+        self.createSpace("robots")
+        self.createSpace("interactables")
 
     @property
     def score(self) -> ValueEntry[int]:
@@ -33,3 +37,17 @@ class GameState(StateSpace):
     @property
     def total_time(self) -> float:
         return self.auto_time.get() + self.teleop_time.get()
+
+    def add_robot(self, robot: RobotState):
+        self.get("robots").registerSpace(robot.name, robot)
+
+    def get_robot(self, name) -> RobotState:
+        return self.get("robots").get(name)
+
+    def add_interactable(self, interactable: RobotInteractable):
+        self.get("interactables").registerSpace(
+            interactable.name, interactable.initializeInteractableState()
+        )
+
+    def get_interactable(self, name) -> StateSpace:
+        return self.get("interactables").get(name)
