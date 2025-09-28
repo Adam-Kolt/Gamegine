@@ -93,6 +93,26 @@ def __MagnitudeEqualityConstraint(problem, vars, magnitude: float, index: int = 
         )
         problem.subject_to(vars[i] == magnitude)
 
+def __MagnitudeWithinToleranceConstraint(problem, vars, target: float, tolerance: float, index: int = -1):
+    """Constraint for setting the magnitude of a scalar to be within a specific tolerance of a target value.
+
+    :param problem: The optimization problem.
+    :type problem: Problem
+    :param vars: The scalar variables.
+    :type vars: list
+    :param target: The target magnitude of the scalar.
+    :type target: float
+    :param tolerance: The tolerance around the target magnitude.
+    :type tolerance: float
+    :param index: The index of the scalar to constrain. If -1, all scalars are constrained.
+    :type index: int"""
+    for i in __get_indices(index, len(vars)):
+        logging.Debug(
+            f"Adding magnitude within tolerance constraint of {target} +/- {tolerance} to control point {i}"
+        )
+        problem.subject_to(vars[i] >= target - tolerance)
+        problem.subject_to(vars[i] <= target + tolerance)
+
 
 def MagnitudeLessThanConstraint(problem, vars, magnitude: float, index: int = -1):
     """Constraint for setting the magnitude of a scalar to be less than a specific value.

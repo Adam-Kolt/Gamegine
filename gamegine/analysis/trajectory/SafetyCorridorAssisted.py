@@ -27,7 +27,7 @@ from gamegine.utils.NCIM.ncim import (
     Radian,
     SpatialMeasurement,
 )
-from jormungandr.optimization import OptimizationProblem
+from jormungandr.optimization import Problem as OptimizationProblem
 import numpy as np
 
 

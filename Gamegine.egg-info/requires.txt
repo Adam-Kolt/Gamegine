@@ -4,7 +4,7 @@ pygame
 setuptools
 Shapely
 sleipnirgroup-jormungandr
-pybullet
+sortedcontainers
 
 [dev]
 check-manifest

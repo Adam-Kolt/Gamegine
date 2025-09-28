@@ -3,8 +3,7 @@ from typing import Tuple
 
 from gamegine.analysis import pathfinding
 from gamegine.analysis.meshing import TriangulatedGraph
-from gamegine.analysis.trajectory.SafetyCorridorAssisted import SafetyCorridorAssisted
-from gamegine.analysis.trajectory.generation import TrajectoryKeypoint
+
 from gamegine.analysis.trajectory.lib.TrajGen import (
     SolverConfig,
     SwerveRobotConstraints,
@@ -27,8 +26,7 @@ from gamegine.representation.bounds import ExpandedObjectBounds
 from gamegine.representation.game import Game
 from gamegine.representation.obstacle import Circular, Polygonal, Rectangular
 from gamegine.representation.robot import (
-    PhysicalParameters,
-    SwerveDrivetrainCharacteristics,
+    PhysicalParameters
 )
 from gamegine.utils.NCIM.ComplexDimensions.MOI import (
     KilogramMetersSquared,
@@ -110,7 +108,7 @@ def CreateTrajectory(
 
     trajectory = builder.generate(
         TrajectoryBuilderConfig(
-            trajectory_resolution=Centimeter(15), stretch_factor=1.5
+            trajectory_resolution=Centimeter(5), stretch_factor=1.5
         )
     ).solve(
         SwerveRobotConstraints(
@@ -137,7 +135,7 @@ def CreateTrajectory(
                 moi=PoundsInchesSquared(21327.14),
             ),
         ),
-        SolverConfig(timeout=1),
+        SolverConfig(timeout=10),
     )
 
     return trajectory
@@ -162,8 +160,8 @@ renderer.init_display()
 
 
 trajectories = [
-    CreateTrajectory((Feet(6), Feet(20)), (Feet(20), Feet(6)), Degree(0), Degree(270)),
-    CreateTrajectory((Feet(20), Feet(6)), (Feet(20), Feet(20)), Degree(270), Degree(0)),
+    CreateTrajectory((Feet(6), Feet(20)), (Feet(9), Feet(20)), Degree(0), Degree(270)),
+    CreateTrajectory((Feet(20), Feet(6)), (Feet(20), Feet(10)), Degree(270), Degree(0)),
 ]
 
 while renderer.loop() != False:

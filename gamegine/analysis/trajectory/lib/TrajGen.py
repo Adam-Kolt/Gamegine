@@ -2,7 +2,7 @@ from enum import Enum
 
 import math
 from typing import Callable, List
-from jormungandr.optimization import OptimizationProblem
+from jormungandr.optimization import Problem as OptimizationProblem
 from gamegine.analysis.trajectory.lib.constraints import base
 from gamegine.analysis.trajectory.lib.constraints.spacing import (
     PositionMaxSpacingConstraint,

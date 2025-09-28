@@ -5,7 +5,10 @@ import pygame
 from gamegine.first.alliance import Alliance
 from gamegine.render.drawable import Drawable
 from gamegine.representation.gamepiece import Gamepiece
-from gamegine.representation.interactable import RobotInteractionConfig
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from gamegine.representation.interactable import RobotInteractionConfig
 from gamegine.simulation.state import StateSpace, ValueEntry
 from gamegine.utils.NCIM.Dimensions.angular import AngularMeasurement, Radian
 from gamegine.utils.NCIM.Dimensions.spatial import Meter, SpatialMeasurement
@@ -33,7 +36,7 @@ class RobotState(StateSpace, Drawable):
         heading: AngularMeasurement = Radian(0),
         alliance: Alliance = Alliance.RED,
         gamepieces: Dict[Gamepiece, int] = {},
-        current_action: RobotInteractionConfig = None,
+        current_action: 'RobotInteractionConfig' = None,
         action_progress: float = 0,
     ):
         super().__init__()

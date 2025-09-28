@@ -9,8 +9,10 @@ import pygame
 from gamegine.render.drawable import Drawable
 from gamegine.render.style import Palette
 from gamegine.representation.base import NamedObject
-from gamegine.simulation.environment import shape
-from gamegine.simulation.environment.shape import BulletBox, BulletCylinder, BulletShape
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:  # type-only imports to keep runtime free of pybullet deps
+    from gamegine.simulation.environment.shape import BulletShape  # noqa: F401
 from gamegine.utils import logging
 from gamegine.utils.NCIM.Dimensions.spatial import Feet
 from gamegine.utils.logging import Debug
@@ -411,7 +413,20 @@ class Boundary3D(Boundary):
     def discretized(self, curve_segments: int = 5) -> "DiscreteBoundary3D":
         pass
 
-    def get_bullet_shape(self) -> BulletShape:
+    def get_bullet_shape(self):
+        """Return a Bullet shape for physics.
+
+        This requires the Bullet/pybullet-dependent modules. To keep this
+        module importable without pybullet, the import is done lazily here.
+        """
+        try:
+            from gamegine.simulation.environment.shape import BulletBox
+        except Exception as e:
+            raise RuntimeError(
+                "PyBullet (and related Bullet shapes) not available; "
+                "get_bullet_shape cannot be used without pybullet."
+            ) from e
+
         logging.Warn("No bullet shape defined for this boundary.")
         return BulletBox(Feet(1), Feet(1), Feet(1))
 
@@ -829,6 +844,13 @@ class Cylinder(DiscreteBoundary3D):
         return transformed_points
 
     def get_bullet_shape(self):
+        try:
+            from gamegine.simulation.environment.shape import BulletCylinder
+        except Exception as e:
+            raise RuntimeError(
+                "PyBullet (and related Bullet shapes) not available; "
+                "get_bullet_shape cannot be used without pybullet."
+            ) from e
         return BulletCylinder(self.radius, self.height)
 
 
@@ -918,7 +940,15 @@ class PolygonalPrism(DiscreteBoundary3D):
         return min([point[1] for point in self.local_points])
 
     def get_bullet_shape(self):
-        return shape.PolygonalPrism(self.get_2d_local_points(), self.height)
+        try:
+            # Import inside to avoid pybullet dependency at module import time
+            from gamegine.simulation.environment import shape as bullet_shape_mod
+        except Exception as e:
+            raise RuntimeError(
+                "PyBullet (and related Bullet shapes) not available; "
+                "get_bullet_shape cannot be used without pybullet."
+            ) from e
+        return bullet_shape_mod.PolygonalPrism(self.get_2d_local_points(), self.height)
 
 
 class Line(DiscreteBoundary):

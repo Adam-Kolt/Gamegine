@@ -1,4 +1,4 @@
-Metadata-Version: 2.2
+Metadata-Version: 2.4
 Name: Gamegine
 Version: 0.1.0
 Summary: A FRC game representation, analysis, and simulation engine for performing post-kickoff strategy and design evaluation and optimization 
@@ -14,7 +14,7 @@ Requires-Dist: pygame
 Requires-Dist: setuptools
 Requires-Dist: Shapely
 Requires-Dist: sleipnirgroup-jormungandr
-Requires-Dist: pybullet
+Requires-Dist: sortedcontainers
 Provides-Extra: dev
 Requires-Dist: check-manifest; extra == "dev"
 Provides-Extra: test
