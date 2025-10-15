@@ -1,0 +1,58 @@
+---
+title: Pathfinding & Meshing
+description: Build navigation graphs and run search across the field.
+---
+
+Gamegine provides two stages for navigation: building a graph that avoids obstacles and
+running a pathfinder across that graph. The meshing utilities produce a `Map` instance,
+which is then handed to `findPath` together with start and end positions.
+
+## Meshing utilities
+
+`VisibilityGraph` connects the vertices of discrete obstacle boundaries with line-of-sight
+edges, optionally including extra waypoints you supply. `TriangulatedGraph` builds a regular
+triangular lattice clipped against the inflated obstacle polygons. Both helpers return a
+shared `Map` object which stores graph connectivity, offers nearest node lookup, and can be
+rendered for debugging.
+
+## Path search
+
+`gamegine.analysis.pathfinding` exposes a flexible `findPath` helper wrapping multiple
+A*-style search strategies. `InitialConnectionPolicy` determines how the start and goal
+positions are snapped onto the mesh, while `Path.shortcut` prunes redundant waypoints after
+search. The resulting `Path` retains NCIM units and can be fed directly into the trajectory
+pipeline.
+
+### Heuristics and extensions
+
+- `Heuristics.EuclideanHeuristic` is a good default for holonomic drives.
+- `Heuristics.DirectedEuclideanHeuristic` biases the search toward the goal heading,
+  reducing overshoot in tight spaces.
+- Create your own heuristics by subclassing :class:`Pathfinder`—the new docstrings on
+  :class:`AStar` and :func:`findPath` document the expected interfaces.
+
+### Connecting custom start/end points
+
+`findPath` accepts NCIM coordinates and adds temporary mesh nodes when required. If you want
+to reuse the base mesh across multiple queries, either operate on a copy or remove any
+accidental bookkeeping nodes after each search.
+
+### Smoothing and resampling
+
+`Path.shortcut` removes detours while checking for obstacle collisions. Pair it with
+`Path.dissect` to produce evenly spaced waypoints suitable for optimisation warm starts or
+continuous motion controllers.
+
+```python title="path_utils.py"
+from gamegine.analysis.pathfinding import findPath, InitialConnectionPolicy
+from gamegine.utils.NCIM.ncim import Meter
+
+path = findPath(mesh, start, end, initial_connection_policy=InitialConnectionPolicy.SnapToClosest)
+smooth = path.shortcutted([obstacle.discretized() for obstacle in obstacles])
+uniform = smooth.dissected(Meter(0.2))
+```
+
+## Modules
+
+- `gamegine.analysis.meshing`
+- `gamegine.analysis.pathfinding`

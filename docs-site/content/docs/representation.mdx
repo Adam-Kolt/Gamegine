@@ -1,0 +1,64 @@
+---
+title: Field Representation
+description: Model the field, obstacles, interactables, and robots.
+---
+
+The representation package captures the physical layout of the field, including the walls,
+obstacles, scoring locations, and robots that inhabit it. These models feed both the
+renderer and the analysis/trajectory modules.
+
+## Games and zones
+
+`gamegine.representation.game.Game` is the main container for a field. It tracks the field
+size, static obstacles, interactables, and optional border padding that keeps robots within
+bounds. Use helper methods such as `add_obstacle` and `enable_field_border_obstacles` to
+assemble a playable environment.
+
+```python title="game_setup.py"
+from gamegine.representation.game import Game
+from gamegine.representation.obstacle import Rectangular
+from gamegine.utils.NCIM.ncim import Meter
+
+game = Game("Practice Field")
+game.set_field_size(Meter(15), Meter(8))
+game.add_obstacle(Rectangular("Stage", Meter(2), Meter(3), Meter(3), Meter(1)))
+game.enable_field_border_obstacles()
+```
+
+## Bounds and obstacles
+
+Geometric primitives live in `gamegine.representation.bounds`. `Boundary` is the abstract
+base class, while `Rectangle`, `Circle`, and `Polygon` implement concrete shapes along with
+conversion helpers such as `DiscreteBoundary.discretized`. The
+`gamegine.representation.obstacle` module wraps these boundaries into named `Obstacle`
+instances that can be attached to a `Game`. `ExpandedObjectBounds` and related utilities are
+frequently used when expanding obstacles by the robot footprint before meshing. Each
+boundary now carries docstrings covering the available transformations (`translate`,
+`scale`, `reflect_x`, `reflect_y`) so it is easier to pipeline CAD-derived shapes without
+losing track of units.
+
+## Interactables and other field elements
+
+Robot actions are modelled with `RobotInteractable` instances, providing interaction options
+that affect game state. The `gamepiece` and `apriltag` modules expose additional convenience
+classes covering common field features for FRC-style games. Each interactable exposes a
+navigation point and a set of :class:`gamegine.representation.interactable.InteractionOption`
+objects—check the inline docstrings for guidance on when to use `ableToInteract` and how to
+describe state transitions.
+
+## Robot representation
+
+`gamegine.representation.robot` records the drivetrain geometry and module properties required
+by trajectory generation, including module spacing, mass properties, and swerve
+characterisation helpers. The module level docstrings explain how the NCIM quantities map to
+`SwerveRobotConstraints`, making it easier to feed the optimiser realistic limits.
+
+## Modules
+
+- `gamegine.representation.game`
+- `gamegine.representation.bounds`
+- `gamegine.representation.obstacle`
+- `gamegine.representation.apriltag`
+- `gamegine.representation.gamepiece`
+- `gamegine.representation.interactable`
+- `gamegine.representation.robot`

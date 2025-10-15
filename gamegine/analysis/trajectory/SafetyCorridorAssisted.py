@@ -1,3 +1,5 @@
+"""Guided trajectory generation that respects dynamically computed safe corridors."""
+
 import math
 from typing import Dict, List, Tuple
 
@@ -32,11 +34,15 @@ import numpy as np
 
 
 class SafeCorridor(Rectangle):
+    """Thin wrapper around :class:`Rectangle` that renders with a consistent style."""
+
     def draw(self, render_scale: SpatialMeasurement):
         helpers.draw_fancy_rectangle(self, Palette.BLUE, render_scale)
 
 
 class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
+    """Swerve trajectory generator that keeps the robot inside inflated obstacle corridors."""
+
     def __init__(self, units_per_node: SpatialMeasurement = Centimeter(20)):
         self.safe_corridor: List[SafeCorridor] = []
         self.units_per_node = units_per_node
@@ -44,6 +50,7 @@ class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
     def __get_max_acc_ms(
         self, mass: MassMeasurement, drivetrain: SwerveDrivetrainCharacteristics
     ):
+        """Compute the theoretical acceleration limit based on motor torque."""
         return (
             drivetrain.module.max_module_force.to(NewtonMeter)
             / mass.to(Kilogram)
@@ -52,6 +59,7 @@ class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
         )
 
     def __bound_in_rect(self, rect: Rectangle, problem, x, y):
+        """Add bounding constraints that force a state variable to stay within ``rect``."""
         problem.subject_to(x > rect.get_min_x().to(Meter))
         problem.subject_to(x < rect.get_max_x().to(Meter))
         problem.subject_to(y > rect.get_min_y().to(Meter))
@@ -65,6 +73,7 @@ class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
         x_s: List,
         y_s: List,
     ):
+        """Attach per-point corridor constraints to the optimisation problem."""
         for i in range(len(x_s)):
             c_index = corridor_path_map[i]
             c = corridor[c_index]
@@ -81,6 +90,7 @@ class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
         physics: PhysicalParameters,
         drivetrain: SwerveDrivetrainCharacteristics,
     ):
+        """Solve the time-optimal trajectory constrained to the safe corridor."""
         # Basic Constraints
         MAX_SPEED = drivetrain.module.max_module_speed.to(MetersPerSecond)
         Debug(f"Max Speed: {MAX_SPEED}")
@@ -198,6 +208,7 @@ class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
         physical_parameters: PhysicalParameters,
         drivetrain_parameters: SwerveDrivetrainCharacteristics,
     ) -> SwerveTrajectory:
+        """Generate a corridor guided swerve trajectory from a high level guide path."""
         self.dissected_path = guide_path.dissected(units_per_node=self.units_per_node)
         self.drivetrain = drivetrain_parameters
         self.start = start_parameters
@@ -228,6 +239,7 @@ class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
         obstacles: List[DiscreteBoundary],
         alternate_obstacles: List[DiscreteBoundary] = None,
     ) -> SafeCorridor:
+        """Grow a rectangle around a point until it touches the nearest obstacle."""
         INITIAL_STEP_SIZE = Meter(1)
 
         # Adding small amount to prevent it being a line is kinda scuff, but it works for now
@@ -326,6 +338,7 @@ class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
         path: List[Tuple[SpatialMeasurement, SpatialMeasurement]],
         obstacles: List[DiscreteBoundary],
     ) -> Tuple[List[SafeCorridor], Dict[int, int]]:
+        """Compute the sequence of rectangles that fence each path waypoint."""
         safe_corridor: List[Rectangle] = []
         path_map: Dict[int, int] = {}
         rect_obstacles = [obstacle.get_bounded_rectangle() for obstacle in obstacles]
@@ -360,4 +373,5 @@ class SafetyCorridorAssisted(GuidedSwerveTrajectoryGenerator):
         return safe_corridor, path_map
 
     def GetSafeCorridor(self) -> List[SafeCorridor]:
+        """Expose the last generated corridor sequence (primarily for debugging)."""
         return self.safe_corridor

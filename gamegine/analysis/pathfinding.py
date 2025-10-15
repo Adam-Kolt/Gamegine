@@ -1,3 +1,11 @@
+"""A* based pathfinding utilities used across the navigation subsystem.
+
+The module couples the :class:`Map` graph structure with a collection of heuristics and a
+convenience :func:`findPath` wrapper that handles connecting arbitrary NCIM coordinates
+onto the underlying mesh.  It also ships with a drawable :class:`Path` helper so debugging
+visualisations can be produced with very little boilerplate.
+"""
+
 import math
 from queue import PriorityQueue
 from typing import Callable, Dict, List, Tuple
@@ -22,6 +30,8 @@ class InitialConnectionPolicy(Enum):
 
 
 class Path(Drawable):
+    """Convenience wrapper that stores an ordered waypoint list and renders it."""
+
     def __init__(
         self, path: List[Tuple[SpatialMeasurement, SpatialMeasurement]]
     ) -> None:
@@ -30,17 +40,21 @@ class Path(Drawable):
     def set_path(
         self, path: List[Tuple[SpatialMeasurement, SpatialMeasurement]]
     ) -> None:
+        """Replace the existing waypoint sequence."""
         self.path = path
 
     def add_point(self, point: Tuple[SpatialMeasurement, SpatialMeasurement]) -> None:
+        """Append a new waypoint to the end of the path."""
         self.path.append(point)
 
     def get_points(self) -> List[Tuple[SpatialMeasurement, SpatialMeasurement]]:
+        """Expose the raw coordinate list."""
         return self.path
 
     def shortcut(
         self, discrete_obstacles: List[DiscreteBoundary], max_jump: int = -1
     ) -> "Path":
+        """In-place path smoothing that removes redundant intermediate waypoints."""
         if len(self.path) <= 2:
             return self.path
         out = [self.path[0]]
@@ -66,13 +80,16 @@ class Path(Drawable):
         return self
 
     def shortcutted(self, discrete_obstacles: List[DiscreteBoundary]) -> "Path":
+        """Return a new :class:`Path` instance with shortcutting applied."""
         return Path(shortcut_tuple_path(discrete_obstacles, self.path))
 
     def dissect(self, units_per_node: SpatialMeasurement) -> "Path":
+        """In-place resampling of the path with evenly spaced nodes."""
         self.path = self.dissected(units_per_node).get_points()
         return self
 
     def dissected(self, units_per_node: SpatialMeasurement) -> "Path":
+        """Return a new :class:`Path` resampled to the requested resolution."""
         path = self.path
         disected_path = []
         for i in range(len(path) - 1):
@@ -122,12 +139,16 @@ class Path(Drawable):
 
 
 class Pathfinder(ABC):
+    """Interface implemented by concrete graph search algorithms."""
+
     @abstractmethod
     def calculate_path(map: Map, start: int, end: int) -> List[int]:
         pass
 
 
 class Heuristics(object):
+    """Static collection of heuristics used by :class:`AStar`."""
+
     @staticmethod
     def EuclideanHeuristic(map: Map, start: int, end: int, current: int, next: int):
         end_coords = map.decode_coordinates(end)
@@ -154,6 +175,8 @@ class Heuristics(object):
 
 
 class AStar(Pathfinder):
+    """Canonical A* search over the :class:`Map` graph."""
+
     class Node:
         def __init__(
             self, id: int, parent: int, g_score: float, f_score: float
@@ -165,6 +188,7 @@ class AStar(Pathfinder):
 
     @staticmethod
     def __retrace_steps(nodes: Dict[int, Node], end_node: Node) -> List[int]:
+        """Reconstruct an optimal path by walking the parent chain."""
         out = []
         parent_id = end_node.id
         while parent_id != None:
@@ -182,6 +206,7 @@ class AStar(Pathfinder):
             [Map, int, int, int, int], float
         ] = Heuristics.EuclideanHeuristic,
     ) -> List[int]:
+        """Execute a standard A* search between two nodes."""
         open_set = PriorityQueue()
         nodes = {}
 
@@ -222,6 +247,7 @@ def shortcut_tuple_path(
     discrete_obstacles: List[DiscreteBoundary],
     path: List[Tuple[SpatialMeasurement, SpatialMeasurement]],
 ) -> List[Tuple[SpatialMeasurement, SpatialMeasurement]]:
+    """Return a new path with shortcutting applied."""
     if len(path) <= 2:
         return path
     out = [path[0]]
@@ -248,6 +274,12 @@ def findPath(
     pathfinder: Pathfinder = DirectedAStar,
     initial_connection_policy: InitialConnectionPolicy = InitialConnectionPolicy.ConnectToClosest,
 ) -> Path:
+    """High level helper that runs a pathfinder on NCIM coordinates.
+
+    ``start`` and ``end`` are mapped onto the mesh according to
+    ``initial_connection_policy``.  The returned object is drawable and can be fed directly
+    into the trajectory generation pipeline.
+    """
     match initial_connection_policy:
         case InitialConnectionPolicy.ConnectToClosest:
             connect_start = map.get_closest_node(*start)

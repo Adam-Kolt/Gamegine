@@ -49,3 +49,8 @@ gamegine/representation/__pycache__/game.cpython-310.pyc
 gamegine/representation/__pycache__/obstacle.cpython-310.pyc
 gamegine/analysis/__pycache__/pathfinding.cpython-310.pyc
 gamegine/analysis/__pycache__/meshing.cpython-310.pyc
+# Docs site build artifacts
+/node_modules/
+/docs-site/node_modules/
+/docs-site/.next/
+/docs-site/.source/

@@ -1,0 +1,79 @@
+---
+title: Trajectory Optimisation
+description: Configure Sleipnir-based optimisers for holonomic and swerve motion.
+---
+
+The trajectory library wraps Sleipnir optimisation problems to create smooth, dynamically
+feasible robot motions. It builds on NCIM-aware decision variables and constraint helpers so
+you can describe drivetrain limits, enforce boundary conditions, and stitch multiple guide
+paths together.
+
+## Trajectory problems
+
+The core entry point is `gamegine.analysis.trajectory.lib.TrajGen`, which provides
+`TrajectoryProblemBuilder` subclasses for generic holonomic motion as well as dedicated
+support for swerve drivetrains. Robot limits are described with `TrajectoryRobotConstraints`
+or `SwerveRobotConstraints`, while `SolverConfig` lets you tune the underlying Sleipnir
+solver.
+
+```python title="builder.py"
+from gamegine.analysis.trajectory.lib.TrajGen import (
+    TrajectoryBuilderConfig,
+    SwerveTrajectoryProblemBuilder,
+    Waypoint,
+)
+
+builder = SwerveTrajectoryProblemBuilder()
+builder.waypoint(Waypoint(start_x, start_y).given(start_constraints))
+builder.waypoint(Waypoint(end_x, end_y).given(end_constraints))
+trajectory_problem = builder.generate(
+    TrajectoryBuilderConfig(trajectory_resolution=Meter(0.05))
+)
+```
+
+The new docstrings throughout `TrajGen.py` clarify which NCIM units each constraint expects
+and document the intermediate `TrajectoryState` values exposed after solving.
+
+## Supporting modules
+
+- `problemVariables` defines the decision variable layout for each optimisation point.
+- `trajectoryStates` stores the sampled states used by the renderer and analysis tools.
+- The `constraints` package exposes reusable constraint factories covering kinematics,
+  module forces, spacing, and safety margins. Constraints are grouped by purpose so you can
+  mix and match them inside a builder without diving through the entire `TrajGen` file.
+
+Commonly used constraints include:
+
+- `VelocityLessThan` and `AccelerationLessThan` for enforcing drivetrain safety limits.
+- `PositionEquals` and `AngleEquals` for hard boundary conditions.
+- `PositionMinSpacingConstraint` / `PositionMaxSpacingConstraint` for keeping successive
+  samples at sensible distances.
+
+Refer to the enhanced docstrings in the constraint modules for parameter details and
+examples.
+
+## Safety corridor guided generation
+
+Beyond the low-level builders, `gamegine.analysis.trajectory.SafetyCorridorAssisted`
+implements a higher level workflow. It accepts an obstacle list and an initial path,
+inflates the path into a series of safe rectangles, and runs a time-optimal optimisation
+subject to drivetrain limits.
+
+`SafetyCorridorAssisted` stores the computed rectangles so you can draw the corridor during
+debug sessions. The helper respects the NCIM units from the supplied path, meaning you can
+grow the corridor in inches and still constrain the optimiser in metres without rounding
+errors.
+
+## Modules
+
+- `gamegine.analysis.trajectory.lib.TrajGen`
+- `gamegine.analysis.trajectory.lib.problemVariables`
+- `gamegine.analysis.trajectory.lib.trajectoryStates`
+- `gamegine.analysis.trajectory.lib.constraints.base`
+- `gamegine.analysis.trajectory.lib.constraints.constraints`
+- `gamegine.analysis.trajectory.lib.constraints.kinematics`
+- `gamegine.analysis.trajectory.lib.constraints.spacing`
+- `gamegine.analysis.trajectory.lib.constraints.swerve`
+- `gamegine.analysis.trajectory.SafetyCorridorAssisted`
+- `gamegine.analysis.trajectory.generation` – high-level orchestrators combining guide paths
+  with constraint sets.

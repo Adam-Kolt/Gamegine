@@ -1,0 +1,53 @@
+---
+title: Examples
+description: End-to-end scripts that combine representation, analysis, and rendering.
+---
+
+The repository ships with several runnable examples that exercise different parts of the
+stack. This page explains what each script demonstrates and points you towards the relevant
+APIs if you want to extend them.
+
+## `examples/basic_pathfinding.py`
+
+Focuses on meshing and pathfinding. It builds a simple field, constructs a fully connected
+mesh, and runs A* with optional shortcutting before drawing the result.
+
+Highlights:
+
+- Creates a :class:`~gamegine.analysis.meshing.Map` and calls
+  :py:meth:`Map.connect_all_nodes` to explore dense graphs.
+- Demonstrates :func:`gamegine.analysis.pathfinding.findPath` with
+  :pydata:`InitialConnectionPolicy.ConnectToClosest`.
+- Shows how :class:`gamegine.render.renderer.Renderer` can draw both the mesh and the path.
+
+Try adapting the script to use :func:`gamegine.analysis.meshing.VisibilityGraph` or to test
+alternative heuristics by subclassing :class:`gamegine.analysis.pathfinding.Pathfinder`.
+
+## `examples/trajectory_generation.py`
+
+Builds on the pathfinding example by inflating obstacles, running a triangulated mesh,
+and solving a swerve trajectory with the full optimiser stack.
+
+Highlights:
+
+- Uses :class:`gamegine.representation.bounds.ExpandedObjectBounds` to keep the robot clear
+  of collisions.
+- Feeds guide paths into :class:`gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectoryProblemBuilder`.
+- Demonstrates how :class:`gamegine.analysis.trajectory.SafetyCorridorAssisted.SafetyCorridorAssisted`
+  can slot into a larger workflow.
+- Renders multiple drawables (expanded obstacles, mesh, and solved trajectories) every
+draw loop.
+
+Enrich the example by replacing the constraint set, experimenting with different
+:class:`gamegine.analysis.trajectory.lib.TrajGen.SolverConfig` tolerances, or by injecting
+robot-specific RIO/characterisation data.
+
+## Testing your own scenarios
+
+1. Use the [Representation](./representation) page to assemble the field quickly.
+2. Reuse the code snippets from the [Analysis Workflow](./analysis) guide to mesh and route
+   through your scenario.
+3. Drop your drawables into the base example loop to get instant feedback.
+
+Remember that all of the examples rely on the strongly typed NCIM units. Keep everything in
+NCIM until the very last mile to avoid silent unit mismatches.
