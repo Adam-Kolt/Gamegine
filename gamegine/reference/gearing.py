@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from enum import Enum
 
 
 @dataclass
@@ -140,3 +141,35 @@ class MK4I:
     L1 = __STAGE1A + __STAGE2A + __STAGE3A
     L2 = __STAGE1A + __STAGE2B + __STAGE3A
     L3 = __STAGE1A + __STAGE2C + __STAGE3A
+
+class ThriftySwerve:
+    """Class for storing the gear ratios of the Thrifty Swerve."""
+
+    __BASE_STAGE = GearSeries(None, None, ratio=4.5)
+    
+
+    class Pinions(Enum):
+        """Enum for the pinion gears of the Thrifty Swerve."""
+        P12 = Gear(12)
+        P13 = Gear(13)
+        P14 = Gear(14)
+    
+    class Stage2(Enum):
+        """Enum for the stage 2 gears of the Thrifty Swerve."""
+        S18 = Gear(18)
+        S16 = Gear(16)
+
+    @classmethod
+    def get_gear_ratio(cls, pinion: "ThriftySwerve.Pinions", stage2: "ThriftySwerve.Stage2") -> GearSeries:
+        """Returns the gear ratio of the Thrifty Swerve for the given pinion and stage 2 gears.
+
+        :param pinion: The pinion gear to use.
+        :type pinion: ThriftySwerve.Pinions
+        :param stage2: The stage 2 gear to use.
+        :type stage2: ThriftySwerve.Stage2
+        :return: The gear ratio of the Thrifty Swerve.
+        :rtype: GearSeries
+        """
+      
+        return cls.__BASE_STAGE + (pinion.value + stage2.value)
+      
