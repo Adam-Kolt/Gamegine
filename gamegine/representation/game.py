@@ -3,7 +3,7 @@ from typing import Dict, List, Tuple
 
 from gamegine.representation.bounds import Rectangle
 from gamegine.representation.interactable import RobotInteractable
-from gamegine.simulation.game import GameState
+
 from gamegine.utils.logging import Debug
 from gamegine.utils.NCIM.ncim import Meter, SpatialMeasurement, Zero, Feet
 import numpy as np
@@ -208,14 +208,7 @@ class Game(object):
     def get_interactables(self) -> List[RobotInteractable]:
         return self.interactables.values()
 
-    def get_initial_state(self) -> GameState:
-        state = GameState()
-        state.auto_time.set(15)
-        state.teleop_time.set(135)
-        state.endgame_time.set(30)
-        state.current_time.set(0)
-        state.score.set(0)
-        return state
+
 
     def add_zone(self, zone) -> "Game":
         if zone.name in self.zones:

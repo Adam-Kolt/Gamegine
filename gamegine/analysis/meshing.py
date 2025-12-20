@@ -3,10 +3,7 @@ import math
 from typing import List, Set, Tuple
 from enum import Enum
 
-import pygame
-
 from gamegine.render.drawable import Drawable
-from gamegine.render.renderer import Renderer
 from gamegine.representation.bounds import (
     Boundary,
     BoundedObject,
@@ -211,6 +208,9 @@ class Map(Drawable):
         return 0
 
     def draw(self, render_scale: SpatialMeasurement) -> None:
+        import pygame
+        from gamegine.render.renderer import Renderer
+
         if not self.cache_up_to_date:
             self.__update_nodes_cache()
             self.__update_connections_cache()

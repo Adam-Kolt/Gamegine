@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from jormungandr.optimization import Problem as OptimizationProblem
+from sleipnir.optimization import Problem as OptimizationProblem
 
 
 @dataclass

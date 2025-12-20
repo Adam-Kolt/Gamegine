@@ -23,6 +23,15 @@ def __GetExpandedRectangle(
 ) -> SafeCorridor:
     INITIAL_STEP_SIZE = Meter(1)
 
+    if not obstacles:
+        dist = Meter(100)
+        return SafeCorridor(
+            x - dist,
+            y - dist,
+            dist * 2,
+            dist * 2,
+        )
+
     # Adding small amount to prevent it being a line is kinda scuff, but it works for now
     rectangle = [
         x,

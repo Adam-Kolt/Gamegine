@@ -4,11 +4,8 @@ from typing import Callable, Dict, List, Tuple
 from enum import Enum
 from abc import ABC, abstractmethod
 
-import pygame
-
 from gamegine.analysis.meshing import Map
 from gamegine.render.drawable import Drawable
-from gamegine.render.renderer import Renderer
 from gamegine.representation.bounds import Boundary, DiscreteBoundary
 from gamegine.utils.logging import Debug
 from gamegine.utils.matematika import AngleBetweenVectors, GetDistanceBetween
@@ -94,6 +91,9 @@ class Path(Drawable):
         return 1
 
     def draw(self, render_scale: SpatialMeasurement) -> None:
+        import pygame
+        from gamegine.render.renderer import Renderer
+
         for i in range(len(self.path) - 1):
             node1 = self.path[i]
             node2 = self.path[i + 1]

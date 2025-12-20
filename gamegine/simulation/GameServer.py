@@ -2,20 +2,9 @@ from dataclasses import dataclass, field
 import math
 from typing import Dict, List, Tuple
 from gamegine.analysis import pathfinding
-from gamegine.analysis.meshing import Map, TriangulatedGraph
-from gamegine.analysis.trajectory.lib.TrajGen import (
-    SolverConfig,
-    SwerveRobotConstraints,
-    SwerveTrajectory,
-    SwerveTrajectoryProblemBuilder,
-    TrajectoryBuilderConfig,
-    Waypoint,
-)
-from gamegine.analysis.trajectory.lib.constraints.avoidance import SafetyCorridor
-from gamegine.analysis.trajectory.lib.constraints.constraints import (
-    VelocityEquals,
-    AngleEquals,
-)
+from gamegine.analysis.meshing import Map
+from gamegine.analysis.trajectory.lib.TrajGen import SwerveTrajectory
+from gamegine.simulation.physics import PhysicsEngine, PhysicsConfig
 from gamegine.representation import obstacle
 from gamegine.representation.bounds import ExpandedObjectBounds
 from gamegine.representation.game import Game
@@ -27,7 +16,7 @@ from gamegine.representation.robot import SwerveRobot
 from gamegine.simulation.game import GameState
 from gamegine.simulation.robot import RobotState
 from gamegine.simulation.state import ValueChange, ValueIncrease
-from gamegine.utils.NCIM.Dimensions.angular import AngularMeasurement
+from gamegine.utils.NCIM.Dimensions.angular import AngularMeasurement, Radian
 from gamegine.utils.NCIM.Dimensions.spatial import (
     SpatialMeasurement,
     Inch,
@@ -41,6 +30,7 @@ from gamegine.utils.NCIM.ncim import (
     RadiansPerSecondSquared,
     Second,
 )
+from gamegine.simulation.rules import RuleEngine
 from gamegine.utils.logging import Info, Warn, Debug
 
 
@@ -64,21 +54,26 @@ class GameServer:
     def __init__(self) -> None:
         self.game = None
         self.game_state: GameState = None
-        self.interactables: Dict[str, RobotInteractable] = {}
         self.robots: Dict[str, SwerveRobot] = {}
         self.config = ServerConfig()
         self.field_obstacles = []
-        self.robot_traversal_space = {}
-        self.trajectories = {}
         self.game_log = []
-        self.latest_trajectory = None
+        self.physics_engine = PhysicsEngine()
+        self.rule_engine = RuleEngine(self.log_cb)
 
+    def log_cb(self, action, changes):
+        """Callback for RuleEngine logging."""
+        # Check if game_state is initialized to avoid errors during early setup?
+        if self.game_state:
+             self.game_log.append((self.game_state.current_time.get(), action, changes))
+        else:
+             self.game_log.append((0, action, changes))
+             
     def clear_log(self):
         self.game_log = []
 
     def log(self, action, changes):
-
-        self.game_log.append((self.game_state.current_time.get(), action, changes))
+        self.log_cb(action, changes)
 
     def __is_game_over(self) -> bool:
         """Determines whether the game is over.
@@ -104,45 +99,6 @@ class GameServer:
 
         return self.__is_game_over()
 
-    def prepare_traversal_space(self, robot: str) -> TraversalSpace:
-        """Generates the expanded obstacles for the game."""
-        if robot in self.robot_traversal_space:
-            return self.robot_traversal_space[robot]
-
-        if robot not in self.robots:
-            raise ValueError("Robot not added")
-
-        if self.game is None:
-            raise ValueError("Game not loaded")
-
-        robot_object = self.robots[robot]
-        obstacles = ExpandedObjectBounds(
-            self.get_obstacles(),
-            robot_object.get_bounding_radius(),
-            self.config.discretization_quality,
-        )
-
-        map_obstacles = ExpandedObjectBounds(
-            self.game.get_obstacles(),
-            Inch(2) + robot_object.get_bounding_radius(),
-            self.config.discretization_quality,
-        )
-
-        triangle_map = TriangulatedGraph(
-            map_obstacles,
-            self.config.mesh_resolution,
-            self.game.get_field_size(),
-            self.config.discretization_quality,
-        )
-
-        traversal_space = TraversalSpace(
-            traversal_map=triangle_map, obstacles=obstacles
-        )
-
-        self.robot_traversal_space[robot] = traversal_space
-
-        return traversal_space
-
     def load_from_game(self, game: Game) -> None:
         """Loads the game representation into the server.
 
@@ -150,7 +106,16 @@ class GameServer:
         :type game: :class:`Game`
         """
         self.game = game
-        self.init_game_state(game.get_initial_state())
+        
+        # Initialize default game state locally
+        initial_state = GameState()
+        initial_state.auto_time.set(15)
+        initial_state.teleop_time.set(135)
+        initial_state.endgame_time.set(30)
+        initial_state.current_time.set(0)
+        initial_state.score.set(0)
+        
+        self.init_game_state(initial_state)
         self.set_obstacles(game.get_obstacles())
         self.clear_log()
 
@@ -181,10 +146,7 @@ class GameServer:
         """
         if self.game_state is None:
             raise ValueError("Game state not initialized")
-        self.interactables[interactable.name] = interactable
-        self.game_state.get("interactables").registerSpace(
-            interactable.name, interactable.initializeInteractableState()
-        )
+        self.rule_engine.add_interactable(interactable, self.game_state)
 
     def init_game_state(self, state: GameState) -> None:
         """Initializes the game state with the given state space.
@@ -197,43 +159,8 @@ class GameServer:
         self.game_state.createSpace("interactables")
         self.game_state.createSpace("robots")
 
-    def __get_robot_action_config(
-        self, robot_name: str, interactable: str, interaction: str
-    ) -> RobotInteractionConfig:
-        """Gets the action configuration for a robot.
-
-        :param robot_name: The name of the robot.
-        :type robot_name: str
-        :return: The action configuration for the robot.
-        :rtype: :class:`RobotInteractionConfig`
-        """
-        robot = self.robots[robot_name]
-        if interactable not in robot.interaction_configs:
-            Warn(
-                f"Robot {robot_name} does not have an interaction config for {interactable}"
-            )
-            return None
-
-        if interaction not in robot.interaction_configs[interactable]:
-            Warn(
-                f"Robot {robot_name} does not have an interaction config for {interactable} with {interaction}"
-            )
-            return None
-        return robot.interaction_configs[interactable][interaction]
-
     def get_actions_set(self, robot_name: str) -> List[Tuple[str, str]]:
-        robot = self.robots[robot_name]
-        configs: Dict[str, Dict[str, RobotInteractionConfig]] = (
-            robot.interaction_configs
-        )
-
-        actions = []
-        for interactable, interactions in configs.items():
-            for interaction_str, interaction in interactions.items():
-                actions.append(
-                    (interaction.interactable_name, interaction.interaction_identifier)
-                )
-        return actions
+        return self.rule_engine.get_actions_set(self.robots, robot_name)
 
     def drive_robot(
         self,
@@ -266,9 +193,8 @@ class GameServer:
 
         path = self.__pathfind(robot_name, x, y)
         trajectory = self.__trajectory(
-            robot_name, x, y, theta, path, no_safety_corridor
+            robot_name, x, y, Radian(theta), path, no_safety_corridor
         )
-        self.latest_trajectory = trajectory
 
         changes = [
             ValueChange(robot_state.x, x),
@@ -290,24 +216,36 @@ class GameServer:
             changes,
         )
 
+    def prepare_traversal_space(self, robot_name: str) -> TraversalSpace:
+        """Generates the expanded obstacles for the game."""
+        if robot_name not in self.robots:
+            raise ValueError("Robot not added")
+
+        if self.game is None:
+            raise ValueError("Game not loaded")
+
+        return self.physics_engine.prepare_traversal_space(
+            robot_name,
+            self.robots[robot_name],
+            self.game.get_obstacles() if self.game else self.get_obstacles(), # Fallback if game not set but obstacles are?
+            self.game.get_field_size(),
+        )
+
     def __pathfind(
         self, robot_name: str, x: SpatialMeasurement, y: SpatialMeasurement
     ) -> pathfinding.Path:
         """Pathfinds a robot to a new position."""
-
-        robot = self.robots[robot_name]
         robot_state: RobotState = self.game_state.get("robots").get(robot_name)
         traversal_space = self.prepare_traversal_space(robot_name)
-
-        path = pathfinding.findPath(
-            traversal_space.traversal_map,
-            (robot_state.x.get(), robot_state.y.get()),
-            (x, y),
-            pathfinding.AStar,
-            pathfinding.InitialConnectionPolicy.ConnectToClosest,
+        
+        return self.physics_engine.pathfind(
+            robot_name,
+            robot_state.x.get(),
+            robot_state.y.get(),
+            x,
+            y,
+            traversal_space
         )
-        path.shortcut(traversal_space.obstacles)
-        return path
 
     def __trajectory(
         self,
@@ -318,163 +256,50 @@ class GameServer:
         path: pathfinding.Path,
         no_safety_corridor=False,
     ) -> SwerveTrajectory:
-        robot = self.robots[robot_name]
         robot_state: RobotState = self.game_state.get("robots").get(robot_name)
         traversal_space = self.prepare_traversal_space(robot_name)
-        start_x = robot_state.x.get()
-        start_y = robot_state.y.get()
-        start_heading = robot_state.heading.get()
-
-        if (start_x, start_y, start_heading, x, y, heading) in self.trajectories.get(
-            robot_name, {}
-        ):
-            return self.trajectories[robot_name][
-                (start_x, start_y, start_heading, x, y, heading)
-            ]
-
-        builder = SwerveTrajectoryProblemBuilder()
-        builder.waypoint(
-            Waypoint(start_x, start_y).given(
-                VelocityEquals(MetersPerSecond(0), MetersPerSecond(0)),
-                AngleEquals(start_heading),
-            )
+        
+        start_state = (robot_state.x.get(), robot_state.y.get(), robot_state.heading.get())
+        target_state = (x, y, heading)
+        
+        return self.physics_engine.generate_trajectory(
+            robot_name,
+            self.robots[robot_name],
+            start_state,
+            target_state,
+            path,
+            traversal_space,
+            no_safety_corridor
         )
-        builder.waypoint(
-            Waypoint(x, y).given(
-                VelocityEquals(MetersPerSecond(0), MetersPerSecond(0)),
-                AngleEquals(heading),
-            )
-        )
-        builder.guide_pathes([path])
-        # TODO: JUST FOR TESTING
-        if not no_safety_corridor:
-            builder.points_constraint(SafetyCorridor(traversal_space.obstacles))
-
-        trajectory = builder.generate(
-            TrajectoryBuilderConfig(
-                trajectory_resolution=Centimeter(10),
-                stretch_factor=1.5,
-                min_spacing=Centimeter(8),
-            )
-        ).solve(
-            SwerveRobotConstraints(
-                MeterPerSecondSquared(6.5),
-                MetersPerSecond(6.1),
-                RadiansPerSecondSquared(7.5),
-                RadiansPerSecond(18),
-                robot.get_drivetrain(),
-                physical_parameters=robot.get_physics(),
-            ),
-            SolverConfig(timeout=10, max_iterations=10000, solution_tolerance=1e-9),
-        )
-
-        if robot_name not in self.trajectories:
-            self.trajectories[robot_name] = {}
-
-        self.trajectories[robot_name][
-            (start_x, start_y, start_heading, x, y, heading)
-        ] = trajectory
-
-        return trajectory
 
     def get_trajectories(self, robot_name) -> Dict:
-        return self.trajectories.get(robot_name, {})
+        return self.physics_engine.trajectories.get(robot_name, {})
 
     def pickup_gamepiece(self, robot_name: str, gamepiece) -> None:
-        robot_state: RobotState = self.game_state.get("robots").get(robot_name)
-        gamepiece_state = robot_state.gamepieces.get()
-
-        if gamepiece not in gamepiece_state:
-            gamepiece_state[gamepiece] = 1
-
-        gamepiece_state[gamepiece] += 1
-
-        self.log(f"Robot {robot_name} picked up {gamepiece}", [])
+        self.rule_engine.pickup_gamepiece(robot_name, gamepiece, self.game_state)
 
     def get_traversal_space(self, robot_name) -> TraversalSpace:
-        return self.robot_traversal_space.get(robot_name, None)
+        return self.physics_engine.robot_traversal_space.get(robot_name, None)
 
     def process_action(
         self, interactable_name, interaction_name, robot_name, time_cutoff=None
     ) -> bool:
-        """Processes an action by a robot on an interactable object.
-
-        :param interactable_name: The name of the interactable object.
-        :type interactable_name: str
-        :param interaction_name: The name of the interaction.
-        :type interaction_name: str
-        :param robot_name: The name of the robot performing the interaction.
-        :type robot_name: str
-        """
-        interactable = self.interactables[interactable_name]
-        robot = self.robots[robot_name]
-        interaction = interactable.get_interaction(interaction_name)
-
-        robot_config = self.__get_robot_action_config(
-            robot_name, interactable_name, interaction_name
-        )
-
-        if not interaction.ableToInteract(
-            self.game_state.get("interactables").get(interactable_name),
-            self.game_state.get("robots").get(robot_name),
+        """Processes an action by a robot on an interactable object."""
+        return self.rule_engine.process_action(
+            interactable_name,
+            interaction_name,
+            robot_name,
+            self.robots,
             self.game_state,
-        ):
-            Info(
-                f"Robot {robot_name} attempted to perform {interaction_name} on {interactable_name}, but was unable to"
-            )
-            self.log(
-                f"Robot {robot_name} attempted to perform {interaction_name} on {interactable_name}, but was unable to",
-                [],
-            )
-            return False
-
-        if robot_config is not None:
-            time = robot_config.time_to_interact(
-                self.game_state.get("interactables").get(interactable_name),
-                self.game_state.get("robots").get(robot_name),
-                self.game_state,
-            )
-            time_change = ValueIncrease(self.game_state.current_time, time)
-            self.process_value_changes([time_change])
-        if time_cutoff is not None:
-            if self.game_state.current_time.get() > time_cutoff:
-                Info(
-                    f"Robot {robot_name} attempted to perform {interaction_name} on {interactable_name}, but the time cutoff was reached"
-                )
-                self.log(
-                    f"Robot {robot_name} attempted to perform {interaction_name} on {interactable_name}, but the time cutoff was reached",
-                    [],
-                )
-                return False
-
-        changes = interaction.action(
-            self.game_state.get("interactables").get(interactable_name),
-            self.game_state.get("robots").get(robot_name),
-            self.game_state,
+            time_cutoff
         )
-
-        self.process_value_changes(changes)
-        Info(
-            f"Robot {robot_name} performed {interaction_name} on {interactable_name}, taking {time} seconds, resulting in {changes}"
-        )
-        self.log(
-            f"Robot {robot_name} performed {interaction_name} on {interactable_name}, taking {time} seconds",
-            changes,
-        )
-
-        return True
 
     def process_value_changes(self, changes: List[ValueChange]) -> None:
-        """Processes a value change.
-
-        :param change: The value change to process.
-        :type change: :class:`ValueChange`
-        """
-        for change in changes:
-            change.apply()
+        """Processes a value change."""
+        self.rule_engine.process_value_changes(changes)
 
     def get_latest_trajectory(self) -> SwerveTrajectory:
-        return self.latest_trajectory
+        return self.physics_engine.get_latest_trajectory()
 
     def get_log(self):
         return self.game_log
@@ -487,32 +312,19 @@ class GameServer:
         time_cutoff=None,
         no_safety_cooridor=False,
     ) -> bool:
-        """Drives a robot to an interactable object and processes an action.
-
-        :param interactable_name: The name of the interactable object.
-        :type interactable_name: str
-        :param interaction_name: The name of the interaction.
-        :type interaction_name: str
-        :param robot_name: The name of the robot performing the interaction.
-        :type robot_name: str
-        """
-        interactable = self.interactables[interactable_name]
-
-        robot_config = self.__get_robot_action_config(
-            robot_name, interactable_name, interaction_name
+        """Drives a robot to an interactable object and processes an action."""
+        # Use RuleEngine helper to find navigation point
+        drive_point = self.rule_engine.get_navigation_point(
+            interactable_name, interaction_name, robot_name, self.robots
         )
 
-        drive_point = None
-        if robot_config is not None:
-            drive_point = robot_config.navigation_point
         if drive_point is None:
-            drive_point = interactable.get_navigation_point()
-
-        if drive_point is None:
-            raise ValueError("Interactable does not have a navigation point")
-
-        robot = self.robots[robot_name]
-        robot_state: RobotState = self.game_state.get("robots").get(robot_name)
+             # Should be caught by get_navigation_point or interactable itself logic, 
+             # but legacy code raised ValueError.
+             # interactable.get_navigation_point() might return None?
+             # Let's assume RuleEngine helper handles getting it from config or interactable.
+             # If it's still none, legacy code raised error.
+             raise ValueError("Interactable does not have a navigation point")
 
         self.drive_robot(
             robot_name,
