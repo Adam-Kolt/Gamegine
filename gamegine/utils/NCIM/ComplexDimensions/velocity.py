@@ -1,64 +1,38 @@
-from gamegine.utils.NCIM.basic import ComplexMeasurement, ComplexUnit
-from gamegine.utils.NCIM.Dimensions.spatial import (
-    Feet,
-    Kilometer,
-    Meter,
-    Mile,
-    SpatialUnit,
-)
-from gamegine.utils.NCIM.Dimensions.temporal import Hour, Second, TemporalUnit
+from gamegine.utils.NCIM.core import Measurement, Unit, Dimension
+from gamegine.utils.NCIM.Dimensions.spatial import SpatialUnit, Meter, Kilometer, Mile, Feet
+from gamegine.utils.NCIM.Dimensions.temporal import TemporalUnit, Second, Hour
+import numpy as np
 
-
-class VelocityUnit(ComplexUnit):
-    """A class representing a velocity complex unit, composed of a spatial and temporal element in the form spatial^1 / temporal^1, in addition to creating a :class:`Velocity` of the same type when called. Inherits from the :class:`ComplexUnit` class.
-
-    :param spatial: The spatial unit of the velocity.
-    :type spatial: :class:`SpatialUnit`
-    :param time: The temporal unit of the velocity.
-    :type time: :class:`TemporalUnit`
+class VelocityUnit(Unit):
     """
-
+    A class representing a velocity unit (Length/Time).
+    """
     def __init__(self, spatial: SpatialUnit, time: TemporalUnit) -> None:
-        super().__init__({spatial: 1, time: -1})
+        # Construct dimensions: Spatial^1 * Temporal^-1
+        # Implementation: we can just divide the units
+        # But we need to call super().__init__ properly to set up THIS unit
+        
+        # Calculate resulting scale and symbol
+        res_scale = spatial.scale / time.scale
+        res_symbol = f"{spatial.symbol}/{time.symbol}"
+        
+        dims = np.zeros(len(Dimension))
+        dims[Dimension.Spatial.value] = 1
+        dims[Dimension.Temporal.value] = -1
+        
+        super().__init__(dims, res_scale, res_symbol)
 
     def __call__(self, magnitude: float):
-        """Creates a new :class:`Velocity` with the given magnitude.
-
-        :param magnitude: The magnitude of the measurement.
-        :type magnitude: float
-        :return: A new velocity measurement.
-        :rtype: :class:`Velocity`
-        """
         return Velocity(magnitude, self)
 
-
-class Velocity(ComplexMeasurement):
-    """A class representing a velocity complex measurement, composed of a spatial and temporal element in the form spatial^1 / temporal^1. Inherits from the :class:`ComplexMeasurement` class.
-
-    :param magnitude: The magnitude of the measurement.
-    :type magnitude: float
-    :param unit: The unit of the measurement.
-    :type unit: :class:`VelocityUnit`
-    :param base_magnitude: The base magnitude of the measurement, used for internal creation. Defaults to None.
-    :type base_magnitude: float, optional
+class Velocity(Measurement):
     """
-
-    def __new__(
-        cls,
-        magnitude: float,
-        unit: VelocityUnit,
-        base_magnitude=None,
-    ):
-        return ComplexMeasurement.__new__(cls, magnitude, unit, base_magnitude)
-
-    def __init__(
-        self,
-        magnitude: float,
-        unit: VelocityUnit,
-        base_magnitude=None,
-    ) -> None:
-        super().__init__(magnitude, unit, base_magnitude)
-
+    A class representing a velocity measurement.
+    """
+    def __init__(self, magnitude: float, unit: VelocityUnit, base_magnitude=None):
+        if base_magnitude is not None:
+             magnitude = unit.from_base(base_magnitude)
+        super().__init__(magnitude, unit)
 
 MetersPerSecond = VelocityUnit(Meter, Second)
 KilometersPerHour = VelocityUnit(Kilometer, Hour)
