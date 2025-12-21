@@ -7,3 +7,6 @@ sleipnirgroup-jormungandr
 sortedcontainers
 pytest
 pytest-cov
+pymupdf
+google-generativeai
+reportlab
