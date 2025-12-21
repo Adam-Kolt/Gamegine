@@ -5,3 +5,5 @@ setuptools
 Shapely
 sleipnirgroup-jormungandr
 sortedcontainers
+pytest
+pytest-cov
