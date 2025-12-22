@@ -800,37 +800,147 @@ class TrajectoryProblemBuilder:
             self.point_vars.POS_X[i].set_value(X_nodes[i])
             self.point_vars.POS_Y[i].set_value(Y_nodes[i])
 
-        # === SIMPLE INITIAL GUESS: Constant velocity towards next position ===
+        # === KINEMATICALLY-CONSISTENT INITIAL GUESS ===
+        # Uses cubic spline fitting + trapezoidal velocity profile
         n = len(X_nodes)
-        target_velocity = 2.0  # m/s - moderate starting velocity
         
-        # Initialize velocities pointing towards next position
-        for i in range(n):
-            if i < n - 1:
-                dx = X_nodes[i + 1] - X_nodes[i]
-                dy = Y_nodes[i + 1] - Y_nodes[i]
-                dist = (dx**2 + dy**2)**0.5
-                if dist > 0.001:
-                    # Velocity in direction of next point
-                    vx = target_velocity * (dx / dist)
-                    vy = target_velocity * (dy / dist)
+        # Debug: Print first and last few positions to verify ordering
+        logging.Debug(f"Initial guess: {n} points")
+        if n > 0:
+            logging.Debug(f"  First 3: {[(X_nodes[i], Y_nodes[i]) for i in range(min(3, n))]}")
+            logging.Debug(f"  Last 3: {[(X_nodes[i], Y_nodes[i]) for i in range(max(0, n-3), n)]}")
+        
+        # Kinematic limits
+        max_vel = 3.0  # m/s
+        max_accel = 2.5  # m/s^2
+        min_curvature_radius = 0.3  # meters - minimum turning radius
+        
+        try:
+            from scipy.interpolate import CubicSpline
+            import numpy as np
+            
+            # Step 1: Fit cubic spline through path points
+            # Create parameter t based on cumulative arc length
+            x_arr = np.array(X_nodes)
+            y_arr = np.array(Y_nodes)
+            
+            # Compute cumulative arc length for parameterization
+            diffs = np.sqrt(np.diff(x_arr)**2 + np.diff(y_arr)**2)
+            arc_lengths = np.concatenate([[0], np.cumsum(diffs)])
+            total_length = arc_lengths[-1]
+            
+            if total_length < 0.01:
+                # Path too short, use zero velocity fallback
+                raise ValueError("Path too short for spline fitting")
+            
+            # Normalize to [0, 1] for spline parameter
+            t_param = arc_lengths / total_length
+            
+            # Fit cubic splines for x and y
+            cs_x = CubicSpline(t_param, x_arr, bc_type='natural')
+            cs_y = CubicSpline(t_param, y_arr, bc_type='natural')
+            
+            # Step 2: Compute derivatives at each point
+            # First derivative (tangent/velocity direction)
+            dx_dt = cs_x(t_param, 1)  # First derivative
+            dy_dt = cs_y(t_param, 1)
+            
+            # Second derivative (for curvature)
+            d2x_dt2 = cs_x(t_param, 2)
+            d2y_dt2 = cs_y(t_param, 2)
+            
+            # Step 3: Compute curvature at each point
+            # κ = |x'y'' - y'x''| / (x'^2 + y'^2)^(3/2)
+            speed_squared = dx_dt**2 + dy_dt**2
+            speed = np.sqrt(speed_squared)
+            speed_cubed = speed_squared * speed
+            
+            # Avoid division by zero
+            speed_cubed = np.maximum(speed_cubed, 1e-6)
+            curvature = np.abs(dx_dt * d2y_dt2 - dy_dt * d2x_dt2) / speed_cubed
+            
+            # Step 4: Compute curvature-limited max velocity at each point
+            # v_max_curvature = sqrt(a_centripetal_max / curvature)
+            # Using a_centripetal = v^2 / R = v^2 * curvature
+            centripetal_limit = max_accel * 0.5  # Reserve some accel budget for tangential
+            curvature_safe = np.maximum(curvature, 1.0 / min_curvature_radius)
+            v_curvature_limit = np.sqrt(centripetal_limit / curvature_safe)
+            v_curvature_limit = np.minimum(v_curvature_limit, max_vel)
+            
+            # Endpoints must have zero velocity
+            v_curvature_limit[0] = 0
+            v_curvature_limit[-1] = 0
+            
+            # Step 5: Forward pass - respect acceleration limits
+            segment_lengths = diffs
+            forward_vel = np.zeros(n)
+            for i in range(1, n):
+                v_prev = forward_vel[i-1]
+                ds = segment_lengths[i-1]
+                # v^2 = v_prev^2 + 2*a*ds
+                v_max_from_accel = np.sqrt(v_prev**2 + 2 * max_accel * ds)
+                forward_vel[i] = min(v_curvature_limit[i], v_max_from_accel)
+            
+            # Step 6: Backward pass - respect deceleration limits
+            backward_vel = np.zeros(n)
+            backward_vel[-1] = 0
+            for i in range(n-2, -1, -1):
+                v_next = backward_vel[i+1]
+                ds = segment_lengths[i]
+                v_max_from_decel = np.sqrt(v_next**2 + 2 * max_accel * ds)
+                backward_vel[i] = min(forward_vel[i], v_max_from_decel)
+            
+            velocities = backward_vel
+            
+            # Step 7: Compute velocity vectors (tangent direction * speed)
+            # Normalize tangent vectors
+            tangent_x = dx_dt / np.maximum(speed, 1e-6)
+            tangent_y = dy_dt / np.maximum(speed, 1e-6)
+            
+            vel_x = velocities * tangent_x
+            vel_y = velocities * tangent_y
+            
+            # Step 8: Compute time steps from velocity
+            dt_values = np.zeros(n-1)
+            for i in range(n-1):
+                ds = segment_lengths[i]
+                avg_v = (velocities[i] + velocities[i+1]) / 2
+                if avg_v > 0.01:
+                    dt_values[i] = ds / avg_v
                 else:
-                    vx, vy = 0, 0
-            else:
-                # Last point: zero velocity (endpoint)
-                vx, vy = 0, 0
-                
-            self.point_vars.VEL_X[i].set_value(0)
-            self.point_vars.VEL_Y[i].set_value(0)
-        
-        # Set first point velocity to zero (starting from rest)
-        self.point_vars.VEL_X[0].set_value(0)
-        self.point_vars.VEL_Y[0].set_value(0)
-        
-        # Initialize accelerations to zero
-        for i in range(n - 1):
-            self.point_vars.ACCEL_X[i].set_value(0)
-            self.point_vars.ACCEL_Y[i].set_value(0)
+                    dt_values[i] = ds / 0.5  # Fallback for near-zero velocity
+                dt_values[i] = np.clip(dt_values[i], 0.01, 2.0)
+            
+            # Step 9: Compute accelerations from velocity changes
+            accel_x = np.zeros(n-1)
+            accel_y = np.zeros(n-1)
+            for i in range(n-1):
+                dt = dt_values[i]
+                if dt > 0.001:
+                    accel_x[i] = (vel_x[i+1] - vel_x[i]) / dt
+                    accel_y[i] = (vel_y[i+1] - vel_y[i]) / dt
+            
+            # Apply to point variables
+            for i in range(n):
+                self.point_vars.VEL_X[i].set_value(float(vel_x[i]))
+                self.point_vars.VEL_Y[i].set_value(float(vel_y[i]))
+            
+            for i in range(n-1):
+                self.point_vars.DT[i].set_value(float(dt_values[i]))
+                self.point_vars.ACCEL_X[i].set_value(float(accel_x[i]))
+                self.point_vars.ACCEL_Y[i].set_value(float(accel_y[i]))
+            
+            logging.Info(f"Initialized trajectory with cubic spline + velocity profile (total length: {total_length:.2f}m)")
+            
+        except Exception as e:
+            # Fallback: zero velocity initialization
+            logging.Warn(f"Cubic spline initialization failed ({e}), using zero velocity fallback")
+            for i in range(n):
+                self.point_vars.VEL_X[i].set_value(0)
+                self.point_vars.VEL_Y[i].set_value(0)
+            for i in range(n-1):
+                self.point_vars.ACCEL_X[i].set_value(0)
+                self.point_vars.ACCEL_Y[i].set_value(0)
         
         # Initialize Swerve Variables if applicable
         if isinstance(self.point_vars, SwervePointVariables):
