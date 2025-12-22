@@ -9,6 +9,7 @@ from gamegine.simulation.game import GameState
 from gamegine.simulation.state import ValueChange, ValueIncrease
 from gamegine.simulation.rules import RuleEngine
 from gamegine.utils.logging import Info, Warn
+from gamegine.simulation.logic import LogicRule
 
 @dataclass
 class MatchConfig:
@@ -35,6 +36,9 @@ class MatchController:
         
         # Rule Engine
         self.rule_engine = RuleEngine(self.log_cb)
+        
+        # Logic Rules
+        self.logic_rules: List[LogicRule] = []
 
     def log_cb(self, action, changes):
         """Callback for RuleEngine logging."""
@@ -116,6 +120,9 @@ class MatchController:
         # Removed extensive logging for every tick to reduce noise?
         # self.log("Time Update", [ValueIncrease(self.game_state.current_time, dt)])
         # GameServer did log it.
+        
+        self._process_logic_rules(dt)
+        
         return self.is_game_over()
 
     def process_action(
@@ -143,3 +150,28 @@ class MatchController:
         return self.rule_engine.get_navigation_point(
             interactable_name, interaction_name, robot_name, self.robots
         )
+        
+    # --- Logic System Integration ---
+    def add_logic_rule(self, rule: "LogicRule"):
+        """Adds a logic rule to the match."""
+        # Avoid circular import issues by importing locally if needed, 
+        # but type hint uses string forward ref or we import at top.
+        # We'll just append to a list.
+        if not hasattr(self, "logic_rules"):
+             self.logic_rules = []
+        self.logic_rules.append(rule)
+
+    def _process_logic_rules(self, dt: float):
+        if not hasattr(self, "logic_rules"):
+            return
+
+        all_changes = []
+        for rule in self.logic_rules:
+            changes = rule.update(dt, self.game_state)
+            if changes:
+                all_changes.extend(changes)
+        
+        if all_changes:
+            self.apply_changes(all_changes)
+            self.log("Logic Rule Triggered", all_changes)
+

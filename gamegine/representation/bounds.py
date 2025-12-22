@@ -1243,7 +1243,7 @@ def CircularPattern(
         for i in range(1, num_objects):
             angle = angle_increment * i
             Debug(angle)
-            new_vector = RotateAboutOrigin(centerToObject, -angle)
+            new_vector = RotateAboutOrigin(centerToObject, angle * -1)
             out.append(
                 object.translated(objectToCenter[0], objectToCenter[1])
                 .translate_ip(new_vector[0], new_vector[1])

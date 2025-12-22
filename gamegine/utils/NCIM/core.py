@@ -122,32 +122,49 @@ class Measurement(float):
         else:
              # Convert to base
              val_base = unit.to_base(value)
-        return float.__new__(cls, val_base)
+        
+        obj = float.__new__(cls, val_base)
+        obj._unit = unit
+        return obj
 
     def __init__(self, value: float, unit: Unit, *args, **kwargs):
         # float is immutable, so value is passed to __new__
-        self._unit = unit
+        pass
+
+    def __getnewargs__(self):
+        """
+        Support for pickling and copy.deepcopy.
+        Returns the arguments that should be passed to __new__ to recreate this object.
+        We pass 0.0 for value, the unit, and the actual base magnitude.
+        __new__ will see base_magnitude and use it directly.
+        """
+        return (0.0, self._unit, float(self))
 
     @property
     def unit(self) -> Unit:
         return self._unit
 
-    def to(self, target_unit: Unit) -> 'Measurement':
-        """Convert this measurement to another unit."""
+    def to(self, target_unit: Unit) -> float:
+        """
+        Convert this measurement to another unit and return the magnitude as a float.
+        This maintains backward compatibility with legacy NCIM.
+        """
         if not np.array_equal(self._unit.dimensions, target_unit.dimensions):
-             # Compatibility: Allow if dimensions are effectively same (all zeros vs empty? no, arrays check handles it)
-             # But what about compatible units like Joule vs N*m?
-             # dimensions array equality check is correct for that.
              raise ValueError(f"Incompatible dimensions: {self._unit} vs {target_unit}")
         
-        # Self is already base value
-        base_val = float(self)
-        # We return a new Measurement. 
-        # Measurement(val, unit) -> converts val to base.
-        # So we need to convert base_val to target_unit magnitude first, 
-        # so that when passed to __new__, it gets converted BACK to base (which equals base_val).
-        # OR we pass base_magnitude=base_val.
-        return Measurement(0.0, target_unit, base_magnitude=base_val)
+        # Self is already base value. 
+        # Convert base val to target unit magnitude.
+        return target_unit.from_base(float(self))
+
+    def convert_to(self, target_unit: Unit) -> 'Measurement':
+        """
+        Convert this measurement to another unit and return a new Measurement object.
+        """
+        if not np.array_equal(self._unit.dimensions, target_unit.dimensions):
+             raise ValueError(f"Incompatible dimensions: {self._unit} vs {target_unit}")
+        
+        # Return new Measurement in target unit (base value preserved)
+        return Measurement(0.0, target_unit, base_magnitude=float(self))
 
     # --- Arithmetic Operations ---
 
@@ -216,7 +233,16 @@ class Measurement(float):
 
     def __truediv__(self, other: object) -> 'Measurement':
         if isinstance(other, Measurement):
+            # Fast path for same unit
+            if self._unit is other._unit:
+                return float(self) / float(other)
+                
             new_unit = self._unit / other._unit
+            
+            # Check if dimensionless (all dimensions are 0)
+            if np.all(new_unit.dimensions == 0):
+                 return float(self) / float(other)
+                 
             return Measurement(0, new_unit, base_magnitude=float(self) / float(other))
         elif isinstance(other, (float, int)):
             return Measurement(0, self._unit, base_magnitude=float(self) / other)
@@ -244,6 +270,24 @@ class Measurement(float):
             
         return NotImplemented
 
+    def __mod__(self, other: object) -> 'Measurement':
+        if isinstance(other, Measurement):
+             if self._unit is other._unit or np.array_equal(self._unit.dimensions, other._unit.dimensions):
+                 # Modulo should preserve the original unit
+                 return Measurement(0, self._unit, base_magnitude=float(self) % float(other))
+             raise ValueError(f"Cannot modulo measurements of different dimensions: {self._unit} vs {other._unit}")
+             
+        elif isinstance(other, (float, int)):
+            return Measurement(0, self._unit, base_magnitude=float(self) % other)
+        return NotImplemented
+
+    def __rmod__(self, other: object) -> 'Measurement':
+        # other % self
+        # Since self is a Measurement, the result will take self's unit if other is scalar
+        if isinstance(other, (float, int)):
+             return Measurement(0, self._unit, base_magnitude=other % float(self))
+        return NotImplemented
+
     def __str__(self) -> str:
         # Show magnitude in current unit
         val = self._unit.from_base(float(self))
@@ -253,4 +297,16 @@ class Measurement(float):
         # repr should show creation args (magnitude, unit)
         val = self._unit.from_base(float(self))
         return f"Measurement({val}, {self._unit})"
+
+    def __neg__(self) -> 'Measurement':
+        return Measurement(0.0, self._unit, base_magnitude=-float(self))
+    
+    def __pos__(self) -> 'Measurement':
+        return Measurement(0.0, self._unit, base_magnitude=float(self))
+
+    def __abs__(self) -> 'Measurement':
+        return Measurement(0.0, self._unit, base_magnitude=abs(float(self)))
+    
+    def __pow__(self, power: int) -> 'Measurement':
+        return Measurement(0.0, self._unit ** power, base_magnitude=float(self) ** power)
 

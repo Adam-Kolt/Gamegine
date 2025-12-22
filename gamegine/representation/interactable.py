@@ -5,7 +5,7 @@ from typing import Callable, List, Tuple
 
 from gamegine.render import helpers
 from gamegine.render.drawable import Drawable
-from gamegine.representation.bounds import BoundedObject, DiscreteBoundary
+from gamegine.representation.bounds import BoundedObject, Boundary
 from gamegine.simulation.robot import RobotState
 from gamegine.simulation.state import StateSpace, ValueChange
 from gamegine.utils.NCIM.Dimensions.spatial import SpatialMeasurement
@@ -16,14 +16,14 @@ class RobotInteractable(BoundedObject, Drawable):
     """Class for representing a robot-interactable object during the match, which includes scoring stations and other game elements which the robot can interact with to change the game state.
 
     :param boundary: The boundary of the interactable object.
-    :type boundary: :class:`DiscreteBoundary`
+    :type boundary: :class:`Boundary`
     :param name: The name of the interactable object. Defaults to an empty string.
     :type name: str, optional
     """
 
     def __init__(
         self,
-        boundary: DiscreteBoundary,
+        boundary: Boundary,
         name="",
         navigation_point: Tuple[
             SpatialMeasurement, SpatialMeasurement, AngularMeasurement

@@ -23,7 +23,7 @@ from gamegine.utils.NCIM.ComplexDimensions.acceleration import MeterPerSecondSqu
 from gamegine.utils.NCIM.ComplexDimensions.alpha import RadiansPerSecondSquared
 from gamegine.utils.NCIM.ComplexDimensions.omega import RadiansPerSecond
 from gamegine.utils.NCIM.ComplexDimensions.velocity import MetersPerSecond
-from gamegine.utils.NCIM.Dimensions.angular import AngularMeasurement, Degree
+from gamegine.utils.NCIM.Dimensions.angular import AngularMeasurement, Degree, Radian
 from gamegine.utils.NCIM.Dimensions.current import Ampere
 from gamegine.utils.NCIM.Dimensions.mass import Pound
 from gamegine.utils.NCIM.Dimensions.spatial import (
@@ -32,6 +32,10 @@ from gamegine.utils.NCIM.Dimensions.spatial import (
     Inch,
     SpatialMeasurement,
 )
+from gamegine.utils.NCIM.Dimensions.temporal import Second
+from gamegine.render import helpers
+from gamegine.render.style import Palette
+import math
 
 
 expanded_obstacles = ExpandedObjectBounds(
@@ -153,12 +157,23 @@ renderer.init_display()
 print("Game set and display initialized")
 
 
-loop = True
-while loop != False:
-    loop = renderer.loop()
-    ev = pygame.event.get()
 
-    for event in loop:
+
+
+loop = True
+clock = pygame.time.Clock()
+current_time = Second(0)
+
+while loop:
+    events = renderer.loop()
+    if events is False:
+        loop = False
+        break
+        
+    dt_ms = clock.tick(60)
+    current_time += Second(dt_ms / 1000.0)
+
+    for event in events:
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
             x, y = (
@@ -172,6 +187,7 @@ while loop != False:
             if event.key == pygame.K_c:
                 trajectories = []
                 paths = []
+                current_time = Second(0)
 
     renderer.draw_element(map)
 
@@ -179,5 +195,49 @@ while loop != False:
     renderer.draw_elements(trajectories)
     renderer.draw_elements(paths)
     renderer.draw_static_elements()
+    
+    # Animation Logic
+    if trajectories:
+        total_traj_time = Second(0)
+        for t in trajectories:
+            total_traj_time += t.get_travel_time()
+            
+        if total_traj_time > Second(0):
+            anim_time = current_time % total_traj_time
+            
+            accum_time = Second(0)
+            for t in trajectories:
+                duration = t.get_travel_time()
+                if accum_time + duration > anim_time:
+                    # distinct time within this trajectory
+                    local_time = anim_time - accum_time
+                    state = t.get_at_time(local_time)
+                    
+                    # Draw Robot
+                    helpers.draw_point(
+                        state.x, 
+                        state.y, 
+                        Inch(15), 
+                        Palette.GREEN, 
+                        Renderer.render_scale
+                    )
+                    
+                    # Draw Heading
+                    head_len = Inch(20)
+                    end_x = state.x + head_len * math.cos(state.theta.to(Radian))
+                    end_y = state.y + head_len * math.sin(state.theta.to(Radian))
+                    
+                    start_pix = (Renderer.to_pixels(state.x), Renderer.to_pixels(state.y))
+                    end_pix = (Renderer.to_pixels(end_x), Renderer.to_pixels(end_y))
+                    
+                    pygame.draw.line(
+                        pygame.display.get_surface(),
+                        (0, 0, 0),
+                        start_pix,
+                        end_pix,
+                        width=3
+                    )
+                    break 
+                accum_time += duration
 
     renderer.render_frame()

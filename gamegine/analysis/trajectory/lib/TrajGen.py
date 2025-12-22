@@ -304,20 +304,22 @@ class SwerveTrajectory(Trajectory):
         :return: The interpolated trajectory state.
         :rtype: :class:`TrajectoryState`"""
 
-        x = state1.x + (state2.x - state1.x) * (t / state1.dt)
-        y = state1.y + (state2.y - state1.y) * (t / state1.dt)
-        theta = state1.theta + (state2.theta - state1.theta) * (t / state1.dt)
-        vel_x = state1.vel_x + (state2.vel_x - state1.vel_x) * (t / state1.dt)
-        vel_y = state1.vel_y + (state2.vel_y - state1.vel_y) * (t / state1.dt)
-        omega = state1.omega + (state2.omega - state1.omega) * (t / state1.dt)
+        ratio = t / state1.dt
+        
+        x = state1.x + (state2.x - state1.x) * ratio
+        y = state1.y + (state2.y - state1.y) * ratio
+        theta = state1.theta + (state2.theta - state1.theta) * ratio
+        vel_x = state1.vel_x + (state2.vel_x - state1.vel_x) * ratio
+        vel_y = state1.vel_y + (state2.vel_y - state1.vel_y) * ratio
+        omega = state1.omega + (state2.omega - state1.omega) * ratio
         if state2.acc_x is None:
             acc_x = state1.acc_x
             acc_y = state1.acc_y
             alpha = state1.alpha
         else:
-            acc_x = state1.acc_x + (state2.acc_x - state1.acc_x) * (t / state1.dt)
-            acc_y = state1.acc_y + (state2.acc_y - state1.acc_y) * (t / state1.dt)
-            alpha = state1.alpha + (state2.alpha - state1.alpha) * (t / state1.dt)
+            acc_x = state1.acc_x + (state2.acc_x - state1.acc_x) * ratio
+            acc_y = state1.acc_y + (state2.acc_y - state1.acc_y) * ratio
+            alpha = state1.alpha + (state2.alpha - state1.alpha) * ratio
         dt = t
 
         return TrajectoryState(
@@ -759,7 +761,7 @@ class TrajectoryProblemBuilder:
                     curr_velocity * (dy / (dx**2 + dy**2) ** 0.5)
                 )
                 if curr_velocity < max_vel:
-                    curr_velocity += init_dt * max_acceleration
+                    curr_velocity += max_acceleration * float(init_dt)
                     if curr_velocity > max_vel:
                         curr_velocity = max_vel
 
@@ -777,7 +779,7 @@ class TrajectoryProblemBuilder:
             )
 
             if curr_velocity < max_vel:
-                curr_velocity += init_dt * max_acceleration
+                curr_velocity += float(init_dt) * max_acceleration
                 if curr_velocity > max_vel:
                     curr_velocity = max_vel
 
