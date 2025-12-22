@@ -80,6 +80,7 @@ corridors = []
 lane_segments = []  # For optimized halfspace lanes visualization
 paths = []
 intermediate_positions = []  # For real-time solver visualization
+initial_guess_positions = []  # For initial guess visualization
 
 
 def CreateTrajectory(
@@ -138,19 +139,33 @@ def CreateTrajectory(
         
   
         render_scale = Renderer.render_scale
+        
+        # Draw initial guess first (bottom layer)
+        if len(initial_guess_positions) > 0:
+            for i, variables in enumerate(initial_guess_positions[:-1]):
+                helpers.draw_point(Meter(variables[0]), Meter(variables[1]), Inch(1), Palette.BLUE, render_scale)
+                helpers.draw_line(Meter(variables[0]), Meter(variables[1]), Meter(initial_guess_positions[i+1][0]), Meter(initial_guess_positions[i+1][1]), Inch(1), Palette.BLUE, render_scale)
+
         for i, variables in enumerate(intermediate_positions[:-1]):
             helpers.draw_point(Meter(variables[0]), Meter(variables[1]), Inch(1), Palette.YELLOW, render_scale)
             helpers.draw_line(Meter(variables[0]), Meter(variables[1]), Meter(intermediate_positions[i+1][0]), Meter(intermediate_positions[i+1][1]), Inch(1), Palette.PINK, render_scale)
         
         renderer.render_frame()
     
-    trajectory = builder.generate(
+    global initial_guess_positions
+    problem = builder.generate(
         TrajectoryBuilderConfig(
             trajectory_resolution=Centimeter(15),  # Lower resolution works with large corridors
             stretch_factor=1.5,
             min_spacing=Centimeter(5),
         )
-    ).solve(
+    )
+    
+    # Capture initial guess for debugging (bottom layer visualization)
+    initial_states = problem.get_trajectory_states()
+    initial_guess_positions = [(s.x, s.y) for s in initial_states]
+
+    trajectory = problem.solve(
         SwerveRobotConstraints(
             MeterPerSecondSquared(5),
             MetersPerSecond(6),
@@ -239,13 +254,23 @@ while loop:
                 trajectories = []
                 paths = []
                 corridors = []
+                corridors = []
                 intermediate_positions = []
+                initial_guess_positions = []
                 current_time = Second(0)
 
     renderer.draw_element(map)
 
     renderer.draw_elements(expanded_obstacles)
     renderer.draw_elements(corridors)
+    
+    # Draw initial guess
+    if len(initial_guess_positions) > 0:
+        render_scale = Renderer.render_scale
+        for i, variables in enumerate(initial_guess_positions[:-1]):
+             helpers.draw_point(Meter(variables[0]), Meter(variables[1]), Inch(1), Palette.BLUE, render_scale)
+             helpers.draw_line(Meter(variables[0]), Meter(variables[1]), Meter(initial_guess_positions[i+1][0]), Meter(initial_guess_positions[i+1][1]), Inch(1), Palette.BLUE, render_scale)
+
     
     
     

@@ -819,12 +819,19 @@ class TrajectoryProblemBuilder:
             from scipy.interpolate import CubicSpline
             import numpy as np
             
-            # Step 1: Fit cubic spline through path points
-            # Create parameter t based on cumulative arc length
+            # Step 1: Fit cubic spline through a SUBSET of path points (Downsampling)
+            # This prevents the spline from tightly adhering to the jagged A* grid segments,
+            # effectively ignoring high-frequency noise/jaggies while preserving the overall shape.
+            
+            # Target roughly 1 knot per meter or at least every 5-10 points to allow smoothing
+            # Ensure we always include start (0) and end (-1)
+            indices = np.linspace(0, n-1, min(n, max(4, int(n/5)))).astype(int) 
+            indices = np.unique(indices) # ensure unique in case n is small
+            
             x_arr = np.array(X_nodes)
             y_arr = np.array(Y_nodes)
             
-            # Compute cumulative arc length for parameterization
+            # Compute cumulative arc length for parameterization (original dense points)
             diffs = np.sqrt(np.diff(x_arr)**2 + np.diff(y_arr)**2)
             arc_lengths = np.concatenate([[0], np.cumsum(diffs)])
             total_length = arc_lengths[-1]
@@ -834,20 +841,39 @@ class TrajectoryProblemBuilder:
                 raise ValueError("Path too short for spline fitting")
             
             # Normalize to [0, 1] for spline parameter
-            t_param = arc_lengths / total_length
+            t_orig = arc_lengths / total_length
             
-            # Fit cubic splines for x and y
-            cs_x = CubicSpline(t_param, x_arr, bc_type='natural')
-            cs_y = CubicSpline(t_param, y_arr, bc_type='natural')
+            # Subsample for spline fitting
+            t_subset = t_orig[indices]
+            x_subset = x_arr[indices]
+            y_subset = y_arr[indices]
             
-            # Step 2: Compute derivatives at each point
+            # Fit cubic splines for x and y using the sparse subset
+            cs_x = CubicSpline(t_subset, x_subset, bc_type='clamped') # clamped for 0 vel at ends naturally? or natural? 
+                                                                    # 'natural' curvature=0 at ends (straight line)
+                                                                    # 'clamped' d/dx = 0? No, we want direction.
+                                                                    # Let's use 'natural' for smoothness or 'not-a-knot' default
+            cs_x = CubicSpline(t_subset, x_subset, bc_type='natural')
+            cs_y = CubicSpline(t_subset, y_subset, bc_type='natural')
+            
+            # Evaluate spline at ALL original dense time/distance steps
+            # This updates the positions to be on the smooth curve
+            smooth_x = cs_x(t_orig)
+            smooth_y = cs_y(t_orig)
+            
+            # Update position variables with the SMOOTHED positions
+            for i in range(n):
+                self.point_vars.POS_X[i].set_value(float(smooth_x[i]))
+                self.point_vars.POS_Y[i].set_value(float(smooth_y[i]))
+
+            # Step 2: Compute derivatives using the SMOOTH spline
             # First derivative (tangent/velocity direction)
-            dx_dt = cs_x(t_param, 1)  # First derivative
-            dy_dt = cs_y(t_param, 1)
+            dx_dt = cs_x(t_orig, 1)  # First derivative
+            dy_dt = cs_y(t_orig, 1)
             
             # Second derivative (for curvature)
-            d2x_dt2 = cs_x(t_param, 2)
-            d2y_dt2 = cs_y(t_param, 2)
+            d2x_dt2 = cs_x(t_orig, 2)
+            d2y_dt2 = cs_y(t_orig, 2)
             
             # Step 3: Compute curvature at each point
             # κ = |x'y'' - y'x''| / (x'^2 + y'^2)^(3/2)
