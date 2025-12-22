@@ -314,6 +314,12 @@ def TriangulatedGraph(
                 if not eliminate:
                     good_points.append(point)
 
-            map.connect_all_points(good_points)
-
+            # map.connect_all_points(good_points)
+            for i in range(len(good_points)):
+                for j in range(i + 1, len(good_points)):
+                    p1 = good_points[i]
+                    p2 = good_points[j]
+                    # Check edge validity
+                    if not LineIntersectsAnyBound(discrete_bounds, p1[0], p1[1], p2[0], p2[1]):
+                        map.add_edge(p1, p2)
     return map

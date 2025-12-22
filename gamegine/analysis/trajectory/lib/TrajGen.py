@@ -121,7 +121,7 @@ class SolverConfig:
     :param timeout: The maximum time the solver will run before stopping.
     :type timeout: float"""
 
-    solution_tolerance: float = 1e-6
+    solution_tolerance: float = 1e-2
     max_iterations: int = 1000
     timeout: float = 100.0
 
@@ -304,22 +304,37 @@ class SwerveTrajectory(Trajectory):
         :return: The interpolated trajectory state.
         :rtype: :class:`TrajectoryState`"""
 
-        ratio = t / state1.dt
+        # Use Kinematic Interpolation (s = ut + 0.5at^2)
+        # We assume constant acceleration over the interval (as modeled by the solver)
+        dt_val = t
         
-        x = state1.x + (state2.x - state1.x) * ratio
-        y = state1.y + (state2.y - state1.y) * ratio
-        theta = state1.theta + (state2.theta - state1.theta) * ratio
-        vel_x = state1.vel_x + (state2.vel_x - state1.vel_x) * ratio
-        vel_y = state1.vel_y + (state2.vel_y - state1.vel_y) * ratio
-        omega = state1.omega + (state2.omega - state1.omega) * ratio
-        if state2.acc_x is None:
-            acc_x = state1.acc_x
-            acc_y = state1.acc_y
-            alpha = state1.alpha
-        else:
-            acc_x = state1.acc_x + (state2.acc_x - state1.acc_x) * ratio
-            acc_y = state1.acc_y + (state2.acc_y - state1.acc_y) * ratio
-            alpha = state1.alpha + (state2.alpha - state1.alpha) * ratio
+        # Acceleration to use for this interval
+        # Ideally state1.acc should be used.
+        curr_acc_x = state1.acc_x
+        curr_acc_y = state1.acc_y
+        curr_alpha = state1.alpha
+        
+        # Fallback if acceleration is missing (e.g. last point)
+        if curr_acc_x is None:
+             curr_acc_x = Acceleration(0, AccelerationUnit(CALCULATION_UNIT_SPATIAL, CALCULATION_UNIT_TEMPORAL))
+             curr_acc_y = Acceleration(0, AccelerationUnit(CALCULATION_UNIT_SPATIAL, CALCULATION_UNIT_TEMPORAL))
+             curr_alpha = Alpha(0, AlphaUnit(CALCULATION_UNIT_ANGULAR, CALCULATION_UNIT_TEMPORAL))
+
+        # Position
+        x = state1.x + state1.vel_x * dt_val + 0.5 * curr_acc_x * dt_val**2
+        y = state1.y + state1.vel_y * dt_val + 0.5 * curr_acc_y * dt_val**2
+        theta = state1.theta + state1.omega * dt_val + 0.5 * curr_alpha * dt_val**2
+        
+        # Velocity
+        vel_x = state1.vel_x + curr_acc_x * dt_val
+        vel_y = state1.vel_y + curr_acc_y * dt_val
+        omega = state1.omega + curr_alpha * dt_val
+        
+        # Acceleration (Constant over interval)
+        acc_x = curr_acc_x
+        acc_y = curr_acc_y
+        alpha = curr_alpha
+        
         dt = t
 
         return TrajectoryState(
@@ -443,10 +458,13 @@ class TrajectoryProblem:
 
     def set_solver_callback(self, callback: Callable):
         """Sets a callback function to be called for each solver iteration.
+        
+        The callback receives an IterationInfo object and should return True to stop early,
+        False to continue.
 
-        :param callback: The callback function to call.
+        :param callback: The callback function (Callable[[IterationInfo], bool]).
         :type callback: Callable"""
-        self.problem.callback(callback)
+        self.problem.add_callback(callback)
 
     def apply_constraints(self, robot_constraints: TrajectoryRobotConstraints):
         """Applies constraints to the optimization problem based on the robot constraints.
@@ -578,12 +596,44 @@ class SwerveTrajectoryProblem(TrajectoryProblem):
             robot_constraints.swerve_config, robot_constraints.physical_parameters
         )(self.problem, self.point_vars)
 
-    def solve(self, robot_constraints: SwerveRobotConstraints, config: SolverConfig):
-        """Solves the optimization problem and returns the solution."""
+    def solve(self, robot_constraints: SwerveRobotConstraints, config: SolverConfig, 
+              iteration_callback: Callable[[List], None] = None):
+        """Solves the optimization problem and returns the solution.
+        
+        :param iteration_callback: Optional callback called each iteration with current positions.
+                                   Signature: callback(positions: List[Tuple[float, float]]) -> None
+        """
 
         self.apply_constraints(robot_constraints)
         # TODO: FIX SWERVE CONSTRAINTS
         self.apply_swerve_constraints(robot_constraints)
+        
+        # Register iteration callback if provided
+        if iteration_callback is not None:
+            point_vars = self.point_vars
+            iteration_count = [0]  # Mutable counter for throttling
+            
+            def sleipnir_callback(info) -> bool:
+                iteration_count[0] += 1
+                # Throttle: only call user callback every 10 iterations
+                if iteration_count[0] % 1 != 0:
+                    return False
+                
+                # Extract current positions from point variables
+                positions = []
+                for i in range(len(point_vars.POS_X)):
+                    x = point_vars.POS_X[i].value()
+                    y = point_vars.POS_Y[i].value()
+                    positions.append((x, y))
+                
+                try:
+                    iteration_callback(positions)
+                except Exception as e:
+                    logging.Warn(f"Iteration callback error: {e}")
+                    
+                return False  # Continue solving
+            
+            self.problem.add_callback(sleipnir_callback)
 
         status = self.problem.solve(
             tolerance=config.solution_tolerance,
@@ -641,6 +691,7 @@ class MinimizationStrategy(Enum):
 
     TIME = 0
     DISTANCE = 1
+    SMOOTHNESS = 2
 
 
 @dataclass
@@ -722,9 +773,14 @@ class TrajectoryProblemBuilder:
                         (waypoints[i + 1][1].x, waypoints[i + 1][1].y),
                     ]
                 )
-            dissected_path = Path(
-                path.dissected(units_per_node=resolution).get_points()[1:]
-            )  # TODO: Do this better. This is done to ensure first point is not in same position as last point of previous path, which cooks the solver
+            if i == 0:
+                dissected_path = Path(
+                    path.dissected(units_per_node=resolution).get_points()
+                )
+            else:
+                dissected_path = Path(
+                    path.dissected(units_per_node=resolution).get_points()[1:]
+                )  # TODO: Do this better. This is done to ensure first point is not in same position as last point of previous path, which cooks the solver
 
             for node in dissected_path.get_points():
                 X_nodes.append(node[0].to(CALCULATION_UNIT_SPATIAL))
@@ -739,52 +795,59 @@ class TrajectoryProblemBuilder:
         for i in range(len(X_nodes) - 1):
             self.point_vars.DT[i].set_value(init_dt)
 
-        # Initialize state variables to inital pathes
+        # Initialize state variables to initial paths
         for i in range(len(X_nodes)):
-
             self.point_vars.POS_X[i].set_value(X_nodes[i])
             self.point_vars.POS_Y[i].set_value(Y_nodes[i])
 
-            # Initialize velocities
-            curr_velocity = 0
-            max_acceleration = 3
-            max_vel = 4
-            if i < len(X_nodes) - 1:
-
+        # === SIMPLE INITIAL GUESS: Constant velocity towards next position ===
+        n = len(X_nodes)
+        target_velocity = 2.0  # m/s - moderate starting velocity
+        
+        # Initialize velocities pointing towards next position
+        for i in range(n):
+            if i < n - 1:
                 dx = X_nodes[i + 1] - X_nodes[i]
                 dy = Y_nodes[i + 1] - Y_nodes[i]
-                base_velocity = MetersPerSecond(5).to(MetersPerSecond)
-                self.point_vars.VEL_X[i].set_value(
-                    curr_velocity * (dx / (dx**2 + dy**2) ** 0.5)
-                )
-                self.point_vars.VEL_Y[i].set_value(
-                    curr_velocity * (dy / (dx**2 + dy**2) ** 0.5)
-                )
-                if curr_velocity < max_vel:
-                    curr_velocity += max_acceleration * float(init_dt)
-                    if curr_velocity > max_vel:
-                        curr_velocity = max_vel
+                dist = (dx**2 + dy**2)**0.5
+                if dist > 0.001:
+                    # Velocity in direction of next point
+                    vx = target_velocity * (dx / dist)
+                    vy = target_velocity * (dy / dist)
+                else:
+                    vx, vy = 0, 0
+            else:
+                # Last point: zero velocity (endpoint)
+                vx, vy = 0, 0
+                
+            self.point_vars.VEL_X[i].set_value(0)
+            self.point_vars.VEL_Y[i].set_value(0)
+        
+        # Set first point velocity to zero (starting from rest)
+        self.point_vars.VEL_X[0].set_value(0)
+        self.point_vars.VEL_Y[0].set_value(0)
+        
+        # Initialize accelerations to zero
+        for i in range(n - 1):
+            self.point_vars.ACCEL_X[i].set_value(0)
+            self.point_vars.ACCEL_Y[i].set_value(0)
+        
+        # Initialize Swerve Variables if applicable
+        if isinstance(self.point_vars, SwervePointVariables):
+            logging.Info("Initializing Swerve Point Variables...")
+            for i in range(len(X_nodes)):
+                vx = self.point_vars.VEL_X[i].value()
+                vy = self.point_vars.VEL_Y[i].value()
+                
+                # Assume 0 omega initially, so module velocity = robot velocity
+                for module in [self.point_vars.TL, self.point_vars.TR, self.point_vars.BL, self.point_vars.BR]:
+                     module.VX[i].set_value(vx)
+                     module.VY[i].set_value(vy)
+                     # Forces default to 0
+                     if i < len(X_nodes) - 1:
+                         module.FX[i].set_value(0) 
+                         module.FY[i].set_value(0)
 
-        for i in range(len(X_nodes) - 1, 0, -1):
-            curr_velocity = 0
-            max_acceleration = 3
-            max_vel = 4
-
-            self.point_vars.VEL_X[i].set_value(
-                curr_velocity * (dx / (dx**2 + dy**2) ** 0.5)
-            )
-
-            self.point_vars.VEL_Y[i].set_value(
-                curr_velocity * (dy / (dx**2 + dy**2) ** 0.5)
-            )
-
-            if curr_velocity < max_vel:
-                curr_velocity += float(init_dt) * max_acceleration
-                if curr_velocity > max_vel:
-                    curr_velocity = max_vel
-
-            if curr_velocity >= max_vel:
-                break
         self.__apply_waypoint_constraints()
 
         return len(X_nodes)
@@ -799,12 +862,13 @@ class TrajectoryProblemBuilder:
     def __apply_kinematic_constraints(self):
         PositionKinematicsConstraint(self.problem, self.point_vars)
         VelocityKinematicsConstraint(self.problem, self.point_vars)
-        OmegaKinematicsConstraint(self.problem, self.point_vars)
         ThetaKinematicsConstraint(self.problem, self.point_vars)
+        OmegaKinematicsConstraint(self.problem, self.point_vars)
 
     def apply_basic_constraints(self):
         """Applies basic constraints to the optimization problem."""
-        base.MagnitudeGreaterThanConstraint(self.problem, self.point_vars.DT, 0)
+        # Enforce strict positive dt to prevent division by zero / infinite velocity
+        base.MagnitudeGreaterThanConstraint(self.problem, self.point_vars.DT, 0.01)
         base.MagnitudeLessThanConstraint(self.problem, self.point_vars.DT, 1)
 
     def __apply_spacing_constraints(self, config: TrajectoryBuilderConfig):
@@ -843,7 +907,39 @@ class TrajectoryProblemBuilder:
                     ) ** 2 + (
                         self.point_vars.POS_Y[i + 1] - self.point_vars.POS_Y[i]
                     ) ** 2
+            case MinimizationStrategy.SMOOTHNESS:
+                # Minimize Time (REMOVED to prioritize smoothness/feasibility)
+                # time_weight = 1.0
+                # for i in range(len(self.point_vars.DT)):
+                #     total += self.point_vars.DT[i] * time_weight
+                
+                # Minimize Jerk (Change in Acceleration)
+                jerk_weight = 1.0
+                for i in range(len(self.point_vars.ACCEL_X) - 1):
+                    # (a_i+1 - a_i)^2
+                    jerk_x = (self.point_vars.ACCEL_X[i+1] - self.point_vars.ACCEL_X[i])**2
+                    jerk_y = (self.point_vars.ACCEL_Y[i+1] - self.point_vars.ACCEL_Y[i])**2
+                    total += (jerk_x + jerk_y) * jerk_weight
 
+                # Minimize Angular Jerk
+                angular_jerk_weight = 1.0
+                for i in range(len(self.point_vars.ALPHA) - 1):
+                     angular_jerk = (self.point_vars.ALPHA[i+1] - self.point_vars.ALPHA[i])**2
+                     total += angular_jerk * angular_jerk_weight
+
+        # Minimize Safety Corridor Slacks (Soft Constraints)
+        # Moderate penalty to encourage staying within corridors while maintaining numerical stability
+        # With MAX_SLACK=1m per direction, max penalty per point is 4 * 1e4 = 40k
+        slack_weight = 1e4
+        for i in range(len(self.point_vars.POS_X)):
+            slack_sq = (
+                self.point_vars.SLACK_X_POS[i]**2 +
+                self.point_vars.SLACK_X_NEG[i]**2 +
+                self.point_vars.SLACK_Y_POS[i]**2 +
+                self.point_vars.SLACK_Y_NEG[i]**2
+            )
+            total += slack_sq * slack_weight
+        
         self.problem.minimize(total)
 
     def generate(

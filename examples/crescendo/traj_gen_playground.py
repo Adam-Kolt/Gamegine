@@ -11,7 +11,10 @@ from gamegine.analysis.trajectory.lib.TrajGen import (
     TrajectoryBuilderConfig,
     Waypoint,
 )
-from gamegine.analysis.trajectory.lib.constraints.avoidance import SafetyCorridor
+from gamegine.analysis.trajectory.lib.constraints.avoidance import (
+    GenerateSafeCorridors,
+    SafetyCorridor,
+)
 from gamegine.analysis.trajectory.lib.constraints.constraints import VelocityEquals
 from gamegine.reference import gearing, motors
 from gamegine.reference.swerve import SwerveConfig, SwerveModule
@@ -30,6 +33,7 @@ from gamegine.utils.NCIM.Dimensions.spatial import (
     Centimeter,
     Feet,
     Inch,
+    Meter,
     SpatialMeasurement,
 )
 from gamegine.utils.NCIM.Dimensions.temporal import Second
@@ -73,7 +77,9 @@ def CreatePath(
 
 
 corridors = []
+lane_segments = []  # For optimized halfspace lanes visualization
 paths = []
+intermediate_positions = []  # For real-time solver visualization
 
 
 def CreateTrajectory(
@@ -83,6 +89,11 @@ def CreateTrajectory(
     end_angle: AngularMeasurement = Degree(0),
 ):
     path = CreatePath(start, end)
+
+    global corridors
+    # Corridors will be populated by SafetyCorridor via SAFETY_CORRIDOR_DEBUG
+    from gamegine.analysis.trajectory.lib.constraints.avoidance import SAFETY_CORRIDOR_DEBUG
+    SAFETY_CORRIDOR_DEBUG.clear()  # Clear previous corridors
 
     builder = SwerveTrajectoryProblemBuilder()
     builder.waypoint(
@@ -96,17 +107,52 @@ def CreateTrajectory(
         )
     )
     builder.guide_pathes([path])
-    builder.points_constraint(SafetyCorridor(expanded_obstacles))
+    
+    # Use merged rectangle corridors for stability
+    from gamegine.analysis.trajectory.lib.constraints.avoidance import MergedSafetyCorridor, SAFETY_CORRIDOR_DEBUG
+    astar_path_points = path.get_points()
+    builder.points_constraint(MergedSafetyCorridor(expanded_obstacles, guide_path=astar_path_points))
 
+    # Global for storing intermediate trajectory positions during solving
+
+    
+    # Callback for real-time visualization during solving
+    # Since solver blocks the thread, this callback must render the full scene
+    def on_iteration(positions):
+        
+        intermediate_positions = positions
+        
+        # Process pygame events to prevent freezing
+        import pygame
+
+        renderer.fill_background((255, 255, 255)) 
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return
+        
+        # Render the full scene (solver blocks main loop)
+        renderer.draw_element(map)
+        renderer.draw_elements(expanded_obstacles)
+        renderer.draw_elements(corridors)
+        
+  
+        render_scale = Renderer.render_scale
+        for i, variables in enumerate(intermediate_positions[:-1]):
+            helpers.draw_point(Meter(variables[0]), Meter(variables[1]), Inch(1), Palette.YELLOW, render_scale)
+            helpers.draw_line(Meter(variables[0]), Meter(variables[1]), Meter(intermediate_positions[i+1][0]), Meter(intermediate_positions[i+1][1]), Inch(1), Palette.PINK, render_scale)
+        
+        renderer.render_frame()
+    
     trajectory = builder.generate(
         TrajectoryBuilderConfig(
-            trajectory_resolution=Centimeter(15),
+            trajectory_resolution=Centimeter(15),  # Lower resolution works with large corridors
             stretch_factor=1.5,
             min_spacing=Centimeter(5),
         )
     ).solve(
         SwerveRobotConstraints(
-            MeterPerSecondSquared(8),
+            MeterPerSecondSquared(5),
             MetersPerSecond(6),
             RadiansPerSecondSquared(3.14),
             RadiansPerSecond(3.14),
@@ -130,7 +176,12 @@ def CreateTrajectory(
             ),
         ),
         SolverConfig(timeout=10, max_iterations=10000, solution_tolerance=1e-9),
+        iteration_callback=on_iteration,  # Real-time visualization callback
     )
+    
+    # Populate corridors for visualization (same as used for constraints)
+    global corridors
+    corridors.extend(SAFETY_CORRIDOR_DEBUG)
 
     return trajectory
 
@@ -148,7 +199,7 @@ def Destinations(
 
 # safe_corridor = trajectory_generator.GetSafeCorridor()
 Current = (Feet(6), Inch(64.081) + Inch(82.645) / 2)
-trajectories = []
+trajectories: SwerveTrajectory = []
 renderer = Renderer()
 
 renderer.set_game(Crescendo)
@@ -187,11 +238,17 @@ while loop:
             if event.key == pygame.K_c:
                 trajectories = []
                 paths = []
+                corridors = []
+                intermediate_positions = []
                 current_time = Second(0)
 
     renderer.draw_element(map)
 
     renderer.draw_elements(expanded_obstacles)
+    renderer.draw_elements(corridors)
+    
+    
+    
     renderer.draw_elements(trajectories)
     renderer.draw_elements(paths)
     renderer.draw_static_elements()

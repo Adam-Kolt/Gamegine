@@ -94,6 +94,14 @@ class Renderer:
         """
         element.draw(Renderer.render_scale)
 
+    def fill_background(self, color: tuple[int, int, int]):
+        """Fills the background with a color.
+
+        :param color: The color to fill the background with.
+        :type color: tuple[int, int, int]
+        """
+        pygame.display.get_surface().fill(color)
+
     def draw_elements(self, elements: list[Drawable]):
         """Draws a list of drawable elements on the screen.
 

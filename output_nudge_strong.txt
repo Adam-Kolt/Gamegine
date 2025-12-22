@@ -1,0 +1,679 @@
+DEBUG:gamegine:Creating new game: FRC Crescendo 2024
+DEBUG:gamegine:Circular pattern with angle: 360.0000 °
+DEBUG:gamegine:Increment: 120.0000 °
+DEBUG:gamegine:Doubled: 240.0000 °
+DEBUG:gamegine:120.0000 °
+DEBUG:gamegine:Raw: -2.094396 Angle: -120.0000 °
+DEBUG:gamegine:Rads: -2.094396
+DEBUG:gamegine:240.0000 °
+DEBUG:gamegine:Raw: -4.188792 Angle: -240.0000 °
+DEBUG:gamegine:Rads: -4.188792
+DEBUG:gamegine:Node at (Measurement(3.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(5.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(7.000000000000001, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(9.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(11.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(13.000000000000002, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(15.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(17.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(19.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(21.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(23.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(25.000000000000004, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(26.999999999999996, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(29.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(31.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(33.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(35.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(37.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(39.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(41.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(43.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(45.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(47.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(49.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(51.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(4.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(6.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(8.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(6.999999999999999, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(10.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(12.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(13.999999999999998, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(13.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(16.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(18.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(20.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(19.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(22.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(24.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(26.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(25.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(27.999999999999996, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(30.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(32.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(34.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(36.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(38.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(40.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(42.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(44.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(46.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(48.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(50.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(49.0, ft), Measurement(3.464101615137754, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(5.0, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(7.000000000000001, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(6.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(9.0, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(11.0, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(10.000000000000002, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(13.000000000000002, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(15.0, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(17.0, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(21.0, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(23.0, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(25.000000000000004, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(26.999999999999996, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(29.0, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(31.0, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(33.0, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(37.0, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(39.0, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(38.0, ft), Measurement(5.196152422706631, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(41.0, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(43.0, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(45.0, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(47.0, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(49.0, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(6.0, ft), Measurement(8.660254037844386, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(8.0, ft), Measurement(8.660254037844386, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(6.999999999999999, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(10.0, ft), Measurement(8.660254037844386, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(12.0, ft), Measurement(8.660254037844386, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(13.999999999999998, ft), Measurement(8.660254037844386, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(13.0, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(22.0, ft), Measurement(8.660254037844386, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(24.0, ft), Measurement(8.660254037844386, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(26.0, ft), Measurement(8.660254037844386, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(25.0, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(27.999999999999996, ft), Measurement(8.660254037844386, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(30.0, ft), Measurement(8.660254037844386, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(32.0, ft), Measurement(8.660254037844386, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(40.0, ft), Measurement(8.660254037844386, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(42.0, ft), Measurement(8.660254037844386, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(44.0, ft), Measurement(8.660254037844386, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(46.0, ft), Measurement(8.660254037844386, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(48.0, ft), Measurement(8.660254037844386, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(49.0, ft), Measurement(6.928203230275508, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(5.0, ft), Measurement(10.392304845413262, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(7.000000000000001, ft), Measurement(10.392304845413262, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(6.0, ft), Measurement(8.660254037844386, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(9.0, ft), Measurement(10.392304845413262, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(11.0, ft), Measurement(10.392304845413262, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(10.000000000000002, ft), Measurement(8.660254037844386, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(21.0, ft), Measurement(10.392304845413262, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(23.0, ft), Measurement(10.392304845413262, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(25.000000000000004, ft), Measurement(10.392304845413262, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(26.999999999999996, ft), Measurement(10.392304845413262, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(29.0, ft), Measurement(10.392304845413262, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(31.0, ft), Measurement(10.392304845413262, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(33.0, ft), Measurement(10.392304845413262, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(43.0, ft), Measurement(10.392304845413262, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(45.0, ft), Measurement(10.392304845413262, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(47.0, ft), Measurement(10.392304845413262, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(49.0, ft), Measurement(10.392304845413262, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(4.0, ft), Measurement(12.124355652982139, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(6.0, ft), Measurement(12.124355652982139, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(8.0, ft), Measurement(12.124355652982139, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(6.999999999999999, ft), Measurement(10.392304845413262, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(22.0, ft), Measurement(12.124355652982139, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(24.0, ft), Measurement(12.124355652982139, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(26.0, ft), Measurement(12.124355652982139, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(25.0, ft), Measurement(10.392304845413262, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(27.999999999999996, ft), Measurement(12.124355652982139, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(30.0, ft), Measurement(12.124355652982139, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(32.0, ft), Measurement(12.124355652982139, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(46.0, ft), Measurement(12.124355652982139, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(48.0, ft), Measurement(12.124355652982139, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(50.0, ft), Measurement(12.124355652982139, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(49.0, ft), Measurement(10.392304845413262, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(3.0, ft), Measurement(13.856406460551016, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(5.0, ft), Measurement(13.856406460551016, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(7.000000000000001, ft), Measurement(13.856406460551016, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(6.0, ft), Measurement(12.124355652982139, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(21.0, ft), Measurement(13.856406460551016, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(23.0, ft), Measurement(13.856406460551016, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(25.000000000000004, ft), Measurement(13.856406460551016, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(26.999999999999996, ft), Measurement(13.856406460551016, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(29.0, ft), Measurement(13.856406460551016, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(31.0, ft), Measurement(13.856406460551016, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(33.0, ft), Measurement(13.856406460551016, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(47.0, ft), Measurement(13.856406460551016, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(49.0, ft), Measurement(13.856406460551016, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(51.0, ft), Measurement(13.856406460551016, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(2.0, ft), Measurement(15.588457268119894, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(4.0, ft), Measurement(15.588457268119894, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(6.0, ft), Measurement(15.588457268119894, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(8.0, ft), Measurement(15.588457268119894, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(6.999999999999999, ft), Measurement(13.856406460551016, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(22.0, ft), Measurement(15.588457268119894, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(24.0, ft), Measurement(15.588457268119894, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(26.0, ft), Measurement(15.588457268119894, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(25.0, ft), Measurement(13.856406460551016, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(27.999999999999996, ft), Measurement(15.588457268119894, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(30.0, ft), Measurement(15.588457268119894, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(32.0, ft), Measurement(15.588457268119894, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(46.0, ft), Measurement(15.588457268119894, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(48.0, ft), Measurement(15.588457268119894, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(50.0, ft), Measurement(15.588457268119894, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(49.0, ft), Measurement(13.856406460551016, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(52.0, ft), Measurement(15.588457268119894, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(3.0, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(5.0, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(7.000000000000001, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(6.0, ft), Measurement(15.588457268119894, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(9.0, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(11.0, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(13.000000000000002, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(21.0, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(23.0, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(25.000000000000004, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(26.999999999999996, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(29.0, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(31.0, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(33.0, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(41.0, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(43.0, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(45.0, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(47.0, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(49.0, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(51.0, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(2.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(4.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(6.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(8.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(6.999999999999999, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(10.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(12.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(13.999999999999998, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(13.0, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(16.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(22.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(24.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(26.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(25.0, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(27.999999999999996, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(30.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(32.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(38.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(40.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(42.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(44.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(46.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(48.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(50.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(49.0, ft), Measurement(17.32050807568877, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(52.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(3.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(5.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(7.000000000000001, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(6.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(9.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(11.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(10.000000000000002, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(13.000000000000002, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(15.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(17.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(19.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(21.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(23.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(25.000000000000004, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(26.999999999999996, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(29.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(31.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(33.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(35.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(37.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(39.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(38.0, ft), Measurement(19.05255888325765, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(41.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(43.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(45.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(47.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(49.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(51.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(4.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(6.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(8.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(6.999999999999999, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(10.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(12.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(13.999999999999998, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(13.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(16.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(18.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(20.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(19.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(22.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(24.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(26.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(25.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(27.999999999999996, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(30.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(32.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(34.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(36.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(38.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(40.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(42.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(44.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(46.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(48.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(50.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(49.0, ft), Measurement(20.784609690826525, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(52.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(7.000000000000001, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(6.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(9.0, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(11.0, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(10.000000000000002, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(13.000000000000002, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(15.0, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(17.0, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(19.0, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(21.0, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(23.0, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(25.000000000000004, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(26.999999999999996, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(29.0, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(31.0, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(33.0, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(35.0, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(37.0, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(39.0, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(38.0, ft), Measurement(22.5166604983954, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(41.0, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(43.0, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(45.0, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(47.0, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(49.0, ft), Measurement(24.248711305964278, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(6.0, ft), Measurement(105.40350000000001, in)) does not exist. Attempting to add node.
+DEBUG:gamegine:Node at (Measurement(20.0, ft), Measurement(20.0, ft)) does not exist. Attempting to add node.
+DEBUG:gamegine:Path segment (Measurement(1.8288000000000002, m), Measurement(2.6772489, m)) -> (Measurement(3.3528000000000002, m), Measurement(5.279290861469938, m)) intersects obstacle. Skipping.
+INFO:gamegine:Initializing Swerve Point Variables...
+DEBUG:gamegine:Adding magnitude equality constraint of 1.8288000000000002 to control point 0
+DEBUG:gamegine:Adding magnitude equality constraint of 2.6772489 to control point 0
+INFO:gamegine:Applied waypoint constraint (<function PositionEquals.<locals>._position_equals at 0x104fbf1a0>).
+DEBUG:gamegine:Adding magnitude equality constraint of 0.0 to control point 0
+DEBUG:gamegine:Adding magnitude equality constraint of 0.0 to control point 0
+INFO:gamegine:Applied waypoint constraint (<function VelocityEquals.<locals>._velocity_equals at 0x104fbf100>).
+DEBUG:gamegine:Adding magnitude equality constraint of 6.096 to control point 40
+DEBUG:gamegine:Adding magnitude equality constraint of 6.096 to control point 40
+INFO:gamegine:Applied waypoint constraint (<function PositionEquals.<locals>._position_equals at 0x104fbf2e0>).
+DEBUG:gamegine:Adding magnitude equality constraint of 0.0 to control point 40
+DEBUG:gamegine:Adding magnitude equality constraint of 0.0 to control point 40
+INFO:gamegine:Applied waypoint constraint (<function VelocityEquals.<locals>._velocity_equals at 0x104fbf380>).
+DEBUG:gamegine:Generated Safe Corridor with 22 rectangles for path containing 41 points
+User-configured exit conditions:
+  ↳ error below 1e-09
+  ↳ iteration callback requested stop
+  ↳ executed 10000 iterations
+  ↳ 10s elapsed
+
+Problem structure:
+  ↳ linear cost function
+  ↳ nonlinear equality constraints
+  ↳ quadratic inequality constraints
+
+1054 decision variables
+688 equality constraints
+  ↳ 448 linear
+  ↳ 120 quadratic
+  ↳ 120 nonlinear
+806 inequality constraints
+  ↳ 325 linear
+  ↳ 481 quadratic
+
+Invoking IPM solver...
+
+┏━━━━┯━━━━┯━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━┯━━━━━┯━━━━━━━━┯━━━━━━━━┯━━┓
+┃iter│type│time (ms)│   error    │    cost     │  infeas.   │complement. │   μ    │ reg │primal α│ dual α │↩ ┃
+┡━━━━┷━━━━┷━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━┷━━━━━┷━━━━━━━━┷━━━━━━━━┷━━┩
+│   0 norm     0.746 1.866743e+05  6.493709e-01 2.896787e+07 2.577498e+05 1.00e-01 10⁻⁴  4.59e-01 2.87e-06  0│
+│   1 norm     1.004 1.786152e+05  7.087096e-01 2.771676e+07 4.059347e+04 1.00e-01 10⁻⁴  4.32e-02 4.07e-01  0│
+│   2 norm     1.023 1.660085e+05  8.071239e-01 2.576051e+07 2.571443e+03 1.00e-01  1    7.06e-02 4.78e-01  0│
+│   3 norm     0.726 1.487583e+05  9.397768e-01 2.308362e+07 1.223716e+03 1.00e-01  1    1.04e-01 5.04e-01  0│
+│   4 norm     0.789 1.481799e+05  9.439662e-01 2.299388e+07 1.385641e+03 1.00e-01  1    3.89e-03 4.72e-01  0│
+│   5 norm     0.862 1.481234e+05  9.444009e-01 2.298510e+07 1.581134e+03 1.00e-01 10    3.82e-04 1.27e-01  0│
+│   6 norm     0.842 1.478345e+05  9.468865e-01 2.294028e+07 1.563988e+03 1.00e-01 10³   1.95e-03 8.47e-03  0│
+│   7 norm     0.793 1.466171e+05  9.570436e-01 2.275136e+07 1.537759e+03 1.00e-01 10³   8.24e-03 8.77e-03  0│
+│   8 norm     0.809 1.465172e+05  9.578354e-01 2.273587e+07 1.657917e+03 1.00e-01 10⁴   6.81e-04 4.56e-02  0│
+│   9 norm     0.786 1.444531e+05  9.734671e-01 2.241556e+07 1.871771e+03 1.00e-01 10⁵   1.41e-02 1.28e-01  0│
+│  10 norm     0.792 1.370302e+05  1.028623e+00 2.126371e+07 1.778878e+03 1.00e-01 10⁵   5.14e-02 9.27e-02  0│
+│  11 norm     0.785 1.369522e+05  1.029181e+00 2.125160e+07 1.895361e+03 1.00e-01 10⁶   5.70e-04 6.57e-02  0│
+│  12 norm     0.716 1.369505e+05  1.029193e+00 2.125134e+07 2.305092e+03 1.00e-01 10⁶   1.22e-05 1.09e-01  0│
+│  13 norm     0.778 1.343447e+05  1.046279e+00 2.084698e+07 2.571219e+03 1.00e-01 10⁷   1.90e-02 8.77e-02  0│
+│  14 norm     0.711 1.302504e+05  1.075065e+00 2.021166e+07 3.015250e+03 1.00e-01 10⁶   3.05e-02 1.88e-01  0│
+│  15 norm     0.744 1.300856e+05  1.076286e+00 2.018608e+07 3.170980e+03 1.00e-01 10⁶   1.27e-03 2.09e-02  0│
+│  16 norm     0.787 1.289506e+05  1.083574e+00 2.000995e+07 5.235984e+03 1.00e-01 10⁷   8.73e-03 2.73e-01  0│
+│  17 norm     0.710 1.202054e+05  1.146148e+00 1.865291e+07 6.030416e+03 1.00e-01 10⁶   6.78e-02 2.31e-01  0│
+│  18 norm     0.781 1.197659e+05  1.148750e+00 1.858472e+07 2.099598e+04 1.00e-01 10⁷   3.66e-03 5.57e-01  0│
+│  19 norm     0.765 1.174472e+05  1.164991e+00 1.822492e+07 3.943028e+04 1.00e-01 10⁷   1.94e-02 2.32e-01  0│
+┢━━━━┯━━━━┯━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━┯━━━━━┯━━━━━━━━┯━━━━━━━━┯━━┪
+┃iter│type│time (ms)│   error    │    cost     │  infeas.   │complement. │   μ    │ reg │primal α│ dual α │↩ ┃
+┡━━━━┷━━━━┷━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━┷━━━━━┷━━━━━━━━┷━━━━━━━━┷━━┩
+│  20 norm     0.802 1.143167e+05  1.181816e+00 1.773913e+07 1.366024e+05 1.00e-01 10⁷   2.67e-02 5.37e-01  0│
+│  21 norm     0.724 1.030761e+05  1.256247e+00 1.599487e+07 2.166790e+04 1.00e-01 10⁷   9.83e-02 2.19e-01  0│
+│  22 norm     0.778 1.029590e+05  1.256827e+00 1.597670e+07 1.118673e+05 1.00e-01 10⁸   1.14e-03 5.74e-01  0│
+│  23 norm     0.722 1.017117e+05  1.264358e+00 1.578314e+07 5.295741e+05 1.00e-01 10⁸   1.21e-02 4.35e-01  0│
+│  24 norm     0.781 1.008457e+05  1.268074e+00 1.564877e+07 2.918691e+06 1.00e-01 10⁸   8.51e-03 7.03e-01  0│
+│  25 norm     0.721 9.202440e+04  1.313034e+00 1.427992e+07 5.287056e+05 1.00e-01 10⁸   8.75e-02 1.20e-01  0│
+│  26 norm     0.739 9.181577e+04  1.314408e+00 1.424755e+07 8.798241e+05 1.00e-01 10⁸   2.27e-03 3.83e-01  0│
+│  27 norm     0.773 7.764452e+04  1.376941e+00 1.204852e+07 7.603251e+05 1.00e-01 10⁸   1.54e-01 1.00e+00  0│
+│  28 norm     0.728 7.669533e+04  1.382564e+00 1.190123e+07 7.592719e+05 1.00e-01 10⁸   1.22e-02 1.54e-01  0│
+│  29 norm     0.719 7.653267e+04  1.383903e+00 1.187599e+07 8.729147e+05 1.00e-01 10⁸   2.12e-03 2.40e-01  0│
+│  30 norm     0.772 6.504487e+04  1.436650e+00 1.009337e+07 6.637990e+05 1.00e-01 10⁸   1.50e-01 1.02e-01  0│
+│  31 norm     0.709 5.706890e+04  1.482274e+00 8.855691e+06 7.430301e+05 1.00e-01 10⁸   1.23e-01 9.56e-01  0│
+│  32 norm     0.712 5.698043e+04  1.483169e+00 8.841962e+06 7.656142e+05 1.00e-01 10⁸   1.55e-03 7.46e-02  0│
+│  33 norm     0.771 5.692211e+04  1.483446e+00 8.832913e+06 1.104392e+06 1.00e-01 10⁹   1.02e-03 5.24e-01  0│
+│  34 norm     0.709 5.549028e+04  1.492266e+00 8.610729e+06 2.595707e+06 1.00e-01 10⁸   2.52e-02 6.81e-01  0│
+│  35 norm     0.774 5.541328e+04  1.492579e+00 8.598780e+06 6.367955e+07 1.00e-01 10⁹   1.39e-03 1.00e+00  0│
+│  36 norm     0.725 5.206183e+04  1.509473e+00 8.078718e+06 1.012806e+08 1.00e-01 10⁹   6.05e-02 4.23e-01  0│
+│  37 norm     0.723 4.234310e+04  1.572535e+00 6.570606e+06 1.000270e+08 1.00e-01 10⁸   1.87e-01 5.69e-01  0│
+│  38 norm     0.786 4.164646e+04  1.575394e+00 6.462506e+06 1.847198e+08 1.00e-01 10⁹   1.65e-02 1.00e+00  0│
+│  39 norm     0.721 4.081459e+04  1.579706e+00 6.333421e+06 2.107385e+08 1.00e-01 10⁹   2.00e-02 4.96e-01  0│
+┢━━━━┯━━━━┯━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━┯━━━━━┯━━━━━━━━┯━━━━━━━━┯━━┪
+┃iter│type│time (ms)│   error    │    cost     │  infeas.   │complement. │   μ    │ reg │primal α│ dual α │↩ ┃
+┡━━━━┷━━━━┷━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━┷━━━━━┷━━━━━━━━┷━━━━━━━━┷━━┩
+│  40 norm     0.715 4.079544e+04  1.579825e+00 6.330449e+06 2.108389e+08 1.00e-01 10⁸   4.69e-04 3.81e-03  0│
+│  41 norm     0.746 4.063798e+04  1.581381e+00 6.306015e+06 2.098192e+08 1.00e-01 10⁸   3.86e-03 3.80e-05  0│
+│  42 norm     0.810 4.056603e+04  1.581682e+00 6.294850e+06 2.093258e+08 1.00e-01 10⁹   1.77e-03 1.70e-06  0│
+│  43 norm     0.736 4.027124e+04  1.583236e+00 6.249106e+06 2.074195e+08 1.00e-01 10⁹   7.27e-03 9.85e-04  0│
+│  44 norm     0.709 3.852970e+04  1.597264e+00 5.978861e+06 2.206279e+08 1.00e-01 10⁸   4.32e-02 4.81e-01  0│
+│  45 norm     0.779 3.513587e+04  1.607915e+00 5.452225e+06 2.381928e+08 1.00e-01 10⁹   8.81e-02 6.90e-01  0│
+│  46 norm     0.746 2.185746e+04  1.673146e+00 3.391735e+06 1.457740e+08 1.00e-01 10⁹   3.78e-01 6.17e-01  0│
+│  47 norm     0.739 2.172114e+04  1.674673e+00 3.370580e+06 1.448275e+08 1.00e-01 10⁸   6.24e-03 4.85e-03  0│
+│  48 norm     0.774 2.171983e+04  1.674678e+00 3.370378e+06 1.448204e+08 1.00e-01 10⁹   5.99e-05 1.07e-04  0│
+│  49 norm     0.710 2.171975e+04  1.674679e+00 3.370364e+06 1.448197e+08 1.00e-01 10⁹   4.06e-06 7.80e-07  0│
+│  50 norm     0.726 2.171904e+04  1.674685e+00 3.370254e+06 1.448141e+08 1.00e-01 10⁸   3.28e-05 7.60e-07  0│
+│  51 norm     0.724 2.171454e+04  1.674863e+00 3.369556e+06 1.447793e+08 1.00e-01 10⁸   2.07e-04 2.17e-07  0│
+│  52 norm     0.779 2.171453e+04  1.674863e+00 3.369555e+06 1.549920e+08 1.00e-01 10⁹   1.60e-07 3.36e-01  0│
+│  53 norm     0.741 2.081662e+04  1.681774e+00 3.230222e+06 1.474559e+08 1.00e-01 10⁹   4.14e-02 7.55e-04  0│
+│  54 norm     0.728 2.080603e+04  1.681939e+00 3.228578e+06 1.473696e+08 1.00e-01 10⁸   5.09e-04 2.66e-05  0│
+│  55 norm     0.791 2.080455e+04  1.681946e+00 3.228348e+06 1.473880e+08 1.00e-01 10⁹   7.10e-05 1.04e-03  0│
+│  56 norm     0.709 2.078012e+04  1.682108e+00 3.224558e+06 1.697149e+08 1.00e-01 10⁹   1.17e-03 8.34e-01  0│
+│  57 norm     0.723 2.043116e+04  1.686095e+00 3.170407e+06 1.664561e+08 1.00e-01 10⁸   1.68e-02 1.24e-03  0│
+│  58 norm     0.791 2.022214e+04  1.686775e+00 3.137974e+06 1.743469e+08 1.00e-01 10⁹   1.02e-02 3.26e-01  0│
+│  59 norm     0.717 1.701756e+04  1.704041e+00 2.640702e+06 1.518102e+08 1.00e-01 10⁹   1.58e-01 4.26e-01  0│
+┢━━━━┯━━━━┯━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━┯━━━━━┯━━━━━━━━┯━━━━━━━━┯━━┪
+┃iter│type│time (ms)│   error    │    cost     │  infeas.   │complement. │   μ    │ reg │primal α│ dual α │↩ ┃
+┡━━━━┷━━━━┷━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━┷━━━━━┷━━━━━━━━┷━━━━━━━━┷━━┩
+│  60 norm     0.714 1.700031e+04  1.704245e+00 2.638026e+06 1.539815e+08 1.00e-01 10⁸   1.01e-03 1.20e-01  0│
+│  61 norm     0.778 1.699982e+04  1.704246e+00 2.637950e+06 1.786972e+08 1.00e-01 10⁹   2.92e-05 1.00e+00  0│
+│  62 norm     0.712 1.021461e+04  1.738159e+00 1.585050e+06 1.012839e+08 1.00e-01 10⁹   3.99e-01 1.85e-01  0│
+│  63 norm     0.890 9.778364e+03  1.744252e+00 1.517355e+06 1.013512e+08 1.00e-01 10⁹   4.27e-02 5.08e-01  0│
+│  64 norm     0.879 9.771009e+03  1.744254e+00 1.516213e+06 1.135303e+08 1.00e-01 10⁹   7.52e-04 1.00e+00  0│
+│  65 norm     0.687 9.767077e+03  1.744272e+00 1.515603e+06 1.242523e+08 1.00e-01 10⁹   4.02e-04 1.00e+00  0│
+│  66 norm     0.674 6.869098e+03  1.770363e+00 1.065891e+06 9.129298e+07 1.00e-01 10⁹   2.97e-01 1.00e+00  0│
+│  67 norm     0.735 6.837944e+03  1.770266e+00 1.061057e+06 9.909783e+07 1.00e-01 10⁹   4.54e-03 1.00e+00  0│
+│  68 norm     0.681 6.837461e+03  1.770268e+00 1.060982e+06 1.061016e+08 1.00e-01 10⁹   7.07e-05 1.00e+00  0│
+│  69 norm     0.693 6.640041e+03  1.772159e+00 1.030348e+06 1.092945e+08 1.00e-01 10⁹   2.89e-02 1.00e+00  0│
+│  70 norm     0.690 6.633217e+03  1.772319e+00 1.029289e+06 1.101084e+08 1.00e-01 10⁸   1.03e-03 1.72e-01  0│
+│  71 norm     0.769 6.185289e+03  1.768798e+00 9.597842e+05 1.021583e+08 1.00e-01 10⁹   6.75e-02 9.35e-04  0│
+│  72 norm     0.701 5.971724e+03  1.767989e+00 9.266451e+05 9.841183e+07 1.00e-01 10⁹   3.45e-02 1.20e-05  0│
+│  73 norm     0.704 5.970331e+03  1.768008e+00 9.264291e+05 9.839981e+07 1.00e-01 10⁹   2.33e-04 2.35e-03  0│
+│  74 norm     0.715 5.968199e+03  1.768160e+00 9.260982e+05 9.837359e+07 1.00e-01 10⁸   3.57e-04 2.88e-03  0│
+│  75 norm     0.772 5.952340e+03  1.768077e+00 9.236373e+05 1.008546e+08 1.00e-01 10⁹   2.66e-03 4.41e-01  0│
+│  76 norm     0.694 3.081457e+03  1.791839e+00 4.780612e+05 4.962881e+07 1.00e-01 10⁹   4.82e-01 5.32e-03  0│
+│  77 norm     0.707 3.078234e+03  1.792209e+00 4.775612e+05 4.988804e+07 1.00e-01 10⁸   1.05e-03 1.87e-01  0│
+│  78 norm     0.764 3.077994e+03  1.792206e+00 4.775239e+05 5.089684e+07 1.00e-01 10⁹   7.80e-05 3.66e-01  0│
+│  79 norm     0.699 3.035613e+03  1.792446e+00 4.709490e+05 5.257671e+07 1.00e-01 10⁹   1.38e-02 1.00e+00  0│
+┢━━━━┯━━━━┯━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━┯━━━━━┯━━━━━━━━┯━━━━━━━━┯━━┪
+┃iter│type│time (ms)│   error    │    cost     │  infeas.   │complement. │   μ    │ reg │primal α│ dual α │↩ ┃
+┡━━━━┷━━━━┷━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━┷━━━━━┷━━━━━━━━┷━━━━━━━━┷━━┩
+│  80 norm     0.700 2.514946e+03  1.819398e+00 3.901387e+05 4.364996e+07 1.00e-01 10⁸   1.72e-01 2.68e-01  0│
+│  81 norm     0.699 2.514686e+03  1.819970e+00 3.900984e+05 4.364718e+07 1.00e-01 10⁸   1.03e-04 3.77e-03  0│
+│  82 norm     0.780 2.514586e+03  1.819968e+00 3.900828e+05 4.557628e+07 1.00e-01 10⁹   4.01e-05 1.00e+00  0│
+│  83 norm     0.691 2.412480e+03  1.824300e+00 3.742425e+05 4.421237e+07 1.00e-01 10⁹   4.06e-02 3.78e-01  0│
+│  84 norm     0.711 2.408075e+03  1.825562e+00 3.735591e+05 4.419625e+07 1.00e-01 10⁸   1.83e-03 9.56e-02  0│
+│  85 norm     0.768 2.292255e+03  1.820328e+00 3.555926e+05 4.376807e+07 1.00e-01 10⁹   4.81e-02 1.00e+00  0│
+│  86 norm     0.857 2.201897e+03  1.824082e+00 3.415752e+05 4.267664e+07 1.00e-01 10⁹   3.94e-02 5.03e-01  0│
+│  87 norm     0.757 2.200921e+03  1.824217e+00 3.414237e+05 4.283491e+07 1.00e-01 10⁸   4.43e-04 2.24e-01  0│
+│  88 norm     0.720 1.841578e+03  1.805412e+00 2.856793e+05 3.699312e+07 1.00e-01 10⁹   1.63e-01 1.00e+00  0│
+│  89 norm     0.673 1.421204e+03  1.822416e+00 2.204503e+05 2.880332e+07 1.00e-01 10⁹   2.28e-01 5.87e-01  0│
+│  90 norm     0.669 1.416385e+03  1.823146e+00 2.197027e+05 2.888869e+07 1.00e-01 10⁸   3.39e-03 3.61e-01  0│
+│  91 norm     0.765 1.416316e+03  1.823140e+00 2.196920e+05 2.931894e+07 1.00e-01 10⁹   4.86e-05 4.23e-01  0│
+│  92 norm     0.695 1.125793e+03  1.813404e+00 1.746188e+05 2.381606e+07 1.00e-01 10⁹   2.05e-01 1.00e+00  0│
+│  93 norm     0.696 1.123182e+03  1.813729e+00 1.742139e+05 2.391855e+07 1.00e-01 10⁹   2.32e-03 3.58e-01  0│
+│  94 norm     0.762 1.105842e+03  1.812502e+00 1.715245e+05 2.430726e+07 1.00e-01 10⁹   1.54e-02 1.00e+00  0│
+│  95 norm     0.701 6.987498e+02  1.820634e+00 1.083609e+05 1.538009e+07 1.00e-01 10⁹   3.68e-01 6.43e-01  0│
+│  96 norm     0.704 6.977556e+02  1.820781e+00 1.082067e+05 1.552034e+07 1.00e-01 10⁹   1.42e-03 6.09e-01  0│
+│  97 norm     0.699 6.976344e+02  1.820924e+00 1.081879e+05 1.551919e+07 1.00e-01 10⁸   1.74e-04 4.55e-02  0│
+│  98 norm     0.762 6.623973e+02  1.814281e+00 1.027236e+05 1.507813e+07 1.00e-01 10⁹   5.05e-02 9.48e-01  0│
+│  99 norm     0.703 6.151303e+02  1.819447e+00 9.539174e+04 1.410781e+07 1.00e-01 10⁹   7.14e-02 4.75e-01  0│
+┢━━━━┯━━━━┯━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━┯━━━━━┯━━━━━━━━┯━━━━━━━━┯━━┪
+┃iter│type│time (ms)│   error    │    cost     │  infeas.   │complement. │   μ    │ reg │primal α│ dual α │↩ ┃
+┡━━━━┷━━━━┷━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━┷━━━━━┷━━━━━━━━┷━━━━━━━━┷━━┩
+│ 100 norm     0.705 6.149434e+02  1.819560e+00 9.536276e+04 1.412201e+07 1.00e-01 10⁸   3.04e-04 1.99e-01  0│
+│ 101 norm     0.781 5.999671e+02  1.816676e+00 9.304051e+04 1.411912e+07 1.00e-01 10⁹   2.44e-02 1.00e+00  0│
+│ 102 norm     0.698 2.907918e+02  1.849862e+00 4.501150e+04 6.787813e+06 1.00e-01 10⁹   5.15e-01 6.70e-01  0│
+│ 103 norm     0.702 2.905436e+02  1.850082e+00 4.497309e+04 6.793835e+06 1.00e-01 10⁸   8.53e-04 3.11e-01  0│
+│ 104 norm     0.772 2.904936e+02  1.850060e+00 4.496535e+04 6.932619e+06 1.00e-01 10⁹   1.72e-04 1.00e+00  0│
+│ 105 norm     0.700 2.704025e+02  1.850870e+00 4.185508e+04 6.546420e+06 1.00e-01 10⁹   6.92e-02 9.80e-01  0│
+│ 106 norm     0.707 1.756087e+02  1.858471e+00 2.707491e+04 4.242338e+06 1.00e-01 10⁹   3.51e-01 2.80e-01  0│
+│ 107 norm     0.778 1.719014e+02  1.857203e+00 2.650350e+04 4.213129e+06 1.00e-01 10⁹   2.11e-02 1.00e+00  0│
+│ 108 norm     0.703 1.718842e+02  1.857201e+00 2.650085e+04 4.261651e+06 1.00e-01 10⁹   1.00e-04 1.00e+00  0│
+│ 109 norm     0.797 1.695015e+02  1.857542e+00 2.613347e+04 4.227075e+06 1.00e-01 10⁹   1.39e-02 1.00e+00  0│
+│ 110 norm     0.736 1.594669e+02  1.785112e+00 1.057001e+04 1.697089e+06 1.00e-01 10⁹   5.95e-01 1.00e+00  0│
+│ 111 norm     0.652 1.584223e+02  1.844963e+00 1.116101e+03 1.760847e+05 1.00e-01 10⁹   8.88e-01 1.00e+00  0│
+│ 112 norm     0.684 1.566790e+02  1.847093e+00 1.078870e+03 1.706057e+05 1.00e-01 10⁹   3.31e-02 1.00e+00  0│
+│ 113 norm     0.755 1.565641e+02  1.752324e+00 1.061856e+02 1.434327e+04 1.00e-01 10⁹   9.07e-01 6.67e-02  0│
+│ 114 norm     0.698 1.547615e+02  1.751409e+00 7.375460e+01 8.890373e+03 1.00e-01 10⁹   3.84e-01 9.94e-01  0│
+│ 115 norm     0.715 1.536481e+02  1.751419e+00 7.375030e+01 8.894421e+03 1.00e-01 10⁹   6.06e-05 6.11e-01  0│
+│ 116 norm     0.702 1.530048e+02  1.751745e+00 7.364792e+01 8.867633e+03 1.00e-01 10⁹   1.42e-03 2.37e-01  0│
+│ 117 norm     0.768 1.511376e+02  1.750326e+00 5.161199e+01 5.175624e+03 1.00e-01 10⁹   4.21e-01 1.00e+00  0│
+│ 118 XSOC     0.066 3.759724e+03  1.783482e+00 1.568901e+02 1.333931e+02 1.00e-01 10⁹   9.87e-01 1.00e+00  0│
+│ 118 norm     0.830 1.490933e+02  1.784118e+00 4.832871e+01 3.919260e+03 1.00e-01 10⁹   2.47e-01 1.00e+00  2│
+│ 119 XSOC     0.066 3.724576e+03  1.817664e+00 1.852595e+02 1.944599e+03 1.00e-01 10⁹   5.15e-01 1.00e+00  0│
+│ 119 norm     0.861 1.467496e+02  1.788398e+00 4.765028e+01 3.734094e+03 1.00e-01 10⁹   4.31e-02 1.00e+00  3│
+┢━━━━┯━━━━┯━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━┯━━━━━┯━━━━━━━━┯━━━━━━━━┯━━┪
+┃iter│type│time (ms)│   error    │    cost     │  infeas.   │complement. │   μ    │ reg │primal α│ dual α │↩ ┃
+┡━━━━┷━━━━┷━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━┷━━━━━┷━━━━━━━━┷━━━━━━━━┷━━┩
+│ 120 norm     0.772 1.448489e+02  1.755670e+00 3.224254e+01 1.226560e+02 1.00e-01 10⁹   9.84e-01 1.00e+00  0│
+│ 121 XSOC     0.066 3.624996e+03  1.806363e+00 1.009890e+02 8.054476e+01 1.00e-01 10⁹   9.97e-01 7.85e-01  0│
+│ 121 norm     0.841 1.441923e+02  1.783184e+00 3.178498e+01 1.121170e+02 1.00e-01 10⁹   2.49e-01 3.35e-01  2│
+│ 122 XSOC     0.066 3.602156e+03  1.814373e+00 1.218312e+02 9.569483e+01 1.00e-01 10⁹   5.25e-01 1.00e+00  0│
+│ 122 norm     0.866 1.431151e+02  1.790673e+00 3.147354e+01 1.108984e+02 1.00e-01 10⁹   4.84e-02 4.58e-01  3│
+│ 123 norm     0.773 1.411664e+02  1.789588e+00 2.308752e+01 8.074336e+01 1.00e-01 10⁹   9.96e-01 1.00e+00  0│
+│ 124 XSOC     0.066 3.512907e+03  1.826662e+00 6.361172e+01 8.033947e+01 1.00e-01 10⁹   9.72e-01 1.00e+00  0│
+│ 124 norm     0.848 1.397596e+02  1.804836e+00 2.249148e+01 8.071322e+01 1.00e-01 10⁹   2.10e-01 6.80e-01  2│
+│ 125 XSOC     0.065 3.497089e+03  1.821435e+00 3.601423e+01 8.103537e+01 1.00e-01 10⁹   2.73e-01 1.00e+00  1│
+│ 125 norm     0.860 1.373819e+02  1.807298e+00 2.229398e+01 8.199421e+01 1.00e-01 10⁹   2.98e-02 1.00e+00  3│
+│ 126 norm     0.777 1.352890e+02  1.783144e+00 1.833859e+01 8.066854e+01 1.00e-01 10¹⁰  1.00e+00 1.00e+00  0│
+│ 127 XSOC     0.066 3.400099e+03  1.817518e+00 2.530995e+01 8.036725e+01 1.00e-01 10⁹   6.02e-01 7.37e-01  0│
+│ 127 norm     0.836 1.342148e+02  1.794003e+00 1.763153e+01 8.068305e+01 1.00e-01 10⁹   1.46e-01 5.15e-01  2│
+│ 128 XSOC     0.066 3.363538e+03  1.806741e+00 2.031963e+01 8.096002e+01 1.00e-01 10⁹   1.73e-01 1.00e+00  2│
+│ 128 norm     0.837 1.321407e+02  1.797372e+00 1.750525e+01 8.210780e+01 1.00e-01 10⁹   4.04e-02 8.86e-01  2│
+│ 129 norm     0.783 1.299967e+02  1.805050e+00 1.506485e+01 8.076491e+01 1.00e-01 10¹⁰  1.00e+00 1.00e+00  0│
+│ 130 norm     0.735 1.284963e+02  1.810674e+00 1.461488e+01 8.052030e+01 1.00e-01 10⁹   1.11e-01 7.04e-01  0│
+│ 131 norm     0.730 1.261377e+02  1.810699e+00 1.461234e+01 8.150526e+01 1.00e-01 10⁹   4.82e-04 1.00e+00  0│
+│ 132 norm     0.741 1.289126e+02  1.811461e+00 1.459992e+01 8.171114e+01 1.00e-01 10⁹   1.27e-02 2.90e-01  0│
+│ 133 XSOC     0.066 3.102481e+03  1.833168e+00 2.272232e+01 8.085569e+01 1.00e-01 10⁹   1.00e+00 1.00e+00  0│
+│ 133 norm     0.912 1.230529e+02  1.815433e+00 1.446130e+01 8.064219e+01 1.00e-01 10⁹   2.50e-01 1.00e+00  2│
+│ 134 XSOC     0.068 3.044138e+03  1.876057e+00 5.034153e+01 8.041294e+01 1.00e-01 10⁹   8.88e-01 1.00e+00  0│
+│ 134 norm     0.883 1.220177e+02  1.818515e+00 1.444646e+01 8.067259e+01 1.00e-01 10⁹   1.21e-01 4.88e-01  3│
+│ 135 XSOC     0.066 3.043813e+03  1.828296e+00 5.536567e+01 8.081555e+01 1.00e-01 10⁹   4.68e-01 1.00e+00  1│
+│ 135 norm     0.905 1.576501e+02  1.820554e+00 1.441722e+01 8.178326e+01 1.00e-01 10⁹   1.82e-02 6.52e-01  4│
+│ 136 XSOC     0.065 2.976061e+03  1.859877e+00 1.759743e+01 8.070974e+01 1.00e-01 10¹⁰  1.00e+00 1.00e+00  0│
+│ 136 norm     0.877 1.180014e+02  1.788410e+00 1.879964e+01 8.045844e+01 1.00e-01 10¹⁰  1.00e+00 1.00e+00  0│
+│ 137 XSOC     0.066 2.913793e+03  1.832454e+00 3.974304e+01 8.035820e+01 1.00e-01 10⁹   1.00e+00 1.00e+00  0│
+│ 137 norm     0.842 1.173443e+02  1.807792e+00 1.828473e+01 8.041538e+01 1.00e-01 10⁹   2.50e-01 3.01e-01  2│
+│ 138 XSOC     0.065 2.927467e+03  1.838908e+00 3.480087e+01 8.064997e+01 1.00e-01 10⁹   4.10e-01 9.95e-01  1│
+│ 138 norm     0.835 1.162529e+02  1.813985e+00 1.827480e+01 8.079051e+01 1.00e-01 10⁹   7.32e-02 4.50e-01  2│
+│ 139 norm     0.795 1.138661e+02  1.836993e+00 1.556314e+01 8.062085e+01 1.00e-01 10¹⁰  1.00e+00 1.00e+00  0│
+┢━━━━┯━━━━┯━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━┯━━━━━┯━━━━━━━━┯━━━━━━━━┯━━┪
+┃iter│type│time (ms)│   error    │    cost     │  infeas.   │complement. │   μ    │ reg │primal α│ dual α │↩ ┃
+┡━━━━┷━━━━┷━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━┷━━━━━┷━━━━━━━━┷━━━━━━━━┷━━┩
+│ 140 XSOC     0.067 2.834786e+03  1.845892e+00 1.760279e+01 8.043102e+01 1.00e-01 10⁹   5.11e-01 1.00e+00  0│
+┢━━━━┯━━━━┯━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━┯━━━━━┯━━━━━━━━┯━━━━━━━━┯━━┪
+┃iter│type│time (ms)│   error    │    cost     │  infeas.   │complement. │   μ    │ reg │primal α│ dual α │↩ ┃
+┡━━━━┷━━━━┷━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━┷━━━━━┷━━━━━━━━┷━━━━━━━━┷━━┩
+│ 140 norm     0.838 1.115025e+02  1.842422e+00 1.523047e+01 8.067183e+01 1.00e-01 10⁹   2.30e-01 1.00e+00  1│
+│ 141 XSOC     0.065 2.788408e+03  1.844749e+00 1.567595e+01 8.114404e+01 1.00e-01 10⁹   1.14e-01 1.00e+00  3│
+│ 141 norm     0.813 1.088496e+02  1.843562e+00 1.521427e+01 8.206801e+01 1.00e-01 10⁹   5.37e-02 1.00e+00  1│
+│ 142 norm     0.779 1.071415e+02  1.843700e+00 1.387066e+01 8.065561e+01 1.00e-01 10¹⁰  8.76e-01 6.93e-01  0│
+│ 143 norm     0.723 1.071367e+02  1.843717e+00 1.386372e+01 8.064434e+01 1.00e-01 10⁹   2.31e-03 1.92e-03  0│
+│ 144 norm     0.713 1.071367e+02  1.843717e+00 1.386368e+01 8.064415e+01 1.00e-01 10⁹   1.15e-05 2.01e-05  0│
+│ 145 norm     0.776 1.046676e+02  1.843717e+00 1.386357e+01 8.074234e+01 1.00e-01 10¹⁰  3.90e-05 1.00e+00  0│
+│ 146 XSOC     0.066 2.691880e+03  1.852907e+00 1.710011e+01 8.052207e+01 1.00e-01 10¹⁰  1.00e+00 1.61e-02  0│
+│ 146 norm     0.833 1.046151e+02  1.847314e+00 1.369701e+01 8.050632e+01 1.00e-01 10¹⁰  4.64e-01 2.14e-02  1│
+│ 147 XSOC     0.060 2.692438e+03  1.849364e+00 1.418266e+01 8.051253e+01 1.00e-01 10⁹   2.03e-01 4.08e-04  2│
+│ 147 norm     0.811 1.046141e+02  1.847884e+00 1.361615e+01 8.048278e+01 1.00e-01 10⁹   8.72e-02 3.85e-04  1│
+│ 148 XSOC     0.061 2.691254e+03  1.847271e+00 1.361670e+01 8.033303e+01 1.00e-01 10⁹   2.37e-02 1.47e-02  5│
+│ 148 norm     0.737 1.045343e+02  1.847038e+00 1.359786e+01 8.042004e+01 1.00e-01 10⁹   1.12e-02 3.08e-02  1│
+│ 149 norm     0.733 1.019708e+02  1.848221e+00 1.334158e+01 8.069623e+01 1.00e-01 10¹⁰  1.26e-01 1.00e+00  0│
+│ 150 norm     0.667 1.016217e+02  1.848226e+00 1.334015e+01 8.056387e+01 1.00e-01 10⁹   7.67e-04 1.32e-01  0│
+│ 151 norm     0.736 9.898212e+01  1.848226e+00 1.334012e+01 8.442077e+01 1.00e-01 10⁹   2.43e-05 9.22e-01  0│
+│ 152 XSOC     0.063 2.483070e+03  1.838614e+00 1.351840e+01 8.050395e+01 1.00e-01 10¹⁰  8.72e-01 5.47e-01  0│
+│ 152 norm     0.853 9.747577e+01  1.854308e+00 1.316363e+01 8.321220e+01 1.00e-01 10¹⁰  2.50e-01 5.78e-01  2│
+│ 153 XSOC     0.063 2.397271e+03  1.849043e+00 1.615891e+01 8.069690e+01 1.00e-01 10⁹   6.95e-01 1.00e+00  0│
+│ 153 norm     0.789 9.485305e+01  1.854552e+00 1.310465e+01 8.355375e+01 1.00e-01 10⁹   1.04e-01 1.00e+00  3│
+│ 154 XSOC     0.062 2.429743e+03  1.877442e+00 2.764456e+01 8.044763e+01 1.00e-01 10⁹   6.67e-01 2.38e-01  0│
+│ 154 norm     0.805 9.217845e+01  1.853265e+00 1.308209e+01 8.502002e+01 1.00e-01 10⁹   4.23e-02 1.00e+00  3│
+│ 155 ✓SOC     0.059 2.338977e+03  1.832586e+00 1.275095e+01 8.048176e+01 1.00e-01 10¹⁰  9.14e-01 3.41e-01  0│
+│ 155 norm     0.810 9.041066e+01  1.832586e+00 1.275095e+01 8.048176e+01 1.00e-01 10¹⁰  9.14e-01 3.41e-01  0│
+│ 156 XSOC     0.057 2.206881e+03  1.813860e+00 1.708019e+01 8.062322e+01 1.00e-01 10¹⁰  1.00e+00 1.00e+00  0│
+│ 156 norm     0.810 8.770943e+01  1.886801e+00 1.738232e+01 8.056515e+01 1.00e-01 10¹⁰  1.00e+00 1.00e+00  0│
+│ 157 XSOC     0.067 2.234382e+03  2.076908e+00 3.605453e+01 8.020411e+01 1.00e-01 10⁹   1.00e+00 2.74e-01  0│
+│ 157 norm     0.828 8.824732e+01  1.865111e+00 1.698246e+01 8.074326e+01 1.00e-01 10⁹   2.50e-01 1.00e+00  2│
+│ 158 norm     0.763 8.217593e+01  1.914611e+00 1.395570e+01 8.051441e+01 1.00e-01 10¹⁰  1.00e+00 1.00e+00  0│
+│ 159 XSOC     0.063 1.993584e+03  1.872778e+00 1.499654e+01 8.054959e+01 1.00e-01 10¹⁰  1.00e+00 1.00e+00  0│
+│ 159 norm     0.805 7.943476e+01  1.875610e+00 1.347015e+01 8.061723e+01 1.00e-01 10¹⁰  5.00e-01 1.00e+00  1│
+┢━━━━┯━━━━┯━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━┯━━━━━┯━━━━━━━━┯━━━━━━━━┯━━┪
+┃iter│type│time (ms)│   error    │    cost     │  infeas.   │complement. │   μ    │ reg │primal α│ dual α │↩ ┃
+┡━━━━┷━━━━┷━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━┷━━━━━┷━━━━━━━━┷━━━━━━━━┷━━┩
+│ 160 XSOC     0.064 1.918202e+03  1.894947e+00 2.276251e+01 8.050894e+01 1.00e-01 10⁹   1.00e+00 1.00e+00  0│
+┢━━━━┯━━━━┯━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━┯━━━━━┯━━━━━━━━┯━━━━━━━━┯━━┪
+┃iter│type│time (ms)│   error    │    cost     │  infeas.   │complement. │   μ    │ reg │primal α│ dual α │↩ ┃
+┡━━━━┷━━━━┷━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━┷━━━━━┷━━━━━━━━┷━━━━━━━━┷━━┩
+│ 160 norm     0.849 7.658408e+01  1.871344e+00 1.346840e+01 8.076305e+01 1.00e-01 10⁹   1.25e-01 1.00e+00  3│
+│ 161 norm     0.769 7.372649e+01  1.879830e+00 1.304545e+01 8.059096e+01 1.00e-01 10¹⁰  1.00e+00 1.00e+00  0│
+│ 162 XSOC     0.061 1.775244e+03  1.869536e+00 1.387619e+01 8.057223e+01 1.00e-01 10¹⁰  1.00e+00 1.00e+00  0│
+│ 162 norm     0.782 7.091275e+01  1.859129e+00 1.296384e+01 8.063071e+01 1.00e-01 10¹⁰  5.00e-01 1.00e+00  1│
+│ 163 XSOC     0.064 1.698800e+03  1.869873e+00 1.775514e+01 8.056263e+01 1.00e-01 10⁹   1.00e+00 1.00e+00  0│
+│ 163 norm     0.861 6.800590e+01  1.858432e+00 1.295017e+01 8.071823e+01 1.00e-01 10⁹   6.25e-02 1.00e+00  4│
+│ 164 XSOC     0.064 1.769160e+03  2.116002e+00 2.107513e+01 8.033656e+01 1.00e-01 10⁹   9.69e-02 2.56e-02  3│
+│ 164 norm     0.947 1.140925e+02  1.857981e+00 1.294934e+01 8.097551e+01 1.00e-01 10⁹   7.81e-03 1.00e+00  7│
+│ 165 XSOC     0.065 1.548366e+03  1.785048e+00 1.412587e+01 8.056575e+01 1.00e-01 10¹⁰  1.00e+00 1.00e+00  0│
+│ 165 norm     0.861 7.072904e+01  1.966695e+00 1.529219e+01 8.049287e+01 1.00e-01 10¹⁰  1.00e+00 7.75e-01  0│
+│ 166 XSOC     0.063 1.487127e+03  1.844783e+00 1.535864e+01 8.046559e+01 1.00e-01 10¹⁰  1.00e+00 1.00e+00  0│
+│ 166 norm     0.791 5.974306e+01  1.911219e+00 1.452015e+01 8.060168e+01 1.00e-01 10¹⁰  5.00e-01 1.00e+00  1│
+│ 167 XSOC     0.063 1.556008e+03  2.280742e+00 2.502288e+01 8.010537e+01 1.00e-01 10⁹   1.47e-01 5.45e-02  2│
+│ 167 norm     0.816 6.602869e+02  1.834939e+00 1.425171e+01 8.076643e+01 1.00e-01 10⁹   1.70e-01 1.00e+00  1│
+│ 168 XSOC     0.063 1.330822e+03  1.769898e+00 1.504764e+01 8.067248e+01 1.00e-01 10¹⁰  3.70e-01 1.00e+00  1│
+│ 168 norm     0.927 5.873452e+02  1.898788e+00 1.434670e+01 8.048878e+01 1.00e-01 10¹⁰  1.25e-01 1.36e-01  3│
+│ 169 XSOC     0.064 1.324672e+03  1.783115e+00 1.513012e+01 8.060580e+01 1.00e-01 10¹⁰  1.49e-01 1.00e+00  2│
+│ 169 norm     0.801 1.288668e+03  2.458394e+00 2.867960e+01 8.020654e+01 1.00e-01 10¹⁰  8.26e-01 2.55e-01  0│
+│ 170 norm     0.780 1.657224e+02  2.575708e+00 2.805492e+01 8.112199e+01 1.00e-01 10¹⁰  1.00e+00 1.00e+00  0│
+│ 171 norm     0.717 8.784350e+02  1.853903e+00 1.768458e+01 8.068737e+01 1.00e-01 10¹⁰  4.21e-01 3.20e-02  0│
+│ 172 norm     0.760 7.574360e+02  1.845241e+00 1.758938e+01 8.043375e+01 1.00e-01 10¹⁰  8.35e-03 6.43e-01  0│
+│ 173 XSOC     0.064 1.254425e+03  1.845105e+00 1.758721e+01 8.145031e+01 1.00e-01 10⁹   6.32e-05 4.01e-01 13│
+│ 173 norm     0.831 9.516437e+02  2.021422e+00 1.933078e+01 8.052667e+01 1.00e-01 10⁹   1.93e-01 1.04e-04  2│
+│ 174 ✓SOC     0.066 1.159416e+03  1.742403e+00 1.619036e+01 8.051306e+01 1.00e-01 10¹⁰  8.11e-01 1.00e+00  0│
+│ 174 norm     0.875 1.371327e+02  1.742403e+00 1.619036e+01 8.051306e+01 1.00e-01 10¹⁰  8.11e-01 1.00e+00  0│
+│ 175 norm     0.718 3.152450e+02  1.740767e+00 1.616495e+01 8.043129e+01 1.00e-01 10¹⁰  2.50e-02 9.18e-01  0│
+│ 176 XSOC     0.063 9.198884e+02  1.740751e+00 1.616458e+01 8.212646e+01 1.00e-01 10¹⁰  1.86e-04 1.00e+00 12│
+│ 176 norm     0.793 2.850236e+02  1.864412e+00 1.479677e+01 8.216265e+01 1.00e-01 10¹⁰  5.00e-01 7.74e-05  1│
+│ 177 XSOC     0.061 1.073514e+03  1.892004e+00 1.688520e+01 8.089619e+01 1.00e-01 10⁹   9.47e-02 1.06e-01  3│
+│ 177 norm     1.365 2.143147e+02  1.841772e+00 1.634975e+01 8.095241e+01 1.00e-01 10⁹   1.33e-01 3.10e-01  0│
+│ 178 XSOC     0.065 8.941752e+02  1.770154e+00 1.534916e+01 8.245320e+01 1.00e-01 10¹⁰  1.00e+00 1.00e+00  0│
+│ 178 ✓SOC     0.065 8.683511e+02  1.915359e+00 1.448441e+01 8.549229e+01 1.00e-01 10¹⁰  1.00e+00 7.70e-01  0│
+│ 178 norm     0.913 6.835171e+01  1.915359e+00 1.448441e+01 8.549229e+01 1.00e-01 10¹⁰  1.00e+00 7.70e-01  0│
+│ 179 XSOC     0.064 7.928678e+02  1.912327e+00 1.623007e+01 8.028802e+01 1.00e-01 10¹⁰  4.42e-01 5.79e-01  1│
+│ 179 norm     0.850 1.273238e+02  1.906554e+00 1.469032e+01 8.062403e+01 1.00e-01 10¹⁰  1.10e-01 5.20e-01  3│
+┢━━━━┯━━━━┯━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━┯━━━━━┯━━━━━━━━┯━━━━━━━━┯━━┪
+┃iter│type│time (ms)│   error    │    cost     │  infeas.   │complement. │   μ    │ reg │primal α│ dual α │↩ ┃
+┡━━━━┷━━━━┷━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━┷━━━━━┷━━━━━━━━┷━━━━━━━━┷━━┩
+│ 180 XSOC     0.061 8.091501e+02  2.327031e+00 2.278209e+01 8.047531e+01 1.00e-01 10⁹   5.18e-01 2.02e-01  0│
+┢━━━━┯━━━━┯━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━━━━━┯━━━━━━━━┯━━━━━┯━━━━━━━━┯━━━━━━━━┯━━┪
+┃iter│type│time (ms)│   error    │    cost     │  infeas.   │complement. │   μ    │ reg │primal α│ dual α │↩ ┃
+┡━━━━┷━━━━┷━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━━━━━┷━━━━━━━━┷━━━━━┷━━━━━━━━┷━━━━━━━━┷━━┩
+│ 180 norm     0.940 3.192585e+02  1.904205e+00 1.466865e+01 8.150973e+01 1.00e-01 10⁹   7.47e-03 1.00e+00  6│
+│ 181 norm     0.779 3.138862e+02  2.267024e+00 2.016567e+01 8.092349e+01 1.00e-01 10¹⁰  1.00e+00 4.54e-01  0│
+│ 182 norm     0.704 4.435007e+01  2.255450e+00 2.084373e+01 8.041621e+01 1.00e-01 10¹⁰  1.00e+00 1.00e+00  0│
+│ 183 norm     0.776 8.500511e+02  2.163586e+00 1.931226e+01 8.165404e+01 1.00e-01 10⁹   5.18e-02 6.57e-01  2│
+│ 184 XSOC     0.065 7.614554e+02  1.762257e+00 1.612474e+01 8.041314e+01 1.00e-01 10¹⁰  7.46e-01 1.00e+00  0│
+│ 184 ✓SOC     0.066 7.544114e+02  2.148368e+00 1.832831e+01 8.088801e+01 1.00e-01 10¹⁰  1.00e+00 4.68e-01  0│
+│ 184 norm     0.912 5.576776e+02  2.148368e+00 1.832831e+01 8.088801e+01 1.00e-01 10¹⁰  1.00e+00 4.68e-01  0│
+│ 185 XSOC     0.070 8.394531e+02  1.877212e+00 1.583823e+01 8.102334e+01 1.00e-01 10¹⁰  1.97e-01 1.00e+00  2│
+│ 185 XSOC     0.065 7.608124e+02  2.791438e+00 3.087228e+01 8.037803e+01 1.00e-01 10¹⁰  1.00e+00 4.48e-01  0│
+└────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+┏━━━━━━━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━━━━┯━━━━━━━━━━┯━━━━━━━━━┯━━━━┓
+┃     solver trace      │     percent      │total (ms)│each (ms)│runs┃
+┡━━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━━━━┷━━━━━━━━━━┷━━━━━━━━━┷━━━━┩
+│solver                  100.00%▕█████████▏    145.072   145.072    1│
+│  ↳ setup                 0.25%▕         ▏      0.361     0.361    1│
+│  ↳ iteration            99.43%▕████████▉▏    144.242     0.775  186│
+│    ↳ feasibility ✓       0.69%▕         ▏      0.997     0.005  186│
+│    ↳ iter callbacks      0.00%▕         ▏      0.003     0.000  186│
+│    ↳ KKT matrix build    8.69%▕▊        ▏     12.611     0.067  186│
+│    ↳ KKT matrix decomp  49.00%▕████▍    ▏     71.083     0.382  186│
+│    ↳ KKT system solve    5.28%▕▍        ▏      7.657     0.041  186│
+│    ↳ line search         8.07%▕▋        ▏     11.711     0.062  186│
+│      ↳ SOC               2.10%▕▏        ▏      3.043     0.064   47│
+│    ↳ next iter prep      3.98%▕▎        ▏      5.781     0.031  185│
+│    ↳ f(x)                1.04%▕         ▏      1.502     0.002  548│
+│    ↳ ∇f(x)               0.53%▕         ▏      0.767     0.004  188│
+│    ↳ ∇²ₓₓL              15.62%▕█▍       ▏     22.666     0.121  186│
+│    ↳ cₑ(x)               4.21%▕▍        ▏      6.107     0.011  552│
+│    ↳ ∂cₑ/∂x              3.98%▕▎        ▏      5.770     0.030  188│
+│    ↳ cᵢ(x)               3.35%▕▎        ▏      4.866     0.008  550│
+│    ↳ ∂cᵢ/∂x              3.20%▕▎        ▏      4.649     0.024  188│
+└────────────────────────────────────────────────────────────────────┘
+┏━━━━━━━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━━━━┯━━━━━━━━━━┯━━━━━━━━━┯━━━━┓
+┃    autodiff trace     │     perINFO:gamegine:Computed trajectory parameters: 6.5927 m length, 2.1484 s time, 4.3037 m/s^2^0.5 max velocity, 8.0000 m/s^2^2^0.5 max acceleration.
+pygame 2.6.1 (SDL 2.28.4, Python 3.13.5)
+Hello from the pygame community. https://www.pygame.org/contribute.html
+Name: FRC Crescendo 2024
+Path found with 3 points
+Generating trajectory...
+DEBUG: Corridor 0: 1.4265 m, 0.5081 m -> 2.6999 m, 6.7046 m
+DEBUG: Corridor 1: 2.3291 m, 4.8105 m -> 3.1241 m, 7.7012 m
+DEBUG: Corridor 2: 2.3225 m, 4.7813 m -> 3.1240 m, 7.6999 m
+DEBUG: Corridor 3: 2.3223 m, 4.7846 m -> 3.1239 m, 7.6987 m
+DEBUG: Corridor 4: 2.3533 m, 4.7814 m -> 3.1238 m, 7.7014 m
+DEBUG: Corridor 5: 2.3272 m, 5.8598 m -> 4.9776 m, 7.6892 m
+DEBUG: Corridor 6: 2.3238 m, 5.8598 m -> 4.9791 m, 7.6982 m
+DEBUG: Corridor 7: 2.3250 m, 5.8606 m -> 4.9735 m, 7.7024 m
+DEBUG: Corridor 8: 2.3333 m, 5.8598 m -> 4.9778 m, 7.6958 m
+DEBUG: Corridor 9: 2.3230 m, 5.8598 m -> 4.9793 m, 7.7008 m
+DEBUG: Corridor 10: 2.3264 m, 5.8598 m -> 4.9748 m, 7.6980 m
+DEBUG: Corridor 11: 2.3550 m, 5.8605 m -> 4.9644 m, 7.7023 m
+DEBUG: Corridor 12: 2.3222 m, 5.8616 m -> 4.9570 m, 7.6878 m
+DEBUG: Corridor 13: 2.3247 m, 5.8598 m -> 4.9770 m, 7.6967 m
+DEBUG: Corridor 14: 2.3230 m, 5.8602 m -> 4.9792 m, 7.7010 m
+DEBUG: Corridor 15: 2.3240 m, 5.8598 m -> 4.9783 m, 7.6943 m
+DEBUG: Corridor 16: 2.3229 m, 5.8605 m -> 4.9794 m, 7.6994 m
+DEBUG: Corridor 17: 2.3234 m, 6.0960 m -> 14.2189 m, 7.7005 m
+DEBUG: Corridor 18: 2.3224 m, 6.0960 m -> 14.2067 m, 7.7016 m
+DEBUG: Corridor 19: 2.3290 m, 6.0960 m -> 14.2118 m, 7.7025 m
+DEBUG: Corridor 20: 2.3236 m, 6.0967 m -> 14.2181 m, 7.6992 m
+DEBUG: Corridor 21: 2.3260 m, 6.0963 m -> 14.2186 m, 7.6964 m
+DEBUG_SWERVE: max_torque = 43.40816326530613
+DEBUG_SWERVE: max_speed = 102.62543666666664
+DEBUG_SWERVE: wheel_radius = 0.0508
+DEBUG_SWERVE: max_force_surface_check = 854.4914028603569
+DEBUG_SWERVE: max_friction_force = 587.36535264
+Trajectory generated successfully.
+Time: 2.1484 s
+cent      │total (ms)│each (ms)│runs┃
+┡━━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━━━━┷━━━━━━━━━━┷━━━━━━━━━┷━━━━┩
+│setup                   100.00%▕█████████▏      1.480     1.480    1│
+│  ↳ ∇f(x)                 1.15%▕         ▏      0.017     0.017    1│
+│  ↳ ∂cₑ/∂x                8.65%▕▊        ▏      0.128     0.128    1│
+│  ↳ ∂cᵢ/∂x                6.22%▕▌        ▏      0.092     0.092    1│
+│  ↳ ∇²ₓₓL                74.93%▕██████▋  ▏      1.109     1.109    1│
+└────────────────────────────────────────────────────────────────────┘
+
+Exit: line search failed

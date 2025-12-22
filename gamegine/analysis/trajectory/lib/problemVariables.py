@@ -38,6 +38,10 @@ class PointVariables:
     OMEGA: list
     ALPHA: list
     DT: list
+    SLACK_X_POS: list
+    SLACK_X_NEG: list
+    SLACK_Y_POS: list
+    SLACK_Y_NEG: list
 
     @classmethod
     def with_initial_variables(cls, problem: OptimizationProblem, num_points: int):
@@ -62,6 +66,10 @@ class PointVariables:
             OMEGA=problem.decision_variable(num_points),
             ALPHA=problem.decision_variable(num_points - 1),
             DT=problem.decision_variable(num_points - 1),
+            SLACK_X_POS=problem.decision_variable(num_points),
+            SLACK_X_NEG=problem.decision_variable(num_points),
+            SLACK_Y_POS=problem.decision_variable(num_points),
+            SLACK_Y_NEG=problem.decision_variable(num_points),
         )
 
 
@@ -127,6 +135,10 @@ class SwervePointVariables(PointVariables):
             OMEGA=problem.decision_variable(num_points),
             ALPHA=problem.decision_variable(num_points - 1),
             DT=problem.decision_variable(num_points - 1),
+            SLACK_X_POS=problem.decision_variable(num_points),
+            SLACK_X_NEG=problem.decision_variable(num_points),
+            SLACK_Y_POS=problem.decision_variable(num_points),
+            SLACK_Y_NEG=problem.decision_variable(num_points),
             TL=ModuleVariables(
                 FX=problem.decision_variable(num_points - 1),
                 FY=problem.decision_variable(num_points - 1),

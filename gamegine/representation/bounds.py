@@ -144,7 +144,7 @@ class DiscreteBoundary(Boundary, Drawable):
         :rtype: bool"""
         self.__recompute_plain_points()
         return sg.Polygon(self.plain_points).intersects(
-            sg.LineString([(x1, y1), (x2, y2)])
+            sg.LineString([(float(x1), float(y1)), (float(x2), float(y2))])
         )
 
     def intersects_rectangle(
@@ -168,7 +168,7 @@ class DiscreteBoundary(Boundary, Drawable):
         :rtype: bool
         """
         self.__recompute_plain_points()
-        return sg.Polygon(self.plain_points).intersects(sg.box(x, y, max_x, max_y))
+        return sg.Polygon(self.plain_points).intersects(sg.box(float(x), float(y), float(max_x), float(max_y)))
 
     def contains_point(self, x: SpatialMeasurement, y: SpatialMeasurement) -> bool:
         """Checks if the boundary contains a point.
@@ -182,20 +182,20 @@ class DiscreteBoundary(Boundary, Drawable):
         """
 
         self.__recompute_plain_points()
-        return sg.Polygon(self.plain_points).contains(sg.Point((x, y)))
+        return sg.Polygon(self.plain_points).contains(sg.Point((float(x), float(y))))
 
     def __convert_coordinate_sequence(
         self, coord_sequence
-    ) -> List[Tuple[float, float]]:
-        """Converts a coordinate sequence to a list of tuples.
+    ) -> List[Tuple[SpatialMeasurement, SpatialMeasurement]]:
+        """Converts a coordinate sequence to a list of SpatialMeasurement tuples.
 
-        :param coord_sequence: The coordinate sequence to convert.
+        :param coord_sequence: The coordinate sequence to convert (raw floats assumed in meters).
         :type coord_sequence: list
-        :return: The converted coordinate sequence.
+        :return: The converted coordinate sequence with SpatialMeasurement objects.
         :rtype: list
         """
 
-        return [(x, y) for x, y in coord_sequence]
+        return [(Meter(x), Meter(y)) for x, y in coord_sequence]
 
     def get_bounded_rectangle(self) -> "Rectangle":
         """Returns the bounded rectangle of the boundary.
@@ -871,7 +871,7 @@ class Polygon(DiscreteBoundary):
         self.points = [(x + point[0], y + point[1]) for point in self.points]
         return self
 
-    def scale(self, factor: SpatialMeasurement) -> "Polygon":
+    def scale(self, factor: float) -> "Polygon":
         self.points = [(factor * point[0], factor * point[1]) for point in self.points]
         return self
 
