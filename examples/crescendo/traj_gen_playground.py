@@ -108,11 +108,12 @@ def CreateTrajectory(
         )
     )
     builder.guide_pathes([path])
+    builder.points_constraint(SafetyCorridor(expanded_obstacles))
     
-    # Use merged rectangle corridors for stability
-    from gamegine.analysis.trajectory.lib.constraints.avoidance import MergedSafetyCorridor, SAFETY_CORRIDOR_DEBUG
-    astar_path_points = path.get_points()
-    builder.points_constraint(MergedSafetyCorridor(expanded_obstacles, guide_path=astar_path_points))
+    # NOTE: We no longer use MergedSafetyCorridor here.
+    # Instead, we apply SplineTrackingCost AFTER generate() to keep trajectory close to the 
+    # obstacle-avoiding spline path. This is more solver-friendly than hard corridor constraints.
+    from gamegine.analysis.trajectory.lib.constraints.avoidance import SAFETY_CORRIDOR_DEBUG
 
     # Global for storing intermediate trajectory positions during solving
 
@@ -164,6 +165,7 @@ def CreateTrajectory(
     # Capture initial guess for debugging (bottom layer visualization)
     initial_states = problem.get_trajectory_states()
     initial_guess_positions = [(s.x, s.y) for s in initial_states]
+    
 
     trajectory = problem.solve(
         SwerveRobotConstraints(

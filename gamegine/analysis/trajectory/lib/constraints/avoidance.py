@@ -713,6 +713,67 @@ def ObstacleRepulsion(obstacles: List[DiscreteBoundary], repulsion_weight: float
     return __obstacle_repulsion
 
 
+def SplineTrackingCost(
+    reference_path: List[Tuple[float, float]],
+    weight: float = 100.0,
+    max_deviation: float = None,
+):
+    """Returns a constraint function that penalizes trajectory deviation from a reference path.
+    
+    This is a solver-friendly alternative to hard safety corridors. Since the reference
+    path (typically a smooth spline fit to an A* path) already avoids obstacles, keeping
+    the trajectory close to it implicitly ensures obstacle avoidance.
+    
+    :param reference_path: List of (x, y) reference positions in meters. Must have the same 
+                           length as the number of trajectory points.
+    :param weight: Weight for the deviation penalty. Higher = stricter adherence to reference.
+                   Typical values: 10-1000 depending on importance.
+    :param max_deviation: Optional. If set, adds a soft constraint that deviation should not
+                          exceed this value (in meters). Helps prevent runaway solutions.
+    :return: Constraint function.
+    """
+    
+    def __spline_tracking_cost(problem, point_variables: PointVariables):
+        n_points = len(point_variables.POS_X)
+        n_ref = len(reference_path)
+        
+        if n_points != n_ref:
+            Warn(f"SplineTrackingCost: Reference path has {n_ref} points but trajectory has {n_points}. Skipping.")
+            return
+        
+        Debug(f"SplineTrackingCost: Adding tracking cost with weight={weight} for {n_points} points.")
+        
+        total_cost = 0.0
+        
+        for i in range(n_points):
+            x = point_variables.POS_X[i]
+            y = point_variables.POS_Y[i]
+            ref_x, ref_y = reference_path[i]
+            
+            # Squared distance from reference point
+            dx = x - ref_x
+            dy = y - ref_y
+            dist_sq = dx * dx + dy * dy
+            
+            # Add to cost
+            total_cost = total_cost + weight * dist_sq
+            
+            # Optional: Add soft constraint on maximum deviation
+            if max_deviation is not None:
+                # dist_sq <= max_deviation^2  =>  max_deviation^2 - dist_sq >= 0
+                max_dev_sq = max_deviation * max_deviation
+                # Use slack variable to make this soft
+                slack = point_variables.SLACK_X_POS[i]  # Reuse an existing slack
+                problem.subject_to(max_dev_sq - dist_sq + slack >= 0)
+        
+        # Add the tracking cost to the objective
+        problem.minimize(problem.cost() + total_cost)
+        
+        Debug(f"SplineTrackingCost: Added deviation cost to objective.")
+    
+    return __spline_tracking_cost
+
+
 # =============================================================================
 # OPTIMIZED HALFSPACE LANES (Path-Following Corridors)
 # =============================================================================

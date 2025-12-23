@@ -1,7 +1,7 @@
 from enum import Enum
 
 import math
-from typing import Callable, List
+from typing import Callable, List, Tuple
 from sleipnir.optimization import Problem as OptimizationProblem
 from gamegine.analysis.trajectory.lib.constraints import base
 from gamegine.analysis.trajectory.lib.constraints.spacing import (
@@ -449,12 +449,21 @@ class TrajectoryProblem:
     :type point_vars: :class:`PointVariables`"""
 
     def __init__(
-        self, intialized_problem: OptimizationProblem, point_vars: PointVariables
+        self, intialized_problem: OptimizationProblem, point_vars: PointVariables,
+        reference_spline_path: List[Tuple[float, float]] = None
     ):
         self.point_vars = point_vars
         self.problem = intialized_problem
+        self.reference_spline_path = reference_spline_path or []
 
         pass
+
+    def apply_constraint(self, constraint: Callable):
+        """Applies a constraint function to the optimization problem.
+        
+        :param constraint: Constraint function with signature (problem, point_vars) -> None
+        :type constraint: Callable[[OptimizationProblem, PointVariables], None]"""
+        constraint(self.problem, self.point_vars)
 
     def set_solver_callback(self, callback: Callable):
         """Sets a callback function to be called for each solver iteration.
@@ -731,6 +740,7 @@ class TrajectoryProblemBuilder:
         self.waypoints: SortedDict[int, Waypoint] = SortedDict()
         self.initial_pathes = []
         self.point_constraints = []
+        self.reference_spline_path = []  # Smoothed reference path for SplineTrackingCost
 
         pass
 
@@ -865,6 +875,9 @@ class TrajectoryProblemBuilder:
             for i in range(n):
                 self.point_vars.POS_X[i].set_value(float(smooth_x[i]))
                 self.point_vars.POS_Y[i].set_value(float(smooth_y[i]))
+            
+            # Store reference path for use by SplineTrackingCost constraint
+            self.reference_spline_path = [(float(smooth_x[i]), float(smooth_y[i])) for i in range(n)]
 
             # Step 2: Compute derivatives using the SMOOTH spline
             # First derivative (tangent/velocity direction)
@@ -967,6 +980,8 @@ class TrajectoryProblemBuilder:
             for i in range(n-1):
                 self.point_vars.ACCEL_X[i].set_value(0)
                 self.point_vars.ACCEL_Y[i].set_value(0)
+            # Fallback reference path uses original (non-smoothed) positions
+            self.reference_spline_path = [(float(X_nodes[i]), float(Y_nodes[i])) for i in range(n)]
         
         # Initialize Swerve Variables if applicable
         if isinstance(self.point_vars, SwervePointVariables):
@@ -1105,7 +1120,7 @@ class TrajectoryProblemBuilder:
         # Minimization objective
         self.apply_minimization_objective(config)
 
-        return TrajectoryProblem(self.problem, self.point_vars)
+        return TrajectoryProblem(self.problem, self.point_vars, self.reference_spline_path)
 
     def solve(self):
         """Solves the optimization problem and returns the solution."""
