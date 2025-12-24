@@ -1,0 +1,43 @@
+---
+title: NCIM Units
+description: Strongly typed unit helpers used throughout Gamegine.
+---
+
+Not Crashing Into Mars (NCIM) is Gamegine's strongly typed unit system. Every numerical
+quantity in the planning stack should use these wrappers to avoid accidental unit mixing and
+keep conversions explicit.
+
+```python title="conversion.py"
+from gamegine.utils.NCIM.ncim import Meter, Feet, RatioOf
+
+distance = RatioOf(Feet(3), Meter(1))  # -> float ratio useful when setting render scales
+```
+
+The NCIM modules now carry docstrings detailing when conversions happen implicitly and when
+you need to call `to()` explicitly (for example, when normalising values before handing them
+to the optimiser).
+
+## Core modules
+
+- `gamegine.utils.NCIM.ncim`
+- `gamegine.utils.NCIM.basic`
+
+## Standard dimensions
+
+- `gamegine.utils.NCIM.Dimensions.spatial`
+- `gamegine.utils.NCIM.Dimensions.temporal`
+- `gamegine.utils.NCIM.Dimensions.angular`
+- `gamegine.utils.NCIM.Dimensions.current`
+- `gamegine.utils.NCIM.Dimensions.energy`
+- `gamegine.utils.NCIM.Dimensions.force`
+- `gamegine.utils.NCIM.Dimensions.mass`
+
+## Composite dimensions
+
+- `gamegine.utils.NCIM.ComplexDimensions.acceleration`
+- `gamegine.utils.NCIM.ComplexDimensions.alpha`
+- `gamegine.utils.NCIM.ComplexDimensions.electricpot`
+- `gamegine.utils.NCIM.ComplexDimensions.MOI`
+- `gamegine.utils.NCIM.ComplexDimensions.omega`
+- `gamegine.utils.NCIM.ComplexDimensions.torque`
+- `gamegine.utils.NCIM.ComplexDimensions.velocity`

@@ -1,0 +1,64 @@
+---
+title: Overview
+description: Understand the major Gamegine subsystems and how they fit together.
+---
+
+Gamegine stitches together several subsystems to help you design and evaluate robot
+behaviour on an FRC field:
+
+- `gamegine.representation` models the field, field elements, robots, and their collision
+  geometry.
+- `gamegine.analysis` exposes higher level tooling such as meshing, pathfinding, and
+  trajectory optimisation.
+- `gamegine.render` contains a lightweight 2D renderer used by the examples and during
+  debugging.
+- `gamegine.simulation` keeps track of robot state and provides hooks for game logic and
+  interactions.
+- `gamegine.reference` and `gamegine.utils.NCIM` provide physical constants and unit
+  helpers used throughout the library.
+
+## Quick start workflow
+
+1. Build a `Game` instance and populate it with obstacles or interactables. See the minimal
+   example in the [representation](./representation) section.
+2. Generate a mesh for the walkable area using
+   [`TriangulatedGraph`](../pathfinding#meshing-utilities) or
+   [`VisibilityGraph`](../pathfinding#meshing-utilities).
+3. Use [`findPath`](../pathfinding#path-search) to plan a collision-free route.
+4. Feed the resulting `Path` into one of the trajectory builders in
+   [`TrajGen`](../trajectory#trajectory-problems) or leverage the guided generator provided
+   by `SafetyCorridorAssisted`.
+5. Visualise the result with the `Renderer` and helper drawing utilities found in the
+   [rendering](./rendering) section.
+
+The [Analysis Workflow](./analysis) page expands each of these steps with runnable code and
+describes how the pathfinding and optimisation layers compose.
+
+The `examples` package contains runnable scripts illustrating each of these steps.
+`examples/basic_pathfinding.py` focuses on meshing and A* search, while
+`examples/trajectory_generation.py` demonstrates full trajectory optimisation for a swerve
+ drivetrain.
+
+## Key conventions
+
+- All geometry is expressed using the NCIM unit system. Prefer `Meter`/`Feet` and other
+  typed wrappers over raw floats so conversions remain explicit.
+- Objects that can be drawn inherit from `Drawable` and receive a `render_scale` value
+  (units per pixel) inside their `draw` method.
+- Optimisation problems are expressed with Sleipnir/Jormungandr decision variables. The API
+  mirrors Sleipnir’s Python bindings, so plan on interacting with decision variable lists
+  rather than plain numbers within optimisation modules.
+- Runtime modules now ship with detailed docstrings describing side effects, customisation
+  points, and the expected NCIM units. Explore the source if you need deeper insight into a
+  particular subsystem.
+
+## Where to go next
+
+- Dive into [representation](./representation) for field elements and boundaries.
+- Read [pathfinding](./pathfinding) for meshing utilities and pathfinder implementations.
+- Study [trajectory optimisation](./trajectory) to see the optimisation pipeline and
+  available constraints.
+- Visit [rendering](./rendering) to understand the renderer, colour utilities, and how to
+  hook custom drawables into the loop.
+- Check [simulation](./simulation) to learn how state containers back real-time scenarios.
+- Walk through the [Examples](./examples) for ready-made entry points into the codebase.

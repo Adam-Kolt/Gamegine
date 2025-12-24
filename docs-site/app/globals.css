@@ -1,0 +1,163 @@
+@import 'tailwindcss';
+@import 'fumadocs-ui/css/neutral.css';
+@import 'fumadocs-ui/css/preset.css';
+@import 'fumadocs-ui/css/shiki.css';
+
+:root {
+  --brand-primary: #102a6d;
+  --brand-accent: #1d4ed8;
+  --brand-surface: #f5f7ff;
+  --brand-border: #d7ddf5;
+  --brand-muted: #e7ecff;
+  --fd-top: 32px;
+  --fd-background: var(--brand-surface);
+  --fd-foreground: #0f172a;
+  --fd-primary: var(--brand-accent);
+  --fd-primary-foreground: #ffffff;
+  --fd-muted: var(--brand-muted);
+  --fd-muted-foreground: #2c3f85;
+  --fd-card: #ffffff;
+  --fd-card-foreground: #0f172a;
+  --fd-popover: #ffffff;
+  --fd-popover-foreground: #0f172a;
+  --fd-border: var(--brand-border);
+  --fd-input: var(--brand-border);
+  --fd-ring: var(--brand-accent);
+  --shiki-light: #cbd5f5;
+  --shiki-dark: #cbd5f5;
+  color-scheme: only light;
+}
+
+@theme inline {
+  --color-background: var(--brand-surface);
+  --color-foreground: var(--brand-primary);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--brand-surface);
+  color: var(--brand-primary);
+  font-family: var(--font-geist-sans), 'Inter', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', sans-serif;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--brand-accent);
+}
+
+a:hover {
+  color: #0f33a9;
+}
+
+.text-brand-primary {
+  color: var(--brand-primary);
+}
+
+.text-brand-accent {
+  color: var(--brand-accent);
+}
+
+.text-brand-primary-70 {
+  color: rgba(16, 42, 109, 0.7);
+}
+
+.text-brand-primary-75 {
+  color: rgba(16, 42, 109, 0.75);
+}
+
+.text-brand-primary-80 {
+  color: rgba(16, 42, 109, 0.8);
+}
+
+.text-brand-primary-85 {
+  color: rgba(16, 42, 109, 0.85);
+}
+
+.text-brand-primary-90 {
+  color: rgba(16, 42, 109, 0.9);
+}
+
+.bg-brand-surface {
+  background-color: var(--brand-surface);
+}
+
+.border-brand-border {
+  border-color: var(--brand-border);
+}
+
+.bg-brand-muted-soft {
+  background-color: rgba(231, 236, 255, 0.65);
+}
+
+.bg-brand-muted-lighter {
+  background-color: rgba(231, 236, 255, 0.4);
+}
+
+.bg-brand-accent-strong {
+  background-color: #2146d8;
+}
+
+button {
+  font-family: inherit;
+}
+
+code,
+pre {
+  font-family: var(--font-geist-mono), 'Fira Code', 'JetBrains Mono', monospace;
+}
+
+pre:not(.shiki) {
+  background-color: #0f172a;
+  color: #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  box-shadow: 0 20px 45px -20px rgba(15, 23, 42, 0.4);
+}
+
+pre:not(.shiki) code {
+  color: inherit;
+}
+
+/* Fumadocs code block overrides */
+.shiki {
+  position: relative;
+  background: transparent !important;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  --fd-muted-foreground: #cbd5f5;
+}
+
+.shiki::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: #0f172a;
+  border-radius: inherit;
+  z-index: 0;
+}
+
+.shiki code {
+  position: relative;
+  z-index: 1;
+  display: block;
+  filter: invert(1) hue-rotate(180deg);
+}
+
+.shiki code span {
+  filter: none;
+}
+
+.shiki > div {
+  position: relative;
+  z-index: 1;
+}
+
+.shiki .line {
+  background: transparent !important;
+}
+
+:is(pre *)[data-theme='light'] .line {
+  background: transparent !important;
+}

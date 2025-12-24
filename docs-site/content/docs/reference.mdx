@@ -1,0 +1,40 @@
+---
+title: Reference Data
+description: Vendor measurements and drivetrain constants packaged with Gamegine.
+---
+
+The reference package collects the physical constants and vendor measurements used by the
+planning tools. Values are expressed using the NCIM unit system so they can be combined
+without extra conversions.
+
+```python title="motor_lookup.py"
+from gamegine.reference.motors import KrakenX60
+
+print(KrakenX60.free_speed)
+```
+
+Docstrings in each reference module clarify what unit a quantity is expressed in and how it
+maps to the optimiser constraint fields (e.g. torque limits feeding into
+`SwerveModuleConstraints`).
+
+## Motors
+
+`gamegine.reference.motors` stores motor definitions and helper utilities for calculating
+speed/torque trade-offs.
+
+## Gear trains
+
+`gamegine.reference.gearing` enumerates common gear reductions and module stages used in
+swerve drivetrains.
+
+## Swerve drivetrains
+
+`gamegine.reference.swerve` and `gamegine.reference.wheels` hold measured dimensions for
+popular swerve modules and wheel packages.
+
+## Modules
+
+- `gamegine.reference.motors`
+- `gamegine.reference.gearing`
+- `gamegine.reference.swerve`
+- `gamegine.reference.wheels`

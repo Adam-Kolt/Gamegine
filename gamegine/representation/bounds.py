@@ -1,3 +1,5 @@
+"""2D boundary primitives used to describe the field and robot geometry."""
+
 from typing import Callable, List, Tuple
 from abc import ABC, abstractmethod
 import copy
@@ -28,52 +30,26 @@ from gamegine.utils.NCIM.ncim import (
 
 
 class Boundary(ABC):
-    """Abstract base class for representing a boundary of an object. Boundaries are used to represent the shape of an object in 2D space. Boundaries can be translated, scaled, and reflected across the x and y axes. Boundaries can also be discretized into a series of points."""
+    """Abstract base type for 2D shapes that support geometric transforms."""
 
     @abstractmethod
     def translate(self, x: SpatialMeasurement, y: SpatialMeasurement) -> "Boundary":
-        """Translates the boundary by the given x and y values.
-
-        :param x: The x value to translate the boundary by.
-        :type x: :class:`SpatialMeasurement`
-        :param y: The y value to translate the boundary by.
-        :type y: :class:`SpatialMeasurement`
-        :return: The translated boundary.
-        :rtype: :class:`Boundary`
-        """
+        """Return a copy shifted by the supplied offsets."""
         pass
 
     @abstractmethod
     def scale(self, factor: SpatialMeasurement) -> "Boundary":
-        """Scales the boundary by the given factor.
-
-        :param factor: The factor to scale the boundary by.
-        :type factor: :class:`SpatialMeasurement`
-        :return: The scaled boundary.
-        :rtype: :class:`Boundary`
-        """
+        """Return a copy scaled uniformly by ``factor``."""
         pass
 
     @abstractmethod
     def reflect_x(self, axis: SpatialMeasurement) -> "Boundary":
-        """Reflects the boundary across the x-axis at the given axis.
-
-        :param axis: The axis to reflect the boundary across.
-        :type axis: :class:`SpatialMeasurement`
-        :return: The reflected boundary.
-        :rtype: :class:`Boundary`
-        """
+        """Return a copy mirrored across the provided vertical axis."""
         pass
 
     @abstractmethod
     def reflect_y(self, axis: SpatialMeasurement) -> "Boundary":
-        """Reflects the boundary across the y-axis at the given axis.
-
-        :param axis: The axis to reflect the boundary across.
-        :type axis: :class:`SpatialMeasurement`
-        :return: The reflected boundary.
-        :rtype: :class:`Boundary`
-        """
+        """Return a copy mirrored across the provided horizontal axis."""
         pass
 
     @abstractmethod
@@ -84,13 +60,7 @@ class Boundary(ABC):
 
     @abstractmethod
     def discretized(self, curve_segments: int = 5) -> "DiscreteBoundary":
-        """Discretizes the boundary into a series of points.
-
-        :param curve_segments: The number of curve segments to use when discretizing the boundary.
-        :type curve_segments: int
-        :return: The discretized boundary.
-        :rtype: :class:`DiscreteBoundary`
-        """
+        """Return a polygonal approximation of the boundary."""
         pass
 
 
@@ -99,26 +69,15 @@ class DiscreteBoundary(Boundary):
 
     @abstractmethod
     def get_vertices(self) -> List[Tuple[SpatialMeasurement, SpatialMeasurement]]:
-        """Returns the vertices of the boundary.
-
-        :return: The vertices of the boundary.
-        :rtype: List[Tuple[:class:`SpatialMeasurement`, :class:`SpatialMeasurement`]]
-        """
-
+        """Expose the ordered vertex list describing the polygon."""
         pass
 
     def discretized(self, curve_segments: int = 5) -> "DiscreteBoundary":
-        """Discretizes the boundary into a series of points.
-
-        :param curve_segments: The number of curve segments to use when discretizing the boundary.
-        :type curve_segments: int
-        :return: The discretized boundary.
-        :rtype: :class:`DiscreteBoundary`
-        """
+        """Discrete boundaries are already polygonal, so return ``self``."""
         return self
 
     def __recompute_plain_points(self):
-        """Recomputes the plain points of the boundary, used for only updating points when necessary to keep them consistent with the shape."""
+        """Refresh the cached list of raw vertices (used for shapely queries)."""
         self.plain_points = [point for point in self.get_vertices()]
 
     def intersects_line(
@@ -128,18 +87,7 @@ class DiscreteBoundary(Boundary):
         x2: SpatialMeasurement,
         y2: SpatialMeasurement,
     ) -> bool:
-        """Checks if the boundary intersects a line.
-
-        :param x1: The x value of the first point of the line.
-        :type x1: :class:`SpatialMeasurement`
-        :param y1: The y value of the first point of the line.
-        :type y1: :class:`SpatialMeasurement`
-        :param x2: The x value of the second point of the line.
-        :type x2: :class:`SpatialMeasurement`
-        :param y2: The y value of the second point of the line.
-        :type y2: :class:`SpatialMeasurement`
-        :return: True if the boundary intersects the line, False otherwise.
-        :rtype: bool"""
+        """Return ``True`` when the polyline intersects the given segment."""
         self.__recompute_plain_points()
         return sg.Polygon(self.plain_points).intersects(
             sg.LineString([(float(x1), float(y1)), (float(x2), float(y2))])
@@ -152,33 +100,12 @@ class DiscreteBoundary(Boundary):
         max_x: SpatialMeasurement,
         max_y: SpatialMeasurement,
     ) -> bool:
-        """Checks if the boundary intersects a rectangle.
-
-        :param x: The x value of the bottom left corner of the rectangle.
-        :type x: :class:`SpatialMeasurement`
-        :param y: The y value of the bottom left corner of the rectangle.
-        :type y: :class:`SpatialMeasurement`
-        :param max_x: The x value of the top right corner of the rectangle.
-        :type max_x: :class:`SpatialMeasurement`
-        :param max_y: The y value of the top right corner of the rectangle.
-        :type max_y: :class:`SpatialMeasurement`
-        :return: True if the boundary intersects the rectangle, False otherwise.
-        :rtype: bool
-        """
+        """Return ``True`` if any portion of the boundary overlaps the rectangle."""
         self.__recompute_plain_points()
         return sg.Polygon(self.plain_points).intersects(sg.box(float(x), float(y), float(max_x), float(max_y)))
 
     def contains_point(self, x: SpatialMeasurement, y: SpatialMeasurement) -> bool:
-        """Checks if the boundary contains a point.
-
-        :param x: The x value of the point.
-        :type x: :class:`SpatialMeasurement`
-        :param y: The y value of the point.
-        :type y: :class:`SpatialMeasurement`
-        :return: True if the boundary contains the point, False otherwise.
-        :rtype: bool
-        """
-
+        """Return ``True`` if the point is strictly inside the polygon."""
         self.__recompute_plain_points()
         return sg.Polygon(self.plain_points).contains(sg.Point((float(x), float(y))))
 

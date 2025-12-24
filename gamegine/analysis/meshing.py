@@ -1,4 +1,15 @@
-# {node_id : ((x, y), [(neighbour_id, distance), ...]), ...}
+"""Graph construction helpers for navigation meshes used by the path planner.
+
+The :class:`Map` class stores a thin wrapper around a visibility/triangulated graph
+backed by NCIM aware coordinates.  Each node stores its original coordinate in meters and
+the adjacency list with travel distances.  The module also exposes factory helpers for
+building visibility graphs and triangular lattices that respect field obstacles.
+
+The data structure intentionally focuses on expressiveness rather than raw performance.
+The navigation subsystem only operates on a handful of nodes at a time, so the overhead of
+keeping rich metadata and validation hooks is acceptable and makes debugging far easier.
+"""
+
 import math
 from typing import List, Set, Tuple
 from enum import Enum
@@ -29,6 +40,7 @@ class ConnectionStrategy(Enum):
 # TODO: Add display for one-directional edges and colors depending on weight
 class Map:
     def __init__(self, name: str = "Map") -> None:
+        """Initialise an empty graph with a human friendly name."""
         self.name = name
         self.nodes = {}
         self.encoding = {}
@@ -40,6 +52,11 @@ class Map:
         self.cache_up_to_date = True
 
     def add_node(self, x: SpatialMeasurement, y: SpatialMeasurement) -> "Map":
+        """Register a node at the given coordinates.
+
+        The node id is generated automatically.  Adding a duplicate coordinate raises an
+        exception to avoid ambiguous routing behaviour.
+        """
 
         coord = (float(x), float(y))
         self.nodes[self.id] = (coord, {})
@@ -58,6 +75,11 @@ class Map:
         bidirectional: bool = True,
         weight_backward: float = None,
     ) -> "Map":
+        """Create an edge (optionally bidirectional) between two coordinates.
+
+        Distances default to straight-line distance if not provided.  Missing nodes are
+        created on the fly so caller code can treat the map as append-only.
+        """
 
         if node1 not in self.encoding:
             Debug(f"Node at {node1} does not exist. Attempting to add node.")
@@ -89,6 +111,7 @@ class Map:
         node2: Tuple[SpatialMeasurement, SpatialMeasurement],
         weight: float,
     ) -> "Map":
+        """Convenience wrapper for inserting a directed edge only."""
         return self.add_edge(node1, node2, weight, False)
 
     def add_edges(
@@ -101,6 +124,7 @@ class Map:
             ]
         ],
     ) -> "Map":
+        """Bulk insert helper for iterables of ``(start, end, weight)`` tuples."""
         for edge in edges:
             self.add_edge(edge[0], edge[1], edge[2])
         return self
@@ -108,12 +132,14 @@ class Map:
     def get_node(
         self, x: SpatialMeasurement, y: SpatialMeasurement
     ) -> Tuple[int, Tuple[SpatialMeasurement, SpatialMeasurement]]:
+        """Return the internal node id for the provided coordinate."""
         coord = (x, y)
         if coord not in self.encoding:
             raise Exception(f"Node at ({x}, {y}) does not exist.")
         return (self.encoding[coord], coord)
 
     def get_neighbours(self, node_id: int) -> List[Tuple[int, SpatialMeasurement]]:
+        """Return the neighbour id/weight pairs for the selected node."""
         if node_id not in self.nodes:
             raise Exception(f"Node with id {node_id} does not exist.")
         return [
@@ -124,9 +150,11 @@ class Map:
     def get_all_nodes(
         self,
     ) -> List[Tuple[int, Tuple[SpatialMeasurement, SpatialMeasurement]]]:
+        """Expose node ids with their decoded coordinates."""
         return [(node_id, node[0]) for node_id, node in self.nodes.items()]
 
     def encode_coordinates(self, x: SpatialMeasurement, y: SpatialMeasurement) -> int:
+        """Return the integer id associated with the coordinate."""
         coord = (x, y)
         if coord not in self.encoding:
             raise Exception(f"Node at ({x}, {y}) does not exist.")
@@ -135,6 +163,7 @@ class Map:
     def decode_coordinates(
         self, node_id: int
     ) -> Tuple[SpatialMeasurement, SpatialMeasurement]:
+        """Convert a node id back to absolute NCIM coordinates."""
         if node_id not in self.nodes:
             raise Exception(f"Node with id {node_id} does not exist.")
         raw = self.nodes[node_id][0]
@@ -146,6 +175,7 @@ class Map:
     def get_all_unique_connections(
         self,
     ) -> List[Tuple[Tuple[int, int], Tuple[float], bool]]:
+        """Generate a unique edge list for rendering and introspection."""
         connections = {}
         for node_id, node in self.nodes.items():
             for id, weight in node[1].items():
@@ -160,6 +190,7 @@ class Map:
         ]
 
     def connect_all_nodes(self) -> "Map":
+        """Fully connect the graph (mostly useful while prototyping)."""
         items = list(self.nodes.items())
         for i in range(len(items)):
             for j in range(i + 1, len(items)):
@@ -171,6 +202,7 @@ class Map:
     def connect_all_points(
         self, points: List[Tuple[SpatialMeasurement, SpatialMeasurement]]
     ) -> "Map":
+        """Insert nodes for the supplied coordinates and fully connect them."""
         for i in range(len(points)):
             for j in range(i + 1, len(points)):
                 self.add_edge(points[i], points[j])
@@ -185,6 +217,7 @@ class Map:
     def get_closest_node(
         self, x: SpatialMeasurement, y: SpatialMeasurement
     ) -> Tuple[int, Tuple[SpatialMeasurement, SpatialMeasurement]]:
+        """Return the nearest node id/coordinate pair to the supplied point."""
         coord = (x, y)
         if coord in self.encoding:
             return self.get_node(x, y)
@@ -214,6 +247,13 @@ def VisibilityGraph(
     clip_to: Tuple[SpatialMeasurement, SpatialMeasurement] = None,
     discretization_quality: int = 4,
 ) -> Map:
+    """Create a visibility graph that links mutually visible obstacle vertices.
+
+    The routine discretises each obstacle boundary (respecting ``discretization_quality``)
+    and connects any pair of points that can see each other without intersecting an
+    obstacle.  Additional waypoints can be injected through ``required_points`` and the
+    search space can optionally be clipped to a bounding rectangle.
+    """
     map = Map("Visibility Graph")
     discrete_bounds = [
         obstacle.discretized(discretization_quality) for obstacle in obstacles
@@ -258,6 +298,12 @@ def TriangulatedGraph(
     field_bounds: Tuple[SpatialMeasurement, SpatialMeasurement],
     discretization_quality: int = 4,
 ) -> Map:
+    """Generate a regular triangular lattice that excludes blocked cells.
+
+    Nodes whose centres intersect an obstacle or fall outside the field bounds are
+    skipped.  Remaining nodes are fully connected within each triangle in order to
+    preserve symmetry.
+    """
     map = Map("Triangulated Graph")
     discrete_bounds = [
         obstacle.discretized(discretization_quality) for obstacle in obstacles
