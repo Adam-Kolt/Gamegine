@@ -100,6 +100,107 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         self.min_curvature_radius = min_curvature_radius
         self.resolution = resolution
     
+    def _validate_and_subdivide_spline(
+        self,
+        x_arr: 'np.ndarray',
+        y_arr: 'np.ndarray', 
+        t_arr: 'np.ndarray',
+        expanded_obstacles,
+        resolution_m: float,
+        max_iterations: int = 10,
+    ) -> 'Tuple[np.ndarray, np.ndarray, np.ndarray]':
+        """Iteratively validate and subdivide spline until it avoids all obstacles.
+        
+        Algorithm:
+        1. Fit a cubic spline through current knots
+        2. Evaluate spline at dense intervals
+        3. Check each point for obstacle collision
+        4. If collision found, insert midpoint of the problematic segment and retry
+        5. Repeat until no collisions or max_iterations reached
+        
+        :param x_arr: X coordinates of path points
+        :param y_arr: Y coordinates of path points
+        :param t_arr: Parameter values for each point (normalized arc length)
+        :param expanded_obstacles: ExpandedObjectBounds to check collisions against
+        :param resolution_m: Resolution for dense evaluation (meters)
+        :param max_iterations: Maximum subdivision iterations
+        :return: Tuple of (x_knots, y_knots, t_knots) for the validated spline
+        """
+        from scipy.interpolate import CubicSpline
+        import numpy as np
+        from gamegine.utils.NCIM.Dimensions.spatial import Meter
+        
+        x_knots = x_arr.copy()
+        y_knots = y_arr.copy()
+        t_knots = t_arr.copy()
+        
+        for iteration in range(max_iterations):
+            # Fit spline with current knots
+            if len(t_knots) < 2:
+                break
+            
+            cs_x = CubicSpline(t_knots, x_knots, bc_type='natural')
+            cs_y = CubicSpline(t_knots, y_knots, bc_type='natural')
+            
+            # Dense evaluation
+            total_length = np.sum(np.sqrt(np.diff(x_knots)**2 + np.diff(y_knots)**2))
+            n_eval = max(int(total_length / resolution_m) + 1, 10)
+            t_dense = np.linspace(0, 1, n_eval)
+            
+            eval_x = cs_x(t_dense)
+            eval_y = cs_y(t_dense)
+            
+            # Check for collisions
+            collision_indices = []
+            for i, (x, y) in enumerate(zip(eval_x, eval_y)):
+                point = (Meter(float(x)), Meter(float(y)))
+                # Check if point is inside any obstacle
+                for obstacle in expanded_obstacles:
+                    if obstacle.contains_point(*point):
+                        collision_indices.append(i)
+                        break
+            
+            if not collision_indices:
+                # No collisions, we're done
+                print(f"[SplineTrajectoryGenerator] Validated after {iteration} subdivision(s). {len(t_knots)} knots.")
+                break
+            
+            # Find which segments need subdivision
+            # Map collision indices back to knot segments
+            segments_to_subdivide = set()
+            for coll_idx in collision_indices:
+                t_coll = t_dense[coll_idx]
+                # Find which knot segment this falls into
+                for seg_idx in range(len(t_knots) - 1):
+                    if t_knots[seg_idx] <= t_coll <= t_knots[seg_idx + 1]:
+                        segments_to_subdivide.add(seg_idx)
+                        break
+            
+            if not segments_to_subdivide:
+                break
+            
+            # Insert midpoints for colliding segments (in reverse order to preserve indices)
+            new_x = list(x_knots)
+            new_y = list(y_knots)
+            new_t = list(t_knots)
+            
+            for seg_idx in sorted(segments_to_subdivide, reverse=True):
+                mid_t = (t_knots[seg_idx] + t_knots[seg_idx + 1]) / 2
+                mid_x = (x_knots[seg_idx] + x_knots[seg_idx + 1]) / 2
+                mid_y = (y_knots[seg_idx] + y_knots[seg_idx + 1]) / 2
+                
+                new_t.insert(seg_idx + 1, mid_t)
+                new_x.insert(seg_idx + 1, mid_x)
+                new_y.insert(seg_idx + 1, mid_y)
+            
+            x_knots = np.array(new_x)
+            y_knots = np.array(new_y)
+            t_knots = np.array(new_t)
+            
+            print(f"[SplineTrajectoryGenerator] Iteration {iteration + 1}: Added {len(segments_to_subdivide)} midpoint(s). Now {len(t_knots)} knots.")
+        
+        return x_knots, y_knots, t_knots
+    
     def generate(
         self,
         robot_name: str,
@@ -169,18 +270,22 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         # Normalize to [0, 1] for spline parameter
         t_input = arc_lengths / total_length
         
-        # Downsample for smooth spline fitting
-        n_knots = min(n_input, max(4, n_input // 5))
-        indices = np.linspace(0, n_input - 1, n_knots).astype(int)
-        indices = np.unique(indices)
+        # Use ALL path points as knots (no downsampling) to prevent corner-cutting
+        # If expanded_obstacles is provided, validate and subdivide as needed
+        if traversal_space is not None:
+            # Extract expanded_obstacles from traversal_space or use directly
+            expanded_obstacles = traversal_space
+            x_knots, y_knots, t_knots = self._validate_and_subdivide_spline(
+                x_arr, y_arr, t_input, expanded_obstacles, resolution_m, max_iterations=10
+            )
+        else:
+            x_knots = x_arr
+            y_knots = y_arr
+            t_knots = t_input
         
-        t_subset = t_input[indices]
-        x_subset = x_arr[indices]
-        y_subset = y_arr[indices]
-        
-        # Fit cubic splines
-        cs_x = CubicSpline(t_subset, x_subset, bc_type='natural')
-        cs_y = CubicSpline(t_subset, y_subset, bc_type='natural')
+        # Fit cubic splines using all knots
+        cs_x = CubicSpline(t_knots, x_knots, bc_type='natural')
+        cs_y = CubicSpline(t_knots, y_knots, bc_type='natural')
         
         # Generate dense output points at desired resolution
         n_output = max(int(total_length / resolution_m) + 1, 2)

@@ -121,7 +121,7 @@ def on_click(x, y):
         
         traj = generator.generate(
             "Robot", None, current_pos, (target[0], target[1], destination_heading),
-            path, None, constraints,
+            path, expanded, constraints,  # Pass expanded obstacles for collision validation
         )
         
         renderer.add(path)
