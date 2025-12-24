@@ -22,7 +22,7 @@ try:
     from gamegine.representation.bounds import Circle
     
     @ObjectRendererRegistry.register(Circle)
-    def render_circle(obj: Any, canvas: Canvas, theme: Theme, display_level: DisplayLevel):
+    def render_circle(obj: Any, canvas: Canvas, theme: Theme, display_level: DisplayLevel, renderer=None):
         """Render a Circle as an obstacle."""
         arcade.draw_circle_filled(
             canvas.to_pixels(obj.x),
@@ -49,7 +49,7 @@ try:
     from gamegine.representation.bounds import Rectangle
     
     @ObjectRendererRegistry.register(Rectangle)
-    def render_rectangle(obj: Any, canvas: Canvas, theme: Theme, display_level: DisplayLevel):
+    def render_rectangle(obj: Any, canvas: Canvas, theme: Theme, display_level: DisplayLevel, renderer=None):
         """Render a Rectangle as an obstacle."""
         x = canvas.to_pixels(obj.x)
         y = canvas.to_pixels(obj.y)
@@ -72,7 +72,7 @@ try:
     from gamegine.representation.bounds import DiscreteBoundary
     
     @ObjectRendererRegistry.register(DiscreteBoundary)
-    def render_discrete_boundary(obj: Any, canvas: Canvas, theme: Theme, display_level: DisplayLevel):
+    def render_discrete_boundary(obj: Any, canvas: Canvas, theme: Theme, display_level: DisplayLevel, renderer=None):
         """Render a DiscreteBoundary (polygon)."""
         if not hasattr(obj, 'get_vertices'):
             return
@@ -102,7 +102,7 @@ try:
     from gamegine.representation.bounds import BoundedObject
     
     @ObjectRendererRegistry.register(BoundedObject)
-    def render_bounded_object(obj: Any, canvas: Canvas, theme: Theme, display_level: DisplayLevel):
+    def render_bounded_object(obj: Any, canvas: Canvas, theme: Theme, display_level: DisplayLevel, renderer=None):
         """Render a BoundedObject by rendering its bounds."""
         if not hasattr(obj, 'bounds'):
             return

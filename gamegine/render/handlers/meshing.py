@@ -21,7 +21,7 @@ try:
     from gamegine.analysis.meshing import TriangulatedGraph
     
     @ObjectRendererRegistry.register(TriangulatedGraph)
-    def render_triangulated_graph(obj: Any, canvas: Canvas, theme: Theme, display_level: DisplayLevel):
+    def render_triangulated_graph(obj: Any, canvas: Canvas, theme: Theme, display_level: DisplayLevel, renderer=None):
         """Render a TriangulatedGraph (nav mesh)."""
         # Only show in debug mode
         if display_level != DisplayLevel.DEBUG:

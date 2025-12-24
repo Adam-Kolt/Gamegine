@@ -2,9 +2,11 @@
 Spline Trajectory Playground - Complete Feature Demo.
 
 Controls:
-    Click     - Create trajectory to clicked position
+    Click     - Create trajectory (normal) / Select object (selection mode)
     Q/E       - Rotate destination heading (visible as ghost at cursor)
     C         - Clear all trajectories
+    S         - Toggle selection mode (hover shows outline, click to select)
+    Escape    - Deselect (hides info card)
     D         - Toggle debug/showcase mode
     G         - Toggle grid
     
@@ -97,6 +99,9 @@ elapsed_time = 0.0
 mouse_world_x = 0.0
 mouse_world_y = 0.0
 hovered_robot_state = None  # For hover tooltip
+selection_mode = False  # S key toggles this
+current_robot_state = None  # Current animated robot state for selection
+current_robot_pos = (0, 0)  # Pixel position of robot
 
 def clear_all():
     """Clear all trajectories."""
@@ -116,7 +121,13 @@ def clear_all():
 
 @renderer.on_click
 def on_click(x, y):
-    global current_pos, destination_heading, trajectories, paths
+    global current_pos, destination_heading, trajectories, paths, selection_mode
+    
+    # If clicking on an object (hovered), don't create new trajectory
+    if renderer.hovered_object is not None:
+        return
+    
+    # Create trajectory
     target = (Meter(x), Meter(y))
     
     try:
@@ -153,8 +164,19 @@ def on_update(dt):
 
 def on_key_press(key, mods):
     """Handle key press events."""
+    global selection_mode
     if key == arcade.key.C:
         clear_all()
+    elif key == arcade.key.S:
+        # Toggle selection mode
+        selection_mode = not selection_mode
+        if selection_mode:
+            renderer.show_alert("Selection mode ON", AlertType.INFO, 1.5)
+        else:
+            renderer.show_alert("Selection mode OFF", AlertType.INFO, 1.5)
+    elif key == arcade.key.ESCAPE:
+        # Deselect
+        renderer.deselect()
 
 renderer.on_update_callback(on_update)
 renderer.on_key_press_callback(on_key_press)
@@ -255,7 +277,7 @@ def draw_tooltip(x, y, lines, theme):
 original_on_draw = renderer.on_draw
 
 def custom_on_draw():
-    global mouse_world_x, mouse_world_y, hovered_robot_state
+    global mouse_world_x, mouse_world_y, hovered_robot_state, current_robot_state, current_robot_pos
     
     # Call original renderer
     original_on_draw()
@@ -269,22 +291,27 @@ def custom_on_draw():
         renderer._mouse_x, renderer._mouse_y
     )
     
-    # --- Draw Swerve Debug (if DEBUG mode) ---
-    if display_level == DisplayLevel.DEBUG:
-        for traj, constr in trajectories:
-            if hasattr(traj, 'points') and len(traj.points) > 0:
-                step = max(1, len(traj.points) // 12)
-                for i in range(0, len(traj.points), step):
-                    pt = traj.points[i]
-                    px = canvas.to_pixels(pt.x)
-                    py = canvas.to_pixels(pt.y)
-                    theta = pt.theta.to(Radian)
-                    
-                    # Draw module positions
-                    draw_swerve_modules(px, py, theta, constr.swerve_config, theme)
-    
     # --- Draw Animated Robot ---
-    hovered_robot_state = None
+    # Register robot for selection if not already
+    if not hasattr(renderer, '_example_robot_registered'):
+        def robot_hit_test(wx, wy):
+            if current_robot_pos is None: return False
+            rx, ry = current_robot_pos
+            # Convert screen pos back to world for consistency or just use world dist
+            # Better: convert robot screen pos to world
+            r_world_x, r_world_y = renderer.screen_to_world(rx, ry)
+            return math.sqrt((wx - r_world_x)**2 + (wy - r_world_y)**2) < 0.5  # 0.5m radius
+        
+        # We need a stable object proxy for the robot
+        class RobotProxy:
+            def __init__(self): self.state = None
+            def __getattr__(self, name): return getattr(self.state, name)
+        
+        global robot_proxy
+        robot_proxy = RobotProxy()
+        renderer.register_selectable(robot_proxy, robot_hit_test)
+        renderer._example_robot_registered = True
+
     if trajectories:
         total_time = sum(t.get_travel_time().to(Second) for t, _ in trajectories)
         if total_time > 0:
@@ -297,9 +324,33 @@ def custom_on_draw():
                     local_time = Second(anim_time - accum)
                     state = traj.get_at_time(local_time)
                     
+                    # Update proxy state
+                    if 'robot_proxy' in globals():
+                        robot_proxy.state = state
+                    
                     px = canvas.to_pixels(state.x)
                     py = canvas.to_pixels(state.y)
                     theta = state.theta.to(Radian)
+                    
+                    # Store for click detection (used by hit test)
+                    current_robot_state = state
+                    current_robot_pos = (px, py)
+                    
+                    # Check selection using renderer state
+                    is_hovered = renderer.hovered_object is robot_proxy
+                    is_selected = renderer.selected_object is robot_proxy
+                    
+                    # Hover glow
+                    if is_hovered and not is_selected:
+                        arcade.draw_circle_outline(px, py, ROBOT_HALF_SIZE * 2.2, 
+                                                   arcade.color.ROYAL_BLUE, 3)
+                    
+                    # Selection indicator (bright outline)
+                    if is_selected:
+                        arcade.draw_circle_filled(px, py, ROBOT_HALF_SIZE * 2.5, 
+                                                  (65, 105, 225, 40))  # Glow
+                        arcade.draw_circle_outline(px, py, ROBOT_HALF_SIZE * 2.2, 
+                                                   arcade.color.ROYAL_BLUE, 4)
                     
                     # Draw robot
                     draw_robot(px, py, theta, theme.robot_fill, theme.robot_outline)
@@ -308,9 +359,7 @@ def custom_on_draw():
                     if display_level == DisplayLevel.DEBUG:
                         draw_swerve_modules(px, py, theta, constr.swerve_config, theme, 0.3)
                     
-                    # Check if mouse is over robot for hover
-                    dist = math.sqrt((renderer._mouse_x - px)**2 + (renderer._mouse_y - py)**2)
-                    if dist < ROBOT_HALF_SIZE * 1.5:
+                    if is_hovered:
                         hovered_robot_state = state
                     
                     break

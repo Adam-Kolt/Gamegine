@@ -23,13 +23,41 @@ try:
     from gamegine.analysis.trajectory.lib.TrajGen import Trajectory
     
     @ObjectRendererRegistry.register(Trajectory)
-    def render_trajectory(obj: Any, canvas: Canvas, theme: Theme, display_level: DisplayLevel):
+    def render_trajectory(obj: Any, canvas: Canvas, theme: Theme, display_level: DisplayLevel, renderer=None):
         """Render a Trajectory."""
         if not hasattr(obj, 'points') or len(obj.points) < 2:
             return
         
         points = obj.points
         
+        # Register as selectable with hit test
+        if renderer is not None:
+            def hit_test(wx, wy):
+                """Check if point is near the trajectory."""
+                for i in range(0, len(points), max(1, len(points) // 20)):
+                    pt = points[i]
+                    px = pt.x.to(Meter) if hasattr(pt.x, 'to') else float(pt.x)
+                    py = pt.y.to(Meter) if hasattr(pt.y, 'to') else float(pt.y)
+                    if math.sqrt((wx - px)**2 + (wy - py)**2) < 0.3:  # 30cm hit radius
+                        return True
+                return False
+            renderer.register_selectable(obj, hit_test)
+        
+        # Check hover/selection state
+        is_hovered = renderer is not None and renderer.hovered_object is obj
+        is_selected = renderer is not None and renderer.selected_object is obj
+        
+        # Determine line color and width
+        line_color = theme.trajectory_line
+        line_width = 3
+        
+        if is_selected:
+            line_color = ArcadeColor(65, 105, 225, 255)  # Royal blue
+            line_width = 5
+        elif is_hovered:
+            line_color = ArcadeColor(100, 149, 237, 255)  # Cornflower blue (lighter)
+            line_width = 4
+
         # Draw trajectory line
         for i in range(len(points) - 1):
             p1, p2 = points[i], points[i + 1]
@@ -38,8 +66,8 @@ try:
                 canvas.to_pixels(p1.y),
                 canvas.to_pixels(p2.x),
                 canvas.to_pixels(p2.y),
-                theme.trajectory_line,
-                3,
+                line_color,
+                line_width,
             )
         
         # In debug mode, show waypoints
@@ -65,14 +93,42 @@ try:
     from gamegine.utils.NCIM.Dimensions.spatial import Meter
     
     @ObjectRendererRegistry.register(SwerveTrajectory)
-    def render_swerve_trajectory(obj: Any, canvas: Canvas, theme: Theme, display_level: DisplayLevel):
+    def render_swerve_trajectory(obj: Any, canvas: Canvas, theme: Theme, display_level: DisplayLevel, renderer=None):
         """Render a SwerveTrajectory with optional debug info."""
         if not hasattr(obj, 'points') or len(obj.points) < 2:
             return
         
         points = obj.points
         
-        # Draw trajectory line (always)
+        # Register as selectable with hit test
+        if renderer is not None:
+            def hit_test(wx, wy):
+                """Check if point is near the trajectory."""
+                for i in range(0, len(points), max(1, len(points) // 20)):
+                    pt = points[i]
+                    px = pt.x.to(Meter) if hasattr(pt.x, 'to') else float(pt.x)
+                    py = pt.y.to(Meter) if hasattr(pt.y, 'to') else float(pt.y)
+                    if math.sqrt((wx - px)**2 + (wy - py)**2) < 0.3:  # 30cm hit radius
+                        return True
+                return False
+            renderer.register_selectable(obj, hit_test)
+        
+        # Check hover/selection state
+        is_hovered = renderer is not None and renderer.hovered_object is obj
+        is_selected = renderer is not None and renderer.selected_object is obj
+        
+        # Determine line color and width
+        line_color = theme.trajectory_line
+        line_width = 3
+        
+        if is_selected:
+            line_color = ArcadeColor(65, 105, 225, 255)  # Royal blue
+            line_width = 5
+        elif is_hovered:
+            line_color = ArcadeColor(100, 149, 237, 255)  # Cornflower blue (lighter)
+            line_width = 4
+        
+        # Draw trajectory line
         for i in range(len(points) - 1):
             p1, p2 = points[i], points[i + 1]
             arcade.draw_line(
@@ -80,9 +136,17 @@ try:
                 canvas.to_pixels(p1.y),
                 canvas.to_pixels(p2.x),
                 canvas.to_pixels(p2.y),
-                theme.trajectory_line,
-                3,
+                line_color,
+                line_width,
             )
+        
+        # Selection indicator - glow effect at start
+        if is_selected:
+            start = points[0]
+            sx = canvas.to_pixels(start.x)
+            sy = canvas.to_pixels(start.y)
+            arcade.draw_circle_filled(sx, sy, 15, ArcadeColor(65, 105, 225, 60))
+            arcade.draw_circle_outline(sx, sy, 12, ArcadeColor(65, 105, 225, 200), 2)
         
         # Debug mode: show swerve module positions
         if display_level == DisplayLevel.DEBUG:
@@ -113,7 +177,7 @@ try:
     from gamegine.analysis.pathfinding import Path
     
     @ObjectRendererRegistry.register(Path)
-    def render_path(obj: Any, canvas: Canvas, theme: Theme, display_level: DisplayLevel):
+    def render_path(obj: Any, canvas: Canvas, theme: Theme, display_level: DisplayLevel, renderer=None):
         """Render an A* path."""
         points = obj.get_points() if hasattr(obj, 'get_points') else obj.path
         

@@ -276,6 +276,13 @@ class Renderer(arcade.Window):
         
         # Alerts (slide-in/out notifications)
         self._alerts: List[Alert] = []
+        
+        # Selection & Info Card
+        self._selected_object: Any = None  # Object or Callable returning object
+        self._hovered_object: Any = None   # Currently hovered selectable object
+        self._selectables: Dict[int, Tuple[Any, Callable[[float, float], bool]]] = {}  # id(obj) → (obj, hit_test_fn)
+        self._info_card_progress: float = 0.0  # 0=hidden, 1=visible
+        self._info_card_target: float = 0.0    # Target for animation
     
     # -------------------------------------------------------------------------
     # Factory Method
@@ -428,6 +435,54 @@ class Renderer(arcade.Window):
         """Show a slide-in/out notification alert."""
         self._alerts.append(Alert(message, alert_type, duration))
     
+    def select(self, obj_or_provider: Any):
+        """Select an object to show in the info card.
+        
+        Args:
+            obj_or_provider: Either a static object, or a callable that returns 
+                           the current object state (for dynamic updates).
+        """
+        self._selected_object = obj_or_provider
+    
+    def deselect(self):
+        """Deselect the current object (hides info card)."""
+        self._selected_object = None
+    
+    @property
+    def selected_object(self) -> Any:
+        """Get the currently selected object (calls provider if callable)."""
+        if callable(self._selected_object):
+            return self._selected_object()
+        return self._selected_object
+    
+    @property
+    def hovered_object(self) -> Any:
+        """Get the currently hovered object."""
+        return self._hovered_object
+    
+    def register_selectable(self, obj: Any, hit_test: Callable[[float, float], bool]):
+        """Register an object as selectable with a hit test function.
+        
+        Args:
+            obj: The object to register
+            hit_test: Function(world_x, world_y) -> bool, returns True if point is on object
+        """
+        self._selectables[id(obj)] = (obj, hit_test)
+    
+    def unregister_selectable(self, obj: Any):
+        """Unregister a selectable object."""
+        self._selectables.pop(id(obj), None)
+    
+    def _hit_test_selectables(self, world_x: float, world_y: float) -> Optional[Any]:
+        """Find which selectable object is at the given world coordinates."""
+        for obj_id, (obj, hit_test) in self._selectables.items():
+            try:
+                if hit_test(world_x, world_y):
+                    return obj
+            except:
+                pass
+        return None
+    
     # -------------------------------------------------------------------------
     # Rendering
     # -------------------------------------------------------------------------
@@ -459,12 +514,13 @@ class Renderer(arcade.Window):
                         handler = ObjectRendererRegistry.get_handler(obj)
                         if handler:
                             try:
-                                handler(obj, self._canvas, self._theme, self._display_level)
+                                handler(obj, self._canvas, self._theme, self._display_level, self)
                             except Exception as e:
                                 print(f"Handler error for {type(obj).__name__}: {e}")
             
             # HUD
             self._draw_alerts()
+            self._draw_info_card()
         except Exception as e:
             print(f"on_draw error: {e}")
             import traceback
@@ -585,6 +641,209 @@ class Renderer(arcade.Window):
             )
             y_offset -= text_height + 10
     
+    def _draw_info_card(self):
+        """Draw info card sliding from left with object details."""
+        if self._info_card_progress <= 0.01:
+            return
+        
+        # Card dimensions
+        card_width = 280
+        card_height = 400
+        padding = 16
+        header_height = 40
+        
+        # Slide in from left (eased)
+        eased = self._info_card_progress * self._info_card_progress * (3.0 - 2.0 * self._info_card_progress)
+        x_pos = -card_width + (card_width + 20) * eased
+        y_pos = self.height - card_height - 50
+        
+        # Fade effect
+        alpha = int(240 * eased)
+        
+        # Card background (light/white)
+        arcade.draw_lbwh_rectangle_filled(
+            x_pos, y_pos,
+            card_width, card_height,
+            ArcadeColor(250, 250, 252, alpha)
+        )
+        
+        # Shadow effect (subtle darker rectangle behind)
+        arcade.draw_lbwh_rectangle_filled(
+            x_pos + 3, y_pos - 3,
+            card_width, card_height,
+            ArcadeColor(0, 0, 0, int(30 * eased))
+        )
+        # Redraw card on top of shadow
+        arcade.draw_lbwh_rectangle_filled(
+            x_pos, y_pos,
+            card_width, card_height,
+            ArcadeColor(250, 250, 252, alpha)
+        )
+        
+        # Header background
+        arcade.draw_lbwh_rectangle_filled(
+            x_pos, y_pos + card_height - header_height,
+            card_width, header_height,
+            ArcadeColor(65, 105, 225, alpha)  # Royal blue
+        )
+        
+        # Get object info
+        info_lines = self._get_object_info(self.selected_object)
+        
+        # Header text (object type)
+        header_text = info_lines[0] if info_lines else "Selected Object"
+        arcade.draw_text(
+            header_text,
+            x_pos + padding, y_pos + card_height - header_height + 12,
+            ArcadeColor(255, 255, 255, int(255 * eased)),
+            14,
+            font_name="Arial",
+            bold=True,
+        )
+        
+        # Body text
+        text_y = y_pos + card_height - header_height - 30
+        for line in info_lines[1:]:
+            if text_y < y_pos + 20:
+                break
+            arcade.draw_text(
+                line,
+                x_pos + padding, text_y,
+                ArcadeColor(50, 50, 60, int(255 * eased)),
+                12,
+                font_name="Arial",
+            )
+            text_y -= 20
+        
+        # Draw swerve diagram if object has module states
+        obj = self.selected_object
+        if hasattr(obj, 'module_states') and obj.module_states and len(obj.module_states) >= 4:
+            self._draw_swerve_diagram(x_pos + card_width // 2, y_pos + 80, 50, obj.module_states, eased)
+    
+    def _draw_swerve_diagram(self, cx: float, cy: float, size: float, module_states, alpha_factor: float):
+        """Draw a mini swerve robot diagram with module states."""
+        import math
+        from gamegine.utils.NCIM.Dimensions.angular import Radian
+        from gamegine.utils.NCIM.ComplexDimensions.omega import RadiansPerSecond
+        
+        alpha = int(255 * alpha_factor)
+        
+        # Draw robot body outline
+        half = size * 0.8
+        arcade.draw_lbwh_rectangle_outline(
+            cx - half, cy - half, half * 2, half * 2,
+            ArcadeColor(100, 100, 120, alpha), 2
+        )
+        
+        # Module positions (FL, FR, BL, BR)
+        offsets = [
+            (-half, half),    # FL
+            (half, half),     # FR
+            (-half, -half),   # BL
+            (half, -half),    # BR
+        ]
+        module_labels = ["FL", "FR", "BL", "BR"]
+        
+        for i, (dx, dy) in enumerate(offsets):
+            if i >= len(module_states):
+                break
+            mod = module_states[i]
+            mx, my = cx + dx, cy + dy
+            
+            # Get angle and omega
+            angle = mod.wheel_angle.to(Radian) if hasattr(mod.wheel_angle, 'to') else float(mod.wheel_angle)
+            omega = mod.wheel_omega.to(RadiansPerSecond) if hasattr(mod.wheel_omega, 'to') else float(mod.wheel_omega)
+            
+            # Draw module circle
+            arcade.draw_circle_filled(mx, my, 8, ArcadeColor(65, 105, 225, alpha))
+            
+            # Draw wheel direction arrow
+            arrow_len = 15 + min(abs(omega) * 2, 15)  # Scale with velocity
+            end_x = mx + math.cos(angle) * arrow_len
+            end_y = my + math.sin(angle) * arrow_len
+            
+            # Arrow color: green for forward, red for reverse
+            arrow_color = ArcadeColor(34, 197, 94, alpha) if omega >= 0 else ArcadeColor(239, 68, 68, alpha)
+            arcade.draw_line(mx, my, end_x, end_y, arrow_color, 2)
+            
+            # Arrowhead
+            head_angle = math.atan2(end_y - my, end_x - mx)
+            head_len = 5
+            for da in [2.5, -2.5]:  # Two sides of arrowhead
+                hx = end_x - math.cos(head_angle + da) * head_len
+                hy = end_y - math.sin(head_angle + da) * head_len
+                arcade.draw_line(end_x, end_y, hx, hy, arrow_color, 2)
+            
+            # Module label
+            arcade.draw_text(
+                module_labels[i],
+                mx - 6, my + 12,
+                ArcadeColor(80, 80, 100, alpha),
+                8,
+                font_name="Arial",
+            )
+    
+    def _get_object_info(self, obj: Any) -> List[str]:
+        """Extract info lines for an object."""
+        # Import units at top to avoid UnboundLocalError
+        from gamegine.utils.NCIM.Dimensions.spatial import Meter
+        from gamegine.utils.NCIM.Dimensions.temporal import Second
+        from gamegine.utils.NCIM.Dimensions.angular import Degree, Radian
+        from gamegine.utils.NCIM.ComplexDimensions.velocity import MetersPerSecond
+        from gamegine.utils.NCIM.ComplexDimensions.omega import RadiansPerSecond
+        
+        if obj is None:
+            return ["No Selection"]
+        
+        lines = []
+        type_name = type(obj).__name__
+        lines.append(f"📦 {type_name}")
+        
+        # Position info
+        if hasattr(obj, 'x') and hasattr(obj, 'y'):
+            x_val = obj.x.to(Meter) if hasattr(obj.x, 'to') else float(obj.x)
+            y_val = obj.y.to(Meter) if hasattr(obj.y, 'to') else float(obj.y)
+            lines.append(f"Position: ({x_val:.2f}, {y_val:.2f}) m")
+        
+        # Heading
+        if hasattr(obj, 'theta'):
+            theta = obj.theta.to(Degree) if hasattr(obj.theta, 'to') else float(obj.theta)
+            lines.append(f"Heading: {theta:.1f}°")
+        
+        # Trajectory specific
+        if hasattr(obj, 'get_length') and hasattr(obj, 'get_travel_time'):
+            length = obj.get_length().to(Meter)
+            time = obj.get_travel_time().to(Second)
+            lines.append(f"Length: {length:.2f} m")
+            lines.append(f"Travel time: {time:.2f} s")
+            if hasattr(obj, 'points'):
+                lines.append(f"Waypoints: {len(obj.points)}")
+        
+        # Velocity
+        if hasattr(obj, 'vel_x') and hasattr(obj, 'vel_y'):
+            vx = obj.vel_x.to(MetersPerSecond) if hasattr(obj.vel_x, 'to') else float(obj.vel_x)
+            vy = obj.vel_y.to(MetersPerSecond) if hasattr(obj.vel_y, 'to') else float(obj.vel_y)
+            speed = (vx**2 + vy**2)**0.5
+            lines.append(f"Velocity: {speed:.2f} m/s")
+        
+        # Omega (angular velocity)
+        if hasattr(obj, 'omega'):
+            omega = obj.omega.to(RadiansPerSecond) if hasattr(obj.omega, 'to') else float(obj.omega)
+            lines.append(f"Angular vel: {omega:.2f} rad/s")
+        
+        # Swerve module states
+        if hasattr(obj, 'module_states') and obj.module_states:
+            lines.append("")
+            lines.append("🔧 Swerve Modules:")
+            module_names = ["FL", "FR", "BL", "BR"]
+            for i, mod in enumerate(obj.module_states[:4]):
+                name = module_names[i] if i < len(module_names) else f"M{i}"
+                angle = mod.wheel_angle.to(Degree) if hasattr(mod.wheel_angle, 'to') else float(mod.wheel_angle)
+                omega_val = mod.wheel_omega.to(RadiansPerSecond) if hasattr(mod.wheel_omega, 'to') else float(mod.wheel_omega)
+                lines.append(f"  {name}: {angle:.0f}° @ {omega_val:.1f} rad/s")
+        
+        return lines
+    
     # -------------------------------------------------------------------------
     # Event Handlers
     # -------------------------------------------------------------------------
@@ -597,6 +856,13 @@ class Renderer(arcade.Window):
             alert.elapsed += delta_time
         self._alerts = [a for a in self._alerts if not a.is_expired]
         
+        # Animate info card slide (smooth lerp)
+        self._info_card_target = 1.0 if self._selected_object else 0.0
+        self._info_card_progress += (self._info_card_target - self._info_card_progress) * 0.12
+        # Snap to target when close
+        if abs(self._info_card_progress - self._info_card_target) < 0.01:
+            self._info_card_progress = self._info_card_target
+        
         for cb in self._on_update:
             cb(delta_time)
     
@@ -605,12 +871,25 @@ class Renderer(arcade.Window):
             # Convert to world coords
             wx = x / self._canvas.render_scale
             wy = y / self._canvas.render_scale
+            
+            # Automatic click selection
+            hit = self._hit_test_selectables(wx, wy)
+            if hit is not None:
+                self.select(hit)
+            elif self._selected_object is not None and not callable(self._selected_object):
+                # Click on empty space - deselect (but not if using a state provider)
+                self.deselect()
+            
             for cb in self._on_click:
                 cb(wx, wy)
     
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         self._mouse_x = x
         self._mouse_y = y
+        
+        # Automatic hover detection
+        world_x, world_y = self.screen_to_world(x, y)
+        self._hovered_object = self._hit_test_selectables(world_x, world_y)
     
     def on_key_press(self, key: int, modifiers: int):
         self._keys_pressed.add(key)
