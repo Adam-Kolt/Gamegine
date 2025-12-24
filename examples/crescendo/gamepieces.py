@@ -1,5 +1,4 @@
 from typing import Callable
-from gamegine.render import helpers
 from gamegine.render.style import Palette
 from gamegine.representation.bounds import Circle
 from gamegine.representation.gamepiece import Gamepiece, GamepiecePhysicalProperties
@@ -23,4 +22,5 @@ class Note(Gamepiece):
         y: SpatialMeasurement,
         render_scale: SpatialMeasurement,
     ):
-        helpers.draw_point(x, y, cls.OUTER_RADIUS, Palette.ORANGE, render_scale)
+        pass
+        #helpers.draw_point(x, y, cls.OUTER_RADIUS, Palette.ORANGE, render_scale)

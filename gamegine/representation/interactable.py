@@ -3,8 +3,7 @@ from enum import Enum
 from abc import ABC, abstractmethod
 from typing import Callable, List, Tuple
 
-from gamegine.render import helpers
-from gamegine.render.drawable import Drawable
+# Rendering is handled by gamegine.render.handlers, not embedded here
 from gamegine.representation.bounds import BoundedObject, Boundary
 from gamegine.simulation.robot import RobotState
 from gamegine.simulation.state import StateSpace, ValueChange
@@ -12,7 +11,7 @@ from gamegine.utils.NCIM.Dimensions.spatial import SpatialMeasurement
 from gamegine.utils.NCIM.Dimensions.angular import AngularMeasurement
 
 
-class RobotInteractable(BoundedObject, Drawable):
+class RobotInteractable(BoundedObject):
     """Class for representing a robot-interactable object during the match, which includes scoring stations and other game elements which the robot can interact with to change the game state.
 
     :param boundary: The boundary of the interactable object.
@@ -52,8 +51,6 @@ class RobotInteractable(BoundedObject, Drawable):
         :rtype: List[:class:`InteractionOption`]"""
         pass
 
-    def draw(self, render_scale: SpatialMeasurement):
-        self.bounds.draw(render_scale)
 
     @classmethod
     def get_interaction(cls, identifier: str) -> "InteractionOption":

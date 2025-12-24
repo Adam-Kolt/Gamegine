@@ -2,7 +2,6 @@ from typing import Dict, List, Tuple
 import math
 from gamegine.analysis.trajectory.lib import CALCULATION_UNIT_SPATIAL
 from gamegine.analysis.trajectory.lib.problemVariables import PointVariables
-from gamegine.render import helpers
 from gamegine.render.style import Palette
 from gamegine.representation.bounds import DiscreteBoundary, Rectangle
 from gamegine.utils.NCIM.Dimensions.spatial import Centimeter, Meter, SpatialMeasurement
@@ -13,7 +12,8 @@ class SafeCorridor(Rectangle):
     """Class for representing a safe corridor for the robot to travel through. Wraps around a rectangle to provide a safe corridor for the robot to travel through."""
 
     def draw(self, render_scale: SpatialMeasurement):
-        helpers.draw_fancy_rectangle(self, Palette.BLUE, render_scale)
+        pass
+        #  helpers.draw_fancy_rectangle(self, Palette.BLUE, render_scale)
 
 
 def __CheckIntersection(rect, obstacles: List[DiscreteBoundary]):
@@ -836,12 +836,8 @@ class LaneSegment:
         right_start = (Meter(ext_p1x - self.perp_x * rw), Meter(ext_p1y - self.perp_y * rw))
         right_end = (Meter(ext_p2x - self.perp_x * rw), Meter(ext_p2y - self.perp_y * rw))
         
-        # Draw left boundary (green)
-        helpers.draw_line(left_start[0], left_start[1], left_end[0], left_end[1],
-                         Centimeter(3), Palette.GREEN, render_scale)
-        # Draw right boundary (green)
-        helpers.draw_line(right_start[0], right_start[1], right_end[0], right_end[1],
-                         Centimeter(3), Palette.GREEN, render_scale)
+
+        
 
 
 def __compute_lane_width_in_direction(

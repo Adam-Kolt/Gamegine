@@ -1,6 +1,5 @@
 from typing import List
 from examples.crescendo.gamepieces import Note
-from gamegine.render import helpers
 from gamegine.render.style import Palette
 from gamegine.representation.bounds import DiscreteBoundary, Point
 from gamegine.representation.interactable import InteractionOption, RobotInteractable
@@ -71,8 +70,8 @@ class Speaker(RobotInteractable):
 
     def draw(self, render_scale: SpatialMeasurement):
         point: Point = self.bounds
-        helpers.draw_point(point.x, point.y, Inch(3), Palette.BLUE, render_scale)
-
+        #helpers.draw_point(point.x, point.y, Inch(3), Palette.BLUE, render_scale)
+        pass
 
 class AmplifierState(StateSpace):
     def __init__(self) -> None:

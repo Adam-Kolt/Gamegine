@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from gamegine.render.drawable import Drawable
+# Rendering is handled by gamegine.render.handlers, not embedded here
 from gamegine.representation.bounds import BoundedObject
 from gamegine.simulation.state import StateSpace, ValueEntry
 from gamegine.utils.NCIM.Dimensions.spatial import SpatialMeasurement
@@ -47,7 +47,7 @@ class GamepieceState(StateSpace):
         return self
 
 
-class GamepieceInstance(BoundedObject, Drawable):
+class GamepieceInstance(BoundedObject):
     def __init__(
         self, gamepiece: Gamepiece, x: SpatialMeasurement, y: SpatialMeasurement
     ):
@@ -56,5 +56,4 @@ class GamepieceInstance(BoundedObject, Drawable):
         self.x = x
         self.y = y
 
-    def draw(self, render_scale: SpatialMeasurement):
-        self.gamepiece.display(self.x, self.y, render_scale)
+

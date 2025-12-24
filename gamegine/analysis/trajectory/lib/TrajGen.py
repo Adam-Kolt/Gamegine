@@ -12,9 +12,7 @@ from gamegine.analysis.trajectory.lib.constraints.swerve import (
     SwerveKinematicConstraints,
     SwerveModuleConstraints,
 )
-from gamegine.render import helpers
-from gamegine.render.style import Palette
-import pygame
+# Rendering is handled by gamegine.render.handlers, not embedded here
 from dataclasses import dataclass, field
 
 from gamegine.analysis.pathfinding import Path
@@ -42,7 +40,7 @@ from gamegine.analysis.trajectory.lib.problemVariables import (
 )
 from gamegine.analysis.trajectory.lib.trajectoryStates import TrajectoryState
 from gamegine.reference.swerve import SwerveConfig
-from gamegine.render.drawable import Drawable
+# from gamegine.render.drawable import Drawable  # Removed: rendering handled by handlers
 from gamegine.representation.robot import PhysicalParameters
 from gamegine.utils import logging
 from gamegine.utils.NCIM.ComplexDimensions.acceleration import (
@@ -126,7 +124,7 @@ class SolverConfig:
     timeout: float = 100.0
 
 
-class Trajectory(Drawable):
+class Trajectory:
     """Class used to store a trajectory generated from an optimization problem. Contains information about the trajectory, including length, time, and robot constraints.
 
     :param points: The points along the trajectory.
@@ -240,32 +238,6 @@ class Trajectory(Drawable):
     def __str__(self) -> str:
         return f"Trajectory: {len(self.points)} points, {self.get_length()} length, {self.get_travel_time()} time. Optimized for {self.robot_constraints}."
 
-    def draw(self, render_scale: SpatialMeasurement):
-        """Draws the trajectory on the screen.
-
-        :param render_scale: The scale at which to render the trajectory.
-        :type render_scale: :class:`SpatialMeasurement`"""
-
-        for i in range(len(self.points) - 1):
-            point = self.points[i]
-            point2 = self.points[i + 1]
-            pygame.draw.line(
-                pygame.display.get_surface(),
-                (255, 100, 0),
-                (RatioOf(point.x, render_scale), RatioOf(point.y, render_scale)),
-                (RatioOf(point2.x, render_scale), RatioOf(point2.y, render_scale)),
-                width=int(RatioOf(Inch(2), render_scale)),
-            )
-
-        helpers.draw_point(point2.x, point2.y, Inch(2), Palette.PINK, render_scale)
-        helpers.draw_point(
-            self.points[0].x,
-            self.points[0].y,
-            Inch(2),
-            Palette.PINK,
-            render_scale,
-        )
-
 
 class SwerveTrajectory(Trajectory):
     """Class used to store a swerve drive trajectory generated from an optimization problem. Contains information about the trajectory, including length, time, and robot constraints.
@@ -351,93 +323,6 @@ class SwerveTrajectory(Trajectory):
             cur += point.dt
         return self.points[-1]
 
-    def draw(self, render_scale: SpatialMeasurement):
-        module_points = [
-            self.robot_constraints.swerve_config.top_left_offset,
-            self.robot_constraints.swerve_config.top_right_offset,
-            self.robot_constraints.swerve_config.bottom_right_offset,
-            self.robot_constraints.swerve_config.bottom_left_offset,
-        ]
-
-        for i in range(len(self.points) - 1):
-            point = self.points[i]
-            point2 = self.points[i + 1]
-            pygame.draw.line(
-                pygame.display.get_surface(),
-                (255, 100, 0),
-                (RatioOf(point.x, render_scale), RatioOf(point.y, render_scale)),
-                (RatioOf(point2.x, render_scale), RatioOf(point2.y, render_scale)),
-                width=int(RatioOf(Inch(2), render_scale)),
-            )
-            angle = point.theta
-
-            colors = [
-                Palette.RED,
-                Palette.ORANGE,
-                Palette.BLUE,
-                Palette.YELLOW,
-            ]
-            field_relative_module_points = []
-            for i, offset in enumerate(module_points):
-                cos = math.cos(angle.to(Radian))
-                sin = math.sin(angle.to(Radian))
-                x = point.x + offset[0] * cos - offset[1] * sin
-                y = point.y + offset[0] * sin + offset[1] * cos
-                field_relative_module_points.append((x, y))
-                helpers.draw_point(x, y, Inch(1), colors[i], render_scale)
-
-            # for i, module_point in enumerate(field_relative_module_points[:-1]):
-            #     pygame.draw.line(
-            #         pygame.display.get_surface(),
-            #         colors[i].get_color_array(),
-            #         (
-            #             RatioOf(field_relative_module_points[i][0], render_scale),
-            #             RatioOf(field_relative_module_points[i][1], render_scale),
-            #         ),
-            #         (
-            #             RatioOf(field_relative_module_points[i + 1][0], render_scale),
-            #             RatioOf(field_relative_module_points[i + 1][1], render_scale),
-            #         ),
-            #         width=int(RatioOf(Inch(2), render_scale)),
-            #     )
-
-            # pygame.draw.line(
-            #     pygame.display.get_surface(),
-            #     colors[3].get_color_array(),
-            #     (
-            #         RatioOf(field_relative_module_points[3][0], render_scale),
-            #         RatioOf(field_relative_module_points[3][1], render_scale),
-            #     ),
-            #     (
-            #         RatioOf(field_relative_module_points[0][0], render_scale),
-            #         RatioOf(field_relative_module_points[0][1], render_scale),
-            #     ),
-            #     width=int(RatioOf(Inch(2), render_scale)),
-            # )
-
-            # Draw the robot center
-            helpers.draw_point(point.x, point.y, Inch(2), Palette.PINK, render_scale)
-
-            # Draw the robot heading
-            pygame.draw.line(
-                pygame.display.get_surface(),
-                Palette.PINK.get_color_array(),
-                (
-                    RatioOf(point.x, render_scale),
-                    RatioOf(point.y, render_scale),
-                ),
-                (
-                    RatioOf(
-                        point.x + Inch(6) * math.cos(point.theta.to(Radian)),
-                        render_scale,
-                    ),
-                    RatioOf(
-                        point.y + Inch(6) * math.sin(point.theta.to(Radian)),
-                        render_scale,
-                    ),
-                ),
-                width=int(RatioOf(Inch(1), render_scale)),
-            )
 
 
 class TrajectoryProblem:

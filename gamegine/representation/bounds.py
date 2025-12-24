@@ -5,9 +5,7 @@ import copy
 
 import math
 
-import pygame
-from gamegine.render.drawable import Drawable
-from gamegine.render.style import Palette
+# Rendering is handled by gamegine.render.handlers, not embedded in domain objects
 from gamegine.representation.base import NamedObject
 from typing import TYPE_CHECKING
 
@@ -96,7 +94,7 @@ class Boundary(ABC):
         pass
 
 
-class DiscreteBoundary(Boundary, Drawable):
+class DiscreteBoundary(Boundary):
     """Base class for representing discrete boundaries which can be marked by a series of points, extending the :class:`Boundary` class. Discrete boundaries can be used to represent the shape of an object in 2D space. Can be used in all the manner of the base class, but also provides methods for checking if the boundary intersects a line, rectangle, or point, and for getting the bounded rectangle of the boundary."""
 
     @abstractmethod
@@ -210,22 +208,6 @@ class DiscreteBoundary(Boundary, Drawable):
         max_x = max([point[0] for point in self.plain_points])
         max_y = max([point[1] for point in self.plain_points])
         return Rectangle(min_x, min_y, max_x - min_x, max_y - min_y)
-
-    def draw(self, render_scale: SpatialMeasurement) -> None:
-        """Draws the boundary, used by the :class:`Renderer` to draw the boundary.
-
-        :param render_scale: The scale to render the boundary at.
-        :type render_scale: :class:`SpatialMeasurement`
-        """
-
-        pygame.draw.polygon(
-            pygame.display.get_surface(),
-            (255, 255, 0),
-            [
-                (RatioOf(point[0], render_scale), RatioOf(point[1], render_scale))
-                for point in self.get_vertices()
-            ],
-        )
 
     def buffered(
         self, distance: SpatialMeasurement

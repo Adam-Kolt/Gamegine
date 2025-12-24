@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Callable
 from dataclasses import dataclass
-from gamegine.render.drawable import Drawable
+# Rendering is handled by gamegine.render.handlers, not embedded here
 from gamegine.representation.bounds import Boundary3D, BoundedObject
 from gamegine.simulation.gamepiece import GamepieceInstance
 from gamegine.utils.NCIM.Dimensions.mass import MassMeasurement

@@ -1,29 +1,28 @@
 """
-Spline Trajectory Playground - A simplified trajectory generator using cubic splines.
+Spline Trajectory Playground - Complete Feature Demo.
 
-This example demonstrates the SplineTrajectoryGenerator which bypasses the complex
-optimization solver for faster, more reliable trajectory generation.
-
-Usage:
-- Click to set waypoints
-- Trajectory is generated instantly using cubic splines
-- Press 'C' to clear all trajectories
+Controls:
+    Click     - Create trajectory to clicked position
+    Q/E       - Rotate destination heading (visible as ghost at cursor)
+    C         - Clear all trajectories
+    D         - Toggle debug/showcase mode
+    G         - Toggle grid
+    
+Debug mode shows:
+    - Trajectory waypoints
+    - Swerve module positions along path
 """
 
-from typing import List, Tuple
-import pygame
 import math
+import arcade
 from examples.crescendo.crescendo import Crescendo
 from gamegine.analysis import pathfinding
 from gamegine.analysis.meshing import TriangulatedGraph
 from gamegine.analysis.trajectory.generator import SplineTrajectoryGenerator
-from gamegine.analysis.trajectory.lib.TrajGen import (
-    SwerveTrajectory,
-    SwerveRobotConstraints,
-)
+from gamegine.analysis.trajectory.lib.TrajGen import SwerveRobotConstraints
 from gamegine.reference import gearing, motors
 from gamegine.reference.swerve import SwerveConfig, SwerveModule
-from gamegine.render.renderer import Renderer
+from gamegine.render import Renderer, DisplayLevel, AlertType, run
 from gamegine.representation.bounds import ExpandedObjectBounds
 from gamegine.representation.robot import PhysicalParameters
 from gamegine.utils.NCIM.ComplexDimensions.MOI import PoundsInchesSquared
@@ -31,275 +30,312 @@ from gamegine.utils.NCIM.ComplexDimensions.acceleration import MeterPerSecondSqu
 from gamegine.utils.NCIM.ComplexDimensions.alpha import RadiansPerSecondSquared
 from gamegine.utils.NCIM.ComplexDimensions.omega import RadiansPerSecond
 from gamegine.utils.NCIM.ComplexDimensions.velocity import MetersPerSecond
-from gamegine.utils.NCIM.Dimensions.angular import AngularMeasurement, Degree, Radian
+from gamegine.utils.NCIM.Dimensions.angular import Degree, Radian
 from gamegine.utils.NCIM.Dimensions.current import Ampere
 from gamegine.utils.NCIM.Dimensions.mass import Pound
-from gamegine.utils.NCIM.Dimensions.spatial import (
-    Centimeter,
-    Feet,
-    Inch,
-    Meter,
-    SpatialMeasurement,
-)
+from gamegine.utils.NCIM.Dimensions.spatial import Feet, Inch, Meter
 from gamegine.utils.NCIM.Dimensions.temporal import Second
-from gamegine.render import helpers
-from gamegine.render.style import Palette
 
+# =============================================================================
+# Configuration
+# =============================================================================
 
-# Set up field and obstacles
-expanded_obstacles = ExpandedObjectBounds(
-    Crescendo.get_obstacles(),
-    robot_radius=Inch(20),
-    discretization_quality=16,
-)
-slightly_more_expanded_obstacles = ExpandedObjectBounds(
-    Crescendo.get_obstacles(),
-    robot_radius=Inch(20) + Inch(2),
-    discretization_quality=16,
-)
+obstacles = Crescendo.get_obstacles()
+expanded = ExpandedObjectBounds(obstacles, Inch(20), 16)
+nav_mesh = TriangulatedGraph(expanded, Feet(2), Crescendo.get_field_size())
 
-# Create navigation mesh
-map = TriangulatedGraph(
-    slightly_more_expanded_obstacles, Feet(2), Crescendo.get_field_size()
-)
+# Swerve robot configuration
+swerve_config = SwerveConfig(SwerveModule(
+    motors.MotorConfig(motors.KrakenX60, motors.PowerConfig(Ampere(60), Ampere(360), 1.0)),
+    gearing.MK4I.L3,
+    motors.MotorConfig(motors.KrakenX60, motors.PowerConfig(Ampere(60), Ampere(360), 1.0)),
+    gearing.MK4I.L3,
+))
 
-# Define robot constraints (needed for SwerveTrajectory drawing)
-ROBOT_CONSTRAINTS = SwerveRobotConstraints(
-    MeterPerSecondSquared(5),
-    MetersPerSecond(6),
-    RadiansPerSecondSquared(3.14),
-    RadiansPerSecond(3.14),
-    SwerveConfig(
-        module=SwerveModule(
-            motors.MotorConfig(
-                motors.KrakenX60,
-                motors.PowerConfig(Ampere(60), Ampere(360), 1.0),
-            ),
-            gearing.MK4I.L3,
-            motors.MotorConfig(
-                motors.KrakenX60,
-                motors.PowerConfig(Ampere(60), Ampere(360), 1.0),
-            ),
-            gearing.MK4I.L3,
-        )
-    ),
-    physical_parameters=PhysicalParameters(
-        mass=Pound(110),
-        moi=PoundsInchesSquared(21327.14),
-    ),
+constraints = SwerveRobotConstraints(
+    MeterPerSecondSquared(5), MetersPerSecond(6),
+    RadiansPerSecondSquared(3.14), RadiansPerSecond(3.14),
+    swerve_config,
+    PhysicalParameters(Pound(110), PoundsInchesSquared(21327.14)),
 )
 
-# Create the spline trajectory generator
-# Centripetal acceleration is now automatically computed from wheel friction (µ * g)
-trajectory_generator = SplineTrajectoryGenerator(
-    max_velocity=MetersPerSecond(5.0),
-    max_acceleration=MeterPerSecondSquared(3.0),  # Tangential acceleration limit
-    min_curvature_radius=Meter(0.3),
-    resolution=Meter(0.15),
+generator = SplineTrajectoryGenerator(
+    MetersPerSecond(5.0), MeterPerSecondSquared(3.0), Meter(0.3), Meter(0.15),
 )
 
+# Robot dimensions
+ROBOT_HALF_SIZE = 18  # pixels
 
-def CreatePath(
-    start: Tuple[SpatialMeasurement, SpatialMeasurement],
-    end: Tuple[SpatialMeasurement, SpatialMeasurement],
-) -> pathfinding.Path:
-    """Creates an A* path from start to end, avoiding obstacles."""
-    path = pathfinding.findPath(
-        map,
-        start,
-        end,
-        pathfinding.AStar,
-        pathfinding.InitialConnectionPolicy.ConnectToClosest,
-    )
-    path.shortcut(expanded_obstacles)
-    return path
+# =============================================================================
+# Renderer Setup
+# =============================================================================
 
+renderer = Renderer.create(game=Crescendo)
+renderer.display_level = DisplayLevel.SHOWCASE
 
-def CreateTrajectory(
-    start: Tuple[SpatialMeasurement, SpatialMeasurement, AngularMeasurement],
-    end: Tuple[SpatialMeasurement, SpatialMeasurement],
-    target_heading: AngularMeasurement,
-) -> SwerveTrajectory:
-    """Creates a trajectory using the spline generator."""
-    path = CreatePath(start[:2], end)
-    
-    # Store path for visualization
-    global paths
-    paths.append(path)
-    
-    # Generate trajectory using spline generator (no solver!)
-    trajectory = trajectory_generator.generate(
-        robot_name="TestRobot",
-        robot=None,
-        start_state=(start[0], start[1], start[2]),
-        target_state=(end[0], end[1], target_heading),
-        path=path,
-        traversal_space=None,
-        robot_constraints=ROBOT_CONSTRAINTS,  # Pass proper constraints for drawing
-    )
-    
-    return trajectory
+# Add static objects
+renderer.add_obstacles(obstacles)
+renderer.add_safety_padding(expanded)
+renderer.add(nav_mesh)
 
+# =============================================================================
+# State
+# =============================================================================
 
-# Initialize renderer
-renderer = Renderer()
-renderer.set_game(Crescendo)
-renderer.set_render_scale(Centimeter(1))
-renderer.init_display()
-print("Spline Trajectory Playground initialized")
-print("Click to create trajectories. Press 'C' to clear.")
-
-# Global state
-Current = (Feet(6), Inch(64.081) + Inch(82.645) / 2, Degree(0))
-trajectories: List[SwerveTrajectory] = []
+current_pos = (Feet(6), Inch(64.081 + 82.645/2), Degree(0))
+destination_heading = Degree(0)
+trajectories = []  # List of (trajectory, constraints) pairs
 paths = []
-current_target_heading = Degree(0)
-ROTATION_SPEED = Degree(180)  # Degrees per second
+elapsed_time = 0.0
+mouse_world_x = 0.0
+mouse_world_y = 0.0
+hovered_robot_state = None  # For hover tooltip
 
-# Main loop
-loop = True
-clock = pygame.time.Clock()
-current_time = Second(0)
+def clear_all():
+    """Clear all trajectories."""
+    global trajectories, paths, current_pos
+    trajectories = []
+    paths = []
+    renderer.clear_objects()
+    renderer.add_obstacles(obstacles)
+    renderer.add_safety_padding(expanded)
+    renderer.add(nav_mesh)
+    current_pos = (Feet(6), Inch(64.081 + 82.645/2), Degree(0))
+    renderer.show_alert("Trajectories Cleared", AlertType.SUCCESS)
 
-while loop:
-    events = renderer.loop()
-    if events is False:
-        loop = False
-        break
+# =============================================================================
+# Event Handlers
+# =============================================================================
+
+@renderer.on_click
+def on_click(x, y):
+    global current_pos, destination_heading, trajectories, paths
+    target = (Meter(x), Meter(y))
     
-    dt_ms = clock.tick(60)
-    dt_sec = dt_ms / 1000.0
-    current_time += Second(dt_sec)
+    try:
+        path = pathfinding.findPath(
+            nav_mesh, current_pos[:2], target,
+            pathfinding.AStar, pathfinding.InitialConnectionPolicy.ConnectToClosest,
+        )
+        path.shortcut(expanded)
+        
+        traj = generator.generate(
+            "Robot", None, current_pos, (target[0], target[1], destination_heading),
+            path, None, constraints,
+        )
+        
+        renderer.add(path)
+        renderer.add(traj)
+        # Store trajectory with its constraints for debug drawing
+        trajectories.append((traj, constraints))
+        paths.append(path)
+        current_pos = (target[0], target[1], destination_heading)
+        print(f"Trajectory: {traj.get_length()}, {traj.get_travel_time()}")
+    except Exception as e:
+        renderer.show_alert(f"Path error: {str(e)[:30]}", AlertType.ERROR, 3.0)
 
-    # Handle Continuous Key Presses for Rotation
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_q]:
-        current_target_heading += ROTATION_SPEED * dt_sec
-    if keys[pygame.K_e]:
-        current_target_heading -= ROTATION_SPEED * dt_sec
+def on_update(dt):
+    global destination_heading, elapsed_time
+    elapsed_time += dt
+    
+    # Q/E to rotate destination heading
+    if renderer.is_key_pressed(arcade.key.Q):
+        destination_heading += Degree(180 * dt)
+    if renderer.is_key_pressed(arcade.key.E):
+        destination_heading -= Degree(180 * dt)
 
-    for event in events:
-        if event.type == pygame.MOUSEBUTTONUP:
-            pos = pygame.mouse.get_pos()
-            x, y = (
-                Renderer.render_scale * pos[0],
-                Renderer.render_scale * pos[1],
-            )
-            
-            print(f"Generating trajectory from {Current} to ({x}, {y}) with heading {current_target_heading}...")
-            try:
-                trajectory = CreateTrajectory(Current, (x, y), current_target_heading)
-                trajectories.append(trajectory)
-                Current = (x, y, current_target_heading)
-                print(f"  Generated! Length: {trajectory.get_length()}, Time: {trajectory.get_travel_time()}")
-            except Exception as e:
-                print(f"  Failed: {e}")
-                
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_c:
-                trajectories = []
-                paths = []
-                current_time = Second(0)
-                print("Cleared all trajectories")
+def on_key_press(key, mods):
+    """Handle key press events."""
+    if key == arcade.key.C:
+        clear_all()
 
-    # Draw the field
-    renderer.draw_element(map)
-    renderer.draw_elements(expanded_obstacles)
-    
-    # Draw A* paths (thin green lines)
-    render_scale = Renderer.render_scale
-    for path in paths:
-        points = path.get_points()
-        for i in range(len(points) - 1):
-            p1 = points[i]
-            p2 = points[i + 1]
-            helpers.draw_line(
-                p1[0], p1[1], p2[0], p2[1],
-                Inch(0.5), Palette.LIGHT_GREEN, render_scale
-            )
-    
-    # Draw trajectories
-    renderer.draw_elements(trajectories)
-    renderer.draw_elements(paths)
-    renderer.draw_static_elements()
+renderer.on_update_callback(on_update)
+renderer.on_key_press_callback(on_key_press)
 
-    # === ROBOT ANIMATION ===
-    if trajectories:
-        total_traj_time = Second(0)
-        for t in trajectories:
-            total_traj_time += t.get_travel_time()
-            
-        if total_traj_time > Second(0):
-            anim_time = current_time % total_traj_time
-            
-            accum_time = Second(0)
-            for t in trajectories:
-                duration = t.get_travel_time()
-                if accum_time + duration > anim_time:
-                    # Distinct time within this trajectory
-                    local_time = anim_time - accum_time
-                    state = t.get_at_time(local_time)
-                    
-                    # Draw Robot
-                    helpers.draw_point(
-                        state.x, 
-                        state.y, 
-                        Inch(15), 
-                        Palette.GREEN, 
-                        Renderer.render_scale
-                    )
-                    
-                    # Draw Heading
-                    head_len = Inch(20)
-                    end_x = state.x + head_len * math.cos(state.theta.to(Radian))
-                    end_y = state.y + head_len * math.sin(state.theta.to(Radian))
-                    
-                    start_pix = (Renderer.to_pixels(state.x), Renderer.to_pixels(state.y))
-                    end_pix = (Renderer.to_pixels(end_x), Renderer.to_pixels(end_y))
-                    
-                    pygame.draw.line(
-                        pygame.display.get_surface(),
-                        (0, 0, 0),
-                        start_pix,
-                        end_pix,
-                        width=3
-                    )
-                    break
-                accum_time += duration
+# =============================================================================
+# Drawing Helpers
+# =============================================================================
 
-    # Draw current position marker
-    helpers.draw_point(Current[0], Current[1], Inch(3), Palette.BLUE, render_scale)
+def draw_robot(px, py, theta, fill_color, outline_color, size=ROBOT_HALF_SIZE):
+    """Draw a square robot with a heading indicator."""
+    cos_t = math.cos(theta)
+    sin_t = math.sin(theta)
+    
+    # Robot corners (rotated square)
+    corners = []
+    for dx, dy in [(-1, -1), (1, -1), (1, 1), (-1, 1)]:
+        rx = px + (dx * cos_t - dy * sin_t) * size
+        ry = py + (dx * sin_t + dy * cos_t) * size
+        corners.append((rx, ry))
+    
+    # Draw filled robot
+    arcade.draw_polygon_filled(corners, fill_color)
+    arcade.draw_polygon_outline(corners, outline_color, 2)
+    
+    # Draw heading arrow
+    arrow_len = size * 1.3
+    arrow_x = px + cos_t * arrow_len
+    arrow_y = py + sin_t * arrow_len
+    arcade.draw_line(px, py, arrow_x, arrow_y, outline_color, 3)
 
-    # Draw Destination Overlay (Ghost Robot)
-    mouse_pos = pygame.mouse.get_pos()
-    mx, my = Renderer.render_scale * mouse_pos[0], Renderer.render_scale * mouse_pos[1]
+def draw_ghost_robot(px, py, theta, color, size=ROBOT_HALF_SIZE):
+    """Draw a ghost (outline only) robot."""
+    cos_t = math.cos(theta)
+    sin_t = math.sin(theta)
     
-    # Ghost Robot Body
-    helpers.draw_point(mx, my, Inch(15), Palette.WHITE, render_scale) # Grey for 'ghost'
+    corners = []
+    for dx, dy in [(-1, -1), (1, -1), (1, 1), (-1, 1)]:
+        rx = px + (dx * cos_t - dy * sin_t) * size
+        ry = py + (dx * sin_t + dy * cos_t) * size
+        corners.append((rx, ry))
     
-    # Ghost Robot Heading
-    head_len = Inch(20)
-    ghost_end_x = mx + head_len * math.cos(current_target_heading.to(Radian))
-    ghost_end_y = my + head_len * math.sin(current_target_heading.to(Radian))
+    arcade.draw_polygon_outline(corners, color, 2)
     
-    start_pix = (Renderer.to_pixels(mx), Renderer.to_pixels(my))
-    end_pix = (Renderer.to_pixels(ghost_end_x), Renderer.to_pixels(ghost_end_y))
+    # Heading indicator
+    arrow_x = px + cos_t * size * 1.3
+    arrow_y = py + sin_t * size * 1.3
+    arcade.draw_line(px, py, arrow_x, arrow_y, color, 2)
+
+def draw_swerve_modules(px, py, theta, config, theme, size=0.4):
+    """Draw swerve module positions."""
+    canvas = renderer.drawing_canvas
+    cos_t = math.cos(theta)
+    sin_t = math.sin(theta)
     
-    pygame.draw.line(
-        pygame.display.get_surface(),
-        (100, 100, 100), # Dark Grey
-        start_pix,
-        end_pix,
-        width=2
+    # Get module offsets from swerve config
+    offsets = [
+        config.top_left_offset,
+        config.top_right_offset,
+        config.bottom_right_offset,
+        config.bottom_left_offset,
+    ]
+    
+    for j, offset in enumerate(offsets):
+        ox = offset[0].to(Meter) if hasattr(offset[0], 'to') else float(offset[0])
+        oy = offset[1].to(Meter) if hasattr(offset[1], 'to') else float(offset[1])
+        
+        # Rotate offset by robot heading
+        wx = ox * cos_t - oy * sin_t
+        wy = ox * sin_t + oy * cos_t
+        
+        mpx = px + canvas.render_scale * wx
+        mpy = py + canvas.render_scale * wy
+        
+        arcade.draw_circle_filled(mpx, mpy, 5, theme.module_colors[j])
+
+def draw_tooltip(x, y, lines, theme):
+    """Draw tooltip with multiple lines."""
+    padding = 8
+    line_height = 18
+    width = max(len(line) * 8 for line in lines) + padding * 2
+    height = len(lines) * line_height + padding * 2
+    
+    # Draw background (lbwh = left, bottom, width, height)
+    arcade.draw_lbwh_rectangle_filled(x, y, width, height, theme.tooltip_background)
+    arcade.draw_lbwh_rectangle_outline(x, y, width, height, theme.tooltip_border, 1)
+    
+    # Draw text
+    for i, line in enumerate(lines):
+        arcade.draw_text(
+            line, x + padding, y + height - padding - (i + 1) * line_height + 4,
+            theme.tooltip_text, 12
+        )
+
+# =============================================================================
+# Custom On Draw
+# =============================================================================
+
+original_on_draw = renderer.on_draw
+
+def custom_on_draw():
+    global mouse_world_x, mouse_world_y, hovered_robot_state
+    
+    # Call original renderer
+    original_on_draw()
+    
+    canvas = renderer.drawing_canvas
+    theme = renderer.theme
+    display_level = renderer.display_level
+    
+    # Update mouse world position
+    mouse_world_x, mouse_world_y = renderer.screen_to_world(
+        renderer._mouse_x, renderer._mouse_y
     )
     
-    # Draw Heading Text
-    font = pygame.font.SysFont("Arial", 16) if pygame.font.get_init() else None
-    if font:
-        deg_val = int(current_target_heading.to(Degree) % 360)
-        text_surf = font.render(f"{deg_val}°", True, (0, 0, 0))
-        pygame.display.get_surface().blit(text_surf, (start_pix[0] + 15, start_pix[1] - 15))
+    # --- Draw Swerve Debug (if DEBUG mode) ---
+    if display_level == DisplayLevel.DEBUG:
+        for traj, constr in trajectories:
+            if hasattr(traj, 'points') and len(traj.points) > 0:
+                step = max(1, len(traj.points) // 12)
+                for i in range(0, len(traj.points), step):
+                    pt = traj.points[i]
+                    px = canvas.to_pixels(pt.x)
+                    py = canvas.to_pixels(pt.y)
+                    theta = pt.theta.to(Radian)
+                    
+                    # Draw module positions
+                    draw_swerve_modules(px, py, theta, constr.swerve_config, theme)
+    
+    # --- Draw Animated Robot ---
+    hovered_robot_state = None
+    if trajectories:
+        total_time = sum(t.get_travel_time().to(Second) for t, _ in trajectories)
+        if total_time > 0:
+            anim_time = elapsed_time % total_time
+            
+            accum = 0.0
+            for traj, constr in trajectories:
+                duration = traj.get_travel_time().to(Second)
+                if accum + duration > anim_time:
+                    local_time = Second(anim_time - accum)
+                    state = traj.get_at_time(local_time)
+                    
+                    px = canvas.to_pixels(state.x)
+                    py = canvas.to_pixels(state.y)
+                    theta = state.theta.to(Radian)
+                    
+                    # Draw robot
+                    draw_robot(px, py, theta, theme.robot_fill, theme.robot_outline)
+                    
+                    # Draw swerve modules on animated robot if debug
+                    if display_level == DisplayLevel.DEBUG:
+                        draw_swerve_modules(px, py, theta, constr.swerve_config, theme, 0.3)
+                    
+                    # Check if mouse is over robot for hover
+                    dist = math.sqrt((renderer._mouse_x - px)**2 + (renderer._mouse_y - py)**2)
+                    if dist < ROBOT_HALF_SIZE * 1.5:
+                        hovered_robot_state = state
+                    
+                    break
+                accum += duration
+    
+    # --- Draw Ghost at Current Position ---
+    cx = canvas.to_pixels(current_pos[0])
+    cy = canvas.to_pixels(current_pos[1])
+    theta = current_pos[2].to(Radian) if hasattr(current_pos[2], 'to') else 0
+    draw_ghost_robot(cx, cy, theta, theme.ghost_outline)
+    
+    # --- Draw Ghost at Cursor (with destination heading) ---
+    cursor_px = renderer._mouse_x
+    cursor_py = renderer._mouse_y
+    dest_theta = destination_heading.to(Radian)
+    draw_ghost_robot(cursor_px, cursor_py, dest_theta, theme.ghost_outline, ROBOT_HALF_SIZE * 0.8)
+    
+    # --- Hover Tooltip ---
+    if hovered_robot_state is not None:
+        state = hovered_robot_state
+        lines = [
+            f"Position: ({state.x.to(Meter):.2f}, {state.y.to(Meter):.2f})",
+            f"Heading: {state.theta.to(Degree):.1f}°",
+        ]
+        if hasattr(state, 'velocity'):
+            lines.append(f"Velocity: {state.velocity.to(MetersPerSecond):.2f} m/s")
+        draw_tooltip(renderer._mouse_x + 20, renderer._mouse_y, lines, theme)
 
-    renderer.render_frame()
+renderer.on_draw = custom_on_draw
 
-pygame.quit()
+# =============================================================================
+# Run
+# =============================================================================
+
+run()

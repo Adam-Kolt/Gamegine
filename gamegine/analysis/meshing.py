@@ -3,7 +3,7 @@ import math
 from typing import List, Set, Tuple
 from enum import Enum
 
-from gamegine.render.drawable import Drawable
+# Rendering is handled by gamegine.render.handlers, not embedded here
 from gamegine.representation.bounds import (
     Boundary,
     BoundedObject,
@@ -27,7 +27,7 @@ class ConnectionStrategy(Enum):
 
 
 # TODO: Add display for one-directional edges and colors depending on weight
-class Map(Drawable):
+class Map:
     def __init__(self, name: str = "Map") -> None:
         self.name = name
         self.nodes = {}
@@ -206,36 +206,6 @@ class Map(Drawable):
 
     def z_index(self) -> int:
         return 0
-
-    def draw(self, render_scale: SpatialMeasurement) -> None:
-        import pygame
-        from gamegine.render.renderer import Renderer
-
-        if not self.cache_up_to_date:
-            self.__update_nodes_cache()
-            self.__update_connections_cache()
-            self.cache_up_to_date = True
-
-        for node in self.nodes_cache:
-            pygame.draw.circle(
-                pygame.display.get_surface(),
-                (0, 255, 0),
-                (Renderer.to_pixels(node[1][0]), Renderer.to_pixels(node[1][1])),
-                5,
-            )
-
-        for connection in self.connections_cache:
-            one, two = connection[0][0], connection[0][1]
-            node1 = self.decode_coordinates(one)
-            node2 = self.decode_coordinates(two)
-            color = (0, 255, 0) if connection[2] else (255, 0, 0)
-            pygame.draw.line(
-                pygame.display.get_surface(),
-                color,
-                (Renderer.to_pixels(node1[0]), Renderer.to_pixels(node1[1])),
-                (Renderer.to_pixels(node2[0]), Renderer.to_pixels(node2[1])),
-                width=1,
-            )
 
 
 def VisibilityGraph(

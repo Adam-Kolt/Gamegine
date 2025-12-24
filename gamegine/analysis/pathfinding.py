@@ -5,7 +5,7 @@ from enum import Enum
 from abc import ABC, abstractmethod
 
 from gamegine.analysis.meshing import Map
-from gamegine.render.drawable import Drawable
+# Rendering is handled by gamegine.render.handlers, not embedded here
 from gamegine.representation.bounds import Boundary, DiscreteBoundary
 from gamegine.utils.logging import Debug
 from gamegine.utils.matematika import AngleBetweenVectors, GetDistanceBetween
@@ -18,7 +18,7 @@ class InitialConnectionPolicy(Enum):
     VisibilityConnect = 2
 
 
-class Path(Drawable):
+class Path:
     def __init__(
         self, path: List[Tuple[SpatialMeasurement, SpatialMeasurement]]
     ) -> None:
@@ -86,39 +86,6 @@ class Path(Drawable):
                 )
         disected_path.append(path[-1])
         return Path(disected_path)
-
-    def z_index(self) -> int:
-        return 1
-
-    def draw(self, render_scale: SpatialMeasurement) -> None:
-        import pygame
-        from gamegine.render.renderer import Renderer
-
-        for i in range(len(self.path) - 1):
-            node1 = self.path[i]
-            node2 = self.path[i + 1]
-            pygame.draw.line(
-                pygame.display.get_surface(),
-                (255, 0, 0),
-                (Renderer.to_pixels(node1[0]), Renderer.to_pixels(node1[1])),
-                (Renderer.to_pixels(node2[0]), Renderer.to_pixels(node2[1])),
-                width=2,
-            )
-            pygame.draw.circle(
-                pygame.display.get_surface(),
-                (255, 0, 0),
-                (Renderer.to_pixels(node1[0]), Renderer.to_pixels(node1[1])),
-                3,
-            )
-        pygame.draw.circle(
-            pygame.display.get_surface(),
-            (255, 0, 0),
-            (
-                Renderer.to_pixels(self.path[-1][0]),
-                Renderer.to_pixels(self.path[-1][1]),
-            ),
-            3,
-        )
 
 
 class Pathfinder(ABC):

@@ -1,7 +1,5 @@
 import math
-from gamegine.render import helpers
-from gamegine.render.drawable import Drawable
-from gamegine.render.style import Palette
+# Rendering is handled by gamegine.render.handlers, not embedded here
 from gamegine.representation.bounds import Boundary, BoundedObject, Point
 from gamegine.utils.NCIM.Dimensions.angular import Degree, Radian
 from gamegine.utils.NCIM.Dimensions.spatial import Centimeter, Inch, Meter
@@ -15,7 +13,7 @@ class AprilTagFamily(Enum):
     TAG_36h11 = 2
 
 
-class AprilTag(BoundedObject, Drawable):
+class AprilTag(BoundedObject):
     """A representation of an AprilTag used on FRC fields. Contains information about the tag's position, orientation, and family.
 
     :param x: The x-coordinate of the tag.
@@ -50,44 +48,4 @@ class AprilTag(BoundedObject, Drawable):
         self.size = size
         super().__init__(self.position)
 
-    def draw(self, render_scale: SpatialMeasurement):
 
-        line_length = self.size
-        shift = Degree(90).to(Radian)
-        angle = self.heading.to(Radian)
-
-        x2 = self.position.x + Meter(0.15) * math.cos(angle)
-        y2 = self.position.y + Meter(0.15) * math.sin(angle)
-
-        pink_width = Centimeter(2)
-        helpers.draw_line(
-            self.position.x,
-            self.position.y,
-            x2,
-            y2,
-            pink_width,
-            Palette.PINK,
-            render_scale,
-        )
-
-        x2 = self.position.x + line_length / 2 * math.cos(angle + shift)
-        y2 = self.position.y + line_length / 2 * math.sin(angle + shift)
-        x1 = self.position.x - line_length / 2 * math.cos(angle + shift)
-        y1 = self.position.y - line_length / 2 * math.sin(angle + shift)
-        helpers.draw_line(
-            x1,
-            y1,
-            x2,
-            y2,
-            Centimeter(3),
-            Palette.DARK_GREEN,
-            render_scale,
-        )
-
-        helpers.draw_point(
-            self.position.x,
-            self.position.y,
-            Centimeter(5),
-            Palette.DARK_GREEN,
-            render_scale,
-        )
