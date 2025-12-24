@@ -24,7 +24,7 @@ from gamegine.reference import gearing, motors
 from gamegine.reference.swerve import SwerveConfig, SwerveModule
 from gamegine.render import Renderer, DisplayLevel, AlertType, run
 from gamegine.representation.bounds import ExpandedObjectBounds
-from gamegine.representation.robot import PhysicalParameters
+from gamegine.representation.robot import PhysicalParameters, SwerveRobot
 from gamegine.utils.NCIM.ComplexDimensions.MOI import PoundsInchesSquared
 from gamegine.utils.NCIM.ComplexDimensions.acceleration import MeterPerSecondSquared
 from gamegine.utils.NCIM.ComplexDimensions.alpha import RadiansPerSecondSquared
@@ -57,6 +57,13 @@ constraints = SwerveRobotConstraints(
     RadiansPerSecondSquared(3.14), RadiansPerSecond(3.14),
     swerve_config,
     PhysicalParameters(Pound(110), PoundsInchesSquared(21327.14)),
+)
+
+# Create SwerveRobot with physics for accurate trajectory generation
+robot = SwerveRobot(
+    "TestRobot",
+    drivetrain=swerve_config,
+    physics=PhysicalParameters(Pound(110), PoundsInchesSquared(21327.14)),
 )
 
 generator = SplineTrajectoryGenerator(
@@ -120,8 +127,8 @@ def on_click(x, y):
         path.shortcut(expanded)
         
         traj = generator.generate(
-            "Robot", None, current_pos, (target[0], target[1], destination_heading),
-            path, expanded, constraints,  # Pass expanded obstacles for collision validation
+            "Robot", robot, current_pos, (target[0], target[1], destination_heading),
+            path, expanded,  # Pass robot and expanded obstacles
         )
         
         renderer.add(path)

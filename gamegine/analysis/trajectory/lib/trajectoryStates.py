@@ -94,7 +94,7 @@ class SwerveTrajectoryState(TrajectoryState):
     """
 
     module_states: list[SwerveModuleState] = field(
-        default_factory=[
+        default_factory=lambda: [
             SwerveModuleState(0.0, 0.0, 0.0),
             SwerveModuleState(0.0, 0.0, 0.0),
             SwerveModuleState(0.0, 0.0, 0.0),

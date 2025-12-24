@@ -201,6 +201,193 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         
         return x_knots, y_knots, t_knots
     
+    def _compute_motor_limited_acceleration(
+        self,
+        linear_velocity_mps: float,
+        angular_velocity_rps: float,
+        swerve_config,
+        robot_mass_kg: float,
+        robot_moi_kgm2: float,
+        module_radius_m: float,
+    ) -> tuple:
+        """Compute maximum acceleration at given velocity, accounting for rotation.
+        
+        When the robot is both translating and rotating, motor torque is split between:
+        - Translation force: F_trans = m * a_linear / 4
+        - Rotation torque contribution: τ_rot = I * α / (4 * r_module)
+        
+        The available motor torque is shared, so max linear acceleration is reduced
+        when angular velocity/acceleration is demanded.
+        
+        :param linear_velocity_mps: Current linear velocity in m/s
+        :param angular_velocity_rps: Current angular velocity in rad/s
+        :param swerve_config: SwerveConfig with module specifications
+        :param robot_mass_kg: Robot mass in kg
+        :param robot_moi_kgm2: Robot moment of inertia in kg*m^2
+        :param module_radius_m: Distance from robot center to module in m
+        :return: Tuple of (max_linear_accel_mps2, max_angular_accel_rps2)
+        """
+        from gamegine.utils.NCIM.ComplexDimensions.omega import RadiansPerSecond
+        from gamegine.utils.NCIM.ComplexDimensions.torque import NewtonMeter
+        from gamegine.utils.NCIM.Dimensions.spatial import Meter
+        import math
+        
+        module = swerve_config.module
+        wheel_radius_m = module.wheel.diameter.to(Meter) / 2.0
+        gear_ratio = module.drive_gear_ratio.get_ratio()
+        
+        if wheel_radius_m <= 0 or module_radius_m <= 0:
+            max_accel = self.max_acceleration.to(MeterPerSecondSquared)
+            return (max_accel, max_accel / module_radius_m)
+        
+        # Each module sees a combination of translational and rotational velocity
+        # For worst-case (modules at corners), module speed ≈ sqrt(v_linear² + (ω * r_module)²)
+        rotational_linear_component = abs(angular_velocity_rps) * module_radius_m
+        module_linear_speed = math.sqrt(linear_velocity_mps**2 + rotational_linear_component**2)
+        
+        # Convert module linear speed to wheel angular velocity
+        wheel_omega_rad_s = module_linear_speed / wheel_radius_m
+        
+        # Convert wheel speed to motor speed (through gearing)
+        # Motor runs faster than wheel by gear_ratio
+        motor_omega_rad_s = wheel_omega_rad_s * gear_ratio
+        
+        # Query motor torque at motor-side speed
+        motor_omega = RadiansPerSecond(motor_omega_rad_s)
+        # Note: get_torque already applies gearing to give wheel-side torque
+        available_wheel_torque = module.get_torque(RadiansPerSecond(wheel_omega_rad_s))
+        torque_nm = available_wheel_torque.to(NewtonMeter)
+        
+        # Convert wheel torque to force at ground: F = τ / r_wheel
+        force_per_module = torque_nm / wheel_radius_m
+        
+        # Total force from all 4 modules
+        total_force = force_per_module * 4
+        
+        # Split force between translation and rotation based on current demands
+        # Simple model: allocate proportionally to velocity components
+        total_velocity = linear_velocity_mps + rotational_linear_component + 0.1  # epsilon
+        translation_fraction = (linear_velocity_mps + 0.05) / total_velocity
+        rotation_fraction = (rotational_linear_component + 0.05) / total_velocity
+        
+        # Force available for translation
+        trans_force = total_force * translation_fraction
+        # Torque available for rotation (force * module_radius)
+        rot_force = total_force * rotation_fraction
+        rot_torque = rot_force * module_radius_m
+        
+        # Compute accelerations
+        # a_linear = F / m
+        if robot_mass_kg > 0:
+            max_linear_accel = trans_force / robot_mass_kg
+        else:
+            max_linear_accel = self.max_acceleration.to(MeterPerSecondSquared)
+        
+        # α = τ / I
+        if robot_moi_kgm2 > 0:
+            max_angular_accel = rot_torque / robot_moi_kgm2
+        else:
+            max_angular_accel = 10.0  # Default rad/s^2
+        
+        # Clamp to configured max
+        max_accel = self.max_acceleration.to(MeterPerSecondSquared)
+        return (min(max_linear_accel, max_accel), min(max_angular_accel, max_accel / module_radius_m))
+    
+    def _compute_module_states(
+        self,
+        state,
+        prev_state,
+        swerve_config,
+        dt: float,
+    ):
+        """Compute swerve module states from robot chassis state using inverse kinematics.
+        
+        For each module, computes:
+        - Wheel angle (steer direction to achieve desired velocity)
+        - Wheel omega (angular velocity of wheel)
+        - Wheel alpha (angular acceleration)
+        
+        :param state: Current TrajectoryState
+        :param prev_state: Previous TrajectoryState (for alpha calculation)
+        :param swerve_config: SwerveConfig with module offsets
+        :param dt: Time step in seconds
+        :return: List of 4 SwerveModuleState objects
+        """
+        from gamegine.analysis.trajectory.lib.trajectoryStates import SwerveModuleState
+        from gamegine.utils.NCIM.Dimensions.angular import Radian
+        from gamegine.utils.NCIM.ComplexDimensions.omega import RadiansPerSecond
+        from gamegine.utils.NCIM.ComplexDimensions.alpha import RadiansPerSecondSquared
+        from gamegine.utils.NCIM.Dimensions.spatial import Meter
+        from gamegine.utils.NCIM.ComplexDimensions.velocity import MetersPerSecond
+        import math
+        
+        module_states = []
+        offsets = [
+            swerve_config.top_left_offset,
+            swerve_config.top_right_offset,
+            swerve_config.bottom_left_offset,
+            swerve_config.bottom_right_offset,
+        ]
+        
+        wheel_radius_m = swerve_config.module.wheel.diameter.to(Meter) / 2.0
+        
+        # Get chassis velocities
+        vx = state.vel_x.to(MetersPerSecond) if hasattr(state.vel_x, 'to') else float(state.vel_x)
+        vy = state.vel_y.to(MetersPerSecond) if hasattr(state.vel_y, 'to') else float(state.vel_y)
+        omega = state.omega.to(RadiansPerSecond) if hasattr(state.omega, 'to') else float(state.omega)
+        
+        # Previous wheel omegas for alpha calculation
+        prev_wheel_omegas = []
+        if prev_state is not None:
+            prev_vx = prev_state.vel_x.to(MetersPerSecond) if hasattr(prev_state.vel_x, 'to') else float(prev_state.vel_x)
+            prev_vy = prev_state.vel_y.to(MetersPerSecond) if hasattr(prev_state.vel_y, 'to') else float(prev_state.vel_y)
+            prev_omega_chassis = prev_state.omega.to(RadiansPerSecond) if hasattr(prev_state.omega, 'to') else float(prev_state.omega)
+            
+            for offset in offsets:
+                rx = offset[0].to(Meter)
+                ry = offset[1].to(Meter)
+                vx_mod = prev_vx - prev_omega_chassis * ry
+                vy_mod = prev_vy + prev_omega_chassis * rx
+                linear_speed = math.sqrt(vx_mod**2 + vy_mod**2)
+                prev_wheel_omegas.append(linear_speed / wheel_radius_m if wheel_radius_m > 0 else 0.0)
+        else:
+            prev_wheel_omegas = [0.0, 0.0, 0.0, 0.0]
+        
+        for i, offset in enumerate(offsets):
+            # Module offset from robot center (in meters)
+            rx = offset[0].to(Meter)
+            ry = offset[1].to(Meter)
+            
+            # Inverse kinematics: module velocity = chassis velocity + omega × offset
+            # v_module = v_chassis + ω × r
+            # In 2D: vx_mod = vx - ω*ry, vy_mod = vy + ω*rx
+            vx_module = vx - omega * ry
+            vy_module = vy + omega * rx
+            
+            # Wheel angle (steer direction)
+            if abs(vx_module) < 1e-6 and abs(vy_module) < 1e-6:
+                wheel_angle = 0.0
+            else:
+                wheel_angle = math.atan2(vy_module, vx_module)
+            
+            # Wheel speed (linear → angular via wheel radius)
+            linear_speed = math.sqrt(vx_module**2 + vy_module**2)
+            wheel_omega_val = linear_speed / wheel_radius_m if wheel_radius_m > 0 else 0.0
+            
+            # Alpha from change in omega
+            if dt > 0.001:
+                wheel_alpha_val = (wheel_omega_val - prev_wheel_omegas[i]) / dt
+            else:
+                wheel_alpha_val = 0.0
+            
+            module_states.append(SwerveModuleState(
+                wheel_angle=Radian(wheel_angle),
+                wheel_omega=RadiansPerSecond(wheel_omega_val),
+                wheel_alpha=RadiansPerSecondSquared(wheel_alpha_val),
+            ))
+        
+        return module_states
+    
     def generate(
         self,
         robot_name: str,
@@ -208,25 +395,30 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         start_state: Tuple[SpatialMeasurement, SpatialMeasurement, AngularMeasurement],
         target_state: Tuple[SpatialMeasurement, SpatialMeasurement, AngularMeasurement],
         path: pathfinding.Path,
-        traversal_space: Any,
+        expanded_obstacles: Any = None,
         constraints: Any = None,
         no_safety_corridor: bool = False,
-        robot_constraints: Any = None,
+        robot_constraints: Any = None,  # Deprecated, use robot instead
     ) -> SwerveTrajectory:
         """Generates a trajectory using cubic spline interpolation.
         
-        :param robot_constraints: Optional SwerveRobotConstraints. If provided, enables
-                                  full SwerveTrajectory rendering and friction-based limits.
+        Uses the SwerveRobot's drivetrain, physics (mass, MOI), and wheel friction
+        to compute a physically-accurate trajectory with motor curve integration.
+        
+        :param robot: SwerveRobot with drivetrain and physics. If None, falls back to robot_constraints.
+        :param expanded_obstacles: ExpandedObjectBounds for collision validation.
         """
         from scipy.interpolate import CubicSpline
         import numpy as np
-        from gamegine.analysis.trajectory.lib.trajectoryStates import TrajectoryState
+        from gamegine.analysis.trajectory.lib.trajectoryStates import TrajectoryState, SwerveTrajectoryState
         from gamegine.analysis.trajectory.lib.TrajGen import Trajectory, SwerveTrajectory, SwerveRobotConstraints
         from gamegine.utils.NCIM.Dimensions.spatial import Meter
+        from gamegine.utils.NCIM.Dimensions.mass import Kilogram
         from gamegine.utils.NCIM.Dimensions.temporal import Second
         from gamegine.utils.NCIM.Dimensions.angular import Radian
         from gamegine.utils.NCIM.ComplexDimensions.velocity import VelocityUnit
         from gamegine.utils.NCIM.ComplexDimensions.acceleration import AccelerationUnit
+        from gamegine.utils.NCIM.ComplexDimensions.MOI import KilogramMetersSquared
         from gamegine.utils.NCIM.ComplexDimensions.omega import RadiansPerSecond
         from gamegine.utils.NCIM.ComplexDimensions.alpha import RadiansPerSecondSquared
         
@@ -236,16 +428,41 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         min_radius_m = self.min_curvature_radius.to(Meter)
         resolution_m = self.resolution.to(Meter)
         
-        # Compute centripetal acceleration limit from friction
-        # a_centripetal <= µ * g
-        # Default to a conservative friction coefficient if not available
+        # Extract parameters from SwerveRobot or fall back to robot_constraints
+        swerve_config = None
+        robot_mass_kg = 50.0  # Default
+        robot_moi_kgm2 = 5.0  # Default kg*m^2
         friction_coeff = 1.0  # Default
-        if robot_constraints is not None and hasattr(robot_constraints, 'swerve_config'):
-            swerve_config = robot_constraints.swerve_config
-            if swerve_config is not None and hasattr(swerve_config, 'module'):
-                module = swerve_config.module
-                if module is not None and hasattr(module, 'wheel'):
-                    friction_coeff = module.wheel.grip()
+        use_motor_curve = False
+        module_radius_m = 0.4  # Default module distance from center
+        
+        # Prefer robot object if available
+        if robot is not None:
+            if hasattr(robot, 'drivetrain') and robot.drivetrain is not None:
+                swerve_config = robot.drivetrain
+                use_motor_curve = True
+                # Get friction from wheel
+                if hasattr(swerve_config.module, 'wheel'):
+                    friction_coeff = swerve_config.module.wheel.grip()
+                # Compute module radius from offsets
+                offset = swerve_config.top_left_offset
+                module_radius_m = (offset[0].to(Meter)**2 + offset[1].to(Meter)**2)**0.5
+            if hasattr(robot, 'physics') and robot.physics is not None:
+                robot_mass_kg = robot.physics.mass.to(Kilogram)
+                robot_moi_kgm2 = robot.physics.moi.to(KilogramMetersSquared)
+        # Fallback to robot_constraints for backward compatibility
+        elif robot_constraints is not None:
+            if hasattr(robot_constraints, 'swerve_config') and robot_constraints.swerve_config is not None:
+                swerve_config = robot_constraints.swerve_config
+                use_motor_curve = True
+                if hasattr(swerve_config.module, 'wheel'):
+                    friction_coeff = swerve_config.module.wheel.grip()
+                offset = swerve_config.top_left_offset
+                module_radius_m = (offset[0].to(Meter)**2 + offset[1].to(Meter)**2)**0.5
+            if hasattr(robot_constraints, 'physical_parameters') and robot_constraints.physical_parameters is not None:
+                robot_mass_kg = robot_constraints.physical_parameters.mass.to(Kilogram)
+                if hasattr(robot_constraints.physical_parameters, 'moi'):
+                    robot_moi_kgm2 = robot_constraints.physical_parameters.moi.to(KilogramMetersSquared)
         
         # Centripetal acceleration limit from friction: a_c = µ * g
         centripetal_limit = friction_coeff * GRAVITY_M_S2
@@ -272,9 +489,7 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         
         # Use ALL path points as knots (no downsampling) to prevent corner-cutting
         # If expanded_obstacles is provided, validate and subdivide as needed
-        if traversal_space is not None:
-            # Extract expanded_obstacles from traversal_space or use directly
-            expanded_obstacles = traversal_space
+        if expanded_obstacles is not None:
             x_knots, y_knots, t_knots = self._validate_and_subdivide_spline(
                 x_arr, y_arr, t_input, expanded_obstacles, resolution_m, max_iterations=10
             )
@@ -320,25 +535,59 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         v_curvature_limit = np.sqrt(centripetal_limit / curvature_safe)
         # Clamp to max velocity (this handles near-zero curvature giving huge v_limit)
         v_curvature_limit = np.minimum(v_curvature_limit, max_vel_mps)
-        v_curvature_limit[0] = 0  # Start at rest
-        v_curvature_limit[-1] = 0  # End at rest
+        # Compute heading change rate for angular velocity consideration
+        start_theta = start_state[2].to(Radian)
+        end_theta = target_state[2].to(Radian)
+        total_heading_change = abs(end_theta - start_theta)
         
-        # Forward pass: respect tangential acceleration limits
+        # Ensure start and end at rest
+        v_curvature_limit[0] = 0
+        v_curvature_limit[-1] = 0
+        
+        # Forward pass: respect tangential acceleration limits (motor curve aware)
         forward_vel = np.zeros(n_output)
+        forward_omega = np.zeros(n_output)  # Angular velocity profile
+        
         for i in range(1, n_output):
             v_prev = forward_vel[i-1]
             ds = segment_lengths[i-1]
+            
+            # Estimate angular velocity based on heading change rate
+            # Distribute heading change proportionally to distance traveled
+            cumulative_dist = np.sum(segment_lengths[:i])
+            progress = cumulative_dist / total_length if total_length > 0 else 0
+            omega_estimate = total_heading_change / (sum(segment_lengths) / max(v_prev, 0.5)) if total_heading_change > 0.01 else 0
+            forward_omega[i] = omega_estimate
+            
+            # Use motor curve for acceleration if swerve_config available
+            if use_motor_curve and swerve_config is not None:
+                accel_limit, _ = self._compute_motor_limited_acceleration(
+                    v_prev, omega_estimate, swerve_config, robot_mass_kg, robot_moi_kgm2, module_radius_m
+                )
+            else:
+                accel_limit = max_accel_mps2
+            
             # v^2 = v0^2 + 2*a*s
-            v_max_from_accel = np.sqrt(v_prev**2 + 2 * max_accel_mps2 * ds)
+            v_max_from_accel = np.sqrt(v_prev**2 + 2 * accel_limit * ds)
             forward_vel[i] = min(v_curvature_limit[i], v_max_from_accel)
         
-        # Backward pass: respect deceleration limits
+        # Backward pass: respect deceleration limits (motor curve aware for regenerative braking)
         backward_vel = np.zeros(n_output)
         backward_vel[-1] = 0
         for i in range(n_output - 2, -1, -1):
             v_next = backward_vel[i+1]
             ds = segment_lengths[i]
-            v_max_from_decel = np.sqrt(v_next**2 + 2 * max_accel_mps2 * ds)
+            omega_estimate = forward_omega[i]
+            
+            # Use motor curve for deceleration
+            if use_motor_curve and swerve_config is not None:
+                decel_limit, _ = self._compute_motor_limited_acceleration(
+                    v_next, omega_estimate, swerve_config, robot_mass_kg, robot_moi_kgm2, module_radius_m
+                )
+            else:
+                decel_limit = max_accel_mps2
+            
+            v_max_from_decel = np.sqrt(v_next**2 + 2 * decel_limit * ds)
             backward_vel[i] = min(forward_vel[i], v_max_from_decel)
         
         velocities = backward_vel
@@ -378,10 +627,19 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         VEL_UNIT = VelocityUnit(Meter, Second)
         ACCEL_UNIT = AccelerationUnit(Meter, Second)
         
-        # Create trajectory states
-        states = []
+        # Compute omega (angular velocity) from heading change
+        omega_values = np.zeros(n_output - 1)
         for i in range(n_output - 1):
-            states.append(TrajectoryState(
+            if dt_values[i] > 0.001:
+                omega_values[i] = (theta_values[i+1] - theta_values[i]) / dt_values[i]
+        
+        # Create trajectory states (with module states if swerve_config available)
+        states = []
+        prev_state = None
+        
+        for i in range(n_output - 1):
+            # Create base state first
+            base_state = TrajectoryState(
                 x=Meter(float(smooth_x[i])),
                 y=Meter(float(smooth_y[i])),
                 theta=Radian(float(theta_values[i])),
@@ -389,13 +647,37 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
                 vel_y=VEL_UNIT(float(vel_y[i])),
                 acc_x=ACCEL_UNIT(float(accel_x[i])),
                 acc_y=ACCEL_UNIT(float(accel_y[i])),
-                omega=RadiansPerSecond(0),
+                omega=RadiansPerSecond(float(omega_values[i])),
                 alpha=RadiansPerSecondSquared(0),
                 dt=Second(float(dt_values[i])),
-            ))
+            )
+            
+            # Compute module states if swerve config available
+            if use_motor_curve and swerve_config is not None:
+                module_states = self._compute_module_states(
+                    base_state, prev_state, swerve_config, float(dt_values[i])
+                )
+                state = SwerveTrajectoryState(
+                    x=base_state.x,
+                    y=base_state.y,
+                    theta=base_state.theta,
+                    vel_x=base_state.vel_x,
+                    vel_y=base_state.vel_y,
+                    acc_x=base_state.acc_x,
+                    acc_y=base_state.acc_y,
+                    omega=base_state.omega,
+                    alpha=base_state.alpha,
+                    dt=base_state.dt,
+                    module_states=module_states,
+                )
+            else:
+                state = base_state
+            
+            states.append(state)
+            prev_state = base_state
         
         # Add final state
-        states.append(TrajectoryState(
+        final_base_state = TrajectoryState(
             x=Meter(float(smooth_x[-1])),
             y=Meter(float(smooth_y[-1])),
             theta=Radian(float(theta_values[-1])),
@@ -406,7 +688,29 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
             omega=RadiansPerSecond(0),
             alpha=None,
             dt=None,
-        ))
+        )
+        
+        if use_motor_curve and swerve_config is not None:
+            module_states = self._compute_module_states(
+                final_base_state, prev_state, swerve_config, 0.02
+            )
+            final_state = SwerveTrajectoryState(
+                x=final_base_state.x,
+                y=final_base_state.y,
+                theta=final_base_state.theta,
+                vel_x=final_base_state.vel_x,
+                vel_y=final_base_state.vel_y,
+                acc_x=final_base_state.acc_x,
+                acc_y=final_base_state.acc_y,
+                omega=final_base_state.omega,
+                alpha=final_base_state.alpha,
+                dt=final_base_state.dt,
+                module_states=module_states,
+            )
+        else:
+            final_state = final_base_state
+        
+        states.append(final_state)
         
         # Use provided robot_constraints or create basic ones
         if robot_constraints is not None:
