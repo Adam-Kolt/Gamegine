@@ -1,0 +1,10 @@
+/Users/adamkoltuniuk/Documents/Github/Gamegine/swerve_sim/target/debug/deps/thiserror-7f696839d57ed405.d: /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.16/src/lib.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.16/src/aserror.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.16/src/display.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.16/src/var.rs
+
+/Users/adamkoltuniuk/Documents/Github/Gamegine/swerve_sim/target/debug/deps/libthiserror-7f696839d57ed405.rlib: /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.16/src/lib.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.16/src/aserror.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.16/src/display.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.16/src/var.rs
+
+/Users/adamkoltuniuk/Documents/Github/Gamegine/swerve_sim/target/debug/deps/libthiserror-7f696839d57ed405.rmeta: /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.16/src/lib.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.16/src/aserror.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.16/src/display.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.16/src/var.rs
+
+/Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.16/src/lib.rs:
+/Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.16/src/aserror.rs:
+/Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.16/src/display.rs:
+/Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.16/src/var.rs:

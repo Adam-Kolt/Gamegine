@@ -1,0 +1,17 @@
+[package]
+name = "gamegine_sim_py"
+version = "0.1.0"
+edition = "2021"
+description = "Python bindings for Gamegine high-fidelity simulation"
+
+[lib]
+name = "gamegine_sim_py"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { workspace = true }
+numpy = { workspace = true }
+simcore = { path = "../simcore" }
+mechanics = { path = "../mechanics" }
+electrical = { path = "../electrical" }
+control = { path = "../control" }
