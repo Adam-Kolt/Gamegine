@@ -1,71 +1,31 @@
 ---
 title: Rendering
-description: Visualise games, meshes, and trajectories with the pygame renderer.
+description: Visualizing your simulation with the Renderer.
 ---
 
-The renderer module provides a lightweight pygame window for visualising games, meshes,
-paths, and trajectories during development. Any object implementing `Drawable` can be drawn
-by the renderer.
+# Rendering System
 
-## Renderer loop
+Gamegine uses `arcade` for high-performance 2D rendering.
 
-`gamegine.render.renderer.Renderer` is a singleton responsible for window management and the
-main draw loop. Typical usage:
+## The Renderer
+
+The `Renderer` class is a singleton that manages the window and drawing loop.
+
+### Layers
+
+Objects are drawn on layers (z-order):
+- `floor` (Field image)
+- `ground_markings` (Tape lines)
+- `objects` (Robots, Gamepieces)
+- `ui` (Overlays)
+
+## Custom Rendering
+
+You can register custom render handlers for your own objects using decorators.
 
 ```python
-renderer = Renderer()
-renderer.set_game(game)
-renderer.set_render_scale(Centimeter(1.5))
-renderer.init_display()
-
-while renderer.loop():
-    renderer.draw_static_elements()
-    renderer.draw_element(path)
-    renderer.draw_elements(extra_drawables)
-    renderer.render_frame()
-
-The renderer module now includes docstrings detailing each call—consult them if you need to
-manually manage display state or tweak the animation tick.
+@Renderer.on_draw(MyCustomObject)
+def draw_my_object(obj, canvas, theme, **kwargs):
+    # Draw code here
+    pass
 ```
-
-## Colours and drawing helpers
-
-`gamegine.render.helpers` contains utility functions for drawing rectangles, circles,
-polygons, and generic discrete boundaries with a consistent visual style. Colours are
-wrapped by `gamegine.render.style.Palette` together with `Shade` and `Opacity` enums for
-quick variations.
-
-### Composing scenes
-
-- Use `renderer.draw_element` for single drawables and `renderer.draw_elements` for batches.
-- Every helper in `render.helpers` accepts NCIM-aware measurements—a radius specified as
-  `Inch(6)` will be converted automatically using the active render scale.
-- The updated docstrings explain how each helper styles its shapes, making it easy to match
-  the look of custom drawables to the built-in ones.
-
-```python title="custom_drawable.py"
-from gamegine.render.drawable import Drawable
-from gamegine.render.helpers import draw_line, Palette
-
-class VelocityVector(Drawable):
-    def __init__(self, state):
-        self.state = state
-
-    def draw(self, render_scale):
-        draw_line(
-            self.state.x.get(),
-            self.state.y.get(),
-            self.state.x.get() + self.state.vel_x.get(),
-            self.state.y.get() + self.state.vel_y.get(),
-            render_scale * 0.1,
-            Palette.GREEN,
-            render_scale,
-        )
-```
-
-## Modules
-
-- `gamegine.render.drawable`
-- `gamegine.render.renderer`
-- `gamegine.render.helpers`
-- `gamegine.render.style`

@@ -1,0 +1,62 @@
+---
+title: gamegine.analysis.trajectory.lib.constraints.kinematics
+---
+
+# gamegine.analysis.trajectory.lib.constraints.kinematics
+
+## Functions
+
+### OmegaKinematicsConstraint
+
+```python
+def OmegaKinematicsConstraint(problem, point_variables)
+```
+
+A constraint that enforces the kinematic equation for angular velocity, w = u + at.
+
+:param problem: The optimization problem.
+:type problem: Problem
+:param point_variables: The variables for the points in the trajectory.
+:type point_variables: PointVariables
+
+### PositionKinematicsConstraint
+
+```python
+def PositionKinematicsConstraint(problem, point_variables)
+```
+
+A constraint that enforces the kinematic equation for position, s = ut + 0.5at^2.
+
+:param problem: The optimization problem.
+:type problem: Problem
+:param point_variables: The variables for the points in the trajectory.
+:type point_variables: PointVariables
+
+### ThetaKinematicsConstraint
+
+```python
+def ThetaKinematicsConstraint(problem, point_variables)
+```
+
+A constraint that enforces the kinematic equation for angular position, theta = omega*t + 0.5*alpha*t^2.
+
+:param problem: The optimization problem.
+:type problem: Problem
+:param point_variables: The variables for the points in the trajectory.
+:type point_variables: PointVariables
+:return: The constraint function.
+:rtype: Callable[[Problem, PointVariables], None]
+
+### VelocityKinematicsConstraint
+
+```python
+def VelocityKinematicsConstraint(problem, point_variables)
+```
+
+A constraint that enforces the kinematic equation for velocity, v = u + at.
+
+:param problem: The optimization problem.
+:type problem: Problem
+:param point_variables: The variables for the points in the trajectory.
+:type point_variables: PointVariables
+

@@ -1,0 +1,113 @@
+---
+title: gamegine.render.style
+---
+
+# gamegine.render.style
+
+Style module for Gamegine rendering.
+
+Provides theming, color palettes, and styling utilities for consistent
+and aesthetically pleasing visualizations.
+
+Brand identity: White background, Royal Blue (#4169E1) primary.
+
+## Classes
+
+### DarkTheme
+
+```python
+class DarkTheme
+```
+
+Dark theme with high contrast colors.
+
+#### `__init__`
+
+```python
+def __init__(self, name: str = 'Dark', background: arcade.types.color.Color = <factory>, grid_line: arcade.types.color.Color = <factory>, field_border: arcade.types.color.Color = <factory>, obstacle_fill: arcade.types.color.Color = <factory>, obstacle_outline: arcade.types.color.Color = <factory>, safety_padding: arcade.types.color.Color = <factory>, trajectory_line: arcade.types.color.Color = <factory>, trajectory_point: arcade.types.color.Color = <factory>, path_line: arcade.types.color.Color = <factory>, robot_fill: arcade.types.color.Color = <factory>, robot_outline: arcade.types.color.Color = <factory>, robot_heading: arcade.types.color.Color = <factory>, module_colors: Tuple[arcade.types.color.Color, ...] = <factory>, ghost_fill: arcade.types.color.Color = <factory>, ghost_outline: arcade.types.color.Color = <factory>, ui_primary: arcade.types.color.Color = <factory>, ui_text: arcade.types.color.Color = <factory>, ui_text_light: arcade.types.color.Color = <factory>, tooltip_background: arcade.types.color.Color = <factory>, tooltip_text: arcade.types.color.Color = <factory>, tooltip_border: arcade.types.color.Color = <factory>, mesh_edge: arcade.types.color.Color = <factory>, mesh_node: arcade.types.color.Color = <factory>, hover_highlight: arcade.types.color.Color = <factory>) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+### GamegineTheme
+
+```python
+class GamegineTheme
+```
+
+Base theme class defining colors for different elements.
+
+#### `__init__`
+
+```python
+def __init__(self, name: str = 'Default', background: arcade.types.color.Color = <factory>, grid_line: arcade.types.color.Color = <factory>, field_border: arcade.types.color.Color = <factory>, obstacle_fill: arcade.types.color.Color = <factory>, obstacle_outline: arcade.types.color.Color = <factory>, safety_padding: arcade.types.color.Color = <factory>, trajectory_line: arcade.types.color.Color = <factory>, trajectory_point: arcade.types.color.Color = <factory>, path_line: arcade.types.color.Color = <factory>, robot_fill: arcade.types.color.Color = <factory>, robot_outline: arcade.types.color.Color = <factory>, robot_heading: arcade.types.color.Color = <factory>, module_colors: Tuple[arcade.types.color.Color, ...] = <factory>, ghost_fill: arcade.types.color.Color = <factory>, ghost_outline: arcade.types.color.Color = <factory>, ui_primary: arcade.types.color.Color = <factory>, ui_text: arcade.types.color.Color = <factory>, ui_text_light: arcade.types.color.Color = <factory>, tooltip_background: arcade.types.color.Color = <factory>, tooltip_text: arcade.types.color.Color = <factory>, tooltip_border: arcade.types.color.Color = <factory>, mesh_edge: arcade.types.color.Color = <factory>, mesh_node: arcade.types.color.Color = <factory>, hover_highlight: arcade.types.color.Color = <factory>) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+### Opacity
+
+```python
+class Opacity
+```
+
+Opacity levels.
+
+### Palette
+
+```python
+class Palette
+```
+
+Modern color palette for rendering.
+
+### Theme
+
+```python
+class Theme
+```
+
+Base theme class defining colors for different elements.
+
+#### `__init__`
+
+```python
+def __init__(self, name: str = 'Default', background: arcade.types.color.Color = <factory>, grid_line: arcade.types.color.Color = <factory>, field_border: arcade.types.color.Color = <factory>, obstacle_fill: arcade.types.color.Color = <factory>, obstacle_outline: arcade.types.color.Color = <factory>, safety_padding: arcade.types.color.Color = <factory>, trajectory_line: arcade.types.color.Color = <factory>, trajectory_point: arcade.types.color.Color = <factory>, path_line: arcade.types.color.Color = <factory>, robot_fill: arcade.types.color.Color = <factory>, robot_outline: arcade.types.color.Color = <factory>, robot_heading: arcade.types.color.Color = <factory>, module_colors: Tuple[arcade.types.color.Color, ...] = <factory>, ghost_fill: arcade.types.color.Color = <factory>, ghost_outline: arcade.types.color.Color = <factory>, ui_primary: arcade.types.color.Color = <factory>, ui_text: arcade.types.color.Color = <factory>, ui_text_light: arcade.types.color.Color = <factory>, tooltip_background: arcade.types.color.Color = <factory>, tooltip_text: arcade.types.color.Color = <factory>, tooltip_border: arcade.types.color.Color = <factory>, mesh_edge: arcade.types.color.Color = <factory>, mesh_node: arcade.types.color.Color = <factory>, hover_highlight: arcade.types.color.Color = <factory>) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+## Functions
+
+### get_theme
+
+```python
+def get_theme() -> gamegine.render.style.Theme
+```
+
+Get the current active theme.
+
+### lerp_color
+
+```python
+def lerp_color(color1: arcade.types.color.Color, color2: arcade.types.color.Color, t: float) -> arcade.types.color.Color
+```
+
+Linearly interpolate between two colors.
+
+### set_theme
+
+```python
+def set_theme(theme: gamegine.render.style.Theme)
+```
+
+Set the active theme.
+
+### with_alpha
+
+```python
+def with_alpha(color: arcade.types.color.Color, alpha: int) -> arcade.types.color.Color
+```
+
+Return a color with modified alpha.
+

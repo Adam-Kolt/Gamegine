@@ -1,0 +1,77 @@
+---
+title: gamegine.utils.NCIM.basic
+---
+
+# gamegine.utils.NCIM.basic
+
+## Classes
+
+### ComplexUnit
+
+```python
+class ComplexUnit
+```
+
+Represents a unit of measurement.
+Can be a simple unit (e.g. Meter) or complex (e.g. Meter/Second).
+
+#### `__init__`
+
+```python
+def __init__(self, units_table: Dict[gamegine.utils.NCIM.core.Unit, int]) -> None
+```
+
+Legacy shim for ComplexUnit(units_table).
+Converts the dict \{Unit: power\} into dimensions/scale/symbol.
+
+#### `from_base`
+
+```python
+def from_base(self, value: float) -> float
+```
+
+#### `to_base`
+
+```python
+def to_base(self, value: float) -> float
+```
+
+### Unit
+
+```python
+class Unit
+```
+
+Represents a unit of measurement.
+Can be a simple unit (e.g. Meter) or complex (e.g. Meter/Second).
+
+#### `__init__`
+
+```python
+def __init__(self, dimension_or_array, scale: float = 0, symbol: str = '', shift: float = 0.0) -> None
+```
+
+Legacy shim for Unit initialization.
+Old signature: (dimension: Dimension, scale, symbol, shift)
+New signature: (dimensions: np.ndarray, scale, symbol, offset)
+
+#### `from_base`
+
+```python
+def from_base(self, value: float) -> float
+```
+
+#### `to_base`
+
+```python
+def to_base(self, value: float) -> float
+```
+
+## Functions
+
+### RatioOf
+
+```python
+def RatioOf(a, b)
+```
+

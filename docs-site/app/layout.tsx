@@ -30,9 +30,8 @@ export default function RootLayout({
         <RootProvider
           theme={{
             enabled: true,
-            defaultTheme: 'light',
-            forcedTheme: 'light',
-            enableSystem: false,
+            defaultTheme: 'dark',
+            enableSystem: true,
             attribute: 'class',
           }}
         >

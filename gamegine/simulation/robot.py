@@ -40,6 +40,16 @@ class RobotState(StateSpace):
         current_action: 'RobotInteractionConfig' = None,
         action_progress: float = 0,
     ):
+        """Initializes the RobotState.
+
+        :param x: The x-coordinate of the robot.
+        :param y: The y-coordinate of the robot.
+        :param heading: The heading of the robot.
+        :param alliance: The alliance of the robot.
+        :param gamepieces: A dictionary of gamepieces the robot is holding.
+        :param current_action: The current interaction configuration, if any.
+        :param action_progress: The progress of the current action (0.0 to 1.0).
+        """
         super().__init__()
         self.setValue("x", x)
         self.setValue("y", y)

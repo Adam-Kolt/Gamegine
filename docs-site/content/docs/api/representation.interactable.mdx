@@ -1,0 +1,279 @@
+---
+title: gamegine.representation.interactable
+---
+
+# gamegine.representation.interactable
+
+## Classes
+
+### InteractionOption
+
+```python
+class InteractionOption
+```
+
+Class for representing an interaction option for a robot with an interactable object during the match.
+
+:param identifier: The unique identifier for the interaction option.
+:type identifier: str
+:param description: A description of the interaction option.
+:type description: str
+:param condition: A function which determines whether the interaction can be performed.
+:type condition: Callable[[StateSpace, RobotState, StateSpace], bool]
+:param action: A function which performs the interaction and returns the changes to the game state.
+:type action: Callable[[StateSpace, RobotState, StateSpace], List[ValueChange]]
+
+#### `__init__`
+
+```python
+def __init__(self, identifier: str, description: str, condition: Callable[[gamegine.simulation.state.StateSpace, gamegine.simulation.robot.RobotState, gamegine.simulation.state.StateSpace], bool], action: Callable[[gamegine.simulation.state.StateSpace, gamegine.simulation.robot.RobotState, gamegine.simulation.state.StateSpace], List[gamegine.simulation.state.ValueChange]], navigation_point: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement] = None) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `ableToInteract`
+
+```python
+def ableToInteract(self, interactableState: gamegine.simulation.state.StateSpace, robotState: gamegine.simulation.robot.RobotState, gameState: gamegine.simulation.state.StateSpace) -> bool
+```
+
+Determines whether the interaction can be performed.
+
+:param interactableState: The state space of the interactable object.
+:type interactableState: :class:`StateSpace`
+:param robotState: The state of the robot.
+:type robotState: :class:`RobotState`
+:param gameState: The state space of the game.
+:type gameState: :class:`StateSpace`
+:return: True if the interaction can be performed, False otherwise.
+:rtype: bool
+
+#### `get_navigation_point`
+
+```python
+def get_navigation_point(self) -> Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement]
+```
+
+#### `interact`
+
+```python
+def interact(self, interactableState: gamegine.simulation.state.StateSpace, robotState: gamegine.simulation.robot.RobotState, gameState: gamegine.simulation.state.StateSpace) -> List[gamegine.simulation.state.ValueChange]
+```
+
+Performs the interaction and returns the changes to the game state.
+
+:param interactableState: The state space of the interactable object.
+:type interactableState: :class:`StateSpace`
+:param robotState: The state of the robot.
+:type robotState: :class:`RobotState`
+:param gameState: The state space of the game.
+:type gameState: :class:`StateSpace`
+:return: A list of ValueChange objects representing the changes to the game state.
+:rtype: List[:class:`ValueChange`]
+
+### RobotInteractable
+
+```python
+class RobotInteractable
+```
+
+Class for representing a robot-interactable object during the match, which includes scoring stations and other game elements which the robot can interact with to change the game state.
+
+:param boundary: The boundary of the interactable object.
+:type boundary: :class:`Boundary`
+:param name: The name of the interactable object. Defaults to an empty string.
+:type name: str, optional
+
+#### `__init__`
+
+```python
+def __init__(self, boundary: gamegine.representation.bounds.Boundary, name='', navigation_point: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement] = None)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `discretize_ip`
+
+```python
+def discretize_ip(self, curve_segments: int = 5) -> 'BoundedObject'
+```
+
+Discretizes the object in place, not returning a new object.
+
+:param curve_segments: The number of curve segments to use when discretizing the object.
+:type curve_segments: int
+:return: This object.
+:rtype: :class:`BoundedObject`
+
+#### `discretized`
+
+```python
+def discretized(self, curve_segments: int = 5) -> 'BoundedObject'
+```
+
+Returns a new object which contains a discretized version of its boundary.
+
+:param curve_segments: The number of curve segments to use when discretizing the object.
+:type curve_segments: int
+:return: The discretized object.
+:rtype: :class:`BoundedObject`
+
+#### `get_interaction`
+
+```python
+def get_interaction(identifier: str) -> 'InteractionOption'
+```
+
+Gets the interaction option with the given identifier.
+
+:param identifier: The unique identifier for the interaction option.
+:type identifier: str
+:return: The InteractionOption object with the given identifier.
+:rtype: :class:`InteractionOption`
+
+#### `get_interactions`
+
+```python
+def get_interactions(self) -> List[ForwardRef('InteractionOption')]
+```
+
+Gets the available interactions for the robot with the interactable object.
+
+:return: A list of InteractionOption objects representing the available interactions.
+:rtype: List[:class:`InteractionOption`]
+
+#### `get_navigation_point`
+
+```python
+def get_navigation_point(self) -> Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement]
+```
+
+#### `initializeInteractableState`
+
+```python
+def initializeInteractableState() -> gamegine.simulation.state.StateSpace
+```
+
+Abstract method for initializing the state space of the interactable object.
+
+#### `mirrored_over_horizontal`
+
+```python
+def mirrored_over_horizontal(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a mirror of the object over the horizontal axis at the given axis.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+:return: The mirrored object.
+:rtype: :class:`BoundedObject`
+
+#### `mirrored_over_horizontal_ip`
+
+```python
+def mirrored_over_horizontal_ip(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> None
+```
+
+Mirrors the object over the horizontal axis at the given axis in place, not returning a new object.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+
+#### `mirrored_over_vertical`
+
+```python
+def mirrored_over_vertical(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a mirror of the object over the vertical axis at the given axis.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+:return: The mirrored object.
+:rtype: :class:`BoundedObject`
+
+#### `mirrored_over_vertical_ip`
+
+```python
+def mirrored_over_vertical_ip(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Mirrors the object over the vertical axis at the given axis in place, not returning a new object.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+:return: This object.
+:rtype: :class:`BoundedObject`
+
+#### `prefix`
+
+```python
+def prefix(self, prefix: str) -> 'NamedObject'
+```
+
+#### `scaled`
+
+```python
+def scaled(self, factor: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a scaled version of the object by the given factor.
+
+:param factor: The factor to scale the object by.
+:type factor: :class:`SpatialMeasurement`
+:return: The scaled object.
+:rtype: :class:`BoundedObject`
+
+#### `suffix`
+
+```python
+def suffix(self, suffix: str) -> 'NamedObject'
+```
+
+#### `translate_ip`
+
+```python
+def translate_ip(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Translates the object by the given x and y values in place, not returning a new object.
+
+:param x: The x value to translate the object by.
+:type x: :class:`SpatialMeasurement`
+:param y: The y value to translate the object by.
+:type y: :class:`SpatialMeasurement`
+:return: This object.
+:rtype: :class:`BoundedObject`
+
+#### `translated`
+
+```python
+def translated(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a translated version of the object by the given x and y values.
+
+:param x: The x value to translate the object by.
+:type x: :class:`SpatialMeasurement`
+:param y: The y value to translate the object by.
+:type y: :class:`SpatialMeasurement`
+:return: The translated object.
+:rtype: :class:`BoundedObject`
+
+### RobotInteractionConfig
+
+```python
+class RobotInteractionConfig
+```
+
+Class for representing the interaction configuration of a robot with an interactable object during the match.
+
+#### `__init__`
+
+```python
+def __init__(self, interactable_name: str, interaction_identifier: str, able_to_interact: Callable[[gamegine.simulation.state.StateSpace, gamegine.simulation.robot.RobotState, gamegine.simulation.state.StateSpace], bool], time_to_interact: Callable[[gamegine.simulation.state.StateSpace, gamegine.simulation.robot.RobotState, gamegine.simulation.state.StateSpace], float], navigation_point: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement] = None) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+

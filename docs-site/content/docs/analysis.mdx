@@ -1,149 +1,20 @@
 ---
-title: Analysis Workflow
-description: Build navigation meshes, compute paths, and feed them into trajectory optimisers.
+title: Analysis
+description: Pathfinding and Trajectory Generation tools.
 ---
 
-This guide ties the analysis subsystems together so you can go from a field description to
-an executable motion plan. It covers meshing, pathfinding heuristics, safe corridors, and
-how those artefacts slot into the optimiser-defined trajectory generators.
+# Analysis Tools
 
-## 1. Build or import a mesh
+Gamegine provides powerful tools to analyze the game field and generate optimal paths.
 
-Meshes live in :mod:`gamegine.analysis.meshing`. Start by choosing the strategy that best
-matches your scenario:
+## Pathfinding
 
-- :func:`~gamegine.analysis.meshing.VisibilityGraph` works well for sparse obstacle maps
-  where a straight line between any two vertices is likely to be valid.
-- :func:`~gamegine.analysis.meshing.TriangulatedGraph` yields a homogenous connectivity
-  structure that is easier to tune for dense fields.
+We use A* search on a generated navigation mesh.
+- **VisibilityGraph**: Connects visible points.
+- **TriangulatedGraph**: Meshes the free space.
 
-```python title="meshing.py"
-from gamegine.analysis.meshing import VisibilityGraph
-from gamegine.representation.bounds import Rectangle
-from gamegine.utils.NCIM.ncim import Meter
+## Trajectory Generation
 
-obstacles = [Rectangle(Meter(2), Meter(4), Meter(1), Meter(2))]
-mesh = VisibilityGraph(obstacles, required_points=[(Meter(1), Meter(1))])
-```
-
-Each mesh stores NCIM-aware coordinates, so you can safely combine feet, inches, and meters
-without losing context. The :class:`~gamegine.analysis.meshing.Map` exposes helpers such as
-:py:meth:`Map.encode_coordinates` and :py:meth:`Map.get_neighbours` for deeper inspection.
-
-## 2. Route with A*
-
-Path search lives in :mod:`gamegine.analysis.pathfinding`. The convenience
-:func:`~gamegine.analysis.pathfinding.findPath` helper handles connecting arbitrary
-coordinates to the existing mesh before dispatching to the configured algorithm.
-
-```python title="pathfinding.py"
-from gamegine.analysis import pathfinding
-from gamegine.utils.NCIM.ncim import Meter
-
-start = (Meter(1), Meter(1))
-end = (Meter(8), Meter(3))
-raw_path = pathfinding.findPath(mesh, start, end)
-```
-
-Paths expose `shortcut`/`dissect` utilities so you can reduce unnecessary waypoints or
-resample them to a uniform distance before handing them to the trajectory layer. The
-built-in heuristics (`Euclidean` and `DirectedEuclidean`) are designed for holonomic robots,
-but you can implement your own by subclassing :class:`~gamegine.analysis.pathfinding.Pathfinder`.
-
-## 3. Inflate the path into a safe corridor
-
-Laser-focused motion planning benefits from soft boundaries. The
-:class:`~gamegine.analysis.trajectory.SafetyCorridorAssisted.SafetyCorridorAssisted` helper
-wraps a guide path in dynamically sized rectangles that leave breathing room around
-obstacles.
-
-```python title="safe_corridor.py"
-from gamegine.analysis.trajectory.SafetyCorridorAssisted import SafetyCorridorAssisted
-
-corridor_generator = SafetyCorridorAssisted()
-corralled = corridor_generator.calculate_trajectory(
-    guide_path=raw_path,
-    obstacles=[obstacle.discretized() for obstacle in obstacles],
-    start_parameters=start_keypoint,
-    end_parameters=end_keypoint,
-    physical_parameters=robot_physics,
-    drivetrain_parameters=swerve_spec,
-)
-```
-
-A cached version of the generated rectangles is available via
-:py:meth:`SafetyCorridorAssisted.GetSafeCorridor` which makes it easy to render the final
-constraints while debugging.
-
-## 4. Feed the optimiser
-
-If you need finer control than the guided helper provides, jump straight into
-:mod:`gamegine.analysis.trajectory.lib.TrajGen`. The builder API lets you specify control
-points, hard constraints, and solver options. Assemble the inputs from the previous steps
-and hand them to :class:`~gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectoryProblemBuilder`.
-
-```python title="traj_builder.py"
-from gamegine.analysis.trajectory.lib.TrajGen import (
-    SolverConfig,
-    SwerveRobotConstraints,
-    SwerveTrajectoryProblemBuilder,
-    TrajectoryBuilderConfig,
-    Waypoint,
-)
-
-builder = SwerveTrajectoryProblemBuilder()
-builder.waypoint(Waypoint(*start).given(start_constraints))
-builder.waypoint(Waypoint(*end).given(end_constraints))
-builder.guide_pathes([raw_path])
-
-trajectory = builder.generate(
-    TrajectoryBuilderConfig(trajectory_resolution=Meter(0.05), stretch_factor=1.5)
-).solve(
-    SwerveRobotConstraints(
-        max_acceleration,
-        max_velocity,
-        max_angular_accel,
-        max_angular_vel,
-        swerve_config,
-        physical_parameters=robot_physics,
-    ),
-    SolverConfig(timeout=10.0),
-)
-```
-
-## 5. Visualise the result
-
-Use the :mod:`gamegine.render` package to overlay the corridor, mesh, path, and trajectory.
-All of these objects implement :class:`gamegine.render.drawable.Drawable`, so you can add
-them to the draw loop without any adapters.
-
-```python title="visualise.py"
-from gamegine.render.renderer import Renderer
-
-renderer = Renderer()
-renderer.set_game(game)
-renderer.set_render_scale(Meter(0.05))
-renderer.init_display()
-
-while renderer.loop():
-    renderer.draw_static_elements()
-    renderer.draw_element(mesh)
-    renderer.draw_element(raw_path)
-    renderer.draw_elements(corridor_generator.GetSafeCorridor())
-    renderer.draw_elements(trajectory.points)
-    renderer.render_frame()
-```
-
-## Debugging tips
-
-- Call :py:meth:`Map.get_all_nodes` to verify mesh coverage before routing.
-- Toggle :py:meth:`Path.shortcut` and :py:meth:`Path.dissect` to see how the optimiser reacts
-  to waypoint density.
-- Print the :pyattr:`Trajectory.travel_time` and :pyattr:`Trajectory.path_length` attributes
-  after solving to quickly evaluate the quality of a plan.
-
-## Related topics
-
-- [Pathfinding & Meshing](./pathfinding) – in-depth look at the underlying primitives.
-- [Trajectory Optimisation](./trajectory) – constraint catalogues and solver tuning.
-- [Rendering](./rendering#composing-scenes) – render multiple layers with minimal boilerplate.
+Generates smooth, physics-constrained paths for swerve drives.
+- **Sleipnir**: The underlying optimizer.
+- **Constraints**: Velocity, acceleration, and centripetal force limits.

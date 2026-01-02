@@ -1,0 +1,335 @@
+---
+title: gamegine.analysis.trajectory.lib.constraints.avoidance
+---
+
+# gamegine.analysis.trajectory.lib.constraints.avoidance
+
+## Classes
+
+### LaneSegment
+
+```python
+class LaneSegment
+```
+
+Represents a lane segment along the path with asymmetric widths.
+
+#### `__init__`
+
+```python
+def __init__(self, p1: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement], p2: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement], left_width: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, right_width: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `draw`
+
+```python
+def draw(self, render_scale: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement)
+```
+
+Visualize the lane segment as two boundary lines.
+
+### SafeCorridor
+
+```python
+class SafeCorridor
+```
+
+Class for representing a safe corridor for the robot to travel through. Wraps around a rectangle to provide a safe corridor for the robot to travel through.
+
+#### `__init__`
+
+```python
+def __init__(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, width: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, height: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `buffered`
+
+```python
+def buffered(self, distance: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'DiscreteBoundary'
+```
+
+Returns a buffered version of the boundary, providing a certain amount of padding around the boundary. Used to indicate safe areas which account for object sizes.
+
+:param distance: The distance to buffer the boundary by.
+:type distance: :class:`SpatialMeasurement`
+:return: The buffered boundary.
+:rtype: :class:`DiscreteBoundary`
+
+#### `contains_point`
+
+```python
+def contains_point(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` if the point is strictly inside the polygon.
+
+#### `discretized`
+
+```python
+def discretized(self, curve_segments: int = 5) -> gamegine.representation.bounds.DiscreteBoundary
+```
+
+Discrete boundaries are already polygonal, so return ``self``.
+
+#### `draw`
+
+```python
+def draw(self, render_scale: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement)
+```
+
+#### `from_center`
+
+```python
+def from_center(center: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement], width: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, height: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Rectangle'
+```
+
+Creates a rectangle from the center point, width, and height.
+
+:param center: The center point of the rectangle.
+:type center: Tuple[:class:`SpatialMeasurement`, :class:`SpatialMeasurement`]
+:param width: The width of the rectangle.
+:type width: :class:`SpatialMeasurement`
+:param height: The height of the rectangle.
+:type height: :class:`SpatialMeasurement`
+:return: The rectangle.
+:rtype: :class:`Rectangle`
+
+#### `get_3d`
+
+```python
+def get_3d(self, z_start=Measurement(0.0, ft), z_end=Measurement(0.0, ft))
+```
+
+Returns the 3D version of the boundary.
+
+:param z_start: The starting z value of the boundary.
+:type z_start: :class:`SpatialMeasurement`
+:param z_end: The ending z value of the boundary.
+:type z_end: :class:`SpatialMeasurement`
+:return: The 3D version of the boundary.
+:rtype: :class:`DiscreteBoundary3D`
+
+#### `get_bounded_rectangle`
+
+```python
+def get_bounded_rectangle(self) -> 'Rectangle'
+```
+
+Returns the bounded rectangle of the boundary.
+
+:return: The bounded rectangle of the boundary.
+:rtype: :class:`Rectangle`
+
+#### `get_center`
+
+```python
+def get_center(self) -> Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]
+```
+
+Returns the center of the rectangle.
+
+:return: The center of the rectangle.
+:rtype: Tuple[:class:`SpatialMeasurement`, :class:`SpatialMeasurement`]
+
+#### `get_max_x`
+
+```python
+def get_max_x(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+Returns the maximum x value of the rectangle, being the x value of the right side of the rectangle.
+
+:return: The maximum x value of the rectangle.
+:rtype: :class:`SpatialMeasurement`
+
+#### `get_max_y`
+
+```python
+def get_max_y(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+Returns the maximum y value of the rectangle, being the y value of the bottom side of the rectangle.
+
+:return: The maximum y value of the rectangle.
+:rtype: :class:`SpatialMeasurement`
+
+#### `get_min_x`
+
+```python
+def get_min_x(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+Returns the minimum x value of the rectangle, being the x value of the left side of the rectangle.
+
+:return: The minimum x value of the rectangle.
+:rtype: :class:`SpatialMeasurement`
+
+#### `get_min_y`
+
+```python
+def get_min_y(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+Returns the minimum y value of the rectangle, being the y value of the top side of the rectangle.
+
+:return: The minimum y value of the rectangle.
+:rtype: :class:`SpatialMeasurement`
+
+#### `get_vertices`
+
+```python
+def get_vertices(self) -> List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]
+```
+
+Expose the ordered vertex list describing the polygon.
+
+#### `intersects_line`
+
+```python
+def intersects_line(self, x1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, x2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` when the polyline intersects the given segment.
+
+#### `intersects_rectangle`
+
+```python
+def intersects_rectangle(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, max_x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, max_y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` if any portion of the boundary overlaps the rectangle.
+
+#### `reflect_x`
+
+```python
+def reflect_x(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Rectangle'
+```
+
+Return a copy mirrored across the provided vertical axis.
+
+#### `reflect_y`
+
+```python
+def reflect_y(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Rectangle'
+```
+
+Return a copy mirrored across the provided horizontal axis.
+
+#### `scale`
+
+```python
+def scale(self, factor: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Rectangle'
+```
+
+Return a copy scaled uniformly by ``factor``.
+
+#### `translate`
+
+```python
+def translate(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Rectangle'
+```
+
+Return a copy shifted by the supplied offsets.
+
+## Functions
+
+### GenerateSafeCorridors
+
+```python
+def GenerateSafeCorridors(path: List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]], obstacles: List[gamegine.representation.bounds.DiscreteBoundary], corridor_interval: int = 3) -> Tuple[List[gamegine.analysis.trajectory.lib.constraints.avoidance.SafeCorridor], Dict[int, int]]
+```
+
+Generates overlapping safe corridors along a path.
+
+:param path: The path to generate corridors for.
+:param obstacles: The obstacles to avoid.
+:param corridor_interval: Generate a new corridor every N points (smaller = more corridors = better coverage).
+:return: Tuple of (list of corridors, mapping from path index to corridor index).
+
+### MergedSafetyCorridor
+
+```python
+def MergedSafetyCorridor(obstacles: List[gamegine.representation.bounds.DiscreteBoundary], guide_path: List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]] = None, densify_resolution: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(15.0, cm))
+```
+
+Returns a constraint function that uses merged, larger safety corridors.
+
+1. Generates dense small rectangles along path.
+2. Merges consecutive rectangles if the merged result doesn't intersect obstacles.
+3. Uses these larger corridors for constraints.
+
+### ObstacleRepulsion
+
+```python
+def ObstacleRepulsion(obstacles: List[gamegine.representation.bounds.DiscreteBoundary], repulsion_weight: float = 10000.0)
+```
+
+Returns a constraint function that adds a penalty for being inside obstacles.
+
+This acts as a "backup" to soft corridor constraints by adding a direct cost
+for any point that is inside an obstacle, even if corridors are invalid.
+
+:param obstacles: The obstacles to avoid.
+:param repulsion_weight: Weight for the repulsion penalty per meter inside.
+:return: Constraint function.
+
+### PathFollowingLanes
+
+```python
+def PathFollowingLanes(obstacles: List[gamegine.representation.bounds.DiscreteBoundary], guide_path: List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]], max_lane_width: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(1.5, m), min_lane_width: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(15.0, cm))
+```
+
+Returns a constraint function that keeps trajectory points within optimized lanes.
+
+Creates asymmetric lane boundaries:
+- Tight on obstacle side (prevents intrusion)
+- Wide on safe side (allows smooth curves)
+
+:param obstacles: The obstacles to avoid
+:param guide_path: The A* path to follow
+:param max_lane_width: Maximum lane width on safe side
+:param min_lane_width: Minimum lane width on obstacle side
+:return: Constraint function for the optimization problem
+
+### SafetyCorridor
+
+```python
+def SafetyCorridor(obstacles: List[gamegine.representation.bounds.DiscreteBoundary], guide_path: List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]] = None, densify_resolution: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(15.0, cm))
+```
+
+Returns a constraint function that ensures that the robot's path is within a safe corridor.
+
+:param obstacles: The obstacles that the robot must avoid.
+:type obstacles: List[:class:`DiscreteBoundary`]
+:param guide_path: Optional pre-validated path (e.g., from A*) to use for corridor generation.
+                   If None, uses the interpolated trajectory points (less reliable).
+:type guide_path: List[Tuple[SpatialMeasurement, SpatialMeasurement]]
+:param densify_resolution: Resolution for densifying the guide path (default: 15cm to match trajectory_resolution)
+:type densify_resolution: SpatialMeasurement
+:return: The constraint function that ensures the robot's path is within a safe corridor.
+:rtype: Callable[[Problem, PointVariables], None]
+
+### SplineTrackingCost
+
+```python
+def SplineTrackingCost(reference_path: List[Tuple[float, float]], weight: float = 100.0, max_deviation: float = None)
+```
+
+Returns a constraint function that penalizes trajectory deviation from a reference path.
+
+This is a solver-friendly alternative to hard safety corridors. Since the reference
+path (typically a smooth spline fit to an A* path) already avoids obstacles, keeping
+the trajectory close to it implicitly ensures obstacle avoidance.
+
+:param reference_path: List of (x, y) reference positions in meters. Must have the same 
+                       length as the number of trajectory points.
+:param weight: Weight for the deviation penalty. Higher = stricter adherence to reference.
+               Typical values: 10-1000 depending on importance.
+:param max_deviation: Optional. If set, adds a soft constraint that deviation should not
+                      exceed this value (in meters). Helps prevent runaway solutions.
+:return: Constraint function.
+

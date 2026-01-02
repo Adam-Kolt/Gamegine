@@ -1,0 +1,57 @@
+---
+title: gamegine.analysis.trajectory.lib.constraints.base
+---
+
+# gamegine.analysis.trajectory.lib.constraints.base
+
+## Functions
+
+### MagnitudeGreaterThanConstraint
+
+```python
+def MagnitudeGreaterThanConstraint(problem, vars, magnitude: float, index: int = -1)
+```
+
+Constraint for setting the magnitude of a scalar to be greater than a specific value.
+
+:param problem: The optimization problem.
+:type problem: Problem
+:param vars: The scalar variables.
+:type vars: list
+:param magnitude: The desired minimum magnitude of the scalar.
+:type magnitude: float
+:param index: The index of the scalar to constrain. If -1, all scalars are constrained.
+:type index: int
+
+### MagnitudeLessThanConstraint
+
+```python
+def MagnitudeLessThanConstraint(problem, vars, magnitude: float, index: int = -1)
+```
+
+Constraint for setting the magnitude of a scalar to be less than a specific value.
+
+:param problem: The optimization problem.
+:type problem: Problem
+:param vars: The scalar variables.
+:type vars: list
+:param magnitude: The desired maximum magnitude of the scalar.
+:type magnitude: float
+:param index: The index of the scalar to constrain. If -1, all scalars are constrained.
+:type index: int
+
+### get_magnitude_squared
+
+```python
+def get_magnitude_squared(var1, var2)
+```
+
+Returns the square of the magnitude of the vector defined by the two variables.
+
+:param var1: The first variable.
+:type var1: float
+:param var2: The second variable.
+:type var2: float
+:return: The square of the magnitude of the vector defined by the two variables.
+:rtype: float
+

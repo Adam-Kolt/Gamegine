@@ -1,223 +1,176 @@
 import Link from 'next/link';
 
-const featureCards = [
-  {
-    title: 'Represent the field',
-    description:
-      'Describe obstacles, interactables, and robots with NCIM-aware geometry that powers every subsystem.',
-    href: '/docs/representation',
-    action: 'Explore representation',
-  },
-  {
-    title: 'Plan resilient motion',
-    description:
-      'Generate meshes, run A*, inflate safe corridors, and configure Sleipnir-backed trajectory solvers.',
-    href: '/docs/analysis',
-    action: 'Follow the workflow',
-  },
-  {
-    title: 'Simulate and iterate',
-    description:
-      'Visualise layers, track robot state, and iterate on strategy before you hit the practice field.',
-    href: '/docs/simulation',
-    action: 'See simulation tools',
-  },
-];
-
-const resourceLinks = [
-  { label: 'Quick start overview', href: '/docs/overview' },
-  { label: 'Examples library', href: '/docs/examples' },
-  { label: 'NCIM units', href: '/docs/ncim' },
-  { label: 'Reference data', href: '/docs/reference' },
-];
-
-const quickstartSnippet = `from gamegine.representation.game import Game
-from gamegine.analysis.pathfinding import findPath
-from gamegine.analysis.meshing import VisibilityGraph
-from gamegine.render.renderer import Renderer
-from gamegine.utils.NCIM.ncim import Meter
-
-game = Game("Strategy Lab")
-game.set_field_size(Meter(16), Meter(8))
-
-mesh = VisibilityGraph(list(game.get_obstacles()))
-path = findPath(mesh, (Meter(2), Meter(2)), (Meter(12), Meter(4)))
-trajectory = solve_swerve(path, robot_limits)
-
-renderer = Renderer()
-renderer.set_game(game)
-renderer.set_render_scale(Meter(0.05))
-renderer.init_display()`;
-
 export default function Home() {
   return (
-    <main className="bg-brand-surface text-brand-primary">
-      <div className="border-b border-brand-border bg-brand-surface/95">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6 lg:px-12">
-          <Link href="/" className="text-lg font-semibold text-brand-accent">
-            Gamegine
-          </Link>
-          <nav className="flex items-center gap-4 text-sm font-semibold">
-            <Link href="/docs" className="transition hover:text-brand-accent">
-              Docs
-            </Link>
-            <Link href="/docs/analysis" className="transition hover:text-brand-accent">
-              Workflow
-            </Link>
-            <Link href="/docs/examples" className="transition hover:text-brand-accent">
-              Examples
-            </Link>
-            <Link
-              href="https://github.com/adamkoltuniuk/Gamegine"
-              className="rounded-full border border-brand-border px-3 py-1.5 transition hover:border-brand-accent hover:text-brand-accent"
-            >
-              GitHub
-            </Link>
-          </nav>
-        </div>
+    <main className="min-h-screen bg-black text-white selection:bg-purple-500/30">
+      {/* Background Gradients */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-purple-900/20 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-900/20 blur-[120px]" />
       </div>
-      <div className="mx-auto flex max-w-6xl flex-col gap-24 px-6 pb-24 pt-16 lg:px-12">
-        <section className="flex flex-col gap-10">
-          <div className="flex flex-col gap-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-brand-primary-80">
-              Open-source FRC analysis platform
-            </p>
-            <h1 className="text-4xl font-medium tracking-tight sm:text-5xl lg:text-6xl">
-              Create. Analyze. <span className="text-brand-accent">Win.</span>
-            </h1>
-            <p className="max-w-2xl text-lg leading-relaxed text-brand-primary-85">
-              Gamegine unifies field representation, navigation meshing, guided trajectory optimisation,
-              and simulation so you can design match-ready automations with confidence.
-            </p>
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              <Link
-                href="/docs"
-                className="inline-flex items-center justify-center rounded-full bg-brand-accent px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-[#173ab3]"
-              >
-                Open the documentation
-              </Link>
-              <Link
-                href="https://github.com/adamkoltuniuk/Gamegine"
-                className="inline-flex items-center justify-center rounded-full border border-brand-border px-6 py-3 text-sm font-semibold text-brand-primary transition hover:border-brand-accent hover:text-brand-accent"
-              >
-                View on GitHub
-              </Link>
-            </div>
-          </div>
 
-          <div className="overflow-hidden rounded-3xl border border-brand-border bg-white/90 p-8 shadow-xl backdrop-blur">
-            <p className="text-xs font-semibold uppercase tracking-[0.4em] text-brand-primary-70">
-              Strategic snapshot
-            </p>
-            <div className="grid gap-6 pt-6 md:grid-cols-3">
-              <div className="flex flex-col gap-3 rounded-2xl bg-brand-muted-soft p-6">
-                <span className="text-sm font-semibold">Model</span>
-                <p className="text-sm text-brand-primary-85">
-                  Capture field layout, scoring zones, and robot geometry with NCIM for seamless unit
-                  conversions.
-                </p>
-              </div>
-              <div className="flex flex-col gap-3 rounded-2xl bg-brand-muted-soft p-6">
-                <span className="text-sm font-semibold">Plan</span>
-                <p className="text-sm text-brand-primary-85">
-                  Generate meshes, run A*, and bound safe corridors before handing paths to the optimiser.
-                </p>
-              </div>
-              <div className="flex flex-col gap-3 rounded-2xl bg-brand-muted-soft p-6">
-                <span className="text-sm font-semibold">Validate</span>
-                <p className="text-sm text-brand-primary-85">
-                  Render trajectories, inspect velocities, and iterate until your approach is battle-tested.
-                </p>
-              </div>
-            </div>
+      {/* Nav */}
+      <nav className="relative z-10 border-b border-white/10 bg-black/50 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+          <div className="flex items-center gap-2">
+            <div className="h-6 w-6 rounded bg-gradient-to-br from-purple-500 to-blue-500" />
+            <span className="font-bold tracking-tight">Gamegine</span>
           </div>
-        </section>
+          <div className="flex items-center gap-6 text-sm font-medium text-zinc-400">
+            <Link href="/docs" className="hover:text-white transition-colors">Documentation</Link>
+            <Link href="/docs/api" className="hover:text-white transition-colors">API Reference</Link>
+            <Link href="https://github.com/adamkoltuniuk/Gamegine" className="hover:text-white transition-colors">GitHub</Link>
+          </div>
+        </div>
+      </nav>
 
-        <section className="grid gap-8 md:grid-cols-3">
-          {featureCards.map((card) => (
-            <div
-              key={card.title}
-              className="group flex h-full flex-col gap-4 rounded-3xl border border-brand-border bg-white p-8 shadow-lg transition hover:-translate-y-1 hover:shadow-2xl"
-            >
-              <span className="text-sm font-semibold uppercase tracking-wide text-brand-primary-70">
-                {card.title}
-              </span>
-              <p className="flex-1 text-sm leading-relaxed text-brand-primary-85">{card.description}</p>
-              <Link
-                href={card.href}
-                className="inline-flex items-center text-sm font-semibold text-brand-accent transition group-hover:gap-2"
-              >
-                {card.action}
-                <span aria-hidden>→</span>
-              </Link>
+      {/* Hero */}
+      <section className="relative z-10 mx-auto mt-24 max-w-7xl px-6 text-center">
+        <div className="inline-flex items-center rounded-full border border-purple-500/30 bg-purple-500/10 px-3 py-1 text-xs font-medium text-purple-300 mb-8 backdrop-blur-sm">
+          <span>v2.0 Beta Now Available</span>
+        </div>
+
+        <h1 className="mx-auto max-w-4xl text-5xl font-bold tracking-tight sm:text-7xl">
+          Model reality. <br />
+          <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
+            Win the match.
+          </span>
+        </h1>
+
+        <p className="mx-auto mt-8 max-w-2xl text-lg text-zinc-400">
+          The comprehensive robotics simulation framework.
+          Deterministic physics, NCIM-safe units, and production-grade trajectory optimization
+          built for the First Robotics Competition.
+        </p>
+
+        <div className="mt-10 flex items-center justify-center gap-4">
+          <Link
+            href="/docs/getting-started"
+            className="rounded-full bg-white px-8 py-3 text-sm font-semibold text-black transition hover:bg-zinc-200"
+          >
+            Get Started
+          </Link>
+          <Link
+            href="/docs"
+            className="rounded-full border border-white/10 bg-white/5 px-8 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+          >
+            Read the Philosophy
+          </Link>
+        </div>
+      </section>
+
+      {/* Feature Grid */}
+      <section className="relative z-10 mx-auto mt-32 max-w-7xl px-6 pb-24">
+        <div className="grid gap-8 md:grid-cols-3">
+          {[
+            {
+              title: "Deterministic Simulation",
+              desc: "Run thousands of match-scenarios in seconds. Our physics engine guarantees reproducible results for rock-solid autonomous routines.",
+              gradient: "from-pink-500/20 to-purple-500/20"
+            },
+            {
+              title: "Type-Safe Units",
+              desc: "Never crash a robot because of a unit conversion error again. NCIM enforces dimensional correctness at compile time.",
+              gradient: "from-blue-500/20 to-cyan-500/20"
+            },
+            {
+              title: "Visual Intelligence",
+              desc: "Rich, layered rendering system built on arcade. Visualize pathfinding nodes, trajectories, and sensor data in real-time.",
+              gradient: "from-emerald-500/20 to-teal-500/20"
+            }
+          ].map((feature, i) => (
+            <div key={i} className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 transition-colors hover:bg-white/10">
+              <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 transition-opacity group-hover:opacity-100`} />
+              <div className="relative z-10">
+                <h3 className="text-xl font-bold text-white mb-3">{feature.title}</h3>
+                <p className="text-zinc-400 leading-relaxed">
+                  {feature.desc}
+                </p>
+              </div>
             </div>
           ))}
-        </section>
+        </div>
+      </section>
 
-        <section className="grid gap-10 rounded-3xl border border-brand-border bg-white p-10 shadow-lg md:grid-cols-[1.1fr_0.9fr]">
-          <div className="flex flex-col gap-6">
-            <h2 className="text-2xl font-semibold">From CAD sketch to match-ready automation</h2>
-            <p className="text-sm leading-relaxed text-brand-primary-85">
-              Gamegine keeps geometry, physics, and optimisation aligned. Follow the step-by-step workflow or
-              jump straight into the examples directory to accelerate prototyping.
-            </p>
-            <div className="grid gap-3 text-sm text-brand-primary-90">
-              {resourceLinks.map((resource) => (
-                <Link
-                  key={resource.label}
-                  href={resource.href}
-                  className="inline-flex items-center justify-between rounded-2xl border border-brand-border px-4 py-3 transition hover:border-brand-accent hover:text-brand-accent"
-                >
-                  <span>{resource.label}</span>
-                  <span aria-hidden>↗</span>
-                </Link>
-              ))}
-            </div>
-            <p className="text-xs text-brand-primary-70">
-              *Winning matches still requires human scouting and drive practice—Gamegine just keeps the strategy
-              ironclad.
-            </p>
-          </div>
-          <div className="flex flex-col overflow-hidden rounded-2xl border border-brand-border bg-brand-muted-lighter">
-            <div className="rounded-t-2xl bg-brand-accent-strong p-4 text-xs font-semibold uppercase tracking-[0.35em] text-white/90">
-              Quick start
-            </div>
-            <pre className="flex-1 overflow-auto break-words px-6 py-6 text-sm leading-6 text-brand-primary">
-{quickstartSnippet}
-            </pre>
-            <div className="px-6 pb-6 text-xs text-brand-primary-75">
-              Stitch the representation, analysis, and rendering layers together to iterate safely before the
-              practice field.
-            </div>
-          </div>
-        </section>
-
-        <section className="mb-8 flex flex-col gap-6 rounded-3xl border border-brand-border bg-white px-8 py-10 text-brand-primary shadow-xl">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="max-w-2xl">
-              <h2 className="text-2xl font-semibold">Ready to build match-winning automations?</h2>
-              <p className="text-sm text-brand-primary-85">
-                Dive into subsystem guides, browse curated examples, or open a discussion on GitHub to share ideas
-                with the community.
+      {/* Code Snippet Section */}
+      <section className="relative z-10 border-t border-white/10 bg-white/5 py-24">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
+            <div>
+              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                Code that speaks your language.
+              </h2>
+              <p className="mt-4 text-lg text-zinc-400">
+                Gamegine is designed to be expressive. Define your world using natural concepts,
+                not just matrices and arrays.
               </p>
+
+              <div className="mt-8 grid gap-4">
+                {[
+                  "Define the game arena with precise geometry",
+                  "Configure swerve kinematics with real mass & friction",
+                  "Generate spline trajectories with dynamic constraints",
+                  "Simulate interactions with field elements"
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-purple-500/20 text-purple-400">
+                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-zinc-300">{item}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href="/docs/examples"
-                className="inline-flex items-center rounded-full bg-brand-accent px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#173ab3]"
-              >
-                Browse examples
-              </Link>
-              <Link
-                href="https://github.com/adamkoltuniuk/Gamegine/issues"
-                className="inline-flex items-center rounded-full border border-brand-accent px-5 py-3 text-sm font-semibold text-brand-accent transition hover:bg-brand-accent hover:text-white"
-              >
-                Contribute ideas
-              </Link>
+
+            <div className="relative rounded-2xl border border-white/10 bg-black/50 p-6 shadow-2xl backdrop-blur-xl">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="h-3 w-3 rounded-full bg-red-500/50" />
+                <div className="h-3 w-3 rounded-full bg-yellow-500/50" />
+                <div className="h-3 w-3 rounded-full bg-green-500/50" />
+              </div>
+              <pre className="overflow-x-auto text-sm font-mono leading-relaxed text-zinc-300">
+                {`# Create the Arena
+game = Game("2025 Reefscape")
+game.set_field_size(Meter(16.54), Meter(8.21))
+
+# Initialize Physics
+robot = SwerveRobot("HeroBot", mass=Kilogram(50))
+physics = PhysicsEngine(game)
+
+# Generate Trajectory
+path = findPath(nav_mesh, start_pose, target_reef)
+traj = physics.generate_trajectory(
+    robot, 
+    path, 
+    constraints={
+        "max_vel": Meter(4.5) / Second(1),
+        "max_accel": Meter(3.0) / Second(2)
+    }
+)`}
+              </pre>
             </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-white/10 bg-black py-12">
+        <div className="mx-auto max-w-7xl px-6 flex flex-col items-center justify-between gap-6 md:flex-row">
+          <p className="text-sm text-zinc-500">
+            © 2024 Gamegine Contributors. MIT License.
+          </p>
+          <div className="flex gap-6">
+            <Link href="https://github.com/adamkoltuniuk/Gamegine" className="text-zinc-500 hover:text-white transition-colors">
+              GitHub
+            </Link>
+            <Link href="/docs/privacy" className="text-zinc-500 hover:text-white transition-colors">
+              Privacy
+            </Link>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }

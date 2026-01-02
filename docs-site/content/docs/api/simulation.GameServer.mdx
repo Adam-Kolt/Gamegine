@@ -1,0 +1,538 @@
+---
+title: gamegine.simulation.GameServer
+---
+
+# gamegine.simulation.GameServer
+
+## Classes
+
+### AbstractGameServer
+
+```python
+class AbstractGameServer
+```
+
+Base class for game servers (Discrete/Continuous).
+Manages the MatchController and delegates movement to subclasses.
+
+#### `__init__`
+
+```python
+def __init__(self, config: gamegine.simulation.GameServer.ServerConfig = ServerConfig(mesh_resolution=Measurement(2.0, ft), discretization_quality=4, physics_config=PhysicsConfig(mesh_resolution=Measurement(2.0, ft), discretization_quality=4, trajectory_resolution=Measurement(10.0, cm), stretch_factor=1.5, min_spacing=Measurement(8.0, cm)))) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `add_interactable`
+
+```python
+def add_interactable(self, interactable: gamegine.representation.interactable.RobotInteractable) -> None
+```
+
+#### `add_robot`
+
+```python
+def add_robot(self, robot: gamegine.representation.robot.SwerveRobot) -> None
+```
+
+Adds a robot to the game server.
+
+:param robot: The robot to add.
+:type robot: :class:`SwerveRobot`
+
+#### `drive_robot`
+
+```python
+def drive_robot(self, robot_name: str, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, theta: float, no_safety_corridor=False) -> None
+```
+
+#### `get_actions_set`
+
+```python
+def get_actions_set(self, robot_name: str) -> List[Tuple[str, str]]
+```
+
+#### `get_log`
+
+```python
+def get_log(self)
+```
+
+#### `get_obstacles`
+
+```python
+def get_obstacles(self) -> List[gamegine.representation.obstacle.Obstacle]
+```
+
+#### `init_game_state`
+
+```python
+def init_game_state(self, state)
+```
+
+#### `init_robot`
+
+```python
+def init_robot(self, robot_name: str, robot_state: gamegine.simulation.robot.RobotState) -> None
+```
+
+Initializes a robot with the given state.
+
+:param robot_name: The name of the robot.
+:type robot_name: str
+:param robot_state: The state of the robot.
+:type robot_state: :class:`RobotState`
+
+#### `load_from_game`
+
+```python
+def load_from_game(self, game: gamegine.representation.game.Game) -> None
+```
+
+#### `pickup_gamepiece`
+
+```python
+def pickup_gamepiece(self, robot_name: str, gamepiece) -> None
+```
+
+#### `process_action`
+
+```python
+def process_action(self, interactable_name, interaction_name, robot_name, time_cutoff=None) -> bool
+```
+
+#### `set_obstacles`
+
+```python
+def set_obstacles(self, obstacles: List[gamegine.representation.obstacle.Obstacle]) -> None
+```
+
+#### `update`
+
+```python
+def update(self, dt: float) -> bool
+```
+
+Updates the game state (Time). Subclasses may add physics stepping.
+
+### ContinuousGameServer
+
+```python
+class ContinuousGameServer
+```
+
+Continuous Environment Server.
+Updates robot physics smoothly over time.
+
+#### `__init__`
+
+```python
+def __init__(self, config: gamegine.simulation.GameServer.ServerConfig = ServerConfig(mesh_resolution=Measurement(2.0, ft), discretization_quality=4, physics_config=PhysicsConfig(mesh_resolution=Measurement(2.0, ft), discretization_quality=4, trajectory_resolution=Measurement(10.0, cm), stretch_factor=1.5, min_spacing=Measurement(8.0, cm))))
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `add_interactable`
+
+```python
+def add_interactable(self, interactable: gamegine.representation.interactable.RobotInteractable) -> None
+```
+
+#### `add_robot`
+
+```python
+def add_robot(self, robot: gamegine.representation.robot.SwerveRobot) -> None
+```
+
+Adds a robot to the game server.
+
+:param robot: The robot to add.
+:type robot: :class:`SwerveRobot`
+
+#### `drive_robot`
+
+```python
+def drive_robot(self, robot_name: str, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, theta: float, no_safety_corridor=False) -> None
+```
+
+#### `get_actions_set`
+
+```python
+def get_actions_set(self, robot_name: str) -> List[Tuple[str, str]]
+```
+
+#### `get_log`
+
+```python
+def get_log(self)
+```
+
+#### `get_obstacles`
+
+```python
+def get_obstacles(self) -> List[gamegine.representation.obstacle.Obstacle]
+```
+
+#### `init_game_state`
+
+```python
+def init_game_state(self, state)
+```
+
+#### `init_robot`
+
+```python
+def init_robot(self, robot_name: str, robot_state: gamegine.simulation.robot.RobotState) -> None
+```
+
+Initializes a robot with the given state.
+
+:param robot_name: The name of the robot.
+:type robot_name: str
+:param robot_state: The state of the robot.
+:type robot_state: :class:`RobotState`
+
+#### `load_from_game`
+
+```python
+def load_from_game(self, game: gamegine.representation.game.Game) -> None
+```
+
+#### `pickup_gamepiece`
+
+```python
+def pickup_gamepiece(self, robot_name: str, gamepiece) -> None
+```
+
+#### `process_action`
+
+```python
+def process_action(self, interactable_name, interaction_name, robot_name, time_cutoff=None) -> bool
+```
+
+#### `set_obstacles`
+
+```python
+def set_obstacles(self, obstacles: List[gamegine.representation.obstacle.Obstacle]) -> None
+```
+
+#### `update`
+
+```python
+def update(self, dt: float) -> bool
+```
+
+Updates the game state (Time). Subclasses may add physics stepping.
+
+### DiscreteGameServer
+
+```python
+class DiscreteGameServer
+```
+
+Discrete Environment Server.
+Moves robots instanstly by calculating trajectory cost.
+Equivalent to original GameServer.
+
+#### `__init__`
+
+```python
+def __init__(self, config: gamegine.simulation.GameServer.ServerConfig = ServerConfig(mesh_resolution=Measurement(2.0, ft), discretization_quality=4, physics_config=PhysicsConfig(mesh_resolution=Measurement(2.0, ft), discretization_quality=4, trajectory_resolution=Measurement(10.0, cm), stretch_factor=1.5, min_spacing=Measurement(8.0, cm))))
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `add_interactable`
+
+```python
+def add_interactable(self, interactable: gamegine.representation.interactable.RobotInteractable) -> None
+```
+
+#### `add_robot`
+
+```python
+def add_robot(self, robot: gamegine.representation.robot.SwerveRobot) -> None
+```
+
+Adds a robot to the game server.
+
+:param robot: The robot to add.
+:type robot: :class:`SwerveRobot`
+
+#### `drive_and_process_action`
+
+```python
+def drive_and_process_action(self, interactable_name, interaction_name, robot_name, time_cutoff=None, no_safety_cooridor=False) -> bool
+```
+
+#### `drive_robot`
+
+```python
+def drive_robot(self, robot_name: str, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, theta: float, no_safety_corridor=False) -> None
+```
+
+#### `get_actions_set`
+
+```python
+def get_actions_set(self, robot_name: str) -> List[Tuple[str, str]]
+```
+
+#### `get_latest_trajectory`
+
+```python
+def get_latest_trajectory(self) -> gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectory
+```
+
+#### `get_log`
+
+```python
+def get_log(self)
+```
+
+#### `get_obstacles`
+
+```python
+def get_obstacles(self) -> List[gamegine.representation.obstacle.Obstacle]
+```
+
+#### `get_trajectories`
+
+```python
+def get_trajectories(self, robot_name) -> Dict
+```
+
+#### `get_traversal_space`
+
+```python
+def get_traversal_space(self, robot_name) -> gamegine.simulation.GameServer.TraversalSpace
+```
+
+#### `init_game_state`
+
+```python
+def init_game_state(self, state)
+```
+
+#### `init_robot`
+
+```python
+def init_robot(self, robot_name: str, robot_state: gamegine.simulation.robot.RobotState) -> None
+```
+
+Initializes a robot with the given state.
+
+:param robot_name: The name of the robot.
+:type robot_name: str
+:param robot_state: The state of the robot.
+:type robot_state: :class:`RobotState`
+
+#### `load_from_game`
+
+```python
+def load_from_game(self, game: gamegine.representation.game.Game) -> None
+```
+
+#### `pickup_gamepiece`
+
+```python
+def pickup_gamepiece(self, robot_name: str, gamepiece) -> None
+```
+
+#### `prepare_traversal_space`
+
+```python
+def prepare_traversal_space(self, robot_name: str) -> gamegine.simulation.GameServer.TraversalSpace
+```
+
+#### `process_action`
+
+```python
+def process_action(self, interactable_name, interaction_name, robot_name, time_cutoff=None) -> bool
+```
+
+#### `set_obstacles`
+
+```python
+def set_obstacles(self, obstacles: List[gamegine.representation.obstacle.Obstacle]) -> None
+```
+
+#### `update`
+
+```python
+def update(self, dt: float) -> bool
+```
+
+Updates the game state (Time). Subclasses may add physics stepping.
+
+### GameServer
+
+```python
+class GameServer
+```
+
+Discrete Environment Server.
+Moves robots instanstly by calculating trajectory cost.
+Equivalent to original GameServer.
+
+#### `__init__`
+
+```python
+def __init__(self, config: gamegine.simulation.GameServer.ServerConfig = ServerConfig(mesh_resolution=Measurement(2.0, ft), discretization_quality=4, physics_config=PhysicsConfig(mesh_resolution=Measurement(2.0, ft), discretization_quality=4, trajectory_resolution=Measurement(10.0, cm), stretch_factor=1.5, min_spacing=Measurement(8.0, cm))))
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `add_interactable`
+
+```python
+def add_interactable(self, interactable: gamegine.representation.interactable.RobotInteractable) -> None
+```
+
+#### `add_robot`
+
+```python
+def add_robot(self, robot: gamegine.representation.robot.SwerveRobot) -> None
+```
+
+Adds a robot to the game server.
+
+:param robot: The robot to add.
+:type robot: :class:`SwerveRobot`
+
+#### `drive_and_process_action`
+
+```python
+def drive_and_process_action(self, interactable_name, interaction_name, robot_name, time_cutoff=None, no_safety_cooridor=False) -> bool
+```
+
+#### `drive_robot`
+
+```python
+def drive_robot(self, robot_name: str, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, theta: float, no_safety_corridor=False) -> None
+```
+
+#### `get_actions_set`
+
+```python
+def get_actions_set(self, robot_name: str) -> List[Tuple[str, str]]
+```
+
+#### `get_latest_trajectory`
+
+```python
+def get_latest_trajectory(self) -> gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectory
+```
+
+#### `get_log`
+
+```python
+def get_log(self)
+```
+
+#### `get_obstacles`
+
+```python
+def get_obstacles(self) -> List[gamegine.representation.obstacle.Obstacle]
+```
+
+#### `get_trajectories`
+
+```python
+def get_trajectories(self, robot_name) -> Dict
+```
+
+#### `get_traversal_space`
+
+```python
+def get_traversal_space(self, robot_name) -> gamegine.simulation.GameServer.TraversalSpace
+```
+
+#### `init_game_state`
+
+```python
+def init_game_state(self, state)
+```
+
+#### `init_robot`
+
+```python
+def init_robot(self, robot_name: str, robot_state: gamegine.simulation.robot.RobotState) -> None
+```
+
+Initializes a robot with the given state.
+
+:param robot_name: The name of the robot.
+:type robot_name: str
+:param robot_state: The state of the robot.
+:type robot_state: :class:`RobotState`
+
+#### `load_from_game`
+
+```python
+def load_from_game(self, game: gamegine.representation.game.Game) -> None
+```
+
+#### `pickup_gamepiece`
+
+```python
+def pickup_gamepiece(self, robot_name: str, gamepiece) -> None
+```
+
+#### `prepare_traversal_space`
+
+```python
+def prepare_traversal_space(self, robot_name: str) -> gamegine.simulation.GameServer.TraversalSpace
+```
+
+#### `process_action`
+
+```python
+def process_action(self, interactable_name, interaction_name, robot_name, time_cutoff=None) -> bool
+```
+
+#### `set_obstacles`
+
+```python
+def set_obstacles(self, obstacles: List[gamegine.representation.obstacle.Obstacle]) -> None
+```
+
+#### `update`
+
+```python
+def update(self, dt: float) -> bool
+```
+
+Updates the game state (Time). Subclasses may add physics stepping.
+
+### ServerConfig
+
+```python
+class ServerConfig
+```
+
+ServerConfig(mesh_resolution: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(2.0, ft), discretization_quality: int = 4, physics_config: gamegine.simulation.physics.PhysicsConfig = &lt;factory&gt;)
+
+#### `__init__`
+
+```python
+def __init__(self, mesh_resolution: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(2.0, ft), discretization_quality: int = 4, physics_config: gamegine.simulation.physics.PhysicsConfig = <factory>) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+### TraversalSpace
+
+```python
+class TraversalSpace
+```
+
+TraversalSpace(traversal_map: gamegine.analysis.meshing.Map, obstacles: List[gamegine.representation.obstacle.Obstacle] = &lt;factory&gt;)
+
+#### `__init__`
+
+```python
+def __init__(self, traversal_map: gamegine.analysis.meshing.Map, obstacles: List[gamegine.representation.obstacle.Obstacle] = <factory>) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+

@@ -1,0 +1,155 @@
+---
+title: gamegine.render.canvas
+---
+
+# gamegine.render.canvas
+
+Canvas module for Gamegine rendering.
+
+This module provides a hardware-accelerated drawing abstraction layer using arcade.
+All drawing primitives route through this module to enable consistent styling,
+coordinate transforms, and potential future backend swaps.
+
+## Classes
+
+### Canvas
+
+```python
+class Canvas
+```
+
+Hardware-accelerated drawing canvas using arcade.
+
+Provides drawing primitives that automatically handle coordinate conversion
+from game units (SpatialMeasurement) to screen pixels.
+
+#### `__init__`
+
+```python
+def __init__(self, settings: Optional[gamegine.render.canvas.CanvasSettings] = None)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `begin_shape_batch`
+
+```python
+def begin_shape_batch(self)
+```
+
+Begin a batched shape drawing session for better performance.
+
+#### `draw_arc`
+
+```python
+def draw_arc(self, x: 'SpatialMeasurement', y: 'SpatialMeasurement', radius: 'SpatialMeasurement', color: arcade.types.color.Color, start_angle: float, end_angle: float, line_width: float = 2.0)
+```
+
+Draw an arc.
+
+#### `draw_circle`
+
+```python
+def draw_circle(self, x: 'SpatialMeasurement', y: 'SpatialMeasurement', radius: 'SpatialMeasurement', color: arcade.types.color.Color, filled: bool = True, line_width: float = 2.0)
+```
+
+Draw a circle at the given position.
+
+#### `draw_line`
+
+```python
+def draw_line(self, x1: 'SpatialMeasurement', y1: 'SpatialMeasurement', x2: 'SpatialMeasurement', y2: 'SpatialMeasurement', color: arcade.types.color.Color, line_width: float = 2.0)
+```
+
+Draw a line between two points.
+
+#### `draw_lines`
+
+```python
+def draw_lines(self, points: List[Tuple[ForwardRef('SpatialMeasurement'), ForwardRef('SpatialMeasurement')]], color: arcade.types.color.Color, line_width: float = 2.0)
+```
+
+Draw connected line segments through a list of points.
+
+#### `draw_point`
+
+```python
+def draw_point(self, x: 'SpatialMeasurement', y: 'SpatialMeasurement', color: arcade.types.color.Color, size: float = 5.0)
+```
+
+Draw a single point.
+
+#### `draw_polygon`
+
+```python
+def draw_polygon(self, points: List[Tuple[ForwardRef('SpatialMeasurement'), ForwardRef('SpatialMeasurement')]], color: arcade.types.color.Color, filled: bool = True, line_width: float = 2.0)
+```
+
+Draw a polygon from a list of points.
+
+#### `draw_rectangle`
+
+```python
+def draw_rectangle(self, x: 'SpatialMeasurement', y: 'SpatialMeasurement', width: 'SpatialMeasurement', height: 'SpatialMeasurement', color: arcade.types.color.Color, filled: bool = True, line_width: float = 2.0, tilt_angle: float = 0.0)
+```
+
+Draw a rectangle. x,y is the center.
+
+#### `draw_text`
+
+```python
+def draw_text(self, text: str, x: 'SpatialMeasurement', y: 'SpatialMeasurement', color: arcade.types.color.Color = Color(r=0, g=0, b=0, a=255), font_size: int = 12, anchor_x: str = 'left', anchor_y: str = 'baseline')
+```
+
+Draw text at the given position.
+
+#### `end_shape_batch`
+
+```python
+def end_shape_batch(self)
+```
+
+End the batched shape drawing and render all shapes.
+
+#### `to_pixels`
+
+```python
+def to_pixels(self, value: 'SpatialMeasurement') -> float
+```
+
+Convert a SpatialMeasurement to pixels using the current render scale.
+
+### CanvasSettings
+
+```python
+class CanvasSettings
+```
+
+Global settings for canvas rendering.
+
+#### `__init__`
+
+```python
+def __init__(self, render_scale: float = 100.0, line_width: float = 2.0, antialiasing: bool = True) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+## Functions
+
+### get_canvas
+
+```python
+def get_canvas() -> gamegine.render.canvas.Canvas
+```
+
+Get the default global canvas instance.
+
+### set_canvas
+
+```python
+def set_canvas(canvas: gamegine.render.canvas.Canvas)
+```
+
+Set the default global canvas instance.
+

@@ -1,0 +1,116 @@
+---
+title: gamegine.analysis.trajectory.lib.constraints.constraints
+---
+
+# gamegine.analysis.trajectory.lib.constraints.constraints
+
+## Functions
+
+### AccelerationLessThan
+
+```python
+def AccelerationLessThan(acceleration: gamegine.utils.NCIM.ComplexDimensions.acceleration.Acceleration)
+```
+
+Constraint for setting the magnitude of the acceleration vector to be less than a specific value.
+
+:param acceleration: The desired maximum acceleration magnitude.
+:type acceleration: :class:`Acceleration`
+:return: The constraint function.
+:rtype: Callable[[Problem, PointVariables, int], None]
+
+### AngleEquals
+
+```python
+def AngleEquals(angle: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement)
+```
+
+Constraint for setting the angle of the robot to a specific value.
+
+:param angle: The desired angle.
+:type angle: :class:`AngularMeasurement`
+:return: The constraint function.
+:rtype: Callable[[Problem, PointVariables, int], None]
+
+### AngularAccelerationLessThan
+
+```python
+def AngularAccelerationLessThan(angular_acceleration: gamegine.utils.NCIM.ComplexDimensions.alpha.Alpha)
+```
+
+Constraint for setting the angular acceleration of the robot to be less than a specific value.
+
+:param angular_acceleration: The desired maximum angular acceleration.
+:type angular_acceleration: :class:`Alpha`
+:return: The constraint function.
+:rtype: Callable[[Problem, PointVariables, int], None]
+
+### AngularVelocityLessThan
+
+```python
+def AngularVelocityLessThan(angular_velocity: gamegine.utils.NCIM.ComplexDimensions.omega.Omega)
+```
+
+Constraint for setting the angular velocity of the robot to be less than a specific value.
+
+:param angular_velocity: The desired maximum angular velocity.
+:type angular_velocity: :class:`Omega`
+:return: The constraint function.
+:rtype: Callable[[Problem, PointVariables, int], None]
+
+### PositionEquals
+
+```python
+def PositionEquals(x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement)
+```
+
+Constraint for setting the position of the robot to a specific value.
+
+:param x: The desired x position.
+:type x: :class:`SpatialMeasurement`
+:param y: The desired y position.
+:type y: :class:`SpatialMeasurement`
+:return: The constraint function.
+:rtype: Callable[[Problem, PointVariables, int], None]
+
+### VelocityEquals
+
+```python
+def VelocityEquals(x: gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity, y: gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity)
+```
+
+Constraint for setting the velocity vector to a specific value.
+
+:param x: The desired x velocity.
+:type x: :class:`Velocity`
+:param y: The desired y velocity.
+:type y: :class:`Velocity`
+:return: The constraint function.
+:rtype: Callable[[Problem, PointVariables, int], None]
+
+### VelocityLessThan
+
+```python
+def VelocityLessThan(velocity: gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity)
+```
+
+Constraint for setting the magnitude of the velocity vector to be less than a specific value.
+
+:param velocity: The desired maximum velocity magnitude.
+:type velocity: :class:`Velocity`
+:return: The constraint function.
+:rtype: Callable[[Problem, PointVariables, int], None]
+
+### VelocityMagnitudeEquals
+
+```python
+def VelocityMagnitudeEquals(velocity: gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity)
+```
+
+Constraint for setting the magnitude of the velocity vector to a specific value.
+
+:param velocity: The desired velocity magnitude.
+:type velocity: :class:`Velocity`
+:return: The constraint function.
+:rtype: Callable[[Problem, PointVariables, int], None]
+

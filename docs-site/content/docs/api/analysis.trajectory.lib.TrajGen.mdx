@@ -1,0 +1,786 @@
+---
+title: gamegine.analysis.trajectory.lib.TrajGen
+---
+
+# gamegine.analysis.trajectory.lib.TrajGen
+
+## Classes
+
+### MinimizationStrategy
+
+```python
+class MinimizationStrategy
+```
+
+Enum used to define the minimization strategy for a trajectory optimization problem.
+
+:param TIME: Minimize the time taken to complete the trajectory.
+:param DISTANCE: Minimize the distance traveled in the trajectory.
+
+### SolverConfig
+
+```python
+class SolverConfig
+```
+
+Dataclass used to store configuration information for a trajectory optimization solver. This decides how accurately the solver attempts to solve the problem, in addition to allowing for a time limit on the solver.
+
+:param solution_tolerance: The tolerance of the solution.
+:type solution_tolerance: float
+:param max_iterations: The maximum number of iterations the solver will run.
+:type max_iterations: int
+:param timeout: The maximum time the solver will run before stopping.
+:type timeout: float
+
+#### `__init__`
+
+```python
+def __init__(self, solution_tolerance: float = 0.01, max_iterations: int = 1000, timeout: float = 100.0) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+### SwerveRobotConstraints
+
+```python
+class SwerveRobotConstraints
+```
+
+Dataclass used to store swerve drive robot constraints for a trajectory optimization problem.
+
+:param swerve_config: The configuration of the swerve drive.
+:type swerve_config: :class:`SwerveConfig`
+:param physical_parameters: The physical parameters of the robot.
+:type physical_parameters: :class:`PhysicalParameters`
+
+#### `__init__`
+
+```python
+def __init__(self, max_acceleration: gamegine.utils.NCIM.ComplexDimensions.acceleration.Acceleration = Measurement(0.0, m/s^2), max_velocity: gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity = Measurement(0.0, m/s), max_angular_acceleration: gamegine.utils.NCIM.ComplexDimensions.alpha.Alpha = Measurement(0.0, rad/s^2), max_angular_velocity: gamegine.utils.NCIM.ComplexDimensions.omega.Omega = Measurement(0.0, rad/s), swerve_config: gamegine.reference.swerve.SwerveConfig = None, physical_parameters: gamegine.representation.robot.PhysicalParameters = None) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+### SwerveTrajectory
+
+```python
+class SwerveTrajectory
+```
+
+Class used to store a swerve drive trajectory generated from an optimization problem. Contains information about the trajectory, including length, time, and robot constraints.
+
+:param points: The points along the trajectory.
+:type points: List[:class:`TrajectoryState`]
+:param robot_constraints: The constraints of the robot.
+:type robot_constraints: :class:`SwerveRobotConstraints`
+
+#### `__init__`
+
+```python
+def __init__(self, points: List[gamegine.analysis.trajectory.lib.trajectoryStates.TrajectoryState], robot_constraints: gamegine.analysis.trajectory.lib.TrajGen.SwerveRobotConstraints)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `export_to_file`
+
+```python
+def export_to_file(self, file_path: str)
+```
+
+Exports the trajectory to a JSON file, formatted in the Choreo structure.
+
+:param file_path: The path to the file to export the trajectory to.
+:type file_path: str
+
+#### `get_at_time`
+
+```python
+def get_at_time(self, time)
+```
+
+Returns the state of the robot at a given time.
+
+:param time: The time at which to get the state of the robot.
+:type time: :class:`TemporalMeasurement`
+:return: The state of the robot at the given time.
+:rtype: :class:`TrajectoryState`
+
+#### `get_length`
+
+```python
+def get_length(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+Returns the total length of the trajectory.
+
+:return: The total length of the trajectory.
+:rtype: :class:`SpatialMeasurement`
+
+#### `get_robot_constraints`
+
+```python
+def get_robot_constraints(self) -> gamegine.analysis.trajectory.lib.TrajGen.SwerveRobotConstraints
+```
+
+Returns the robot constraints of the trajectory.
+
+:return: The robot constraints of the trajectory.
+:rtype: :class:`TrajectoryRobotConstraints`
+
+#### `get_travel_time`
+
+```python
+def get_travel_time(self) -> gamegine.utils.NCIM.Dimensions.temporal.TemporalMeasurement
+```
+
+Returns the total travel time of the trajectory.
+
+:return: The total travel time of the trajectory.
+:rtype: :class:`TemporalMeasurement`
+
+#### `interpolate_trajectory_states`
+
+```python
+def interpolate_trajectory_states(self, state1: gamegine.analysis.trajectory.lib.trajectoryStates.TrajectoryState, state2: gamegine.analysis.trajectory.lib.trajectoryStates.TrajectoryState, t: gamegine.utils.NCIM.Dimensions.temporal.TemporalMeasurement) -> gamegine.analysis.trajectory.lib.trajectoryStates.TrajectoryState
+```
+
+Interpolates between two trajectory states based on a given time.
+
+:param state1: The first trajectory state to interpolate between.
+:type state1: :class:`Trajectory
+:param state2: The second trajectory state to interpolate between.
+:type state2: :class:`Trajectory
+:param t: The time at which to interpolate between the two states.
+:type t: :class:`TemporalMeasurement`
+:return: The interpolated trajectory state.
+:rtype: :class:`TrajectoryState`
+
+### SwerveTrajectoryProblem
+
+```python
+class SwerveTrajectoryProblem
+```
+
+Class for defining the optimization problem for a swerve drive trajectory. Contains the problem and the point variables used in the problem.
+
+:param problem: The optimization problem to solve.
+:type problem: :class:`OptimizationProblem`
+:param point_vars: The state variables at all discrete points in the trajectory.
+:type point_vars: :class:`SwervePointVariables`
+
+#### `__init__`
+
+```python
+def __init__(self, problem: sleipnir._sleipnir.optimization.Problem, point_vars: gamegine.analysis.trajectory.lib.problemVariables.SwervePointVariables)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `apply_constraint`
+
+```python
+def apply_constraint(self, constraint: Callable)
+```
+
+Applies a constraint function to the optimization problem.
+
+:param constraint: Constraint function with signature (problem, point_vars) -&gt; None
+:type constraint: Callable[[OptimizationProblem, PointVariables], None]
+
+#### `apply_constraints`
+
+```python
+def apply_constraints(self, robot_constraints: gamegine.analysis.trajectory.lib.TrajGen.TrajectoryRobotConstraints)
+```
+
+Applies constraints to the optimization problem based on the robot constraints.
+
+:param robot_constraints: The constraints of the robot.
+:type robot_constraints: :class:`TrajectoryRobotConstraints`
+
+#### `apply_swerve_constraints`
+
+```python
+def apply_swerve_constraints(self, robot_constraints: gamegine.analysis.trajectory.lib.TrajGen.SwerveRobotConstraints)
+```
+
+Applies constraints to the optimization problem based on the swerve drive robot constraints.
+
+:param robot_constraints: The constraints of the robot.
+:type robot_constraints: :class:`SwerveRobotConstraints`
+
+#### `get_trajectory_states`
+
+```python
+def get_trajectory_states(self) -> List[gamegine.analysis.trajectory.lib.trajectoryStates.TrajectoryState]
+```
+
+Returns a list of trajectory states from the point variables.
+
+:return: A list of trajectory states from the point variables.
+:rtype: List[:class:`TrajectoryState`]
+
+#### `get_trajectory_states_from_vars`
+
+```python
+def get_trajectory_states_from_vars(vars) -> List[gamegine.analysis.trajectory.lib.trajectoryStates.TrajectoryState]
+```
+
+Returns a list of trajectory states from the point variables.
+
+:param vars: The point variables to get the trajectory states from.
+:type vars: :class:`PointVariables`
+:return: A list of trajectory states from the point variables.
+:rtype: List[:class:`TrajectoryState`]
+
+#### `set_solver_callback`
+
+```python
+def set_solver_callback(self, callback: Callable)
+```
+
+Sets a callback function to be called for each solver iteration.
+
+The callback receives an IterationInfo object and should return True to stop early,
+False to continue.
+
+:param callback: The callback function (Callable[[IterationInfo], bool]).
+:type callback: Callable
+
+#### `solve`
+
+```python
+def solve(self, robot_constraints: gamegine.analysis.trajectory.lib.TrajGen.SwerveRobotConstraints, config: gamegine.analysis.trajectory.lib.TrajGen.SolverConfig, iteration_callback: Callable[[List], NoneType] = None)
+```
+
+Solves the optimization problem and returns the solution.
+
+:param iteration_callback: Optional callback called each iteration with current positions.
+                           Signature: callback(positions: List[Tuple[float, float]]) -&gt; None
+
+### SwerveTrajectoryProblemBuilder
+
+```python
+class SwerveTrajectoryProblemBuilder
+```
+
+Class used to build a swerve drive trajectory optimization problem and generate a solution. Allows for constraints and objectives to be added and setup.
+
+#### `__init__`
+
+```python
+def __init__(self) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `apply_basic_constraints`
+
+```python
+def apply_basic_constraints(self)
+```
+
+Applies basic constraints to the optimization problem.
+
+#### `apply_config_constraints`
+
+```python
+def apply_config_constraints(self, config: gamegine.analysis.trajectory.lib.TrajGen.TrajectoryBuilderConfig)
+```
+
+Applies constraints to the optimization problem based on the configuration.
+
+:param config: The configuration of the trajectory optimization problem.
+:type config: :class:`TrajectoryBuilderConfig`
+
+#### `apply_minimization_objective`
+
+```python
+def apply_minimization_objective(self, config: gamegine.analysis.trajectory.lib.TrajGen.TrajectoryBuilderConfig)
+```
+
+Applies the minimization objective to the optimization problem based on the configuration.
+
+:param config: The configuration of the trajectory optimization problem.
+:type config: :class:`TrajectoryBuilderConfig`
+
+#### `generate`
+
+```python
+def generate(self, config: gamegine.analysis.trajectory.lib.TrajGen.TrajectoryBuilderConfig = TrajectoryBuilderConfig(trajectory_resolution=Measurement(10.0, cm), stretch_factor=1.1, min_spacing=Measurement(1.0, cm), apply_kinematic_constraints=True, minimization_strategy=<MinimizationStrategy.TIME: 0>)) -> gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectoryProblem
+```
+
+Sets up and generates the optimization problem, based on the constraints and objectives currently added to the problem.
+
+:param config: The configuration of the trajectory optimization problem.
+:type config: :class:`TrajectoryBuilderConfig`
+:return: The optimization problem for the trajectory.
+:rtype: :class:`SwerveTrajectoryProblem`
+
+#### `generate_point_vars`
+
+```python
+def generate_point_vars(self, num_points: int)
+```
+
+Initializes the state variables for all points in the trajectory.
+
+:param num_points: The number of points in the trajectory.
+:type num_points: int
+:return: The state variables at all discrete points in the trajectory.
+:rtype: :class:`SwervePointVariables`
+
+#### `guide_pathes`
+
+```python
+def guide_pathes(self, guide_pathes: List[gamegine.analysis.pathfinding.Path])
+```
+
+Adds guide pathes that aid the trajectory in reaching its waypoints.
+
+:param guide_pathes: The guide pathes to add.
+:type guide_pathes: List[:class:`Path`]
+
+#### `initialize_state_variables_with_initial_pathes`
+
+```python
+def initialize_state_variables_with_initial_pathes(self, initial_pathes: List[gamegine.analysis.pathfinding.Path], resolution: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> int
+```
+
+Initializes the state variables for all points in the trajectory based on the initial pathes.
+
+:param initial_pathes: The initial pathes to use for the trajectory.
+:type initial_pathes: List[:class:`Path`]
+:param resolution: The resolution of the trajectory.
+:type resolution: :class:`SpatialMeasurement`
+:return: The number of points in the trajectory.
+:rtype: int
+
+#### `points_constraint`
+
+```python
+def points_constraint(self, constraint: Callable[[sleipnir._sleipnir.optimization.Problem, gamegine.analysis.trajectory.lib.problemVariables.PointVariables], NoneType])
+```
+
+Adds a constraint that applies to all points in the trajectory.
+
+:param constraint: The constraint to add.
+:type constraint: Callable[[OptimizationProblem, PointVariables], None]
+
+#### `solve`
+
+```python
+def solve(self)
+```
+
+Solves the optimization problem and returns the solution.
+
+#### `waypoint`
+
+```python
+def waypoint(self, waypoint: gamegine.analysis.trajectory.lib.TrajGen.Waypoint, order: int = -1)
+```
+
+Adds a waypoint that the trajectory must pass through.
+
+:param waypoint: The waypoint to add.
+:type waypoint: :class:`Waypoint`
+:param order: The order of the waypoint in the trajectory.
+:type order: int
+
+### Trajectory
+
+```python
+class Trajectory
+```
+
+Class used to store a trajectory generated from an optimization problem. Contains information about the trajectory, including length, time, and robot constraints.
+
+:param points: The points along the trajectory.
+:type points: List[:class:`TrajectoryState`]
+:param robot_constraints: The constraints of the robot.
+:type robot_constraints: :class:`TrajectoryRobotConstraints`
+
+#### `__init__`
+
+```python
+def __init__(self, points: List[gamegine.analysis.trajectory.lib.trajectoryStates.TrajectoryState], robot_constraints: gamegine.analysis.trajectory.lib.TrajGen.TrajectoryRobotConstraints)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `export_to_file`
+
+```python
+def export_to_file(self, file_path: str)
+```
+
+Exports the trajectory to a JSON file, formatted in the Choreo structure.
+
+:param file_path: The path to the file to export the trajectory to.
+:type file_path: str
+
+#### `get_at_time`
+
+```python
+def get_at_time(self, time: gamegine.utils.NCIM.Dimensions.temporal.TemporalMeasurement) -> gamegine.analysis.trajectory.lib.trajectoryStates.TrajectoryState
+```
+
+Returns the state of the robot at a given time.
+
+:param time: The time at which to get the state of the robot.
+:type time: :class:`TemporalMeasurement`
+:return: The state of the robot at the given time.
+:rtype: :class:`TrajectoryState`
+
+#### `get_length`
+
+```python
+def get_length(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+Returns the total length of the trajectory.
+
+:return: The total length of the trajectory.
+:rtype: :class:`SpatialMeasurement`
+
+#### `get_robot_constraints`
+
+```python
+def get_robot_constraints(self) -> gamegine.analysis.trajectory.lib.TrajGen.TrajectoryRobotConstraints
+```
+
+Returns the robot constraints of the trajectory.
+
+:return: The robot constraints of the trajectory.
+:rtype: :class:`TrajectoryRobotConstraints`
+
+#### `get_travel_time`
+
+```python
+def get_travel_time(self) -> gamegine.utils.NCIM.Dimensions.temporal.TemporalMeasurement
+```
+
+Returns the total travel time of the trajectory.
+
+:return: The total travel time of the trajectory.
+:rtype: :class:`TemporalMeasurement`
+
+### TrajectoryBuilderConfig
+
+```python
+class TrajectoryBuilderConfig
+```
+
+Dataclass used to store configuration information for a trajectory optimization problem.
+
+:param trajectory_resolution: The resolution of the trajectory.
+:type trajectory_resolution: :class:`SpatialMeasurement`
+:param stretch_factor: Factor which controls how much the trajectory can "stretch" from its initial path.
+:type stretch_factor: float
+:param min_spacing: The minimum spacing between points in the trajectory, can help space out points and keep them from clumping up.
+:type min_spacing: :class:`SpatialMeasurement`
+:param apply_kinematic_constraints: Whether to apply kinematic constraints to the trajectory.
+:type apply_kinematic_constraints: bool
+:param minimization_strategy: The minimization strategy for the trajectory.
+:type minimization_strategy: :class:`MinimizationStrategy`
+
+#### `__init__`
+
+```python
+def __init__(self, trajectory_resolution: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(10.0, cm), stretch_factor: float = 1.1, min_spacing: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(1.0, cm), apply_kinematic_constraints: bool = True, minimization_strategy: gamegine.analysis.trajectory.lib.TrajGen.MinimizationStrategy = <MinimizationStrategy.TIME: 0>) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+### TrajectoryProblem
+
+```python
+class TrajectoryProblem
+```
+
+Class for defining the optimization problem for a trajectory. Contains the problem and the point variables used in the problem.
+
+:param intialized_problem: The optimization problem to solve.
+:type intialized_problem: :class:`OptimizationProblem`
+:param point_vars: The state variables at all discrete points in the trajectory.
+:type point_vars: :class:`PointVariables`
+
+#### `__init__`
+
+```python
+def __init__(self, intialized_problem: sleipnir._sleipnir.optimization.Problem, point_vars: gamegine.analysis.trajectory.lib.problemVariables.PointVariables, reference_spline_path: List[Tuple[float, float]] = None)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `apply_constraint`
+
+```python
+def apply_constraint(self, constraint: Callable)
+```
+
+Applies a constraint function to the optimization problem.
+
+:param constraint: Constraint function with signature (problem, point_vars) -&gt; None
+:type constraint: Callable[[OptimizationProblem, PointVariables], None]
+
+#### `apply_constraints`
+
+```python
+def apply_constraints(self, robot_constraints: gamegine.analysis.trajectory.lib.TrajGen.TrajectoryRobotConstraints)
+```
+
+Applies constraints to the optimization problem based on the robot constraints.
+
+:param robot_constraints: The constraints of the robot.
+:type robot_constraints: :class:`TrajectoryRobotConstraints`
+
+#### `get_trajectory_states`
+
+```python
+def get_trajectory_states(self) -> List[gamegine.analysis.trajectory.lib.trajectoryStates.TrajectoryState]
+```
+
+Returns a list of trajectory states from the point variables.
+
+:return: A list of trajectory states from the point variables.
+:rtype: List[:class:`TrajectoryState`]
+
+#### `get_trajectory_states_from_vars`
+
+```python
+def get_trajectory_states_from_vars(vars) -> List[gamegine.analysis.trajectory.lib.trajectoryStates.TrajectoryState]
+```
+
+Returns a list of trajectory states from the point variables.
+
+:param vars: The point variables to get the trajectory states from.
+:type vars: :class:`PointVariables`
+:return: A list of trajectory states from the point variables.
+:rtype: List[:class:`TrajectoryState`]
+
+#### `set_solver_callback`
+
+```python
+def set_solver_callback(self, callback: Callable)
+```
+
+Sets a callback function to be called for each solver iteration.
+
+The callback receives an IterationInfo object and should return True to stop early,
+False to continue.
+
+:param callback: The callback function (Callable[[IterationInfo], bool]).
+:type callback: Callable
+
+#### `solve`
+
+```python
+def solve(self, robot_constraints: gamegine.analysis.trajectory.lib.TrajGen.TrajectoryRobotConstraints, config: gamegine.analysis.trajectory.lib.TrajGen.SolverConfig) -> gamegine.analysis.trajectory.lib.TrajGen.Trajectory
+```
+
+Solves the optimization problem and returns the solution.
+
+:param robot_constraints: The constraints of the robot.
+:type robot_constraints: :class:`TrajectoryRobotConstraints`
+:param config: The configuration of the solver.
+:type config: :class:`SolverConfig`
+:return: The solution to the optimization problem.
+:rtype: :class:`Trajectory`
+
+### TrajectoryProblemBuilder
+
+```python
+class TrajectoryProblemBuilder
+```
+
+Class used to build a trajectory optimization problem and generate a solution. Allows for constraints and objectives to be added and setup.
+
+:param initial_pathes: The initial pathes to use for the trajectory.
+:type initial_pathes: List[:class:`Path`]
+:param point_constraints: The constraints that apply to all points in the trajectory.
+:type point_constraints: List[Callable[[OptimizationProblem, PointVariables], None]
+
+#### `__init__`
+
+```python
+def __init__(self) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `apply_basic_constraints`
+
+```python
+def apply_basic_constraints(self)
+```
+
+Applies basic constraints to the optimization problem.
+
+#### `apply_config_constraints`
+
+```python
+def apply_config_constraints(self, config: gamegine.analysis.trajectory.lib.TrajGen.TrajectoryBuilderConfig)
+```
+
+Applies constraints to the optimization problem based on the configuration.
+
+:param config: The configuration of the trajectory optimization problem.
+:type config: :class:`TrajectoryBuilderConfig`
+
+#### `apply_minimization_objective`
+
+```python
+def apply_minimization_objective(self, config: gamegine.analysis.trajectory.lib.TrajGen.TrajectoryBuilderConfig)
+```
+
+Applies the minimization objective to the optimization problem based on the configuration.
+
+:param config: The configuration of the trajectory optimization problem.
+:type config: :class:`TrajectoryBuilderConfig`
+
+#### `generate`
+
+```python
+def generate(self, config: gamegine.analysis.trajectory.lib.TrajGen.TrajectoryBuilderConfig = TrajectoryBuilderConfig(trajectory_resolution=Measurement(10.0, cm), stretch_factor=1.1, min_spacing=Measurement(1.0, cm), apply_kinematic_constraints=True, minimization_strategy=<MinimizationStrategy.TIME: 0>)) -> gamegine.analysis.trajectory.lib.TrajGen.TrajectoryProblem
+```
+
+Sets up and generates the optimization problem, based on the constraints and objectives currently added to the problem.
+
+:param config: The configuration of the trajectory optimization problem.
+:type config: :class:`Trajectory
+:return: The optimization problem for the trajectory.
+:rtype: :class:`TrajectoryProblem`
+
+#### `generate_point_vars`
+
+```python
+def generate_point_vars(self, num_points: int)
+```
+
+Initializes the state variables for all points in the trajectory.
+
+:param num_points: The number of points in the trajectory.
+:type num_points: int
+:return: The state variables at all discrete points in the trajectory.
+:rtype: :class:`PointVariables`
+
+#### `guide_pathes`
+
+```python
+def guide_pathes(self, guide_pathes: List[gamegine.analysis.pathfinding.Path])
+```
+
+Adds guide pathes that aid the trajectory in reaching its waypoints.
+
+:param guide_pathes: The guide pathes to add.
+:type guide_pathes: List[:class:`Path`]
+
+#### `initialize_state_variables_with_initial_pathes`
+
+```python
+def initialize_state_variables_with_initial_pathes(self, initial_pathes: List[gamegine.analysis.pathfinding.Path], resolution: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> int
+```
+
+Initializes the state variables for all points in the trajectory based on the initial pathes.
+
+:param initial_pathes: The initial pathes to use for the trajectory.
+:type initial_pathes: List[:class:`Path`]
+:param resolution: The resolution of the trajectory.
+:type resolution: :class:`SpatialMeasurement`
+:return: The number of points in the trajectory.
+:rtype: int
+
+#### `points_constraint`
+
+```python
+def points_constraint(self, constraint: Callable[[sleipnir._sleipnir.optimization.Problem, gamegine.analysis.trajectory.lib.problemVariables.PointVariables], NoneType])
+```
+
+Adds a constraint that applies to all points in the trajectory.
+
+:param constraint: The constraint to add.
+:type constraint: Callable[[OptimizationProblem, PointVariables], None]
+
+#### `solve`
+
+```python
+def solve(self)
+```
+
+Solves the optimization problem and returns the solution.
+
+#### `waypoint`
+
+```python
+def waypoint(self, waypoint: gamegine.analysis.trajectory.lib.TrajGen.Waypoint, order: int = -1)
+```
+
+Adds a waypoint that the trajectory must pass through.
+
+:param waypoint: The waypoint to add.
+:type waypoint: :class:`Waypoint`
+:param order: The order of the waypoint in the trajectory.
+:type order: int
+
+### TrajectoryRobotConstraints
+
+```python
+class TrajectoryRobotConstraints
+```
+
+Dataclass used to store robot constraints for a trajectory optimization problem.
+
+:param max_acceleration: The maximum acceleration of the robot.
+:type max_acceleration: :class:`Acceleration`
+:param max_velocity: The maximum velocity of the robot.
+:type max_velocity: :class:`Velocity`
+:param max_angular_acceleration: The maximum angular acceleration of the robot.
+:type max_angular_acceleration: :class:`Alpha`
+:param max_angular_velocity: The maximum angular velocity of the robot.
+:type max_angular_velocity: :class:`Omega`
+
+#### `__init__`
+
+```python
+def __init__(self, max_acceleration: gamegine.utils.NCIM.ComplexDimensions.acceleration.Acceleration = Measurement(0.0, m/s^2), max_velocity: gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity = Measurement(0.0, m/s), max_angular_acceleration: gamegine.utils.NCIM.ComplexDimensions.alpha.Alpha = Measurement(0.0, rad/s^2), max_angular_velocity: gamegine.utils.NCIM.ComplexDimensions.omega.Omega = Measurement(0.0, rad/s)) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+### Waypoint
+
+```python
+class Waypoint
+```
+
+Dataclass used to store a waypoint that the trajectory must pass through.
+
+:param x: The x position of the waypoint.
+:type x: :class:`SpatialMeasurement`
+:param y: The y position of the waypoint.
+:type y: :class:`SpatialMeasurement`
+
+#### `__init__`
+
+```python
+def __init__(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, constraints: List[Callable[[sleipnir._sleipnir.optimization.Problem, gamegine.analysis.trajectory.lib.problemVariables.PointVariables, int], NoneType]] = <factory>, control_point_index: int = -1) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `given`
+
+```python
+def given(self, *constraints: List[Callable[[sleipnir._sleipnir.optimization.Problem, gamegine.analysis.trajectory.lib.problemVariables.PointVariables, int], NoneType]]) -> 'Waypoint'
+```
+
+Adds constraints to the waypoint.
+
+:param constraints: The constraints to add to the waypoint.
+:type constraints: List[Callable[[OptimizationProblem, PointVariables, int], None]]
+:return: The waypoint with the added constraints.
+:rtype: :class:`Waypoint`
+

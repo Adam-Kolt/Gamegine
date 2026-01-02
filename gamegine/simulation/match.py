@@ -13,6 +13,10 @@ from gamegine.simulation.logic import LogicRule
 
 @dataclass
 class MatchConfig:
+    """Configuration for the MatchController.
+    
+    Currently empty but reserved for future match-specific settings.
+    """
     pass
 
 class MatchController:
@@ -22,6 +26,11 @@ class MatchController:
     """
 
     def __init__(self, config: MatchConfig = MatchConfig()):
+        """Initializes the MatchController.
+
+        :param config: Configuration for the match, defaults to MatchConfig()
+        :type config: MatchConfig, optional
+        """
         self.config = config
         self.game_state: GameState = None
         self.game = None
@@ -41,23 +50,41 @@ class MatchController:
         self.logic_rules: List[LogicRule] = []
 
     def log_cb(self, action, changes):
-        """Callback for RuleEngine logging."""
+        """Callback for RuleEngine logging.
+        
+        :param action: Description of the action occurring.
+        :param changes: List of value changes resulting from the action.
+        """
         if self.game_state:
              self.game_log.append((self.game_state.current_time.get(), action, changes))
         else:
              self.game_log.append((0, action, changes))
 
     def log(self, action, changes):
+        """Logs an action and its changes to the game log.
+
+        :param action: Description of the action.
+        :param changes: List of value changes associated with the action.
+        """
         self.log_cb(action, changes)
         
     def clear_log(self):
+        """Clears the current game log."""
         self.game_log = []
         
     def get_log(self):
+        """Retrieves the current game log.
+
+        :return: A list of log entries (time, action, changes).
+        """
         return self.game_log
 
     def load_game(self, game: Game) -> None:
-        """Loads the game representation and initializes state."""
+        """Loads the game representation and initializes state.
+
+        :param game: The game configuration to load.
+        :type game: Game
+        """
         self.game = game
         
         # Initialize default game state locally
@@ -79,18 +106,41 @@ class MatchController:
             self.add_interactable(interactable)
 
     def set_obstacles(self, obstacles: List[obstacle.Obstacle]) -> None:
+        """Sets the obstacles present in the field.
+
+        :param obstacles: List of obstacles.
+        :type obstacles: List[obstacle.Obstacle]
+        """
         self.field_obstacles = obstacles
 
     def get_obstacles(self) -> List[obstacle.Obstacle]:
+        """Returns the list of field obstacles.
+
+        :return: List of obstacles.
+        :rtype: List[obstacle.Obstacle]
+        """
         return self.field_obstacles
 
     def add_interactable(self, interactable: RobotInteractable) -> None:
+        """Adds an interactable object to the match.
+
+        :param interactable: The interactable to add.
+        :type interactable: RobotInteractable
+        :raises ValueError: If the game state is not initialized.
+        """
         if self.game_state is None:
             raise ValueError("Game state not initialized")
         self.interactables[interactable.name] = interactable
         self.rule_engine.add_interactable(interactable, self.game_state)
 
     def add_robot(self, name: str, robot: SwerveRobot):
+        """Adds a robot to the match.
+
+        :param name: The identifier name for the robot.
+        :type name: str
+        :param robot: The robot instance.
+        :type robot: SwerveRobot
+        """
         self.robots[name] = robot
         # Could also register robot in game_state via RuleEngine or directly?
         # GameServer didn't explicitly call RuleEngine for robot addition, it just managed dict.
@@ -104,6 +154,11 @@ class MatchController:
              self.game_state.createSpace("robots")
 
     def is_game_over(self) -> bool:
+        """Checks if the game has ended based on time.
+
+        :return: True if current time exceeds total game time, False otherwise.
+        :rtype: bool
+        """
         if self.game_state is None:
             return False
         return (
@@ -112,7 +167,14 @@ class MatchController:
         )
 
     def update_time(self, dt: float) -> bool:
-        """Updates the game time."""
+        """Updates the game time and processes partial logic updates.
+
+        :param dt: Time delta to advance by.
+        :type dt: float
+        :return: True if game is over, False otherwise.
+        :rtype: bool
+        :raises ValueError: If game state is not initialized.
+        """
         if self.game_state is None:
             raise ValueError("Game state not initialized")
         self.game_state.current_time.set(self.game_state.current_time.get() + dt)
@@ -128,6 +190,15 @@ class MatchController:
     def process_action(
         self, interactable_name, interaction_name, robot_name, time_cutoff=None
     ) -> bool:
+        """Processes a robot interaction with an interactable object.
+
+        :param interactable_name: Name of the interactable.
+        :param interaction_name: Name of the specific interaction.
+        :param robot_name: Name of the robot performing the interaction.
+        :param time_cutoff: Optional time limit for valid interactions.
+        :return: True if action was successful, False otherwise.
+        :rtype: bool
+        """
         return self.rule_engine.process_action(
             interactable_name,
             interaction_name,
@@ -138,22 +209,46 @@ class MatchController:
         )
 
     def pickup_gamepiece(self, robot_name: str, gamepiece) -> None:
+        """Forces a robot to pickup a gamepiece.
+
+        :param robot_name: Name of the robot.
+        :param gamepiece: The gamepiece to pickup.
+        """
         self.rule_engine.pickup_gamepiece(robot_name, gamepiece, self.game_state)
         
     def get_actions_set(self, robot_name: str) -> List[Tuple[str, str]]:
+        """Gets available actions for a robot.
+
+        :param robot_name: The robot to check.
+        :return: List of tuples (interactable_name, interaction_name).
+        """
         return self.rule_engine.get_actions_set(self.robots, robot_name)
     
     def apply_changes(self, changes: List[ValueChange]):
+        """Applies a list of ValueChanges to the game state.
+
+        :param changes: List of changes to apply.
+        """
         self.rule_engine.process_value_changes(changes)
 
     def get_navigation_point(self, interactable_name, interaction_name, robot_name):
+        """Gets the navigation point for a specific interaction.
+
+        :param interactable_name: Name of the interactable.
+        :param interaction_name: Name of the interaction.
+        :param robot_name: Name of the robot.
+        :return: (x, y, heading) tuple or None.
+        """
         return self.rule_engine.get_navigation_point(
             interactable_name, interaction_name, robot_name, self.robots
         )
         
     # --- Logic System Integration ---
     def add_logic_rule(self, rule: "LogicRule"):
-        """Adds a logic rule to the match."""
+        """Adds a logic rule to the match.
+        
+        :param rule: The LogicRule to add.
+        """
         # Avoid circular import issues by importing locally if needed, 
         # but type hint uses string forward ref or we import at top.
         # We'll just append to a list.
@@ -162,6 +257,7 @@ class MatchController:
         self.logic_rules.append(rule)
 
     def _process_logic_rules(self, dt: float):
+        """Internal method to update all registered logic rules."""
         if not hasattr(self, "logic_rules"):
             return
 

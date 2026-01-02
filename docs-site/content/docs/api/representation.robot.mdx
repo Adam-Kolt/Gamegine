@@ -1,0 +1,219 @@
+---
+title: gamegine.representation.robot
+---
+
+# gamegine.representation.robot
+
+## Classes
+
+### PhysicalParameters
+
+```python
+class PhysicalParameters
+```
+
+Stores the physical parameters of a robot, including mass, moment of inertia, and center of mass.
+
+#### `__init__`
+
+```python
+def __init__(self, mass: gamegine.utils.NCIM.Dimensions.mass.MassMeasurement, moi: gamegine.utils.NCIM.ComplexDimensions.MOI.MOI) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+### Robot
+
+```python
+class Robot
+```
+
+Represents a robot on the field.
+
+:param name: The name of the robot.
+:type name: str
+:param structure: The structure of the robot.
+:type structure: List[:class:`Boundary3D`]
+:param physics: The physical parameters of the robot.
+:type physics: :class:`PhysicalParameters`
+
+#### `__init__`
+
+```python
+def __init__(self, name: str, structure: List[gamegine.representation.bounds.Boundary3D] = [], physics: gamegine.representation.robot.PhysicalParameters = None) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `add_interaction_config`
+
+```python
+def add_interaction_config(self, config: gamegine.representation.interactable.RobotInteractionConfig) -> None
+```
+
+Adds an interaction configuration to the robot.
+
+:param config: The interaction configuration to add.
+:type config: :class:`gamepiece.GamepieceConfig`
+
+#### `get_bounding_radius`
+
+```python
+def get_bounding_radius(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+Returns the bounding radius of the robot.
+
+:return: The bounding radius of the robot.
+:rtype: :class:`SpatialMeasurement`
+
+#### `get_physics`
+
+```python
+def get_physics(self) -> gamegine.representation.robot.PhysicalParameters
+```
+
+Returns the physical parameters of the robot.
+
+:return: The physical parameters of the robot.
+:rtype: :class:`PhysicalParameters`
+
+#### `override_bounding_radius`
+
+```python
+def override_bounding_radius(self, radius: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> None
+```
+
+Overrides the bounding radius of the robot.
+
+:param radius: The new bounding radius of the robot.
+:type radius: :class:`SpatialMeasurement`
+
+#### `prefix`
+
+```python
+def prefix(self, prefix: str) -> 'NamedObject'
+```
+
+#### `suffix`
+
+```python
+def suffix(self, suffix: str) -> 'NamedObject'
+```
+
+#### `true_radius`
+
+```python
+def true_radius(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+Returns the true radius of the robot.
+
+:return: The true radius of the robot.
+:rtype: :class:`SpatialMeasurement`
+
+### SwerveRobot
+
+```python
+class SwerveRobot
+```
+
+Represents a swerve robot on the field.
+
+#### `__init__`
+
+```python
+def __init__(self, name: str, drivetrain: gamegine.reference.swerve.SwerveConfig, structure: List[gamegine.representation.bounds.Boundary3D] = [], physics: gamegine.representation.robot.PhysicalParameters = None) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `add_interaction_config`
+
+```python
+def add_interaction_config(self, config: gamegine.representation.interactable.RobotInteractionConfig) -> None
+```
+
+Adds an interaction configuration to the robot.
+
+:param config: The interaction configuration to add.
+:type config: :class:`gamepiece.GamepieceConfig`
+
+#### `get_alliance`
+
+```python
+def get_alliance(self) -> gamegine.first.alliance.Alliance
+```
+
+Returns the alliance of the robot.
+
+:return: The alliance of the robot.
+:rtype: :class:`Alliance`
+
+#### `get_bounding_radius`
+
+```python
+def get_bounding_radius(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+Returns the bounding radius of the robot.
+
+:return: The bounding radius of the robot.
+:rtype: :class:`SpatialMeasurement`
+
+#### `get_drivetrain`
+
+```python
+def get_drivetrain(self) -> gamegine.reference.swerve.SwerveConfig
+```
+
+Returns the characteristics of the robot's drivetrain.
+
+:return: The characteristics of the robot's drivetrain.
+:rtype: :class:`SwerveDrivetrainCharacteristics`
+
+#### `get_physics`
+
+```python
+def get_physics(self) -> gamegine.representation.robot.PhysicalParameters
+```
+
+Returns the physical parameters of the robot.
+
+:return: The physical parameters of the robot.
+:rtype: :class:`PhysicalParameters`
+
+#### `override_bounding_radius`
+
+```python
+def override_bounding_radius(self, radius: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> None
+```
+
+Overrides the bounding radius of the robot.
+
+:param radius: The new bounding radius of the robot.
+:type radius: :class:`SpatialMeasurement`
+
+#### `prefix`
+
+```python
+def prefix(self, prefix: str) -> 'NamedObject'
+```
+
+#### `suffix`
+
+```python
+def suffix(self, suffix: str) -> 'NamedObject'
+```
+
+#### `true_radius`
+
+```python
+def true_radius(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+Returns the true radius of the robot.
+
+:return: The true radius of the robot.
+:rtype: :class:`SpatialMeasurement`
+

@@ -1,0 +1,175 @@
+---
+title: gamegine.render.interaction
+---
+
+# gamegine.render.interaction
+
+Interaction handling for rendered objects.
+
+Provides mouse picking, hover detection, and click handling.
+
+## Classes
+
+### HitTestResult
+
+```python
+class HitTestResult
+```
+
+Result of a hit test (mouse picking).
+
+#### `__init__`
+
+```python
+def __init__(self, obj: Any, distance: float, layer: str) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+### InteractionManager
+
+```python
+class InteractionManager
+```
+
+Manages interaction state for rendered objects.
+
+Provides hit testing, hover tracking, and click detection.
+
+#### `__init__`
+
+```python
+def __init__(self)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `find_hit`
+
+```python
+def find_hit(self, objects: List[Tuple[Any, str]], x: float, y: float) -> Optional[gamegine.render.interaction.HitTestResult]
+```
+
+Find the first object hit by a point.
+
+:param objects: List of (object, layer_name) tuples.
+:param x: World X coordinate.
+:param y: World Y coordinate.
+:return: HitTestResult if an object was hit, None otherwise.
+
+#### `handle_click`
+
+```python
+def handle_click(self, obj: Any)
+```
+
+Handle a click on an object.
+
+:param obj: The object that was clicked.
+
+#### `hit_test`
+
+```python
+def hit_test(self, obj: Any, x: float, y: float) -> bool
+```
+
+Test if a point hits an object.
+
+:param obj: The object to test.
+:param x: World X coordinate.
+:param y: World Y coordinate.
+:return: True if the point hits the object.
+
+#### `on_click`
+
+```python
+def on_click(self, callback: Callable[[Any], NoneType])
+```
+
+Register a click callback.
+
+:param callback: Function to call when an object is clicked.
+
+#### `on_hover`
+
+```python
+def on_hover(self, callback: Callable[[Any], NoneType])
+```
+
+Register a hover callback.
+
+:param callback: Function to call when an object is hovered.
+
+#### `register_hit_tester`
+
+```python
+def register_hit_tester(self, obj_type: Type, tester: Callable[[Any, float, float], bool])
+```
+
+Register a hit test function for a type.
+
+:param obj_type: The class type to register.
+:param tester: Function taking (obj, x, y) and returning True if hit.
+
+#### `set_hovered`
+
+```python
+def set_hovered(self, obj: Any)
+```
+
+Set the hovered object.
+
+:param obj: The object to set as hovered.
+
+#### `set_selected`
+
+```python
+def set_selected(self, obj: Any)
+```
+
+Set the selected object.
+
+:param obj: The object to set as selected.
+
+## Functions
+
+### circle_hit_test
+
+```python
+def circle_hit_test(obj: Any, x: float, y: float) -> bool
+```
+
+Hit test for Circle objects.
+
+### get_interaction_manager
+
+```python
+def get_interaction_manager() -> gamegine.render.interaction.InteractionManager
+```
+
+Get the global interaction manager.
+
+### polygon_hit_test
+
+```python
+def polygon_hit_test(obj: Any, x: float, y: float) -> bool
+```
+
+Hit test for Polygon/DiscreteBoundary objects using shapely.
+
+### rectangle_hit_test
+
+```python
+def rectangle_hit_test(obj: Any, x: float, y: float) -> bool
+```
+
+Hit test for Rectangle objects.
+
+### register_default_hit_testers
+
+```python
+def register_default_hit_testers(manager: gamegine.render.interaction.InteractionManager)
+```
+
+Register default hit testers for common types.
+

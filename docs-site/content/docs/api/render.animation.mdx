@@ -1,0 +1,158 @@
+---
+title: gamegine.render.animation
+---
+
+# gamegine.render.animation
+
+Animation utilities for smooth visual effects.
+
+Provides easing functions, transitions, and animation state management.
+
+## Classes
+
+### Animation
+
+```python
+class Animation
+```
+
+A single animation that interpolates a value over time.
+
+#### `__init__`
+
+```python
+def __init__(self, start_value: float, end_value: float, duration: float, easing: gamegine.render.animation.EasingFunction = <EasingFunction.EASE_IN_OUT: 'ease_in_out'>) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `reset`
+
+```python
+def reset(self)
+```
+
+Reset the animation to start.
+
+#### `update`
+
+```python
+def update(self, delta_time: float)
+```
+
+Update the animation state.
+
+### AnimationManager
+
+```python
+class AnimationManager
+```
+
+Manages multiple named animations.
+
+#### `__init__`
+
+```python
+def __init__(self)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `add`
+
+```python
+def add(self, name: str, start_value: float, end_value: float, duration: float, easing: gamegine.render.animation.EasingFunction = <EasingFunction.EASE_IN_OUT: 'ease_in_out'>) -> gamegine.render.animation.Animation
+```
+
+Create and add a new animation.
+
+#### `clear`
+
+```python
+def clear(self)
+```
+
+Remove all animations.
+
+#### `get`
+
+```python
+def get(self, name: str) -> Optional[gamegine.render.animation.Animation]
+```
+
+Get an animation by name.
+
+#### `get_value`
+
+```python
+def get_value(self, name: str, default: float = 0.0) -> float
+```
+
+Get the current value of an animation, or default if not found.
+
+#### `remove`
+
+```python
+def remove(self, name: str)
+```
+
+Remove an animation.
+
+#### `remove_completed`
+
+```python
+def remove_completed(self)
+```
+
+Remove all completed animations.
+
+#### `update`
+
+```python
+def update(self, delta_time: float)
+```
+
+Update all animations.
+
+### EasingFunction
+
+```python
+class EasingFunction
+```
+
+Common easing functions.
+
+## Functions
+
+### ease
+
+```python
+def ease(start: float, end: float, t: float, easing: gamegine.render.animation.EasingFunction = <EasingFunction.LINEAR: 'linear'>) -> float
+```
+
+Interpolate with easing between two values.
+
+### get_animation_manager
+
+```python
+def get_animation_manager() -> gamegine.render.animation.AnimationManager
+```
+
+Get the global animation manager.
+
+### get_easing
+
+```python
+def get_easing(easing: gamegine.render.animation.EasingFunction) -> Callable[[float], float]
+```
+
+Get the easing function for the given type.
+
+### lerp
+
+```python
+def lerp(start: float, end: float, t: float) -> float
+```
+
+Linear interpolation between two values.
+

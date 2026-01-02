@@ -1,276 +1,43 @@
 ---
-title: Gamegine Documentation Hub
-description: Landing page for methodology, core modules, and applied game analysis.
+title: Philosophy
+description: The design principles and vision behind Gamegine.
 ---
 
-import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
-import { Accordions, Accordion } from 'fumadocs-ui/components/accordion';
-import { Cards, Card } from 'fumadocs-ui/components/card';
+# The Gamegine Philosophy
 
-# Gamegine Documentation Hub
+Gamegine is more than just a robotics simulation library; it is a **comprehensive framework for modeling competitive reality**. Born from the rigorous demands of the FIRST Robotics Competition (FRC), it bridges the gap between theoretical strategy and physical execution.
 
-Gamegine is a cohesive toolkit for prototyping and analysing FRC-style robot gameplay. It
-combines precise field representation with navigation meshing, optimisation-aware trajectory
-planning, and lightweight rendering so you can iterate on strategy before touching the
-practice carpet.
+## Simulation as Validity
 
-<Cards>
-  <Card title="Quick Start" href="./overview" description="Understand the moving pieces and the default workflow." />
-  <Card title="Subsystem Deep Dives" href="./analysis" description="Step-by-step analysis pipeline with runnable snippets." />
-  <Card title="Reference Data" href="./reference" description="Vendor-sourced constants, constraints, and drivetrain helpers." />
-</Cards>
+In competitive robotics, a strategy is only as good as its execution. Gamegine operates on the principle that **accurate simulation is the highest form of validation**. By modeling the physical constraints, robot kinematic limits, and game logic with high fidelity, we transform "what if" into "what will be".
 
-## Methodology
+> "The map is not the territory, but a good map tells you where the cliffs are."
 
-The library is built around a repeatable loop that keeps units, geometry, and solver
-limitations aligned.
+## Core Principles
 
-<Tabs items={['System Overview', 'Planning Pipeline', 'Simulation Loop']}>
-  <Tab>
-    <div className="space-y-3">
-      <h3>System Overview</h3>
-      <p>
-        Gamegine treats the field as a first-class data structure. Every object is stamped with
-        NCIM units so numerical operations (metres vs. inches) remain explicit. Geometry feeds the
-        analysis stack, which in turn produces <code>Drawable</code> objects for rapid visual feedback.
-      </p>
-    </div>
-  </Tab>
-  <Tab>
-    <div className="space-y-3">
-      <h3>Planning Pipeline</h3>
-      <ol className="list-decimal pl-5 space-y-2">
-        <li>
-          <strong>Represent</strong> the field using <code>gamegine.representation.*</code> primitives and
-          expand obstacles to respect robot envelopes.
-        </li>
-        <li>
-          <strong>Mesh</strong> the traversable space with <code>VisibilityGraph</code> or
-          <code>TriangulatedGraph</code> depending on obstacle density.
-        </li>
-        <li>
-          <strong>Route</strong> with A* via <code>findPath</code> and post-process with
-          <code>shortcut</code>/<code>dissect</code> utilities.
-        </li>
-        <li>
-          <strong>Optimise</strong> using <code>TrajGen</code> builders or <code>SafetyCorridorAssisted</code>
-          to obey drivetrain limits.
-        </li>
-      </ol>
-    </div>
-  </Tab>
-  <Tab>
-    <div className="space-y-3">
-      <h3>Simulation Loop</h3>
-      <p>
-        Generated trajectories and robot states live inside <code>gamegine.simulation</code>. The renderer
-        uses those state containers directly, so every iteration closes the loop: adjust an
-        assumption, regenerate the path, and visualise the new behaviour immediately.
-      </p>
-    </div>
-  </Tab>
-</Tabs>
+### 1. Deterministic Physics
+We believe in reproducible results. Gamegine's physics engine is designed to be deterministic, ensuring that a strategy that works once works every time under the same conditions. This reliability is crucial for autonomous path planning and strategy refinement.
 
-<Accordions type="single" collapsible>
-  <Accordion title="Why NCIM?">
-    NCIM (Not Crashing Into Mars) enforces unit safety across the entire stack. Every value is
-    wrapped in a dimensional type so collisions between inches and metres are caught at the
-    call site instead of on the field.
-  </Accordion>
-  <Accordion title="Solver Philosophy">
-    Optimisation problems are expressed with Sleipnir/Jormungandr. Gamegine ships helper
-    builders that translate high-level constraints (speed limits, module forces) into Sleipnir
-    variables, letting you iterate on behaviour without diving into raw solver code.
-  </Accordion>
-  <Accordion title="Debuggability">
-    Every major object implements `Drawable`, enabling one-line visualisation in the pygame
-    renderer. Being able to watch meshes, paths, and trajectories overlaid on the field keeps
-    debugging tight and intuitive.
-  </Accordion>
-</Accordions>
+### 2. Composition over Inheritance
+Robots are complex systems composed of distinct subsystems. Gamegine mirrors this reality. A `SwerveRobot` isn't just a subclass; it's a composition of a drivetrain, kinematics model, and control system. This allows for modularity and easy reconfiguration.
 
-## Core Modules
+### 3. Visual Introspection
+Data without visualization is noise. Gamegine prioritizes **rich, real-time visualization**. Whether it's the `Renderer` displaying a live match or the debugging tools showing pathfinding nodes, we ensure you can always *see* what your code is thinking.
 
-Gamegine’s modular structure keeps responsibilities isolated while allowing tight
-integration when needed.
+### 4. Unit Safety
+Physical units are first-class citizens. Using our **NCIM (New Compact International Measurements)** system, Gamegine enforces dimensional correctness at the type level. Feet don't accidentally become meters. Torque doesn't become Force. This eliminating an entire class of common engineering errors.
 
-<Tabs items={['Representation', 'Analysis', 'Trajectory', 'Rendering & Simulation']}>
-  <Tab>
-    <div className="space-y-3">
-      <h3>Representation</h3>
-      <ul className="list-disc pl-5 space-y-1">
-        <li>
-          <code>gamegine.representation.bounds</code> offers reusable geometry primitives (rectangles,
-          circles, polygons) with transformation utilities.
-        </li>
-        <li>
-          <code>gamegine.representation.obstacle</code> wraps boundaries with metadata used throughout the
-          analysis pipeline.
-        </li>
-        <li>
-          <code>gamegine.representation.robot</code> stores drivetrain geometry and mass properties required
-          for realistic motion constraints.
-        </li>
-      </ul>
-    </div>
-  </Tab>
-  <Tab>
-    <div className="space-y-3">
-      <h3>Analysis</h3>
-      <ul className="list-disc pl-5 space-y-1">
-        <li>
-          <code>gamegine.analysis.meshing</code> builds visibility graphs or triangular lattices tuned to
-          your obstacle density.
-        </li>
-        <li>
-          <code>gamegine.analysis.pathfinding</code> provides A*-style planners with configurable
-          heuristics and connection policies.
-        </li>
-        <li>
-          <code>gamegine.analysis.trajectory</code> packages safety corridor generators, constraint
-          factories, and Sleipnir problem builders.
-        </li>
-      </ul>
-    </div>
-  </Tab>
-  <Tab>
-    <div className="space-y-3">
-      <h3>Trajectory Tooling</h3>
-      <ul className="list-disc pl-5 space-y-1">
-        <li>
-          <code>TrajGen</code> exposes builder APIs for holonomic and swerve motion.
-        </li>
-        <li>
-          Constraint libraries (<code>constraints</code>, <code>kinematics</code>, <code>spacing</code>,
-          <code>swerve</code>) cover velocity, acceleration, and module force envelopes.
-        </li>
-        <li>
-          <code>SafetyCorridorAssisted</code> inflates guide paths into rectangles and runs a time-optimal
-          optimisation that respects drivetrain physics.
-        </li>
-      </ul>
-    </div>
-  </Tab>
-  <Tab>
-    <div className="space-y-3">
-      <h3>Rendering & Simulation</h3>
-      <ul className="list-disc pl-5 space-y-1">
-        <li>
-          <code>gamegine.render.renderer</code> is a lightweight pygame loop for rapid iteration.
-        </li>
-        <li>
-          <code>gamegine.render.helpers</code> keeps drawing styles consistent across custom visuals.
-        </li>
-        <li>
-          <code>gamegine.simulation.state</code> and <code>gamegine.simulation.robot</code> manage team state,
-          alliance information, and gameplay interactions.
-        </li>
-      </ul>
-    </div>
-  </Tab>
-</Tabs>
+## The Architecture
 
-<Accordions type="multiple" collapsible>
-  <Accordion title="Inter-module Contracts">
-    Mesh nodes, paths, and trajectories all leverage NCIM objects. Converters (encode/decode)
-    exist only at module boundaries, keeping the rest of the code strongly typed.
-  </Accordion>
-  <Accordion title="Extensibility Hooks">
-    Create custom `Pathfinder` subclasses or additional `TrajectoryProblemBuilder`
-    specialisations without rewriting the surrounding workflow.
-  </Accordion>
-</Accordions>
+Gamegine is built on four pillars:
 
-## Analysing FRC Games
+1.  **Representation**: defining the world (Games, Obstacles, Robots).
+2.  **Simulation**: The core loop that advances state and enforces rules.
+3.  **Analysis**: Tools for pathfinding, trajectory generation, and strategy optimization.
+4.  **rendering**: The visual layer that brings the simulation to life.
 
-This section demonstrates how the toolkit adapts to annual game challenges.
+## Why Gamegine?
 
-<Tabs items={['Workflow Recap', 'Scouting Integration']}>
-  <Tab>
-    <div className="space-y-3">
-      <h3>Workflow Recap</h3>
-      <ol className="list-decimal pl-5 space-y-2">
-        <li>Digitise the field using official CAD or community-sourced drawings.</li>
-        <li>Inflate obstacles by wheelbase radius to maintain clearance.</li>
-        <li>Generate baseline autonomous routes with <code>findPath</code> and smooth them with
-          <code>shortcut</code>.</li>
-        <li>
-          Optimise each route for the current drivetrain configuration and export key waypoints for
-          driver practice tools.
-        </li>
-      </ol>
-    </div>
-  </Tab>
-  <Tab>
-    <div className="space-y-3">
-      <h3>Scouting Integration</h3>
-      <p>
-        Combine Gamegine outputs with scouting data to evaluate cycle times. Trajectory statistics
-        (travel time, max velocity, max acceleration) feed directly into your match strategy models.
-      </p>
-    </div>
-  </Tab>
-</Tabs>
+Because winning matches starts weeks before the robot hits the field. It starts here, in the simulation, where iterate is cheap and perfection is attainable.
 
-<Accordions type="single" collapsible>
-  <Accordion title="2022 Rapid React">
-    - Focus on hub approaches: model the tarmac, hangar, and protected launch pads.
-    - Use triangular meshes to navigate around defenders near the fender.
-    - Optimise two-ball autonomous routines with safety corridors that hug the hub wall.
-  </Accordion>
-  <Accordion title="2023 Charged Up">
-    - Add `ExpandedObjectBounds` for the charge station to maintain wheel clearance.
-    - Blend pathfinding with robot state to schedule balance-on-charge-station manoeuvres.
-    - Use simulation highlighting to verify alliance paths do not interfere.
-  </Accordion>
-  <Accordion title="2024 Crescendo">
-    - Represent the stage trusses as discrete obstacles and leverage visibility graphs for
-      midfield navigation.
-    - Attach interaction points to speaker and amp interactables to script scoring actions.
-    - Evaluate cycle splits by combining trajectory travel time with amp/speaker animation
-      timelines.
-  </Accordion>
-</Accordions>
-
-## References & Data Provenance
-
-Accurate references are pivotal when validating drivetrain behaviour.
-
-### Motor Specifications
-
-The table below mirrors `gamegine.reference.motors` and is sourced from official vendor
-datasheets (REV Robotics, VEXpro, WestCoast Products). Values are expressed using NCIM units
-inside the code; approximate imperial/metric equivalents are provided for quick scanning.
-
-| Motor | Weight (lb) | Free Speed (RPM) | Stall Torque (N·m) | Stall Current (A) | Free Current (A) |
-| --- | --- | --- | --- | --- | --- |
-| Kraken X60 | 1.20 | 6000 | 7.09 | 366 | 1.50 |
-| Kraken X60 (FOC) | 1.20 | 5800 | 9.37 | 483 | 1.50 |
-| Falcon 500 | 1.10 | 6380 | 4.69 | 257 | 1.50 |
-| Falcon 500 (FOC) | 1.10 | 6080 | 5.84 | 304 | 1.50 |
-| REV NEO | 1.19 | 5880 | 3.28 | 181 | 1.30 |
-| REV NEO Vortex | 1.28 | 6784 | 3.60 | 211 | 3.60 |
-| REV NEO 550 | 0.56 | 11710 | 1.08 | 111 | 1.10 |
-
-### Data Sourcing
-
-- **REV Robotics** motor data (NEO, NEO Vortex, NEO 550, Kraken X60) comes from the official
-  product specification sheets and REV’s public CAD library.
-- **VEXpro/WestCoast Products** data (Falcon 500 variants) originates from the Falcon 500
-  user manual and firmware release notes for FOC tuning.
-- Normalising these datasheets into NCIM units ensures downstream calculations (gearbox
-  sizing, torque envelopes) can be reused across the toolkit without hidden conversions.
-
-<Accordions type="single" collapsible>
-  <Accordion title="Extending Reference Data">
-    Contribute additional motors or gearboxes by creating new `MotorSpecification` entries and
-    documenting the source. Consistent documentation keeps advanced analytics—such as drivetrain
-    simulation or current limiting—trustworthy across teams.
-  </Accordion>
-</Accordions>
-
-## Next Steps
-
-- Dive into the [analysis workflow](./analysis) to run through a guided optimisation example.
-- Browse the [examples](./examples) directory for end-to-end scripts ready to modify.
-- Check the [NCIM documentation](./ncim) whenever you introduce a new measurement type.
+Welcome to the future of FRC strategy.

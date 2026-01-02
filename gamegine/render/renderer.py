@@ -187,14 +187,17 @@ class RenderLayer:
         self._objects: List[Any] = []
     
     def add(self, obj: Any):
+        """Adds an object to this layer."""
         if obj not in self._objects:
             self._objects.append(obj)
     
     def remove(self, obj: Any):
+        """Removes an object from this layer."""
         if obj in self._objects:
             self._objects.remove(obj)
     
     def clear(self):
+        """Removes all objects from this layer."""
         self._objects.clear()
     
     def __iter__(self):
@@ -301,6 +304,13 @@ class Renderer(arcade.Window):
         Create a renderer, optionally from a Game definition.
         
         This is the preferred way to create a renderer.
+        
+        :param game: Optional Game instance to auto-configure dimensions.
+        :param width: Window width in pixels.
+        :param height: Window height in pixels.
+        :param title: Window title.
+        :param theme: Custom Theme instance.
+        :return: A new or existing Renderer instance.
         """
         if cls._instance:
             return cls._instance
@@ -332,10 +342,12 @@ class Renderer(arcade.Window):
     
     @classmethod
     def get_instance(cls) -> Optional["Renderer"]:
+        """Returns the singleton instance of the Renderer if it exists."""
         return cls._instance
     
     @classmethod
     def reset(cls):
+        """Resets the singleton instance."""
         cls._instance = None
     
     # -------------------------------------------------------------------------
@@ -344,14 +356,17 @@ class Renderer(arcade.Window):
     
     @property
     def drawing_canvas(self) -> Canvas:
+        """The underlying drawing canvas."""
         return self._canvas
     
     @property
     def theme(self) -> Theme:
+        """The current color theme."""
         return self._theme
     
     @property
     def display_level(self) -> DisplayLevel:
+        """The current detail level (SHOWCASE or DEBUG)."""
         return self._display_level
     
     @display_level.setter
@@ -360,6 +375,7 @@ class Renderer(arcade.Window):
     
     @property
     def elapsed_time(self) -> float:
+        """Time elapsed since renderer start."""
         return self._elapsed_time
     
     @property
@@ -375,27 +391,39 @@ class Renderer(arcade.Window):
     # -------------------------------------------------------------------------
     
     def add(self, obj: Any):
-        """Add any object - automatically placed in correct layer."""
+        """Add any object - automatically placed in correct layer.
+        
+        :param obj: The object to render.
+        """
         layer_name = _get_layer_for_type(obj)
         self._get_or_create_layer(layer_name).add(obj)
     
     def add_obstacles(self, obstacles: List[Any]):
-        """Add obstacles with proper styling."""
+        """Add obstacles with proper styling.
+        
+        :param obstacles: List of obstacle objects.
+        """
         for obs in obstacles:
             self._layers["obstacles"].add(obs)
     
     def add_safety_padding(self, padding: List[Any]):
-        """Add safety padding (expanded bounds)."""
+        """Add safety padding (expanded bounds).
+        
+        :param padding: List of padding objects.
+        """
         for p in padding:
             self._layers["safety_padding"].add(p)
     
     def remove(self, obj: Any):
-        """Remove an object from all layers."""
+        """Remove an object from all layers.
+        
+        :param obj: The object to remove.
+        """
         for layer in self._layers.values():
             layer.remove(obj)
     
     def clear_objects(self):
-        """Clear all renderable objects."""
+        """Clear all renderable objects (except grid)."""
         for name, layer in self._layers.items():
             if name not in ["grid"]:
                 layer.clear()
@@ -411,7 +439,10 @@ class Renderer(arcade.Window):
     # -------------------------------------------------------------------------
     
     def on_click(self, callback: Callable[[float, float], None] = None):
-        """Register click handler. Can be used as decorator."""
+        """Register click handler. Can be used as decorator.
+        
+        Callback receives (x, y) in world coordinates.
+        """
         if callback:
             self._on_click.append(callback)
             return callback
@@ -421,26 +452,37 @@ class Renderer(arcade.Window):
         return decorator
     
     def on_update_callback(self, callback: Callable[[float], None]):
-        """Register update callback."""
+        """Register update callback.
+        
+        :param callback: Function accepting (delta_time).
+        """
         self._on_update.append(callback)
     
     def on_key_press_callback(self, callback: Callable[[int, int], None]):
-        """Register key press callback."""
+        """Register key press callback.
+        
+        :param callback: Function accepting (key, modifiers).
+        """
         self._on_key_press.append(callback)
     
     def is_key_pressed(self, key: int) -> bool:
+        """Check if a specific key is currently held down."""
         return key in self._keys_pressed
     
     def show_alert(self, message: str, alert_type: AlertType = AlertType.INFO, duration: float = 2.0):
-        """Show a slide-in/out notification alert."""
+        """Show a slide-in/out notification alert.
+        
+        :param message: The message text.
+        :param alert_type: Notification type (color).
+        :param duration: Seconds to display.
+        """
         self._alerts.append(Alert(message, alert_type, duration))
     
     def select(self, obj_or_provider: Any):
         """Select an object to show in the info card.
         
-        Args:
-            obj_or_provider: Either a static object, or a callable that returns 
-                           the current object state (for dynamic updates).
+        :param obj_or_provider: Either a static object, or a callable that returns 
+                               the current object state (for dynamic updates).
         """
         self._selected_object = obj_or_provider
     
@@ -463,14 +505,16 @@ class Renderer(arcade.Window):
     def register_selectable(self, obj: Any, hit_test: Callable[[float, float], bool]):
         """Register an object as selectable with a hit test function.
         
-        Args:
-            obj: The object to register
-            hit_test: Function(world_x, world_y) -> bool, returns True if point is on object
+        :param obj: The object to register
+        :param hit_test: Function(world_x, world_y) -> bool, returns True if point is on object
         """
         self._selectables[id(obj)] = (obj, hit_test)
     
     def unregister_selectable(self, obj: Any):
-        """Unregister a selectable object."""
+        """Unregister a selectable object.
+        
+        :param obj: The object to unregister.
+        """
         self._selectables.pop(id(obj), None)
     
     def _hit_test_selectables(self, world_x: float, world_y: float) -> Optional[Any]:

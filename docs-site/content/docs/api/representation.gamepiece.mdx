@@ -1,0 +1,47 @@
+---
+title: gamegine.representation.gamepiece
+---
+
+# gamegine.representation.gamepiece
+
+## Classes
+
+### Gamepiece
+
+```python
+class Gamepiece
+```
+
+Abstract class which holds structure for representing a gamepiece, consisting of a name, bounds, and physical properties.
+
+#### `display`
+
+```python
+def display(x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, render_scale: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement)
+```
+
+Abstract method for displaying a gamepiece on the field screen.
+
+:param x: The x-coordinate of the gamepiece.
+:type x: :class:`SpatialMeasurement`
+:param y: The y-coordinate of the gamepiece.
+:type y: :class:`SpatialMeasurement`
+:param render_scale: The scale at which the gamepiece should be rendered.
+:type render_scale: :class:`SpatialMeasurement`
+
+### GamepiecePhysicalProperties
+
+```python
+class GamepiecePhysicalProperties
+```
+
+Stores the physical properties of a gamepiece, including mass and friction coefficient.
+
+#### `__init__`
+
+```python
+def __init__(self, mass: gamegine.utils.NCIM.Dimensions.mass.MassMeasurement, friction_coefficient: float) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+

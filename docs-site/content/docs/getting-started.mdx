@@ -1,0 +1,39 @@
+---
+title: Getting Started
+description: Installation and first steps with Gamegine.
+---
+
+# Getting Started with Gamegine
+
+## Installation
+
+Gamegine requires Python 3.10+.
+
+```bash
+pip install gamegine
+```
+
+## Your First Simulation
+
+To create a basic simulation, you'll need to define a `Game` and a `Robot`.
+
+```python
+from gamegine import Game, SwerveRobot
+from gamegine.render import Renderer
+
+# 1. Create a Game
+game = Game("My First Spec")
+
+# 2. Add a Robot
+robot = SwerveRobot("HeroBot")
+game.add_robot(robot)
+
+# 3. Visualize
+renderer = Renderer.create(game)
+renderer.run()
+```
+
+## Next Steps
+
+- Explore [Core Concepts](./core-concepts) to understand the architecture.
+- Dive into [Simulation](./simulation) to learn about physics and rules.

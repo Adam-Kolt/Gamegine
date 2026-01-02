@@ -1,0 +1,211 @@
+---
+title: gamegine.representation.apriltag
+---
+
+# gamegine.representation.apriltag
+
+## Classes
+
+### AprilTag
+
+```python
+class AprilTag
+```
+
+A representation of an AprilTag used on FRC fields. Contains information about the tag's position, orientation, and family.
+
+:param x: The x-coordinate of the tag.
+:type x: :class:`SpatialMeasurement`
+:param y: The y-coordinate of the tag.
+:type y: :class:`SpatialMeasurement`
+:param z: The z-coordinate of the tag, or the height of the tag.
+:type z: :class:`SpatialMeasurement`
+:param heading: The heading of the tag.
+:type heading: :class:`AngularMeasurement`
+:param id: The ID of the tag.
+:type id: int
+:param family: The family of the tag.
+:type family: :class:`AprilTagFamily`
+
+#### `__init__`
+
+```python
+def __init__(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, z: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, heading: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement, id: int, family: gamegine.representation.apriltag.AprilTagFamily, size: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(10.5, in)) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `discretize_ip`
+
+```python
+def discretize_ip(self, curve_segments: int = 5) -> 'BoundedObject'
+```
+
+Discretizes the object in place, not returning a new object.
+
+:param curve_segments: The number of curve segments to use when discretizing the object.
+:type curve_segments: int
+:return: This object.
+:rtype: :class:`BoundedObject`
+
+#### `discretized`
+
+```python
+def discretized(self, curve_segments: int = 5) -> 'BoundedObject'
+```
+
+Returns a new object which contains a discretized version of its boundary.
+
+:param curve_segments: The number of curve segments to use when discretizing the object.
+:type curve_segments: int
+:return: The discretized object.
+:rtype: :class:`BoundedObject`
+
+#### `mirrored_over_horizontal`
+
+```python
+def mirrored_over_horizontal(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a mirror of the object over the horizontal axis at the given axis.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+:return: The mirrored object.
+:rtype: :class:`BoundedObject`
+
+#### `mirrored_over_horizontal_ip`
+
+```python
+def mirrored_over_horizontal_ip(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> None
+```
+
+Mirrors the object over the horizontal axis at the given axis in place, not returning a new object.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+
+#### `mirrored_over_vertical`
+
+```python
+def mirrored_over_vertical(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a mirror of the object over the vertical axis at the given axis.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+:return: The mirrored object.
+:rtype: :class:`BoundedObject`
+
+#### `mirrored_over_vertical_ip`
+
+```python
+def mirrored_over_vertical_ip(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Mirrors the object over the vertical axis at the given axis in place, not returning a new object.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+:return: This object.
+:rtype: :class:`BoundedObject`
+
+#### `prefix`
+
+```python
+def prefix(self, prefix: str) -> 'NamedObject'
+```
+
+#### `scaled`
+
+```python
+def scaled(self, factor: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a scaled version of the object by the given factor.
+
+:param factor: The factor to scale the object by.
+:type factor: :class:`SpatialMeasurement`
+:return: The scaled object.
+:rtype: :class:`BoundedObject`
+
+#### `suffix`
+
+```python
+def suffix(self, suffix: str) -> 'NamedObject'
+```
+
+#### `translate_ip`
+
+```python
+def translate_ip(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Translates the object by the given x and y values in place, not returning a new object.
+
+:param x: The x value to translate the object by.
+:type x: :class:`SpatialMeasurement`
+:param y: The y value to translate the object by.
+:type y: :class:`SpatialMeasurement`
+:return: This object.
+:rtype: :class:`BoundedObject`
+
+#### `translated`
+
+```python
+def translated(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a translated version of the object by the given x and y values.
+
+:param x: The x value to translate the object by.
+:type x: :class:`SpatialMeasurement`
+:param y: The y value to translate the object by.
+:type y: :class:`SpatialMeasurement`
+:return: The translated object.
+:rtype: :class:`BoundedObject`
+
+### AprilTagFamily
+
+```python
+class AprilTagFamily
+```
+
+Create a collection of name/value pairs.
+
+Example enumeration:
+
+&gt;&gt;&gt; class Color(Enum):
+...     RED = 1
+...     BLUE = 2
+...     GREEN = 3
+
+Access them by:
+
+- attribute access:
+
+  &gt;&gt;&gt; Color.RED
+  &lt;Color.RED: 1&gt;
+
+- value lookup:
+
+  &gt;&gt;&gt; Color(1)
+  &lt;Color.RED: 1&gt;
+
+- name lookup:
+
+  &gt;&gt;&gt; Color['RED']
+  &lt;Color.RED: 1&gt;
+
+Enumerations can be iterated over, and know how many members they have:
+
+&gt;&gt;&gt; len(Color)
+3
+
+&gt;&gt;&gt; list(Color)
+[&lt;Color.RED: 1&gt;, &lt;Color.BLUE: 2&gt;, &lt;Color.GREEN: 3&gt;]
+
+Methods can be added to enumerations, and members can have their own
+attributes -- see the documentation for details.
+

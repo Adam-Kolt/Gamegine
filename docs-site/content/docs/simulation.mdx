@@ -1,48 +1,24 @@
 ---
 title: Simulation
-description: Track robot, interactable, and game state during match simulations.
+description: How the physics and game logic engine works.
 ---
 
-The simulation package provides state containers for robots, interactables, and the game
-itself. These utilities are used by the renderer and by higher level planners when modelling
-in-match behaviour.
+# Simulation Engine
 
-## State containers
+The simulation engine is the heart of Gamegine. It ticks continuously, updating the state of the world.
 
-`gamegine.simulation.state` exposes the core `StateSpace` and `ValueEntry` classes used to
-track scalar values alongside their previous states. `ValueChange` and its variants make it
-easy for interactables to request updates that can later be applied or rolled back. Each
-class now includes detailed docstrings outlining when to use `setValue` versus direct
-mutation, and how to safely nest sub-spaces via `createSpace`.
+## Physics vs Logic
 
-## Robot state
+Gamegine separates **Physics** (movement, collision) from **Logic** (scoring, rules).
 
-`gamegine.simulation.robot.RobotState` combines the state space concept with a drawable
-representation of robot pose and heading. It keeps track of the robot alliance, currently
-held gamepieces, and any ongoing interactions. The docstrings document the drawing helpers
-(`draw` vs `draw_real`) and explain how to integrate NCIM measurements when calculating
-distances.
+### PhysicsEngine
+Handles:
+- Rigid body dynamics (simplified).
+- Collision detection.
+- Trajectory execution.
 
-## Game state utilities
-
-`gamegine.simulation.game` and `gamegine.simulation.gamepiece` supply additional state
-machinery for keeping track of scoring, on-field resources, and interaction rules. These
-modules are designed to work hand-in-hand with the interactables defined in the
-representation package. Use the simulation docstrings as a reference when extending the base
-game logic—for example, to model autonomous timelines or custom scoring windows.
-
-```python title="state_updates.py"
-from gamegine.simulation.robot import RobotState
-from gamegine.simulation.state import ValueChange
-
-robot = RobotState()
-current_action = robot.getValue("current_action")
-ValueChange(current_action, "Intaking").apply()
-```
-
-## Modules
-
-- `gamegine.simulation.state`
-- `gamegine.simulation.robot`
-- `gamegine.simulation.game`
-- `gamegine.simulation.gamepiece`
+### MatchController
+Handles:
+- Game rules.
+- Scoring.
+- Autonomous/Teleop periods.

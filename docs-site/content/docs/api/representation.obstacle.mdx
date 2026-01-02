@@ -1,0 +1,766 @@
+---
+title: gamegine.representation.obstacle
+---
+
+# gamegine.representation.obstacle
+
+## Classes
+
+### Circular
+
+```python
+class Circular
+```
+
+Represents a circular obstacle on the field.
+
+:param name: The name of the obstacle.
+:type name: str
+:param x: The x-coordinate of the obstacle.
+:type x: :class:`SpatialMeasurement`
+:param y: The y-coordinate of the obstacle.
+:type y: :class:`SpatialMeasurement`
+:param radius: The radius of the obstacle.
+:type radius: :class:`SpatialMeasurement`
+
+#### `__init__`
+
+```python
+def __init__(self, name: str, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, radius: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `discretize_ip`
+
+```python
+def discretize_ip(self, curve_segments: int = 5) -> 'BoundedObject'
+```
+
+Discretizes the object in place, not returning a new object.
+
+:param curve_segments: The number of curve segments to use when discretizing the object.
+:type curve_segments: int
+:return: This object.
+:rtype: :class:`BoundedObject`
+
+#### `discretized`
+
+```python
+def discretized(self, curve_segments: int = 5) -> 'BoundedObject'
+```
+
+Returns a new object which contains a discretized version of its boundary.
+
+:param curve_segments: The number of curve segments to use when discretizing the object.
+:type curve_segments: int
+:return: The discretized object.
+:rtype: :class:`BoundedObject`
+
+#### `invisible`
+
+```python
+def invisible(self) -> 'Obstacle'
+```
+
+Sets the rendering visibility of the obstacle to False.
+
+:return: The obstacle object with rendering visibility set to False.
+:rtype: :class:`Obstacle`
+
+#### `isVisible`
+
+```python
+def isVisible(self) -> bool
+```
+
+Returns whether the obstacle is visible or not.
+
+:return: True if the obstacle is visible, False otherwise.
+:rtype: bool
+
+#### `mirrored_over_horizontal`
+
+```python
+def mirrored_over_horizontal(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a mirror of the object over the horizontal axis at the given axis.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+:return: The mirrored object.
+:rtype: :class:`BoundedObject`
+
+#### `mirrored_over_horizontal_ip`
+
+```python
+def mirrored_over_horizontal_ip(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> None
+```
+
+Mirrors the object over the horizontal axis at the given axis in place, not returning a new object.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+
+#### `mirrored_over_vertical`
+
+```python
+def mirrored_over_vertical(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a mirror of the object over the vertical axis at the given axis.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+:return: The mirrored object.
+:rtype: :class:`BoundedObject`
+
+#### `mirrored_over_vertical_ip`
+
+```python
+def mirrored_over_vertical_ip(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Mirrors the object over the vertical axis at the given axis in place, not returning a new object.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+:return: This object.
+:rtype: :class:`BoundedObject`
+
+#### `prefix`
+
+```python
+def prefix(self, prefix: str) -> 'NamedObject'
+```
+
+#### `scaled`
+
+```python
+def scaled(self, factor: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a scaled version of the object by the given factor.
+
+:param factor: The factor to scale the object by.
+:type factor: :class:`SpatialMeasurement`
+:return: The scaled object.
+:rtype: :class:`BoundedObject`
+
+#### `set_rendering_visibility`
+
+```python
+def set_rendering_visibility(self, visibility: bool) -> 'Obstacle'
+```
+
+Sets the rendering visibility of the obstacle.
+
+:param visibility: The rendering visibility of the obstacle.
+:type visibility: bool
+:return: The obstacle object with the rendering visibility set.
+:rtype: :class:`Obstacle`
+
+#### `suffix`
+
+```python
+def suffix(self, suffix: str) -> 'NamedObject'
+```
+
+#### `translate_ip`
+
+```python
+def translate_ip(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Translates the object by the given x and y values in place, not returning a new object.
+
+:param x: The x value to translate the object by.
+:type x: :class:`SpatialMeasurement`
+:param y: The y value to translate the object by.
+:type y: :class:`SpatialMeasurement`
+:return: This object.
+:rtype: :class:`BoundedObject`
+
+#### `translated`
+
+```python
+def translated(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a translated version of the object by the given x and y values.
+
+:param x: The x value to translate the object by.
+:type x: :class:`SpatialMeasurement`
+:param y: The y value to translate the object by.
+:type y: :class:`SpatialMeasurement`
+:return: The translated object.
+:rtype: :class:`BoundedObject`
+
+### Obstacle
+
+```python
+class Obstacle
+```
+
+Represents a physical obstacle on the field.
+
+:param name: The name of the obstacle.
+:type name: str
+:param bounds: The boundary of the obstacle.
+:type bounds: :class:`Boundary`
+
+#### `__init__`
+
+```python
+def __init__(self, name: str, bounds: gamegine.representation.bounds.Boundary) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `discretize_ip`
+
+```python
+def discretize_ip(self, curve_segments: int = 5) -> 'BoundedObject'
+```
+
+Discretizes the object in place, not returning a new object.
+
+:param curve_segments: The number of curve segments to use when discretizing the object.
+:type curve_segments: int
+:return: This object.
+:rtype: :class:`BoundedObject`
+
+#### `discretized`
+
+```python
+def discretized(self, curve_segments: int = 5) -> 'BoundedObject'
+```
+
+Returns a new object which contains a discretized version of its boundary.
+
+:param curve_segments: The number of curve segments to use when discretizing the object.
+:type curve_segments: int
+:return: The discretized object.
+:rtype: :class:`BoundedObject`
+
+#### `invisible`
+
+```python
+def invisible(self) -> 'Obstacle'
+```
+
+Sets the rendering visibility of the obstacle to False.
+
+:return: The obstacle object with rendering visibility set to False.
+:rtype: :class:`Obstacle`
+
+#### `isVisible`
+
+```python
+def isVisible(self) -> bool
+```
+
+Returns whether the obstacle is visible or not.
+
+:return: True if the obstacle is visible, False otherwise.
+:rtype: bool
+
+#### `mirrored_over_horizontal`
+
+```python
+def mirrored_over_horizontal(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a mirror of the object over the horizontal axis at the given axis.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+:return: The mirrored object.
+:rtype: :class:`BoundedObject`
+
+#### `mirrored_over_horizontal_ip`
+
+```python
+def mirrored_over_horizontal_ip(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> None
+```
+
+Mirrors the object over the horizontal axis at the given axis in place, not returning a new object.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+
+#### `mirrored_over_vertical`
+
+```python
+def mirrored_over_vertical(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a mirror of the object over the vertical axis at the given axis.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+:return: The mirrored object.
+:rtype: :class:`BoundedObject`
+
+#### `mirrored_over_vertical_ip`
+
+```python
+def mirrored_over_vertical_ip(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Mirrors the object over the vertical axis at the given axis in place, not returning a new object.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+:return: This object.
+:rtype: :class:`BoundedObject`
+
+#### `prefix`
+
+```python
+def prefix(self, prefix: str) -> 'NamedObject'
+```
+
+#### `scaled`
+
+```python
+def scaled(self, factor: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a scaled version of the object by the given factor.
+
+:param factor: The factor to scale the object by.
+:type factor: :class:`SpatialMeasurement`
+:return: The scaled object.
+:rtype: :class:`BoundedObject`
+
+#### `set_rendering_visibility`
+
+```python
+def set_rendering_visibility(self, visibility: bool) -> 'Obstacle'
+```
+
+Sets the rendering visibility of the obstacle.
+
+:param visibility: The rendering visibility of the obstacle.
+:type visibility: bool
+:return: The obstacle object with the rendering visibility set.
+:rtype: :class:`Obstacle`
+
+#### `suffix`
+
+```python
+def suffix(self, suffix: str) -> 'NamedObject'
+```
+
+#### `translate_ip`
+
+```python
+def translate_ip(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Translates the object by the given x and y values in place, not returning a new object.
+
+:param x: The x value to translate the object by.
+:type x: :class:`SpatialMeasurement`
+:param y: The y value to translate the object by.
+:type y: :class:`SpatialMeasurement`
+:return: This object.
+:rtype: :class:`BoundedObject`
+
+#### `translated`
+
+```python
+def translated(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a translated version of the object by the given x and y values.
+
+:param x: The x value to translate the object by.
+:type x: :class:`SpatialMeasurement`
+:param y: The y value to translate the object by.
+:type y: :class:`SpatialMeasurement`
+:return: The translated object.
+:rtype: :class:`BoundedObject`
+
+### Polygonal
+
+```python
+class Polygonal
+```
+
+Represents a polygonal obstacle on the field.
+
+:param name: The name of the obstacle.
+:type name: str
+:param points: The points that define the polygon.
+:type points: List[Tuple[SpatialMeasurement, SpatialMeasurement]]
+
+#### `__init__`
+
+```python
+def __init__(self, name: str, points: List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `discretize_ip`
+
+```python
+def discretize_ip(self, curve_segments: int = 5) -> 'BoundedObject'
+```
+
+Discretizes the object in place, not returning a new object.
+
+:param curve_segments: The number of curve segments to use when discretizing the object.
+:type curve_segments: int
+:return: This object.
+:rtype: :class:`BoundedObject`
+
+#### `discretized`
+
+```python
+def discretized(self, curve_segments: int = 5) -> 'BoundedObject'
+```
+
+Returns a new object which contains a discretized version of its boundary.
+
+:param curve_segments: The number of curve segments to use when discretizing the object.
+:type curve_segments: int
+:return: The discretized object.
+:rtype: :class:`BoundedObject`
+
+#### `invisible`
+
+```python
+def invisible(self) -> 'Obstacle'
+```
+
+Sets the rendering visibility of the obstacle to False.
+
+:return: The obstacle object with rendering visibility set to False.
+:rtype: :class:`Obstacle`
+
+#### `isVisible`
+
+```python
+def isVisible(self) -> bool
+```
+
+Returns whether the obstacle is visible or not.
+
+:return: True if the obstacle is visible, False otherwise.
+:rtype: bool
+
+#### `mirrored_over_horizontal`
+
+```python
+def mirrored_over_horizontal(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a mirror of the object over the horizontal axis at the given axis.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+:return: The mirrored object.
+:rtype: :class:`BoundedObject`
+
+#### `mirrored_over_horizontal_ip`
+
+```python
+def mirrored_over_horizontal_ip(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> None
+```
+
+Mirrors the object over the horizontal axis at the given axis in place, not returning a new object.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+
+#### `mirrored_over_vertical`
+
+```python
+def mirrored_over_vertical(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a mirror of the object over the vertical axis at the given axis.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+:return: The mirrored object.
+:rtype: :class:`BoundedObject`
+
+#### `mirrored_over_vertical_ip`
+
+```python
+def mirrored_over_vertical_ip(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Mirrors the object over the vertical axis at the given axis in place, not returning a new object.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+:return: This object.
+:rtype: :class:`BoundedObject`
+
+#### `prefix`
+
+```python
+def prefix(self, prefix: str) -> 'NamedObject'
+```
+
+#### `scaled`
+
+```python
+def scaled(self, factor: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a scaled version of the object by the given factor.
+
+:param factor: The factor to scale the object by.
+:type factor: :class:`SpatialMeasurement`
+:return: The scaled object.
+:rtype: :class:`BoundedObject`
+
+#### `set_rendering_visibility`
+
+```python
+def set_rendering_visibility(self, visibility: bool) -> 'Obstacle'
+```
+
+Sets the rendering visibility of the obstacle.
+
+:param visibility: The rendering visibility of the obstacle.
+:type visibility: bool
+:return: The obstacle object with the rendering visibility set.
+:rtype: :class:`Obstacle`
+
+#### `suffix`
+
+```python
+def suffix(self, suffix: str) -> 'NamedObject'
+```
+
+#### `translate_ip`
+
+```python
+def translate_ip(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Translates the object by the given x and y values in place, not returning a new object.
+
+:param x: The x value to translate the object by.
+:type x: :class:`SpatialMeasurement`
+:param y: The y value to translate the object by.
+:type y: :class:`SpatialMeasurement`
+:return: This object.
+:rtype: :class:`BoundedObject`
+
+#### `translated`
+
+```python
+def translated(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a translated version of the object by the given x and y values.
+
+:param x: The x value to translate the object by.
+:type x: :class:`SpatialMeasurement`
+:param y: The y value to translate the object by.
+:type y: :class:`SpatialMeasurement`
+:return: The translated object.
+:rtype: :class:`BoundedObject`
+
+### Rectangular
+
+```python
+class Rectangular
+```
+
+Represents a rectangular obstacle on the field.
+
+:param name: The name of the obstacle.
+:type name: str
+:param x: The x-coordinate of the obstacle.
+:type x: :class:`SpatialMeasurement`
+:param y: The y-coordinate of the obstacle.
+:type y: :class:`SpatialMeasurement`
+:param width: The width of the obstacle.
+:type width: :class:`SpatialMeasurement`
+:param height: The height of the obstacle.
+:type height: :class:`SpatialMeasurement`
+
+#### `__init__`
+
+```python
+def __init__(self, name: str, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, width: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, height: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `discretize_ip`
+
+```python
+def discretize_ip(self, curve_segments: int = 5) -> 'BoundedObject'
+```
+
+Discretizes the object in place, not returning a new object.
+
+:param curve_segments: The number of curve segments to use when discretizing the object.
+:type curve_segments: int
+:return: This object.
+:rtype: :class:`BoundedObject`
+
+#### `discretized`
+
+```python
+def discretized(self, curve_segments: int = 5) -> 'BoundedObject'
+```
+
+Returns a new object which contains a discretized version of its boundary.
+
+:param curve_segments: The number of curve segments to use when discretizing the object.
+:type curve_segments: int
+:return: The discretized object.
+:rtype: :class:`BoundedObject`
+
+#### `invisible`
+
+```python
+def invisible(self) -> 'Obstacle'
+```
+
+Sets the rendering visibility of the obstacle to False.
+
+:return: The obstacle object with rendering visibility set to False.
+:rtype: :class:`Obstacle`
+
+#### `isVisible`
+
+```python
+def isVisible(self) -> bool
+```
+
+Returns whether the obstacle is visible or not.
+
+:return: True if the obstacle is visible, False otherwise.
+:rtype: bool
+
+#### `mirrored_over_horizontal`
+
+```python
+def mirrored_over_horizontal(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a mirror of the object over the horizontal axis at the given axis.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+:return: The mirrored object.
+:rtype: :class:`BoundedObject`
+
+#### `mirrored_over_horizontal_ip`
+
+```python
+def mirrored_over_horizontal_ip(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> None
+```
+
+Mirrors the object over the horizontal axis at the given axis in place, not returning a new object.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+
+#### `mirrored_over_vertical`
+
+```python
+def mirrored_over_vertical(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a mirror of the object over the vertical axis at the given axis.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+:return: The mirrored object.
+:rtype: :class:`BoundedObject`
+
+#### `mirrored_over_vertical_ip`
+
+```python
+def mirrored_over_vertical_ip(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Mirrors the object over the vertical axis at the given axis in place, not returning a new object.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+:return: This object.
+:rtype: :class:`BoundedObject`
+
+#### `prefix`
+
+```python
+def prefix(self, prefix: str) -> 'NamedObject'
+```
+
+#### `scaled`
+
+```python
+def scaled(self, factor: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a scaled version of the object by the given factor.
+
+:param factor: The factor to scale the object by.
+:type factor: :class:`SpatialMeasurement`
+:return: The scaled object.
+:rtype: :class:`BoundedObject`
+
+#### `set_rendering_visibility`
+
+```python
+def set_rendering_visibility(self, visibility: bool) -> 'Obstacle'
+```
+
+Sets the rendering visibility of the obstacle.
+
+:param visibility: The rendering visibility of the obstacle.
+:type visibility: bool
+:return: The obstacle object with the rendering visibility set.
+:rtype: :class:`Obstacle`
+
+#### `suffix`
+
+```python
+def suffix(self, suffix: str) -> 'NamedObject'
+```
+
+#### `translate_ip`
+
+```python
+def translate_ip(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Translates the object by the given x and y values in place, not returning a new object.
+
+:param x: The x value to translate the object by.
+:type x: :class:`SpatialMeasurement`
+:param y: The y value to translate the object by.
+:type y: :class:`SpatialMeasurement`
+:return: This object.
+:rtype: :class:`BoundedObject`
+
+#### `translated`
+
+```python
+def translated(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a translated version of the object by the given x and y values.
+
+:param x: The x value to translate the object by.
+:type x: :class:`SpatialMeasurement`
+:param y: The y value to translate the object by.
+:type y: :class:`SpatialMeasurement`
+:return: The translated object.
+:rtype: :class:`BoundedObject`
+

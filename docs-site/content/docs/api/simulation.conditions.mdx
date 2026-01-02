@@ -1,0 +1,112 @@
+---
+title: gamegine.simulation.conditions
+---
+
+# gamegine.simulation.conditions
+
+## Classes
+
+### And
+
+```python
+class And
+```
+
+#### `__init__`
+
+```python
+def __init__(self, conditions: List[Callable[[gamegine.simulation.game.GameState], bool]])
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+### Not
+
+```python
+class Not
+```
+
+#### `__init__`
+
+```python
+def __init__(self, condition: Callable[[gamegine.simulation.game.GameState], bool])
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+### Or
+
+```python
+class Or
+```
+
+#### `__init__`
+
+```python
+def __init__(self, conditions: List[Callable[[gamegine.simulation.game.GameState], bool]])
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+### Xor
+
+```python
+class Xor
+```
+
+#### `__init__`
+
+```python
+def __init__(self, c1: Callable[[gamegine.simulation.game.GameState], bool], c2: Callable[[gamegine.simulation.game.GameState], bool])
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+## Functions
+
+### RobotInZone
+
+```python
+def RobotInZone(robot_name: str, zone: gamegine.representation.bounds.Boundary) -> Callable[[gamegine.simulation.game.GameState], bool]
+```
+
+Returns a condition that is True if the robot's center is within the zone's 2D projection.
+
+:param robot_name: Name of the robot to check.
+:param zone: The Boundary object representing the zone.
+
+### RobotTouchingObject
+
+```python
+def RobotTouchingObject(robot_name: str, object_boundary: gamegine.representation.bounds.Boundary) -> Callable[[gamegine.simulation.game.GameState], bool]
+```
+
+Returns a condition that is True if the robot is touching the object (circle-polygon collision).
+This is approximate: checks if robot center is within distance `radius` of the object polygon.
+
+### RobotTouchingZoneWithRadius
+
+```python
+def RobotTouchingZoneWithRadius(robot_name: str, zone: gamegine.representation.bounds.Boundary, radius: float) -> Callable[[gamegine.simulation.game.GameState], bool]
+```
+
+Checks if robot (approximated as circle of radius `radius`) touches the zone.
+
+### RobotsContacting
+
+```python
+def RobotsContacting(robot1_name: str, robot2_name: str, robots_config: dict[str, gamegine.representation.robot.Robot]) -> Callable[[gamegine.simulation.game.GameState], bool]
+```
+
+Returns a condition that is True if the two robots are touching (distance &lt; sum of radii).
+
+:param robot1_name: Name of first robot.
+:param robot2_name: Name of second robot.
+:param robots_config: Dictionary mapping robot names to Robot definitions (for radii).
+
+### TimeGreaterThan
+
+```python
+def TimeGreaterThan(time: float) -> Callable[[gamegine.simulation.game.GameState], bool]
+```
+

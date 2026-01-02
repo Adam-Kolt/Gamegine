@@ -1,0 +1,146 @@
+---
+title: gamegine.analysis.trajectory.lib.trajectoryStates
+---
+
+# gamegine.analysis.trajectory.lib.trajectoryStates
+
+## Classes
+
+### SwerveModuleState
+
+```python
+class SwerveModuleState
+```
+
+Stores individual states of a swerve module, including wheel angle, angular velocity, and angular acceleration.
+
+:param wheel_angle: The angle of the wheel.
+:type wheel_angle: :class:`AngularMeasurement`
+:param wheel_omega: The angular velocity of the wheel.
+:type wheel_omega: :class:`Omega`
+:param wheel_alpha: The angular acceleration of the wheel.
+:type wheel_alpha: :class:`Alpha`
+
+#### `__init__`
+
+```python
+def __init__(self, wheel_angle: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement, wheel_omega: gamegine.utils.NCIM.ComplexDimensions.omega.Omega, wheel_alpha: gamegine.utils.NCIM.ComplexDimensions.alpha.Alpha) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `get_wheel_velocity_magnitude`
+
+```python
+def get_wheel_velocity_magnitude(self) -> gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity
+```
+
+Returns the magnitude of the velocity vector of the wheel at the current state.
+
+:return: The magnitude of the velocity vector of the wheel at the current state.
+:rtype: :class:`Velocity`
+
+### SwerveTrajectoryState
+
+```python
+class SwerveTrajectoryState
+```
+
+Stores individual states of a swerve trajectory, including position, velocity, acceleration, and angular velocity of the robot, as well as the states of each swerve module.
+
+:param module_states: The states of each swerve module.
+:type module_states: list[:class:`SwerveModuleState`]
+
+#### `__init__`
+
+```python
+def __init__(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, theta: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement, vel_x: gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity = Measurement(0.0, m/s), vel_y: gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity = Measurement(0.0, m/s), acc_x: gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity = Measurement(0.0, m/s), acc_y: gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity = Measurement(0.0, m/s), omega: gamegine.utils.NCIM.ComplexDimensions.omega.Omega = Measurement(0.0, rad/s), alpha: gamegine.utils.NCIM.ComplexDimensions.alpha.Alpha = Measurement(0.0, rad/s^2), dt: gamegine.utils.NCIM.Dimensions.temporal.TemporalMeasurement = Measurement(0.0, s), module_states: list[gamegine.analysis.trajectory.lib.trajectoryStates.SwerveModuleState] = <factory>) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `get_acceleration_magnitude`
+
+```python
+def get_acceleration_magnitude(self) -> gamegine.utils.NCIM.ComplexDimensions.acceleration.Acceleration
+```
+
+Returns the magnitude of the acceleration vector at the current state.
+
+:return: The magnitude of the acceleration vector at the current state.
+:rtype: :class:`Acceleration`
+
+#### `get_velocity_magnitude`
+
+```python
+def get_velocity_magnitude(self) -> gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity
+```
+
+Returns the magnitude of the velocity vector at the current state.
+
+:return: The magnitude of the velocity vector at the current state.
+:rtype: :class:`Velocity`
+
+#### `get_wheel_velocity_magnitude`
+
+```python
+def get_wheel_velocity_magnitude(self) -> gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity
+```
+
+### TrajectoryState
+
+```python
+class TrajectoryState
+```
+
+Stores individual points along a trajectory, including position, velocity, acceleration, and angular velocity.
+
+:param x: The x position of the robot.
+:type x: :class:`SpatialMeasurement`
+:param y: The y position of the robot.
+:type y: :class:`SpatialMeasurement`
+:param theta: The angle of the robot.
+:type theta: :class:`AngularMeasurement`
+:param vel_x: The x velocity of the robot.
+:type vel_x: :class:`Velocity`
+:param vel_y: The y velocity of the robot.
+:type vel_y: :class:`Velocity`
+:param acc_x: The x acceleration of the robot.
+:type acc_x: :class:`Velocity`
+:param acc_y: The y acceleration of the robot.
+:type acc_y: :class:`Velocity`
+:param omega: The angular velocity of the robot.
+:type omega: :class:`Omega`
+:param alpha: The angular acceleration of the robot.
+:type alpha: :class:`Alpha`
+
+#### `__init__`
+
+```python
+def __init__(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, theta: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement, vel_x: gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity = Measurement(0.0, m/s), vel_y: gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity = Measurement(0.0, m/s), acc_x: gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity = Measurement(0.0, m/s), acc_y: gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity = Measurement(0.0, m/s), omega: gamegine.utils.NCIM.ComplexDimensions.omega.Omega = Measurement(0.0, rad/s), alpha: gamegine.utils.NCIM.ComplexDimensions.alpha.Alpha = Measurement(0.0, rad/s^2), dt: gamegine.utils.NCIM.Dimensions.temporal.TemporalMeasurement = Measurement(0.0, s)) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `get_acceleration_magnitude`
+
+```python
+def get_acceleration_magnitude(self) -> gamegine.utils.NCIM.ComplexDimensions.acceleration.Acceleration
+```
+
+Returns the magnitude of the acceleration vector at the current state.
+
+:return: The magnitude of the acceleration vector at the current state.
+:rtype: :class:`Acceleration`
+
+#### `get_velocity_magnitude`
+
+```python
+def get_velocity_magnitude(self) -> gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity
+```
+
+Returns the magnitude of the velocity vector at the current state.
+
+:return: The magnitude of the velocity vector at the current state.
+:rtype: :class:`Velocity`
+

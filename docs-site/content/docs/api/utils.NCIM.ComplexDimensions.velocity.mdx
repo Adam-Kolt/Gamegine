@@ -1,0 +1,69 @@
+---
+title: gamegine.utils.NCIM.ComplexDimensions.velocity
+---
+
+# gamegine.utils.NCIM.ComplexDimensions.velocity
+
+## Classes
+
+### Velocity
+
+```python
+class Velocity
+```
+
+A class representing a velocity measurement.
+
+#### `__init__`
+
+```python
+def __init__(self, magnitude: float, unit: gamegine.utils.NCIM.ComplexDimensions.velocity.VelocityUnit, base_magnitude=None)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `convert_to`
+
+```python
+def convert_to(self, target_unit: gamegine.utils.NCIM.core.Unit) -> 'Measurement'
+```
+
+Convert this measurement to another unit and return a new Measurement object.
+
+#### `to`
+
+```python
+def to(self, target_unit: gamegine.utils.NCIM.core.Unit) -> float
+```
+
+Convert this measurement to another unit and return the magnitude as a float.
+This maintains backward compatibility with legacy NCIM.
+
+### VelocityUnit
+
+```python
+class VelocityUnit
+```
+
+A class representing a velocity unit (Length/Time).
+
+#### `__init__`
+
+```python
+def __init__(self, spatial: gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit, time: gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `from_base`
+
+```python
+def from_base(self, value: float) -> float
+```
+
+#### `to_base`
+
+```python
+def to_base(self, value: float) -> float
+```
+

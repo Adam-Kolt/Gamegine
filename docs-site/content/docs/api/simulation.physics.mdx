@@ -1,0 +1,126 @@
+---
+title: gamegine.simulation.physics
+---
+
+# gamegine.simulation.physics
+
+## Classes
+
+### PhysicsConfig
+
+```python
+class PhysicsConfig
+```
+
+Configuration for the PhysicsEngine.
+
+:param mesh_resolution: Resolution for the navigation mesh.
+:param discretization_quality: Quality of obstacle discretization.
+:param trajectory_resolution: Resolution for trajectory generation.
+:param stretch_factor: Stretch factor for meshing.
+:param min_spacing: Minimum spacing between nodes.
+
+#### `__init__`
+
+```python
+def __init__(self, mesh_resolution: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(2.0, ft), discretization_quality: int = 4, trajectory_resolution: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(10.0, cm), stretch_factor: float = 1.5, min_spacing: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(8.0, cm)) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+### PhysicsEngine
+
+```python
+class PhysicsEngine
+```
+
+Handles all physics-related calculations including pathfinding and trajectory generation.
+
+#### `__init__`
+
+```python
+def __init__(self, config: gamegine.simulation.physics.PhysicsConfig = PhysicsConfig(mesh_resolution=Measurement(2.0, ft), discretization_quality=4, trajectory_resolution=Measurement(10.0, cm), stretch_factor=1.5, min_spacing=Measurement(8.0, cm)))
+```
+
+Initializes the PhysicsEngine.
+
+:param config: The physics configuration to use.
+:type config: PhysicsConfig
+
+#### `generate_trajectory`
+
+```python
+def generate_trajectory(self, robot_name: str, robot: gamegine.representation.robot.SwerveRobot, start_state: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement], target_state: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement], path: gamegine.analysis.pathfinding.Path, traversal_space: gamegine.simulation.physics.TraversalSpace, no_safety_corridor=False) -> gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectory
+```
+
+Generates a swerve trajectory for the robot.
+
+:param robot_name: The name of the robot.
+:param robot: The robot instance.
+:param start_state: Tuple of (x, y, heading) for start.
+:param target_state: Tuple of (x, y, heading) for target.
+:param path: The path to follow.
+:param traversal_space: The traversal space definition.
+:param no_safety_corridor: If True, skips safety corridor generation.
+:return: The generated SwerveTrajectory.
+:rtype: SwerveTrajectory
+
+#### `get_latest_trajectory`
+
+```python
+def get_latest_trajectory(self) -> gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectory
+```
+
+Returns the most recently generated trajectory.
+
+:return: The latest SwerveTrajectory.
+:rtype: SwerveTrajectory
+
+#### `pathfind`
+
+```python
+def pathfind(self, robot_name: str, start_x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, start_y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, target_x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, target_y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, traversal_space: gamegine.simulation.physics.TraversalSpace) -> gamegine.analysis.pathfinding.Path
+```
+
+Finds a path for the robot from start to target.
+
+:param robot_name: The name of the robot.
+:param start_x: Starting X coordinate.
+:param start_y: Starting Y coordinate.
+:param target_x: Target X coordinate.
+:param target_y: Target Y coordinate.
+:param traversal_space: The traversal space to use for pathfinding.
+:return: A Path object representing the route.
+:rtype: pathfinding.Path
+
+#### `prepare_traversal_space`
+
+```python
+def prepare_traversal_space(self, robot_name: str, robot: gamegine.representation.robot.SwerveRobot, game_obstacles: List[gamegine.representation.obstacle.Obstacle], field_size: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]) -> gamegine.simulation.physics.TraversalSpace
+```
+
+Generates and caches the traversal space for a specific robot.
+
+:param robot_name: The name of the robot.
+:param robot: The robot instance (used for bounding radius).
+:param game_obstacles: List of game obstacles.
+:param field_size: Dimensions of the field (width, height).
+:return: The generated TraversalSpace.
+:rtype: TraversalSpace
+
+### TraversalSpace
+
+```python
+class TraversalSpace
+```
+
+Represents the navigable space for a robot, including map and obstacles.
+
+#### `__init__`
+
+```python
+def __init__(self, traversal_map: gamegine.analysis.meshing.Map, obstacles: List[gamegine.representation.obstacle.Obstacle] = <factory>) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+

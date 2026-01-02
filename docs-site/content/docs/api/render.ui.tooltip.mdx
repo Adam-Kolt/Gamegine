@@ -1,0 +1,132 @@
+---
+title: gamegine.render.ui.tooltip
+---
+
+# gamegine.render.ui.tooltip
+
+Tooltip UI component.
+
+Provides hover tooltips for rendered objects.
+
+## Classes
+
+### Tooltip
+
+```python
+class Tooltip
+```
+
+A tooltip that displays information when hovering over objects.
+
+#### `__init__`
+
+```python
+def __init__(self, config: Optional[gamegine.render.ui.tooltip.TooltipConfig] = None)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `draw`
+
+```python
+def draw(self, theme: Optional[gamegine.render.style.Theme] = None)
+```
+
+Draw the tooltip.
+
+#### `hide`
+
+```python
+def hide(self)
+```
+
+Hide the tooltip.
+
+#### `show`
+
+```python
+def show(self, text: str, x: float, y: float, target: Any = None)
+```
+
+Show the tooltip at the given position.
+
+### TooltipConfig
+
+```python
+class TooltipConfig
+```
+
+Configuration for tooltip appearance.
+
+#### `__init__`
+
+```python
+def __init__(self, padding: int = 8, margin: int = 10, font_size: int = 12, max_width: int = 250, corner_radius: int = 4, line_height: float = 1.4) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+### TooltipManager
+
+```python
+class TooltipManager
+```
+
+Manages tooltips for multiple objects.
+
+Provides automatic tooltip display based on hover detection.
+
+#### `__init__`
+
+```python
+def __init__(self)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `draw`
+
+```python
+def draw(self, theme: Optional[gamegine.render.style.Theme] = None)
+```
+
+Draw the active tooltip.
+
+#### `get_info`
+
+```python
+def get_info(self, obj: Any) -> Optional[str]
+```
+
+Get tooltip info for an object.
+
+#### `register_info_provider`
+
+```python
+def register_info_provider(self, obj_type: type, provider: Callable[[Any], str])
+```
+
+Register a function that provides tooltip text for a given object type.
+
+Args:
+    obj_type: The type of object
+    provider: A function that takes an object and returns tooltip text
+
+#### `update`
+
+```python
+def update(self, delta_time: float, hovered_obj: Any, mouse_x: float, mouse_y: float)
+```
+
+Update tooltip state based on hover.
+
+## Functions
+
+### get_tooltip_manager
+
+```python
+def get_tooltip_manager() -> gamegine.render.ui.tooltip.TooltipManager
+```
+
+Get the global tooltip manager.
+

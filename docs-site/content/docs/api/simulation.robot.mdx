@@ -1,0 +1,117 @@
+---
+title: gamegine.simulation.robot
+---
+
+# gamegine.simulation.robot
+
+## Classes
+
+### RobotState
+
+```python
+class RobotState
+```
+
+Class for representing the state space of a robot, which includes the x and y coordinates of the robot on the field screen, the heading of the robot, the alliance of the robot, and the gamepieces the robot is holding.
+
+:param x: The x-coordinate of the robot.
+:type x: :class:`SpatialMeasurement`
+:param y: The y-coordinate of the robot.
+:type y: :class:`SpatialMeasurement`
+:param heading: The heading of the robot.
+:type heading: :class:`AngularMeasurement`
+:param alliance: The alliance of the robot.
+:type alliance: :class:`Alliance`
+:param gamepieces: A dictionary of gamepieces the robot is holding.
+:type gamepieces: Dict[:class:`Gamepiece`, int]
+
+#### `__init__`
+
+```python
+def __init__(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, m), y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, m), heading: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement = Measurement(0.0, rad), alliance: gamegine.first.alliance.Alliance = <Alliance.RED: 1>, gamepieces: Dict[gamegine.representation.gamepiece.Gamepiece, int] = {}, current_action: 'RobotInteractionConfig' = None, action_progress: float = 0)
+```
+
+Initializes the RobotState.
+
+:param x: The x-coordinate of the robot.
+:param y: The y-coordinate of the robot.
+:param heading: The heading of the robot.
+:param alliance: The alliance of the robot.
+:param gamepieces: A dictionary of gamepieces the robot is holding.
+:param current_action: The current interaction configuration, if any.
+:param action_progress: The progress of the current action (0.0 to 1.0).
+
+#### `createSpace`
+
+```python
+def createSpace(self, name: str) -> 'StateSpace'
+```
+
+Creates a new sub-state space with the given name.
+
+:param name: The name of the new sub-state
+:type name: str
+:return: The new sub-state space.
+:rtype: :class:`StateSpace`
+
+#### `distance_to`
+
+```python
+def distance_to(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+#### `get`
+
+```python
+def get(self, space: str) -> 'StateSpace'
+```
+
+Returns the sub-state space with the given name.
+
+:param space: The name of the sub-state
+:type space: str
+:return: The sub-state space with the given name.
+:rtype: :class:`StateSpace`
+
+#### `getValue`
+
+```python
+def getValue(self, name: str) -> gamegine.simulation.state.ValueEntry
+```
+
+Returns the value entry with the given name.
+
+:param name: The name of the value entry.
+:type name: str
+:return: The value entry with the given name.
+:rtype: :class:`ValueEntry`
+
+#### `registerSpace`
+
+```python
+def registerSpace(self, name: str, space: 'StateSpace') -> 'StateSpace'
+```
+
+Registers a sub-state space with the given name.
+
+:param name: The name of the sub-state
+:type name: str
+:param space: The sub-state space to register.
+:type space: :class:`StateSpace
+:return: The sub-state space that was registered.
+:rtype: :class:`StateSpace`
+
+#### `setValue`
+
+```python
+def setValue(self, name: str, value) -> gamegine.simulation.state.ValueEntry
+```
+
+Sets the value of the value entry with the given name.
+
+:param name: The name of the value entry.
+:type name: str
+:param value: The value to set.
+:return: The value entry with the given name.
+:rtype: :class:`ValueEntry`
+

@@ -1,0 +1,139 @@
+---
+title: gamegine.utils.Input.controller
+---
+
+# gamegine.utils.Input.controller
+
+## Classes
+
+### AnalogCallback
+
+```python
+class AnalogCallback
+```
+
+Helper class that provides a standard way to create an ABC using
+inheritance.
+
+#### `on_change`
+
+```python
+def on_change(self, callback: Callable[[float], NoneType])
+```
+
+### Controller
+
+```python
+class Controller
+```
+
+#### `__init__`
+
+```python
+def __init__(self, controller: gamegine.utils.Input.controller.ControllerInterface)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+### ControllerInterface
+
+```python
+class ControllerInterface
+```
+
+Helper class that provides a standard way to create an ABC using
+inheritance.
+
+#### `get_axis`
+
+```python
+def get_axis(self, axis: int) -> float
+```
+
+#### `get_button`
+
+```python
+def get_button(self, button: int) -> bool
+```
+
+#### `get_connected`
+
+```python
+def get_connected(self) -> bool
+```
+
+#### `get_dpad`
+
+```python
+def get_dpad(self) -> Tuple[float, float]
+```
+
+#### `get_id`
+
+```python
+def get_id(self) -> int
+```
+
+#### `get_left_joystick`
+
+```python
+def get_left_joystick(self) -> Tuple[float, float]
+```
+
+#### `get_left_trigger`
+
+```python
+def get_left_trigger(self) -> float
+```
+
+#### `get_name`
+
+```python
+def get_name(self) -> str
+```
+
+#### `get_right_joystick`
+
+```python
+def get_right_joystick(self) -> Tuple[float, float]
+```
+
+#### `get_right_trigger`
+
+```python
+def get_right_trigger(self) -> float
+```
+
+#### `set_light_color`
+
+```python
+def set_light_color(self, color: Tuple[int, int, int])
+```
+
+### DigitalCallback
+
+```python
+class DigitalCallback
+```
+
+Helper class that provides a standard way to create an ABC using
+inheritance.
+
+#### `on_change`
+
+```python
+def on_change(self, callback: Callable[[bool], NoneType])
+```
+
+#### `on_press`
+
+```python
+def on_press(self, callback: Callable[[], NoneType])
+```
+
+#### `on_release`
+
+```python
+def on_release(self, callback: Callable[[], NoneType])
+```
+

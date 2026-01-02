@@ -1,0 +1,68 @@
+---
+title: gamegine.simulation.rules
+---
+
+# gamegine.simulation.rules
+
+## Classes
+
+### RuleEngine
+
+```python
+class RuleEngine
+```
+
+Handles game rules, interactions, and state updates.
+
+#### `__init__`
+
+```python
+def __init__(self, logger: Callable[[str, List[gamegine.simulation.state.ValueChange]], NoneType])
+```
+
+:param logger: Callback function to log actions and changes.
+
+#### `add_interactable`
+
+```python
+def add_interactable(self, interactable: gamegine.representation.interactable.RobotInteractable, game_state: gamegine.simulation.game.GameState) -> None
+```
+
+Adds an interactable object to the engine.
+
+#### `get_actions_set`
+
+```python
+def get_actions_set(self, robots: Dict[str, gamegine.representation.robot.SwerveRobot], robot_name: str) -> List[Tuple[str, str]]
+```
+
+#### `get_navigation_point`
+
+```python
+def get_navigation_point(self, interactable_name: str, interaction_name: str, robot_name: str, robots: Dict[str, gamegine.representation.robot.SwerveRobot])
+```
+
+Helper to get navigation point for an interaction.
+
+#### `pickup_gamepiece`
+
+```python
+def pickup_gamepiece(self, robot_name: str, gamepiece: Any, game_state: gamegine.simulation.game.GameState) -> None
+```
+
+#### `process_action`
+
+```python
+def process_action(self, interactable_name: str, interaction_name: str, robot_name: str, robots: Dict[str, gamegine.representation.robot.SwerveRobot], game_state: gamegine.simulation.game.GameState, time_cutoff: float = None) -> bool
+```
+
+Processes an action by a robot on an interactable object.
+
+#### `process_value_changes`
+
+```python
+def process_value_changes(self, changes: List[gamegine.simulation.state.ValueChange]) -> None
+```
+
+Processes a value change.
+

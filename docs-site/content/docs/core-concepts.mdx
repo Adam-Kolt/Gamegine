@@ -1,0 +1,34 @@
+---
+title: Core Concepts
+description: Understanding the architecture of Gamegine.
+---
+
+# Core Concepts
+
+## The Big Picture
+
+Gamegine wraps the complexity of FRC simulation into four main components:
+
+1. **Representation**: Nouns. (Robots, Field, Gamepieces).
+2.  **Simulation**: Verbs. (Moving, Scoring, Colliding).
+3.  **Analysis**: Brains. (Pathfinding, Trajectories).
+4.  **Rendering**: Eyes. (Visualizing the state).
+
+## The Variable System
+
+Gamegine uses a reactive variable system (`ValueEntry`) to track state changes. This allows for:
+- Automatic logging of all changes.
+- "Time-travel" debugging (replay).
+- Reactive UI updates.
+
+## NCIM (Units)
+
+All measurements in Gamegine use NCIM. You never pass raw floats.
+
+```python
+from gamegine.utils.NCIM.ncim import Meter, Degree, Second
+
+distance = Meter(5)
+angle = Degree(90)
+speed = distance / Second(2)
+```

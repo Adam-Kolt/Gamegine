@@ -1,0 +1,82 @@
+---
+title: gamegine.utils.NCIM.ComplexDimensions.omega
+---
+
+# gamegine.utils.NCIM.ComplexDimensions.omega
+
+## Classes
+
+### Omega
+
+```python
+class Omega
+```
+
+A class representing an angular velocity complex measurement, composed of an angular and temporal element in the form angular^1 / temporal^1. Inherits from the :class:`ComplexMeasurement` class.
+
+:param magnitude: The magnitude of the measurement.
+:type magnitude: float
+:param unit: The unit of the measurement.
+:type unit: :class:`OmegaUnit`
+:param base_magnitude: The base magnitude of the measurement, used for internal creation. Defaults to None.
+:type base_magnitude: float, optional
+
+#### `__init__`
+
+```python
+def __init__(self, magnitude: float, unit: gamegine.utils.NCIM.ComplexDimensions.omega.OmegaUnit, base_magnitude=None) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `convert_to`
+
+```python
+def convert_to(self, target_unit: gamegine.utils.NCIM.core.Unit) -> 'Measurement'
+```
+
+Convert this measurement to another unit and return a new Measurement object.
+
+#### `to`
+
+```python
+def to(self, target_unit: gamegine.utils.NCIM.core.Unit) -> float
+```
+
+Convert this measurement to another unit and return the magnitude as a float.
+This maintains backward compatibility with legacy NCIM.
+
+### OmegaUnit
+
+```python
+class OmegaUnit
+```
+
+A class representing an angular velocity complex unit, composed of an angular and temporal element in the form angular^1 / temporal^1, in addition to creating a :class:`Omega` of the same type when called. Inherits from the :class:`ComplexUnit` class.
+
+:param angles: The angular unit of the angular velocity.
+:type angles: :class:`AngularUnit`
+:param time: The temporal unit of the angular velocity.
+:type time: :class:`TemporalUnit`
+
+#### `__init__`
+
+```python
+def __init__(self, angles: gamegine.utils.NCIM.Dimensions.angular.AngularUnit, time: gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit) -> None
+```
+
+Legacy shim for ComplexUnit(units_table).
+Converts the dict \{Unit: power\} into dimensions/scale/symbol.
+
+#### `from_base`
+
+```python
+def from_base(self, value: float) -> float
+```
+
+#### `to_base`
+
+```python
+def to_base(self, value: float) -> float
+```
+

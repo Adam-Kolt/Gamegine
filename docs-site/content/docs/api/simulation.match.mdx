@@ -1,0 +1,239 @@
+---
+title: gamegine.simulation.match
+---
+
+# gamegine.simulation.match
+
+## Classes
+
+### MatchConfig
+
+```python
+class MatchConfig
+```
+
+Configuration for the MatchController.
+
+Currently empty but reserved for future match-specific settings.
+
+#### `__init__`
+
+```python
+def __init__(self) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+### MatchController
+
+```python
+class MatchController
+```
+
+Manages the unified game state, rules, and scoring.
+Decoupled from specific movement implementations (Discrete/Continuous).
+
+#### `__init__`
+
+```python
+def __init__(self, config: gamegine.simulation.match.MatchConfig = MatchConfig())
+```
+
+Initializes the MatchController.
+
+:param config: Configuration for the match, defaults to MatchConfig()
+:type config: MatchConfig, optional
+
+#### `add_interactable`
+
+```python
+def add_interactable(self, interactable: gamegine.representation.interactable.RobotInteractable) -> None
+```
+
+Adds an interactable object to the match.
+
+:param interactable: The interactable to add.
+:type interactable: RobotInteractable
+:raises ValueError: If the game state is not initialized.
+
+#### `add_logic_rule`
+
+```python
+def add_logic_rule(self, rule: 'LogicRule')
+```
+
+Adds a logic rule to the match.
+
+:param rule: The LogicRule to add.
+
+#### `add_robot`
+
+```python
+def add_robot(self, name: str, robot: gamegine.representation.robot.SwerveRobot)
+```
+
+Adds a robot to the match.
+
+:param name: The identifier name for the robot.
+:type name: str
+:param robot: The robot instance.
+:type robot: SwerveRobot
+
+#### `apply_changes`
+
+```python
+def apply_changes(self, changes: List[gamegine.simulation.state.ValueChange])
+```
+
+Applies a list of ValueChanges to the game state.
+
+:param changes: List of changes to apply.
+
+#### `clear_log`
+
+```python
+def clear_log(self)
+```
+
+Clears the current game log.
+
+#### `get_actions_set`
+
+```python
+def get_actions_set(self, robot_name: str) -> List[Tuple[str, str]]
+```
+
+Gets available actions for a robot.
+
+:param robot_name: The robot to check.
+:return: List of tuples (interactable_name, interaction_name).
+
+#### `get_log`
+
+```python
+def get_log(self)
+```
+
+Retrieves the current game log.
+
+:return: A list of log entries (time, action, changes).
+
+#### `get_navigation_point`
+
+```python
+def get_navigation_point(self, interactable_name, interaction_name, robot_name)
+```
+
+Gets the navigation point for a specific interaction.
+
+:param interactable_name: Name of the interactable.
+:param interaction_name: Name of the interaction.
+:param robot_name: Name of the robot.
+:return: (x, y, heading) tuple or None.
+
+#### `get_obstacles`
+
+```python
+def get_obstacles(self) -> List[gamegine.representation.obstacle.Obstacle]
+```
+
+Returns the list of field obstacles.
+
+:return: List of obstacles.
+:rtype: List[obstacle.Obstacle]
+
+#### `is_game_over`
+
+```python
+def is_game_over(self) -> bool
+```
+
+Checks if the game has ended based on time.
+
+:return: True if current time exceeds total game time, False otherwise.
+:rtype: bool
+
+#### `load_game`
+
+```python
+def load_game(self, game: gamegine.representation.game.Game) -> None
+```
+
+Loads the game representation and initializes state.
+
+:param game: The game configuration to load.
+:type game: Game
+
+#### `log`
+
+```python
+def log(self, action, changes)
+```
+
+Logs an action and its changes to the game log.
+
+:param action: Description of the action.
+:param changes: List of value changes associated with the action.
+
+#### `log_cb`
+
+```python
+def log_cb(self, action, changes)
+```
+
+Callback for RuleEngine logging.
+
+:param action: Description of the action occurring.
+:param changes: List of value changes resulting from the action.
+
+#### `pickup_gamepiece`
+
+```python
+def pickup_gamepiece(self, robot_name: str, gamepiece) -> None
+```
+
+Forces a robot to pickup a gamepiece.
+
+:param robot_name: Name of the robot.
+:param gamepiece: The gamepiece to pickup.
+
+#### `process_action`
+
+```python
+def process_action(self, interactable_name, interaction_name, robot_name, time_cutoff=None) -> bool
+```
+
+Processes a robot interaction with an interactable object.
+
+:param interactable_name: Name of the interactable.
+:param interaction_name: Name of the specific interaction.
+:param robot_name: Name of the robot performing the interaction.
+:param time_cutoff: Optional time limit for valid interactions.
+:return: True if action was successful, False otherwise.
+:rtype: bool
+
+#### `set_obstacles`
+
+```python
+def set_obstacles(self, obstacles: List[gamegine.representation.obstacle.Obstacle]) -> None
+```
+
+Sets the obstacles present in the field.
+
+:param obstacles: List of obstacles.
+:type obstacles: List[obstacle.Obstacle]
+
+#### `update_time`
+
+```python
+def update_time(self, dt: float) -> bool
+```
+
+Updates the game time and processes partial logic updates.
+
+:param dt: Time delta to advance by.
+:type dt: float
+:return: True if game is over, False otherwise.
+:rtype: bool
+:raises ValueError: If game state is not initialized.
+

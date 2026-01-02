@@ -1,0 +1,52 @@
+---
+title: gamegine.render.handlers.geometry
+---
+
+# gamegine.render.handlers.geometry
+
+Geometry rendering handlers for Gamegine.
+
+Handles rendering of geometric shapes: Circle, Rectangle, Polygon, etc.
+
+## Functions
+
+### render_bounded_object
+
+```python
+def render_bounded_object(obj: Any, canvas: gamegine.render.canvas.Canvas, theme: gamegine.render.style.Theme, display_level: gamegine.render.renderer.DisplayLevel, renderer=None)
+```
+
+Render a BoundedObject by rendering its bounds.
+
+### render_circle
+
+```python
+def render_circle(obj: Any, canvas: gamegine.render.canvas.Canvas, theme: gamegine.render.style.Theme, display_level: gamegine.render.renderer.DisplayLevel, renderer=None)
+```
+
+Render a Circle as an obstacle.
+
+### render_discrete_boundary
+
+```python
+def render_discrete_boundary(obj: Any, canvas: gamegine.render.canvas.Canvas, theme: gamegine.render.style.Theme, display_level: gamegine.render.renderer.DisplayLevel, renderer=None)
+```
+
+Render a DiscreteBoundary (polygon).
+
+### render_rectangle
+
+```python
+def render_rectangle(obj: Any, canvas: gamegine.render.canvas.Canvas, theme: gamegine.render.style.Theme, display_level: gamegine.render.renderer.DisplayLevel, renderer=None)
+```
+
+Render a Rectangle as an obstacle.
+
+### render_safety_padding
+
+```python
+def render_safety_padding(boundaries: list, canvas: gamegine.render.canvas.Canvas, theme: gamegine.render.style.Theme, display_level: gamegine.render.renderer.DisplayLevel)
+```
+
+Render expanded obstacle bounds as semi-transparent solid fill.
+

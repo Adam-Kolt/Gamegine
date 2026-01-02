@@ -1,15 +1,12 @@
 {
   "pages": [
     "index",
-    "overview",
-    "analysis",
-    "representation",
+    "getting-started",
+    "core-concepts",
     "simulation",
-    "pathfinding",
-    "trajectory",
     "rendering",
-    "reference",
-    "ncim",
-    "examples"
+    "analysis",
+    "frc-integration",
+    "api"
   ]
 }

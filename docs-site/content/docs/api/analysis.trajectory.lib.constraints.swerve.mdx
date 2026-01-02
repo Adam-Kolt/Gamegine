@@ -1,0 +1,38 @@
+---
+title: gamegine.analysis.trajectory.lib.constraints.swerve
+---
+
+# gamegine.analysis.trajectory.lib.constraints.swerve
+
+## Functions
+
+### SwerveKinematicConstraints
+
+```python
+def SwerveKinematicConstraints(swerve_config: gamegine.reference.swerve.SwerveConfig, robot_parameters: gamegine.representation.robot.PhysicalParameters)
+```
+
+Constraints for the swerve kinematics. Including the robot's mass and moment of inertia.
+
+:param swerve_config: The configuration of the swerve module.
+:type swerve_config: :class:`SwerveConfig`
+:param robot_parameters: The physical parameters of the robot.
+:type robot_parameters: :class:`PhysicalParameters`
+:return: The constraint function.
+:rtype: Callable[[Problem, SwervePointVariables], None]
+
+### SwerveModuleConstraints
+
+```python
+def SwerveModuleConstraints(swerve_config: gamegine.reference.swerve.SwerveConfig, robot_parameters: gamegine.representation.robot.PhysicalParameters)
+```
+
+Constraints for the swerve module. Including its max speed, max torque, and wheel radius.
+
+:param swerve_config: The configuration of the swerve module.
+:type swerve_config: :class:`SwerveConfig`
+:param robot_parameters: The physical parameters of the robot.
+:type robot_parameters: :class:`PhysicalParameters`
+:return: The constraint function.
+:rtype: Callable[[Problem, SwervePointVariables], None]
+

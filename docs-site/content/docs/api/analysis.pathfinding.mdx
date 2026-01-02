@@ -1,0 +1,239 @@
+---
+title: gamegine.analysis.pathfinding
+---
+
+# gamegine.analysis.pathfinding
+
+A* based pathfinding utilities used across the navigation subsystem.
+
+The module couples the :class:`Map` graph structure with a collection of heuristics and a
+convenience :func:`findPath` wrapper that handles connecting arbitrary NCIM coordinates
+onto the underlying mesh.  It also ships with a drawable :class:`Path` helper so debugging
+visualisations can be produced with very little boilerplate.
+
+## Classes
+
+### AStar
+
+```python
+class AStar
+```
+
+Canonical A* search over the :class:`Map` graph.
+
+#### `calculate_path`
+
+```python
+def calculate_path(map: gamegine.analysis.meshing.Map, start: int, end: int, heuristic: Callable[[gamegine.analysis.meshing.Map, int, int, int, int], float] = <function Heuristics.EuclideanHeuristic at 0x115f12980>) -> List[int]
+```
+
+Execute a standard A* search between two nodes.
+
+:param map: The map graph.
+:param start: Start node ID.
+:param end: End node ID.
+:param heuristic: Heuristic function to use.
+:return: List of node IDs.
+
+### DirectedAStar
+
+```python
+class DirectedAStar
+```
+
+A* Search using the DirectedEuclideanHeuristic.
+
+#### `calculate_path`
+
+```python
+def calculate_path(map: gamegine.analysis.meshing.Map, start: int, end: int) -> List[int]
+```
+
+Execute a standard A* search between two nodes.
+
+:param map: The map graph.
+:param start: Start node ID.
+:param end: End node ID.
+:param heuristic: Heuristic function to use.
+:return: List of node IDs.
+
+### Heuristics
+
+```python
+class Heuristics
+```
+
+Static collection of heuristics used by :class:`AStar`.
+
+#### `DirectedEuclideanHeuristic`
+
+```python
+def DirectedEuclideanHeuristic(map: gamegine.analysis.meshing.Map, start: int, end: int, current: int, next: int)
+```
+
+Euclidean distance weighted by direction alignment.
+
+#### `EuclideanHeuristic`
+
+```python
+def EuclideanHeuristic(map: gamegine.analysis.meshing.Map, start: int, end: int, current: int, next: int)
+```
+
+Standard Euclidean distance heuristic.
+
+### InitialConnectionPolicy
+
+```python
+class InitialConnectionPolicy
+```
+
+Create a collection of name/value pairs.
+
+Example enumeration:
+
+&gt;&gt;&gt; class Color(Enum):
+...     RED = 1
+...     BLUE = 2
+...     GREEN = 3
+
+Access them by:
+
+- attribute access:
+
+  &gt;&gt;&gt; Color.RED
+  &lt;Color.RED: 1&gt;
+
+- value lookup:
+
+  &gt;&gt;&gt; Color(1)
+  &lt;Color.RED: 1&gt;
+
+- name lookup:
+
+  &gt;&gt;&gt; Color['RED']
+  &lt;Color.RED: 1&gt;
+
+Enumerations can be iterated over, and know how many members they have:
+
+&gt;&gt;&gt; len(Color)
+3
+
+&gt;&gt;&gt; list(Color)
+[&lt;Color.RED: 1&gt;, &lt;Color.BLUE: 2&gt;, &lt;Color.GREEN: 3&gt;]
+
+Methods can be added to enumerations, and members can have their own
+attributes -- see the documentation for details.
+
+### Path
+
+```python
+class Path
+```
+
+#### `__init__`
+
+```python
+def __init__(self, path: List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `add_point`
+
+```python
+def add_point(self, point: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]) -> None
+```
+
+Append a new waypoint to the end of the path.
+
+#### `dissect`
+
+```python
+def dissect(self, units_per_node: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Path'
+```
+
+In-place resampling of the path with evenly spaced nodes.
+
+#### `dissected`
+
+```python
+def dissected(self, units_per_node: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Path'
+```
+
+Return a new :class:`Path` resampled to the requested resolution.
+
+#### `get_points`
+
+```python
+def get_points(self) -> List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]
+```
+
+Expose the raw coordinate list.
+
+#### `set_path`
+
+```python
+def set_path(self, path: List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]) -> None
+```
+
+Replace the existing waypoint sequence.
+
+#### `shortcut`
+
+```python
+def shortcut(self, discrete_obstacles: List[gamegine.representation.bounds.DiscreteBoundary], max_jump: int = -1) -> 'Path'
+```
+
+In-place path smoothing that removes redundant intermediate waypoints.
+
+#### `shortcutted`
+
+```python
+def shortcutted(self, discrete_obstacles: List[gamegine.representation.bounds.DiscreteBoundary]) -> 'Path'
+```
+
+Return a new :class:`Path` instance with shortcutting applied.
+
+### Pathfinder
+
+```python
+class Pathfinder
+```
+
+Interface implemented by concrete graph search algorithms.
+
+#### `calculate_path`
+
+```python
+def calculate_path(map: gamegine.analysis.meshing.Map, start: int, end: int) -> List[int]
+```
+
+Calculates a path through the map.
+
+:param map: The map to search.
+:param start: The starting node ID.
+:param end: The target node ID.
+:return: A list of node IDs representing the path.
+
+## Functions
+
+### findPath
+
+```python
+def findPath(map: gamegine.analysis.meshing.Map, start: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement], end: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement], pathfinder: gamegine.analysis.pathfinding.Pathfinder = <class 'gamegine.analysis.pathfinding.DirectedAStar'>, initial_connection_policy: gamegine.analysis.pathfinding.InitialConnectionPolicy = <InitialConnectionPolicy.ConnectToClosest: 0>) -> gamegine.analysis.pathfinding.Path
+```
+
+High level helper that runs a pathfinder on NCIM coordinates.
+
+``start`` and ``end`` are mapped onto the mesh according to
+``initial_connection_policy``.  The returned object is drawable and can be fed directly
+into the trajectory generation pipeline.
+
+### shortcut_tuple_path
+
+```python
+def shortcut_tuple_path(discrete_obstacles: List[gamegine.representation.bounds.DiscreteBoundary], path: List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]) -> List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]
+```
+
+Return a new path with shortcutting applied.
+

@@ -1,0 +1,34 @@
+---
+title: gamegine.analysis.trajectory.lib.constraints.spacing
+---
+
+# gamegine.analysis.trajectory.lib.constraints.spacing
+
+## Functions
+
+### PositionMaxSpacingConstraint
+
+```python
+def PositionMaxSpacingConstraint(spacing: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement)
+```
+
+Constraint for setting the maximum spacing between two points.
+
+:param spacing: The desired maximum spacing.
+:type spacing: :class:`SpatialMeasurement`
+:return: The constraint function.
+:rtype: Callable[[Problem, PointVariables], None]
+
+### PositionMinSpacingConstraint
+
+```python
+def PositionMinSpacingConstraint(spacing: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement)
+```
+
+Constraint for setting the minimum spacing between two points.
+
+:param spacing: The desired minimum spacing.
+:type spacing: :class:`SpatialMeasurement`
+:return: The constraint function.
+:rtype: Callable[[Problem, PointVariables], None]
+

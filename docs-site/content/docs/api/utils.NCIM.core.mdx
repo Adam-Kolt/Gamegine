@@ -1,0 +1,80 @@
+---
+title: gamegine.utils.NCIM.core
+---
+
+# gamegine.utils.NCIM.core
+
+## Classes
+
+### Dimension
+
+```python
+class Dimension
+```
+
+Enum for the different dimensions of the NCIM system
+
+### Measurement
+
+```python
+class Measurement
+```
+
+Unified class for all measurements.
+Inherits from float to allow direct usage in many places, 
+but carries Unit information.
+
+#### `__init__`
+
+```python
+def __init__(self, value: float, unit: gamegine.utils.NCIM.core.Unit, *args, **kwargs)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `convert_to`
+
+```python
+def convert_to(self, target_unit: gamegine.utils.NCIM.core.Unit) -> 'Measurement'
+```
+
+Convert this measurement to another unit and return a new Measurement object.
+
+#### `to`
+
+```python
+def to(self, target_unit: gamegine.utils.NCIM.core.Unit) -> float
+```
+
+Convert this measurement to another unit and return the magnitude as a float.
+This maintains backward compatibility with legacy NCIM.
+
+### Unit
+
+```python
+class Unit
+```
+
+Represents a unit of measurement.
+Can be a simple unit (e.g. Meter) or complex (e.g. Meter/Second).
+
+#### `__init__`
+
+```python
+def __init__(self, dimensions: numpy.ndarray, scale: float = 1.0, symbol: str = '', offset: float = 0.0)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `from_base`
+
+```python
+def from_base(self, value: float) -> float
+```
+
+#### `to_base`
+
+```python
+def to_base(self, value: float) -> float
+```
+

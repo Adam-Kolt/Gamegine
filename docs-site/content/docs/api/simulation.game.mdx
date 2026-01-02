@@ -1,0 +1,121 @@
+---
+title: gamegine.simulation.game
+---
+
+# gamegine.simulation.game
+
+## Classes
+
+### GameState
+
+```python
+class GameState
+```
+
+A class for representing a state space, which is a collection of values.
+
+:param values: A dictionary of values in the state space.
+:type values: Dict[str, ValueEntry]
+:param spaces: A dictionary of sub-state spaces.
+:type spaces: Dict[str, StateSpace]
+
+#### `__init__`
+
+```python
+def __init__(self)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `add_interactable`
+
+```python
+def add_interactable(self, interactable: gamegine.representation.interactable.RobotInteractable)
+```
+
+#### `add_robot`
+
+```python
+def add_robot(self, robot: gamegine.simulation.robot.RobotState)
+```
+
+#### `createSpace`
+
+```python
+def createSpace(self, name: str) -> 'StateSpace'
+```
+
+Creates a new sub-state space with the given name.
+
+:param name: The name of the new sub-state
+:type name: str
+:return: The new sub-state space.
+:rtype: :class:`StateSpace`
+
+#### `get`
+
+```python
+def get(self, space: str) -> 'StateSpace'
+```
+
+Returns the sub-state space with the given name.
+
+:param space: The name of the sub-state
+:type space: str
+:return: The sub-state space with the given name.
+:rtype: :class:`StateSpace`
+
+#### `getValue`
+
+```python
+def getValue(self, name: str) -> gamegine.simulation.state.ValueEntry
+```
+
+Returns the value entry with the given name.
+
+:param name: The name of the value entry.
+:type name: str
+:return: The value entry with the given name.
+:rtype: :class:`ValueEntry`
+
+#### `get_interactable`
+
+```python
+def get_interactable(self, name) -> gamegine.simulation.state.StateSpace
+```
+
+#### `get_robot`
+
+```python
+def get_robot(self, name) -> gamegine.simulation.robot.RobotState
+```
+
+#### `registerSpace`
+
+```python
+def registerSpace(self, name: str, space: 'StateSpace') -> 'StateSpace'
+```
+
+Registers a sub-state space with the given name.
+
+:param name: The name of the sub-state
+:type name: str
+:param space: The sub-state space to register.
+:type space: :class:`StateSpace
+:return: The sub-state space that was registered.
+:rtype: :class:`StateSpace`
+
+#### `setValue`
+
+```python
+def setValue(self, name: str, value) -> gamegine.simulation.state.ValueEntry
+```
+
+Sets the value of the value entry with the given name.
+
+:param name: The name of the value entry.
+:type name: str
+:param value: The value to set.
+:return: The value entry with the given name.
+:rtype: :class:`ValueEntry`
+

@@ -1,0 +1,1417 @@
+---
+title: gamegine.render.renderer
+---
+
+# gamegine.render.renderer
+
+Gamegine Renderer - Apple-like simplicity.
+
+Just add objects. The renderer handles everything.
+
+Example:
+    renderer = Renderer.create(game=MyGame)
+    renderer.add(trajectory)
+    renderer.run()
+
+## Classes
+
+### Alert
+
+```python
+class Alert
+```
+
+A slide-in/out notification alert.
+
+#### `__init__`
+
+```python
+def __init__(self, message: str, alert_type: gamegine.render.renderer.AlertType = <AlertType.INFO: 1>, duration: float = 2.0, elapsed: float = 0.0, SLIDE_TIME: float = 0.3) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+### AlertType
+
+```python
+class AlertType
+```
+
+Types of alerts with different styling.
+
+### DisplayLevel
+
+```python
+class DisplayLevel
+```
+
+Controls detail verbosity in rendering.
+
+### ObjectRendererRegistry
+
+```python
+class ObjectRendererRegistry
+```
+
+Registry mapping object types to their render handlers.
+
+#### `get_handler`
+
+```python
+def get_handler(obj: Any) -> Optional[Callable[[Any, gamegine.render.canvas.Canvas, gamegine.render.style.Theme, gamegine.render.renderer.DisplayLevel], NoneType]]
+```
+
+Get the handler for an object, checking inheritance.
+
+#### `has_handler`
+
+```python
+def has_handler(obj_type: Type) -> bool
+```
+
+#### `register`
+
+```python
+def register(obj_type: Type[~T]) -> Callable[[Callable[[Any, gamegine.render.canvas.Canvas, gamegine.render.style.Theme, gamegine.render.renderer.DisplayLevel], NoneType]], Callable[[Any, gamegine.render.canvas.Canvas, gamegine.render.style.Theme, gamegine.render.renderer.DisplayLevel], NoneType]]
+```
+
+Decorator to register a render handler for a type.
+
+#### `register_handler`
+
+```python
+def register_handler(obj_type: Type, handler: Callable[[Any, gamegine.render.canvas.Canvas, gamegine.render.style.Theme, gamegine.render.renderer.DisplayLevel], NoneType])
+```
+
+Register a handler programmatically.
+
+### RenderLayer
+
+```python
+class RenderLayer
+```
+
+A layer containing objects at a specific z-order.
+
+#### `__init__`
+
+```python
+def __init__(self, name: str, z_order: int = 0)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `add`
+
+```python
+def add(self, obj: Any)
+```
+
+Adds an object to this layer.
+
+#### `clear`
+
+```python
+def clear(self)
+```
+
+Removes all objects from this layer.
+
+#### `remove`
+
+```python
+def remove(self, obj: Any)
+```
+
+Removes an object from this layer.
+
+### Renderer
+
+```python
+class Renderer
+```
+
+Gamegine Renderer - Just add objects, we handle the rest.
+
+Usage:
+    renderer = Renderer.create(game=MyGame)
+    renderer.add(trajectory)
+    renderer.add_obstacles(obstacles)
+    renderer.run()
+
+#### `__init__`
+
+```python
+def __init__(self, width: int = 800, height: int = 600, title: str = 'Gamegine', render_scale: float = 100.0, theme: Optional[gamegine.render.style.Theme] = None)
+```
+
+Create a window.
+
+All parameters are optional, and reasonable defaults are assumed
+where they are not specified.
+
+The ``display``, ``screen``, ``config`` and ``context`` parameters form
+a hierarchy of control: there is no need to specify more than
+one of these.  For example, if you specify ``screen`` the ``display``
+will be inferred, and a default ``config`` and ``context`` will be
+created.
+
+``config`` is a special case; it can be a template created by the
+user specifying the attributes desired, or it can be a complete
+``config`` as returned from :py:meth:`~pyglet.display.Screen.get_matching_configs` or similar.
+
+The context will be active as soon as the window is created, as if
+:py:meth:`~pyglet.window.Window.switch_to` was just called.
+
+Args:
+    width:
+        Width of the window, in pixels.  Defaults to 960, or the screen width if ``fullscreen`` is True.
+    height:
+        Height of the window, in pixels.  Defaults to 540, or the screen height if ``fullscreen`` is True.
+    caption:
+        Initial caption (title) of the window.  Defaults to ``sys.argv[0]``.
+    resizable:
+        If True, the window will be resizable.  Defaults to False.
+    style:
+        One of the ``WINDOW_STYLE_*`` constants specifying the border style of the window.
+    fullscreen:
+        If True, the window will cover the entire screen rather than floating.  Defaults to False.
+    visible:
+        Determines if the window is visible immediately after
+        creation.  Defaults to True.  Set this to False if you
+        would like to change attributes of the window before
+        having it appear to the user.
+    vsync:
+        If True, buffer flips are synchronised to the primary screen's
+        vertical retrace, eliminating flicker.
+    file_drops:
+        If True, the Window will accept files being dropped into it and call the ``on_file_drop`` event.
+    display:
+        The display device to use.  Useful only under X11.
+    screen:
+        The screen to use, if in fullscreen.
+    config:
+        Either a template from which to create a complete config, or a complete config.
+    context:
+        The context to attach to this window.  The context must not already be attached to another window.
+    mode:
+        The screen will be switched to this mode if `fullscreen` is
+        True.  If None, an appropriate mode is selected to accommodate ``width`` and ``height``.
+
+#### `activate`
+
+```python
+def activate(self) -> 'None'
+```
+
+Activate this window.
+
+#### `add`
+
+```python
+def add(self, obj: Any)
+```
+
+Add any object - automatically placed in correct layer.
+
+:param obj: The object to render.
+
+#### `add_obstacles`
+
+```python
+def add_obstacles(self, obstacles: List[Any])
+```
+
+Add obstacles with proper styling.
+
+:param obstacles: List of obstacle objects.
+
+#### `add_safety_padding`
+
+```python
+def add_safety_padding(self, padding: List[Any])
+```
+
+Add safety padding (expanded bounds).
+
+:param padding: List of padding objects.
+
+#### `center_window`
+
+```python
+def center_window(self) -> 'None'
+```
+
+Center the window on your desktop.
+
+#### `clear`
+
+```python
+def clear(self, color: 'RGBOrA255 | None' = None, color_normalized: 'RGBANormalized | None' = None, viewport: 'tuple[int, int, int, int] | None' = None) -> 'None'
+```
+
+Clears the window with the configured background color
+set through :py:attr:`~arcade.Window.background_color`.
+
+Args:
+    color:
+        Override the current background color with one of the following:
+
+        1. A :py:class:`~arcade.types.Color` instance
+        2. A 3 or 4-length RGB/RGBA :py:class:`tuple` of byte values (0 to 255)
+
+    color_normalized:
+        override the current background color using normalized values (0.0 to 1.0).
+        For example, (1.0, 0.0, 0.0, 1.0) making the window contents red.
+
+    viewport:
+        The area of the window to clear. By default, the entire window is cleared.
+        The viewport format is ``(x, y, width, height)``.
+
+#### `clear_objects`
+
+```python
+def clear_objects(self)
+```
+
+Clear all renderable objects (except grid).
+
+#### `close`
+
+```python
+def close(self) -> 'None'
+```
+
+Close the Window.
+
+#### `create`
+
+```python
+def create(game: Optional[ForwardRef('Game')] = None, width: int = None, height: int = None, title: str = None, theme: gamegine.render.style.Theme = None) -> 'Renderer'
+```
+
+Create a renderer, optionally from a Game definition.
+
+This is the preferred way to create a renderer.
+
+:param game: Optional Game instance to auto-configure dimensions.
+:param width: Window width in pixels.
+:param height: Window height in pixels.
+:param title: Window title.
+:param theme: Custom Theme instance.
+:return: A new or existing Renderer instance.
+
+#### `deselect`
+
+```python
+def deselect(self)
+```
+
+Deselect the current object (hides info card).
+
+#### `dispatch_event`
+
+```python
+def dispatch_event(self, *args: 'Any') -> 'None'
+```
+
+Dispatch an event to the attached event handlers.
+
+The event is propagated to all registered event handlers
+in the stack, starting and the top and going down. If any
+registered event handler returns ``EVENT_HANDLED``, no further
+handlers down the stack will receive this event.
+
+This method has several possible return values. If any event
+handler has returned ``EVENT_HANDLED``, then this method will
+also return ``EVENT_HANDLED``. If not, this method will return
+``EVENT_UNHANDLED``. If there were no events registered to
+receive this event, ``False`` is returned.
+
+Returns:
+    ``EVENT_HANDLED`` if any event handler returned ``EVENT_HANDLED``;
+    ``EVENT_UNHANDLED`` if one or more event handlers were invoked
+    without any of them returning `EVENT_HANDLED`; ``False`` if no
+    event handlers were registered.
+
+#### `dispatch_events`
+
+```python
+def dispatch_events(self) -> 'None'
+```
+
+Dispatch events
+
+#### `dispatch_pending_events`
+
+```python
+def dispatch_pending_events(self) -> 'None'
+```
+
+#### `draw`
+
+```python
+def draw(self, dt: 'float') -> 'None'
+```
+
+Redraw the Window contents.
+
+This method will first call the :py:meth:`~pyglet.window.Window.`switch_to`
+method to make the GL context current. It then dispatches the
+:py:meth:`~pyglet.window.Window.on_draw` and
+:py:meth:`~pyglet.window.Window.on_refresh`
+events. Finally, it calls the :py:meth:`~pyglet.window.Window.flip`
+method to swap the front and back OpenGL buffers.
+
+#### `draw_mouse_cursor`
+
+```python
+def draw_mouse_cursor(self) -> 'None'
+```
+
+Draw the custom mouse cursor.
+
+If the current mouse cursor has ``drawable`` set, this method
+is called before the buffers are flipped to render it.
+
+There is little need to override this method; instead, subclass
+:py:class:`MouseCursor` and provide your own
+:py:meth:`~MouseCursor.draw` method.
+
+#### `event`
+
+```python
+def event(self, *args: 'Any') -> 'Callable'
+```
+
+Function decorator for an event handler.
+
+If the function or method name matches the event name,
+the decorator can be added without arguments. Likewise,
+if the name does not match, you can provide the target
+event name by passing it as an argument.
+
+Name matches::
+
+    win = window.Window()
+
+    @win.event
+    def on_resize(self, width, height):
+        # ...
+
+Name does not match::
+
+    @win.event('on_resize')
+    def foo(self, width, height):
+        # ...
+
+#### `flip`
+
+```python
+def flip(self) -> 'None'
+```
+
+Present the rendered content to the screen.
+
+This is not necessary to call when using the standard standard
+event loop. The event loop will automatically call this method
+after ``on_draw`` has been called.
+
+Window framebuffers normally have a back and front buffer meaning
+they are "double buffered". Content is always drawn into the back
+buffer while the front buffer contains the previous frame.
+Swapping the buffers makes the back buffer visible and hides the
+front buffer. This is done to prevent flickering and tearing.
+
+This method also garbage collects OpenGL resources if there are
+any dead resources to collect. If you override this method, make
+sure to call the super method to ensure that the garbage collection
+is done.
+
+#### `get_clipboard_text`
+
+```python
+def get_clipboard_text(self) -> 'str'
+```
+
+Access the system clipboard and attempt to retrieve text.
+
+Returns:
+     A string from the clipboard. String will be empty if no text found.
+
+#### `get_framebuffer_size`
+
+```python
+def get_framebuffer_size(self) -> 'tuple[int, int]'
+```
+
+Return the size in actual pixels of the Window framebuffer.
+
+When using HiDPI screens, the size of the Window's framebuffer
+can be higher than that of the Window size requested. If you
+are performing operations that require knowing the actual number
+of pixels in the window, this method should be used instead of
+:py:func:`Window.get_size()`. For example, setting the Window
+projection or setting the glViewport size.
+
+Returns:
+    The width and height of the Window's framebuffer, in pixels.
+
+#### `get_instance`
+
+```python
+def get_instance() -> Optional[ForwardRef('Renderer')]
+```
+
+Returns the singleton instance of the Renderer if it exists.
+
+#### `get_location`
+
+```python
+def get_location(self) -> 'tuple[int, int]'
+```
+
+Get the current X/Y coordinates of the window.
+
+#### `get_pixel_ratio`
+
+```python
+def get_pixel_ratio(self) -> 'float'
+```
+
+Return the framebuffer/window size ratio.
+
+Some platforms and/or window systems support subpixel scaling,
+making the framebuffer size larger than the window size.
+Retina screens on OS X and Gnome on Linux are some examples.
+
+On a Retina systems the returned ratio would usually be 2.0 as a
+window of size 500 x 500 would have a framebuffer of 1000 x 1000.
+Fractional values between 1.0 and 2.0, as well as values above
+2.0 may also be encountered.
+
+:deprecated: Use `Window.scale`.
+
+#### `get_requested_size`
+
+```python
+def get_requested_size(self) -> 'tuple[int, int]'
+```
+
+Return the size of the window without any scaling taken into effect.
+
+This does not include the windows' border or title bar.
+
+Returns:
+    The width and height of the window, in pixels.
+
+#### `get_size`
+
+```python
+def get_size(self) -> 'tuple[int, int]'
+```
+
+Get the size of the window.
+
+#### `get_system_mouse_cursor`
+
+```python
+def get_system_mouse_cursor(self, name) -> 'MouseCursor'
+```
+
+Get the system mouse cursor
+
+#### `hide_view`
+
+```python
+def hide_view(self) -> 'None'
+```
+
+Hide the currently active view (if any).
+
+This is only necessary if you don't want an active view
+falling back to the window's event handlers. It's not
+necessary to call when changing the active view.
+
+#### `is_key_pressed`
+
+```python
+def is_key_pressed(self, key: int) -> bool
+```
+
+Check if a specific key is currently held down.
+
+#### `maximize`
+
+```python
+def maximize(self) -> 'None'
+```
+
+Maximize  the window.
+
+#### `minimize`
+
+```python
+def minimize(self) -> 'None'
+```
+
+Minimize the window.
+
+#### `on_action`
+
+```python
+def on_action(self, action_name: 'str', state) -> 'None'
+```
+
+Called when an action is dispatched.
+This is related to the input manager / controller support.
+
+Args:
+    action_name:
+        The name of the action
+    state:
+        The state of the action
+
+#### `on_click`
+
+```python
+def on_click(self, callback: Callable[[float, float], NoneType] = None)
+```
+
+Register click handler. Can be used as decorator.
+
+Callback receives (x, y) in world coordinates.
+
+#### `on_close`
+
+```python
+def on_close(self) -> 'None'
+```
+
+Default on_close handler.
+
+#### `on_draw`
+
+```python
+def on_draw(self)
+```
+
+Render the scene.
+
+#### `on_fixed_update`
+
+```python
+def on_fixed_update(self, delta_time: 'float')
+```
+
+Called for each fixed update. This is useful for physics engines
+and other systems that should update at a constant rate.
+
+Args:
+    delta_time: Time interval since the last time the function was
+        called in seconds.
+
+#### `on_key_press`
+
+```python
+def on_key_press(self, key: int, modifiers: int)
+```
+
+Called once when a key gets pushed down.
+
+Override this function to add key press functionality.
+
+.. tip:: If you want the length of key presses to affect
+         gameplay, you also need to override
+         :meth:`~.Window.on_key_release`.
+
+Args:
+    symbol:
+        Key that was just pushed down
+    modifiers:
+        Bitwise 'and' of all modifiers (shift, ctrl, num lock)
+        active during this event. See :ref:`keyboard_modifiers`.
+
+#### `on_key_press_callback`
+
+```python
+def on_key_press_callback(self, callback: Callable[[int, int], NoneType])
+```
+
+Register key press callback.
+
+:param callback: Function accepting (key, modifiers).
+
+#### `on_key_release`
+
+```python
+def on_key_release(self, key: int, modifiers: int)
+```
+
+Called once when a key gets released.
+
+Override this function to add key release functionality.
+
+Situations that require handling key releases include:
+
+* Rhythm games where a note must be held for a certain
+  amount of time
+* 'Charging up' actions that change strength depending on
+  how long a key was pressed
+* Showing which keys are currently pressed down
+
+Args:
+    symbol (int): Key that was released
+    modifiers (int): Bitwise 'and' of all modifiers (shift,
+              ctrl, num lock) active during this event.
+              See :ref:`keyboard_modifiers`.
+
+#### `on_mouse_drag`
+
+```python
+def on_mouse_drag(self, x: 'int', y: 'int', dx: 'int', dy: 'int', buttons: 'int', modifiers: 'int') -> 'EVENT_HANDLE_STATE'
+```
+
+Called repeatedly while the mouse moves with a button down.
+
+Override this function to handle dragging.
+
+Args:
+    x:
+        x position of mouse
+    y:
+        y position of mouse
+    dx:
+        Change in x since the last time this method was called
+    dy:
+        Change in y since the last time this method was called
+    buttons:
+        Which button is pressed
+    modifiers:
+        Bitwise 'and' of all modifiers (shift, ctrl, num lock)
+        active during this event. See :ref:`keyboard_modifiers`.
+
+#### `on_mouse_enter`
+
+```python
+def on_mouse_enter(self, x: 'int', y: 'int') -> 'EVENT_HANDLE_STATE'
+```
+
+Called once whenever the mouse enters the window area on screen.
+
+This event will not be triggered if the mouse is currently being
+dragged.
+
+Args:
+    x: The x position the mouse entered the window
+    y: The y position the mouse entered the window
+
+#### `on_mouse_leave`
+
+```python
+def on_mouse_leave(self, x: 'int', y: 'int') -> 'EVENT_HANDLE_STATE'
+```
+
+Called once whenever the mouse leaves the window area on screen.
+
+This event will not be triggered if the mouse is currently being
+dragged. Note that the coordinates of the mouse pointer will be
+outside of the window rectangle.
+
+Args:
+    x: The x position the mouse entered the window
+    y: The y position the mouse entered the window
+
+#### `on_mouse_motion`
+
+```python
+def on_mouse_motion(self, x: float, y: float, dx: float, dy: float)
+```
+
+Called repeatedly while the mouse is moving in the window area.
+
+Override this function to respond to changes in mouse position.
+
+Args:
+    x: x position of mouse within the window in pixels
+    y: y position of mouse within the window in pixels
+    dx: Change in x since the last time this method was called
+    dy: Change in y since the last time this method was called
+
+#### `on_mouse_press`
+
+```python
+def on_mouse_press(self, x: float, y: float, button: int, modifiers: int)
+```
+
+Called once whenever a mouse button gets pressed down.
+
+Override this function to handle mouse clicks. For an example of
+how to do this, see Arcade's built-in :ref:`aiming and shooting
+bullets &lt;sprite_bullets_aimed&gt;` demo.
+
+Args:
+    x:
+        x position of the mouse
+    y:
+        y position of the mouse
+    button:
+        What button was pressed. This will always be one of the following:
+
+        - ``arcade.MOUSE_BUTTON_LEFT``
+        - ``arcade.MOUSE_BUTTON_RIGHT``
+        - ``arcade.MOUSE_BUTTON_MIDDLE``
+
+    modifiers:
+        Bitwise 'and' of all modifiers (shift, ctrl, num lock)
+        active during this event. See :ref:`keyboard_modifiers`.
+
+#### `on_mouse_release`
+
+```python
+def on_mouse_release(self, x: 'int', y: 'int', button: 'int', modifiers: 'int') -> 'EVENT_HANDLE_STATE'
+```
+
+Called once whenever a mouse button gets released.
+
+Override this function to respond to mouse button releases. This
+may be useful when you want to use the duration of a mouse click
+to affect gameplay.
+
+Args:
+    x:
+        x position of mouse
+    y:
+        y position of mouse
+    button:
+        What button was hit. One of:
+
+        - ``arcade.MOUSE_BUTTON_LEFT``
+        - ``arcade.MOUSE_BUTTON_RIGHT``
+        - ``arcade.MOUSE_BUTTON_MIDDLE``
+    modifiers:
+        Bitwise 'and' of all modifiers (shift, ctrl, num lock)
+        active during this event. See :ref:`keyboard_modifiers`.
+
+#### `on_mouse_scroll`
+
+```python
+def on_mouse_scroll(self, x: 'int', y: 'int', scroll_x: 'float', scroll_y: 'float') -> 'EVENT_HANDLE_STATE'
+```
+
+Called repeatedly while a mouse scroll wheel moves.
+
+Override this function to respond to scroll events. The scroll
+arguments may be positive or negative to indicate direction, but
+the units are unstandardized. How many scroll steps you receive
+may vary wildly between computers depending a number of factors,
+including system settings and the input devices used (i.e. mouse
+scrollwheel, touch pad, etc).
+
+.. warning:: Not all users can scroll easily!
+
+         Only some input devices support horizontal
+         scrolling. Standard vertical scrolling is common,
+         but some laptop touch pads are hard to use.
+
+         This means you should be careful about how you use
+         scrolling. Consider making it optional
+         to maximize the number of people who can play your
+         game!
+
+Args:
+    x:
+        x position of mouse
+    y:
+        y position of mouse
+    scroll_x:
+        Number of steps scrolled horizontally since the last call of this function
+    scroll_y:
+        Number of steps scrolled vertically since the last call of this function
+
+#### `on_resize`
+
+```python
+def on_resize(self, width: 'int', height: 'int') -> 'EVENT_HANDLE_STATE'
+```
+
+Override this method to add custom actions when the window is resized.
+
+An internal ``_on_resize`` is called first adjusting the viewport
+to the new size of the window so there is no need to call
+```super().on_resize(width, height)```.
+
+Args:
+    width: New width of the window
+    height: New height of the window
+
+#### `on_scale`
+
+```python
+def on_scale(self, scale: 'float', dpi: 'int') -> 'EVENT_HANDLE_STATE'
+```
+
+A default scale event handler.
+
+This default handler is called if the screen or system's DPI changes
+during runtime.
+
+#### `on_update`
+
+```python
+def on_update(self, delta_time: float)
+```
+
+This method can be implemented and is reserved for game logic.
+Move sprites. Perform collision checks and other game logic.
+This method is called every frame before :meth:`on_draw`.
+
+The ``delta_time`` can be used to make sure the game runs at the same
+speed, no matter the frame rate.
+
+Args:
+    delta_time: Time interval since the last time the function was
+        called in seconds.
+
+#### `on_update_callback`
+
+```python
+def on_update_callback(self, callback: Callable[[float], NoneType])
+```
+
+Register update callback.
+
+:param callback: Function accepting (delta_time).
+
+#### `pop_handlers`
+
+```python
+def pop_handlers(self) -> 'None'
+```
+
+Pop the top level of event handlers off the stack.
+
+#### `post_event`
+
+```python
+def post_event(self, event_type: 'str', *args: 'Any') -> 'bool | None'
+```
+
+Post an event to the main application thread.
+
+Unlike the :py:meth:`~pyglet.event.EventDispatcher.dispatch_event`
+method, this method does not dispatch events directly. Instead, it
+hands off the dispatch call to the main application thread. This
+ensures that any event handlers are also executed in the main thread.
+
+This method aliases :py:meth:`~pyglet.app.PlatformEventLoop.post_event`,
+which can be seen for more information on behavior.
+
+#### `push_handlers`
+
+```python
+def push_handlers(self, *args: 'Any', **kwargs: 'Any') -> 'None'
+```
+
+Push a new level onto the handler stack, and add 0 or more handlers.
+
+This method first pushes a new level to the top of the handler stack.
+It then attaches any handlers that were passed to this new level.
+
+If keyword arguments are given, they name the event type to attach.
+Otherwise, a callable's ``__name__`` attribute will be used. Any
+other object may also be specified, in which case it will be searched
+for callables with event names.
+
+#### `register_event_type`
+
+```python
+def register_event_type(name: 'str') -> 'str'
+```
+
+Register an event type with the dispatcher.
+
+Before dispatching events, they must first be registered by name.
+Registering event types allows the dispatcher to validate event
+handler names as they are attached, and to search attached objects
+for suitable handlers.
+
+#### `register_selectable`
+
+```python
+def register_selectable(self, obj: Any, hit_test: Callable[[float, float], bool])
+```
+
+Register an object as selectable with a hit test function.
+
+:param obj: The object to register
+:param hit_test: Function(world_x, world_y) -&gt; bool, returns True if point is on object
+
+#### `remove`
+
+```python
+def remove(self, obj: Any)
+```
+
+Remove an object from all layers.
+
+:param obj: The object to remove.
+
+#### `remove_handler`
+
+```python
+def remove_handler(self, name: 'str', handler: 'Callable') -> 'None'
+```
+
+Remove a single event handler.
+
+The given event handler is removed from the first handler stack frame
+it appears in.  The handler must be the exact same callable as passed
+to `set_handler`, `set_handlers` or
+:py:meth:`~pyglet.event.EventDispatcher.push_handlers`; and the name
+must match the event type it is bound to.
+
+No error is raised if the event handler is not set.
+
+#### `remove_handlers`
+
+```python
+def remove_handlers(self, *args: 'Any', **kwargs: 'Any') -> 'None'
+```
+
+Remove event handlers from the event stack.
+
+See :py:meth:`~pyglet.event.EventDispatcher.push_handlers` for the
+accepted argument types. All handlers are removed from the first stack
+frame that contains any of the given handlers. No error is raised if
+any handler does not appear in that frame, or if no stack frame
+contains any of the given handlers.
+
+If the stack frame is empty after removing the handlers, it is
+removed from the stack.  Note that this interferes with the expected
+symmetry of :py:meth:`~pyglet.event.EventDispatcher.push_handlers` and
+:py:meth:`~pyglet.event.EventDispatcher.pop_handlers`.
+
+#### `reset`
+
+```python
+def reset()
+```
+
+Resets the singleton instance.
+
+#### `run`
+
+```python
+def run(self, view: 'View | None' = None) -> 'None'
+```
+
+Run the event loop. Optionally start with a specified view.
+
+After the window has been set up, and the event hooks are in place, this
+is usually one of the last commands on the main program. This is a blocking
+function starting pyglet's event loop meaning it will start to dispatch
+events such as ``on_draw`` and ``on_update``.
+
+Args:
+    view: The view to display when starting the run. Defaults to None.
+
+#### `screen_to_world`
+
+```python
+def screen_to_world(self, x: float, y: float) -> Tuple[float, float]
+```
+
+Convert screen coordinates to world (meters).
+
+#### `select`
+
+```python
+def select(self, obj_or_provider: Any)
+```
+
+Select an object to show in the info card.
+
+:param obj_or_provider: Either a static object, or a callable that returns 
+                       the current object state (for dynamic updates).
+
+#### `set_caption`
+
+```python
+def set_caption(self, caption) -> 'None'
+```
+
+Set the caption/title of the window.
+
+#### `set_clipboard_text`
+
+```python
+def set_clipboard_text(self, text: 'str') -> 'None'
+```
+
+Access the system clipboard and set a text string as the clipboard data.
+
+This will clear the existing clipboard.
+
+#### `set_draw_rate`
+
+```python
+def set_draw_rate(self, rate: 'float') -> 'None'
+```
+
+Set how often the on_draw function should be run.
+The draw rate cannot currently be faster than the update rate.
+
+For example::
+
+    # Set the draw rate to 60 frames per second.
+    set.set_draw_rate(1 / 60)
+
+#### `set_exclusive_keyboard`
+
+```python
+def set_exclusive_keyboard(self, exclusive=True) -> 'None'
+```
+
+Capture all keyboard input.
+
+#### `set_exclusive_mouse`
+
+```python
+def set_exclusive_mouse(self, exclusive=True) -> 'None'
+```
+
+Capture the mouse.
+
+#### `set_fullscreen`
+
+```python
+def set_fullscreen(self, fullscreen: 'bool' = True, screen=None, mode: 'ScreenMode | None' = None, width: 'float | None' = None, height: 'float | None' = None) -> 'None'
+```
+
+Change the fullscreen status of the window.
+
+In most cases you simply want::
+
+    # Enter fullscreen mode
+    window.set_fullscreen(True)
+    # Leave fullscreen mode
+    window.set_fullscreen(False)
+
+When entering fullscreen mode the window will resize to the screen's
+resolution. When leaving fullscreen mode the window will resize back
+to the size it was before entering fullscreen mode.
+
+Args:
+    fullscreen:
+        Should we enter or leave fullscreen mode?
+    screen:
+        Which screen should we display on? See :func:`get_screens`
+    mode:
+        The screen will be switched to the given mode.  The mode must
+        have been obtained by enumerating `Screen.get_modes`.  If
+        None, an appropriate mode will be selected from the given
+        `width` and `height`.
+    width:
+        Override the width of the window. Will be rounded to :py:class:`int`.
+    height:
+        Override the height of the window. Will be rounded to :py:class:`int`.
+
+#### `set_handler`
+
+```python
+def set_handler(self, name: 'str', handler: 'Callable') -> 'None'
+```
+
+Attach a single event handler.
+
+#### `set_handlers`
+
+```python
+def set_handlers(self, *args: 'Any', **kwargs: 'Any') -> 'None'
+```
+
+Attach one or more event handlers to the top level of the handler stack.
+
+See :py:meth:`~pyglet.event.EventDispatcher.push_handlers` for the accepted
+argument types.
+
+#### `set_icon`
+
+```python
+def set_icon(self, *images: 'pyglet.image.ImageData') -> 'None'
+```
+
+Set the window icon.
+
+If multiple images are provided, one with an appropriate size
+will be selected (if the correct size is not provided, the image
+will be scaled).
+
+Useful sizes to provide are 16x16, 32x32, 64x64 (Mac only) and
+128x128 (Mac only).
+
+#### `set_location`
+
+```python
+def set_location(self, x, y) -> 'None'
+```
+
+Set location of the window.
+
+#### `set_maximum_size`
+
+```python
+def set_maximum_size(self, width: 'int', height: 'int') -> 'None'
+```
+
+Sets the maximum size of the window.
+
+This will limit how large the window can be resized.
+
+Args:
+    width: Maximum width
+    height: Maximum height
+
+#### `set_minimum_size`
+
+```python
+def set_minimum_size(self, width: 'int', height: 'int') -> 'None'
+```
+
+Set the minimum size of the window.
+
+This will limit how small the window can be resized.
+
+Args:
+    width: Minimum width
+    height: Minimum height
+
+#### `set_mouse_cursor`
+
+```python
+def set_mouse_cursor(self, cursor: 'MouseCursor | None' = None) -> 'None'
+```
+
+Change the appearance of the mouse cursor.
+
+The appearance of the mouse cursor is only changed while it is
+within this window.
+
+Args:
+    cursor:
+        The cursor to set, or ``None`` to restore the default cursor.
+
+#### `set_mouse_passthrough`
+
+```python
+def set_mouse_passthrough(self, state: 'bool') -> 'None'
+```
+
+Set whether the operating system will ignore mouse input from this window.
+
+Behavior may differ across operating systems. This is typically used in window overlays with
+transparent frame buffers.
+
+Args:
+    state:
+        ``True`` will allow mouse input to pass through the window to anything behind it. Otherwise, ``False``
+        allows the window to accept focus again.
+
+.. versionadded:: 2.1.8
+
+#### `set_mouse_platform_visible`
+
+```python
+def set_mouse_platform_visible(self, platform_visible=None) -> 'None'
+```
+
+.. warning:: You are probably looking for
+             :meth:`~.Window.set_mouse_visible`!
+
+This is a lower level function inherited from the pyglet window.
+
+For more information on what this means, see the documentation
+for :py:meth:`pyglet.window.Window.set_mouse_platform_visible`.
+
+#### `set_mouse_position`
+
+```python
+def set_mouse_position(self, x: 'int', y: 'int', absolute: 'bool' = False) -> 'None'
+```
+
+#### `set_mouse_visible`
+
+```python
+def set_mouse_visible(self, visible: 'bool' = True) -> 'None'
+```
+
+Set whether to show the system's cursor while over the window
+
+By default, the system mouse cursor is visible whenever the
+mouse is over the window. To hide the cursor, pass ``False`` to
+this function. Pass ``True`` to make the cursor visible again.
+
+The window will continue receiving mouse events while the cursor
+is hidden, including movements and clicks. This means that
+functions like :meth:`~.Window.on_mouse_motion` and
+t':meth:`~.Window.on_mouse_press` will continue to work normally.
+
+You can use this behavior to visually replace the system mouse
+cursor with whatever you want. One example is :ref:`a game
+character that is always at the most recent mouse position in
+the window&lt;sprite_collect_coins&gt;`.
+
+.. note:: Advanced users can try using system cursor state icons
+
+         It may be possible to use system icons representing
+         cursor interaction states such as hourglasses or resize
+         arrows by using features :class:``~arcade.Window`` inherits
+         from the underlying pyglet window class. See the
+         `pyglet overview on cursors
+         &lt;https://pyglet.readthedocs.io/en/master/programming_guide/mouse.html#changing-the-mouse-cursor&gt;`_
+         for more information.
+
+Args:
+    visible: Whether to hide the system mouse cursor
+
+#### `set_size`
+
+```python
+def set_size(self, width: 'int', height: 'int') -> 'None'
+```
+
+Resize the window.
+
+Args:
+    width: New width of the window
+    height: New height of the window
+
+#### `set_update_rate`
+
+```python
+def set_update_rate(self, rate: 'float') -> 'None'
+```
+
+Set how often the on_update function should be dispatched.
+For example::
+
+    # Set the update rate to 60 times per second.
+    self.set_update_rate(1 / 60)
+
+Args:
+    rate: Update frequency in seconds
+
+#### `set_visible`
+
+```python
+def set_visible(self, visible: 'bool' = True)
+```
+
+Set if the window should be visible or not.
+
+Args:
+    visible (bool): Should the window be visible?
+
+#### `set_vsync`
+
+```python
+def set_vsync(self, vsync: 'bool') -> 'None'
+```
+
+Set if we sync our draws to the monitors vertical sync rate.
+
+#### `show_alert`
+
+```python
+def show_alert(self, message: str, alert_type: gamegine.render.renderer.AlertType = <AlertType.INFO: 1>, duration: float = 2.0)
+```
+
+Show a slide-in/out notification alert.
+
+:param message: The message text.
+:param alert_type: Notification type (color).
+:param duration: Seconds to display.
+
+#### `show_view`
+
+```python
+def show_view(self, new_view: 'View') -> 'None'
+```
+
+Set the currently active view.
+
+This will hide the current view
+and show the new view in the next frame.
+
+This is not a blocking call. It will simply point to the new view
+and return immediately.
+
+Calling this function is the same as setting the
+:py:attr:`arcade.Window.current_view` attribute.
+
+Args:
+    new_view: The view to activate.
+
+#### `switch_to`
+
+```python
+def switch_to(self) -> 'None'
+```
+
+Switch the this window context.
+
+This is normally only used in multi-window applications.
+
+#### `test`
+
+```python
+def test(self, frames: 'int' = 10) -> 'None'
+```
+
+Used by unit test cases. Runs the event loop a few times and stops.
+
+Args:
+    frames: How many frames to run the event loop for.
+
+#### `to_pixels`
+
+```python
+def to_pixels(value: 'SpatialMeasurement') -> float
+```
+
+Convert a measurement to pixels.
+
+#### `unregister_selectable`
+
+```python
+def unregister_selectable(self, obj: Any)
+```
+
+Unregister a selectable object.
+
+:param obj: The object to unregister.
+
+#### `use`
+
+```python
+def use(self) -> 'None'
+```
+
+Make the window the target for drawing.
+
+The window will always be the target for drawing unless
+offscreen framebuffers are used in the application.
+
+This simply binds the window's framebuffer.
+
+## Functions
+
+### run
+
+```python
+def run()
+```
+
+Start the render loop.
+

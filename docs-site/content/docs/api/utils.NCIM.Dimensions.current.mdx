@@ -1,0 +1,85 @@
+---
+title: gamegine.utils.NCIM.Dimensions.current
+---
+
+# gamegine.utils.NCIM.Dimensions.current
+
+## Classes
+
+### CurrentMeasurement
+
+```python
+class CurrentMeasurement
+```
+
+A class representing an :class:`CurrentMeasurement`. Inherits from the :class:`Measurement` class.
+
+:param magnitude: The magnitude of the measurement.
+:type magnitude: float
+:param unit: The unit of the measurement.
+:type unit: :class:`CurrentUnit`
+:param base_magnitude: The base magnitude of the measurement, used for internal creation. Defaults to None.
+:type base_magnitude: float, optional
+
+#### `__init__`
+
+```python
+def __init__(self, magnitude: float, unit: gamegine.utils.NCIM.Dimensions.current.CurrentUnit, base_magnitude=None) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `convert_to`
+
+```python
+def convert_to(self, target_unit: gamegine.utils.NCIM.core.Unit) -> 'Measurement'
+```
+
+Convert this measurement to another unit and return a new Measurement object.
+
+#### `to`
+
+```python
+def to(self, target_unit: gamegine.utils.NCIM.core.Unit) -> float
+```
+
+Convert this measurement to another unit and return the magnitude as a float.
+This maintains backward compatibility with legacy NCIM.
+
+### CurrentUnit
+
+```python
+class CurrentUnit
+```
+
+A class representing an current unit of measurement, in addition to creating a :class:`CurrentMeasurement` of the same type when called. Inherits from the :class:`Unit` class.
+
+:param scale: The scale of the unit.
+:type scale: float, optional
+:param display: The display name of the unit.
+:type display: str, optional
+:param shift: The shift of the unit.
+:type shift: float, optional
+
+#### `__init__`
+
+```python
+def __init__(self, scale: float = 0, display='', shift: float = 0) -> None
+```
+
+Legacy shim for Unit initialization.
+Old signature: (dimension: Dimension, scale, symbol, shift)
+New signature: (dimensions: np.ndarray, scale, symbol, offset)
+
+#### `from_base`
+
+```python
+def from_base(self, value: float) -> float
+```
+
+#### `to_base`
+
+```python
+def to_base(self, value: float) -> float
+```
+

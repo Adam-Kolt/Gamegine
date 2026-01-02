@@ -1,0 +1,225 @@
+---
+title: gamegine.analysis.meshing
+---
+
+# gamegine.analysis.meshing
+
+Graph construction helpers for navigation meshes used by the path planner.
+
+The :class:`Map` class stores a thin wrapper around a visibility/triangulated graph
+backed by NCIM aware coordinates.  Each node stores its original coordinate in meters and
+the adjacency list with travel distances.  The module also exposes factory helpers for
+building visibility graphs and triangular lattices that respect field obstacles.
+
+The data structure intentionally focuses on expressiveness rather than raw performance.
+The navigation subsystem only operates on a handful of nodes at a time, so the overhead of
+keeping rich metadata and validation hooks is acceptable and makes debugging far easier.
+
+## Classes
+
+### ConnectionStrategy
+
+```python
+class ConnectionStrategy
+```
+
+Create a collection of name/value pairs.
+
+Example enumeration:
+
+&gt;&gt;&gt; class Color(Enum):
+...     RED = 1
+...     BLUE = 2
+...     GREEN = 3
+
+Access them by:
+
+- attribute access:
+
+  &gt;&gt;&gt; Color.RED
+  &lt;Color.RED: 1&gt;
+
+- value lookup:
+
+  &gt;&gt;&gt; Color(1)
+  &lt;Color.RED: 1&gt;
+
+- name lookup:
+
+  &gt;&gt;&gt; Color['RED']
+  &lt;Color.RED: 1&gt;
+
+Enumerations can be iterated over, and know how many members they have:
+
+&gt;&gt;&gt; len(Color)
+3
+
+&gt;&gt;&gt; list(Color)
+[&lt;Color.RED: 1&gt;, &lt;Color.BLUE: 2&gt;, &lt;Color.GREEN: 3&gt;]
+
+Methods can be added to enumerations, and members can have their own
+attributes -- see the documentation for details.
+
+### Map
+
+```python
+class Map
+```
+
+#### `__init__`
+
+```python
+def __init__(self, name: str = 'Map') -> None
+```
+
+Initialise an empty graph with a human friendly name.
+
+#### `add_connected_node`
+
+```python
+def add_connected_node(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, strategy: gamegine.analysis.meshing.ConnectionStrategy) -> 'Map'
+```
+
+#### `add_edge`
+
+```python
+def add_edge(self, node1: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement], node2: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement], weight: float = None, bidirectional: bool = True, weight_backward: float = None) -> 'Map'
+```
+
+Create an edge (optionally bidirectional) between two coordinates.
+
+Distances default to straight-line distance if not provided.  Missing nodes are
+created on the fly so caller code can treat the map as append-only.
+
+#### `add_edges`
+
+```python
+def add_edges(self, edges: List[Tuple[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement], Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement], gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]) -> 'Map'
+```
+
+Bulk insert helper for iterables of ``(start, end, weight)`` tuples.
+
+#### `add_node`
+
+```python
+def add_node(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Map'
+```
+
+Register a node at the given coordinates.
+
+The node id is generated automatically.  Adding a duplicate coordinate raises an
+exception to avoid ambiguous routing behaviour.
+
+#### `add_one_way_edge`
+
+```python
+def add_one_way_edge(self, node1: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement], node2: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement], weight: float) -> 'Map'
+```
+
+Convenience wrapper for inserting a directed edge only.
+
+#### `connect_all_nodes`
+
+```python
+def connect_all_nodes(self) -> 'Map'
+```
+
+Fully connect the graph (mostly useful while prototyping).
+
+#### `connect_all_points`
+
+```python
+def connect_all_points(self, points: List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]) -> 'Map'
+```
+
+Insert nodes for the supplied coordinates and fully connect them.
+
+#### `decode_coordinates`
+
+```python
+def decode_coordinates(self, node_id: int) -> Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]
+```
+
+Convert a node id back to absolute NCIM coordinates.
+
+#### `encode_coordinates`
+
+```python
+def encode_coordinates(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> int
+```
+
+Return the integer id associated with the coordinate.
+
+#### `get_all_nodes`
+
+```python
+def get_all_nodes(self) -> List[Tuple[int, Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]]
+```
+
+Expose node ids with their decoded coordinates.
+
+#### `get_all_unique_connections`
+
+```python
+def get_all_unique_connections(self) -> List[Tuple[Tuple[int, int], Tuple[float], bool]]
+```
+
+Generate a unique edge list for rendering and introspection.
+
+#### `get_closest_node`
+
+```python
+def get_closest_node(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> Tuple[int, Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]
+```
+
+Return the nearest node id/coordinate pair to the supplied point.
+
+#### `get_neighbours`
+
+```python
+def get_neighbours(self, node_id: int) -> List[Tuple[int, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]
+```
+
+Return the neighbour id/weight pairs for the selected node.
+
+#### `get_node`
+
+```python
+def get_node(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> Tuple[int, Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]
+```
+
+Return the internal node id for the provided coordinate.
+
+#### `z_index`
+
+```python
+def z_index(self) -> int
+```
+
+## Functions
+
+### TriangulatedGraph
+
+```python
+def TriangulatedGraph(obstacles: List[gamegine.representation.bounds.Boundary], triangle_size: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, field_bounds: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement], discretization_quality: int = 4) -> gamegine.analysis.meshing.Map
+```
+
+Generate a regular triangular lattice that excludes blocked cells.
+
+Nodes whose centres intersect an obstacle or fall outside the field bounds are
+skipped.  Remaining nodes are fully connected within each triangle in order to
+preserve symmetry.
+
+### VisibilityGraph
+
+```python
+def VisibilityGraph(obstacles: List[gamegine.representation.bounds.Boundary], required_points: List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]] = [], clip_to: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement] = None, discretization_quality: int = 4) -> gamegine.analysis.meshing.Map
+```
+
+Create a visibility graph that links mutually visible obstacle vertices.
+
+The routine discretises each obstacle boundary (respecting ``discretization_quality``)
+and connects any pair of points that can see each other without intersecting an
+obstacle.  Additional waypoints can be injected through ``required_points`` and the
+search space can optionally be clipped to a bounding rectangle.
+

@@ -1,0 +1,73 @@
+---
+title: gamegine.utils.NCIM.ComplexDimensions.alpha
+---
+
+# gamegine.utils.NCIM.ComplexDimensions.alpha
+
+## Classes
+
+### Alpha
+
+```python
+class Alpha
+```
+
+Unified class for all measurements.
+Inherits from float to allow direct usage in many places, 
+but carries Unit information.
+
+#### `__init__`
+
+```python
+def __init__(self, magnitude: float, unit: gamegine.utils.NCIM.ComplexDimensions.alpha.AlphaUnit, base_magnitude=None) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `convert_to`
+
+```python
+def convert_to(self, target_unit: gamegine.utils.NCIM.core.Unit) -> 'Measurement'
+```
+
+Convert this measurement to another unit and return a new Measurement object.
+
+#### `to`
+
+```python
+def to(self, target_unit: gamegine.utils.NCIM.core.Unit) -> float
+```
+
+Convert this measurement to another unit and return the magnitude as a float.
+This maintains backward compatibility with legacy NCIM.
+
+### AlphaUnit
+
+```python
+class AlphaUnit
+```
+
+Represents a unit of measurement.
+Can be a simple unit (e.g. Meter) or complex (e.g. Meter/Second).
+
+#### `__init__`
+
+```python
+def __init__(self, angles: gamegine.utils.NCIM.Dimensions.angular.AngularUnit, time: gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit) -> None
+```
+
+Legacy shim for ComplexUnit(units_table).
+Converts the dict \{Unit: power\} into dimensions/scale/symbol.
+
+#### `from_base`
+
+```python
+def from_base(self, value: float) -> float
+```
+
+#### `to_base`
+
+```python
+def to_base(self, value: float) -> float
+```
+

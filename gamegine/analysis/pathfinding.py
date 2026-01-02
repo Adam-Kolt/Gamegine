@@ -108,6 +108,13 @@ class Pathfinder(ABC):
 
     @abstractmethod
     def calculate_path(map: Map, start: int, end: int) -> List[int]:
+        """Calculates a path through the map.
+
+        :param map: The map to search.
+        :param start: The starting node ID.
+        :param end: The target node ID.
+        :return: A list of node IDs representing the path.
+        """
         pass
 
 
@@ -116,6 +123,7 @@ class Heuristics(object):
 
     @staticmethod
     def EuclideanHeuristic(map: Map, start: int, end: int, current: int, next: int):
+        """Standard Euclidean distance heuristic."""
         end_coords = map.decode_coordinates(end)
         next_coords = map.decode_coordinates(next)
         return GetDistanceBetween(end_coords, next_coords)
@@ -124,6 +132,7 @@ class Heuristics(object):
     def DirectedEuclideanHeuristic(
         map: Map, start: int, end: int, current: int, next: int
     ):
+        """Euclidean distance weighted by direction alignment."""
         end_coords = map.decode_coordinates(end)
         next_coords = map.decode_coordinates(next)
         current_coords = map.decode_coordinates(current)
@@ -171,7 +180,14 @@ class AStar(Pathfinder):
             [Map, int, int, int, int], float
         ] = Heuristics.EuclideanHeuristic,
     ) -> List[int]:
-        """Execute a standard A* search between two nodes."""
+        """Execute a standard A* search between two nodes.
+        
+        :param map: The map graph.
+        :param start: Start node ID.
+        :param end: End node ID.
+        :param heuristic: Heuristic function to use.
+        :return: List of node IDs.
+        """
         open_set = PriorityQueue()
         nodes = {}
 
@@ -201,6 +217,8 @@ class AStar(Pathfinder):
 
 
 class DirectedAStar(AStar):
+    """A* Search using the DirectedEuclideanHeuristic."""
+    
     @staticmethod
     def calculate_path(map: Map, start: int, end: int) -> List[int]:
         return super(DirectedAStar, DirectedAStar).calculate_path(

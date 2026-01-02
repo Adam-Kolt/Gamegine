@@ -1,0 +1,82 @@
+---
+title: gamegine.utils.NCIM.ComplexDimensions.MOI
+---
+
+# gamegine.utils.NCIM.ComplexDimensions.MOI
+
+## Classes
+
+### MOI
+
+```python
+class MOI
+```
+
+A class representing a moment of inertia complex measurement, composed of a spatial and mass element in the form spatial^2 * mass^1. Inherits from the :class:`ComplexMeasurement` class.
+
+:param magnitude: The magnitude of the measurement.
+:type magnitude: float
+:param unit: The unit of the measurement.
+:type unit: :class:`MOIUnit`
+:param base_magnitude: The base magnitude of the measurement, used for internal creation. Defaults to None.
+:type base_magnitude: float, optional
+
+#### `__init__`
+
+```python
+def __init__(self, magnitude: float, unit: gamegine.utils.NCIM.ComplexDimensions.MOI.MOIUnit, base_magnitude=None) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `convert_to`
+
+```python
+def convert_to(self, target_unit: gamegine.utils.NCIM.core.Unit) -> 'Measurement'
+```
+
+Convert this measurement to another unit and return a new Measurement object.
+
+#### `to`
+
+```python
+def to(self, target_unit: gamegine.utils.NCIM.core.Unit) -> float
+```
+
+Convert this measurement to another unit and return the magnitude as a float.
+This maintains backward compatibility with legacy NCIM.
+
+### MOIUnit
+
+```python
+class MOIUnit
+```
+
+A class representing a moment of inertia complex unit, composed of a spatial and mass element in the form spatial^2 * mass^1, in addition to creating a :class:`MOI` of the same type when called. Inherits from the :class:`ComplexUnit` class.
+
+:param mass: The mass unit of the
+:type mass: :class:`MassUnit`
+:param spatial: The spatial unit of the
+:type spatial: :class:`SpatialUnit
+
+#### `__init__`
+
+```python
+def __init__(self, mass: gamegine.utils.NCIM.Dimensions.mass.MassUnit, spatial: gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit) -> None
+```
+
+Legacy shim for ComplexUnit(units_table).
+Converts the dict \{Unit: power\} into dimensions/scale/symbol.
+
+#### `from_base`
+
+```python
+def from_base(self, value: float) -> float
+```
+
+#### `to_base`
+
+```python
+def to_base(self, value: float) -> float
+```
+

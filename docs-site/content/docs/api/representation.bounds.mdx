@@ -1,0 +1,2189 @@
+---
+title: gamegine.representation.bounds
+---
+
+# gamegine.representation.bounds
+
+2D boundary primitives used to describe the field and robot geometry.
+
+## Classes
+
+### Boundary
+
+```python
+class Boundary
+```
+
+Abstract base type for 2D shapes that support geometric transforms.
+
+#### `discretized`
+
+```python
+def discretized(self, curve_segments: int = 5) -> 'DiscreteBoundary'
+```
+
+Return a polygonal approximation of the boundary.
+
+#### `get_3d`
+
+```python
+def get_3d(self, z_start: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = 0, z_end: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = 0) -> 'Boundary3D'
+```
+
+#### `reflect_x`
+
+```python
+def reflect_x(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Boundary'
+```
+
+Return a copy mirrored across the provided vertical axis.
+
+#### `reflect_y`
+
+```python
+def reflect_y(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Boundary'
+```
+
+Return a copy mirrored across the provided horizontal axis.
+
+#### `scale`
+
+```python
+def scale(self, factor: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Boundary'
+```
+
+Return a copy scaled uniformly by ``factor``.
+
+#### `translate`
+
+```python
+def translate(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Boundary'
+```
+
+Return a copy shifted by the supplied offsets.
+
+### Boundary3D
+
+```python
+class Boundary3D
+```
+
+Base class for representing boundaries in 3D space.
+
+#### `__init__`
+
+```python
+def __init__(self, transform: gamegine.representation.bounds.Transform3D = None)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `discretized`
+
+```python
+def discretized(self, curve_segments: int = 5) -> 'DiscreteBoundary3D'
+```
+
+Return a polygonal approximation of the boundary.
+
+#### `get_3d`
+
+```python
+def get_3d(self, z_start: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in), z_end: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Returns the 3D version of the boundary. Simply returns self.
+
+#### `get_bullet_shape`
+
+```python
+def get_bullet_shape(self)
+```
+
+Return a Bullet shape for physics.
+
+This requires the Bullet/pybullet-dependent modules. To keep this
+module importable without pybullet, the import is done lazily here.
+
+#### `get_slice`
+
+```python
+def get_slice(self, z: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> gamegine.representation.bounds.Boundary
+```
+
+Returns a slice of the boundary at a certain z value.
+
+#### `get_transform`
+
+```python
+def get_transform(self) -> gamegine.representation.bounds.Transform3D
+```
+
+Returns the transform of the boundary.
+
+#### `project_to_2d`
+
+```python
+def project_to_2d(self) -> gamegine.representation.bounds.Boundary
+```
+
+Projects the 3D boundary onto the XY-plane.
+
+#### `reflect_x`
+
+```python
+def reflect_x(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Reflects the boundary over the plane x = axis.
+
+#### `reflect_y`
+
+```python
+def reflect_y(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Reflects the boundary over the plane y = axis.
+
+#### `reflect_z`
+
+```python
+def reflect_z(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Reflects the boundary over the plane z = axis.
+
+#### `rotate`
+
+```python
+def rotate(self, yaw: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement = Measurement(0.0, rad), pitch: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement = Measurement(0.0, rad), roll: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement = Measurement(0.0, rad)) -> 'Boundary3D'
+```
+
+Rotates the boundary by the given yaw, pitch, and roll angles.
+
+#### `scale`
+
+```python
+def scale(self, sx: float = 1, sy: float = 1, sz: float = 1) -> 'Boundary3D'
+```
+
+Scales the boundary by the given factors.
+
+#### `translate`
+
+```python
+def translate(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, z: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Translates the boundary by the given x, y, z values.
+
+### BoundedObject
+
+```python
+class BoundedObject
+```
+
+Base class for representing game objects which occupy a space on the field. Contain a boundary which indicates the space the object occupies.
+
+#### `__init__`
+
+```python
+def __init__(self, bounds: gamegine.representation.bounds.Boundary, name: str = '') -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `discretize_ip`
+
+```python
+def discretize_ip(self, curve_segments: int = 5) -> 'BoundedObject'
+```
+
+Discretizes the object in place, not returning a new object.
+
+:param curve_segments: The number of curve segments to use when discretizing the object.
+:type curve_segments: int
+:return: This object.
+:rtype: :class:`BoundedObject`
+
+#### `discretized`
+
+```python
+def discretized(self, curve_segments: int = 5) -> 'BoundedObject'
+```
+
+Returns a new object which contains a discretized version of its boundary.
+
+:param curve_segments: The number of curve segments to use when discretizing the object.
+:type curve_segments: int
+:return: The discretized object.
+:rtype: :class:`BoundedObject`
+
+#### `mirrored_over_horizontal`
+
+```python
+def mirrored_over_horizontal(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a mirror of the object over the horizontal axis at the given axis.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+:return: The mirrored object.
+:rtype: :class:`BoundedObject`
+
+#### `mirrored_over_horizontal_ip`
+
+```python
+def mirrored_over_horizontal_ip(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> None
+```
+
+Mirrors the object over the horizontal axis at the given axis in place, not returning a new object.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+
+#### `mirrored_over_vertical`
+
+```python
+def mirrored_over_vertical(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a mirror of the object over the vertical axis at the given axis.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+:return: The mirrored object.
+:rtype: :class:`BoundedObject`
+
+#### `mirrored_over_vertical_ip`
+
+```python
+def mirrored_over_vertical_ip(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Mirrors the object over the vertical axis at the given axis in place, not returning a new object.
+
+:param axis: The axis to reflect the object over.
+:type axis: :class:`SpatialMeasurement`
+:return: This object.
+:rtype: :class:`BoundedObject`
+
+#### `prefix`
+
+```python
+def prefix(self, prefix: str) -> 'NamedObject'
+```
+
+#### `scaled`
+
+```python
+def scaled(self, factor: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a scaled version of the object by the given factor.
+
+:param factor: The factor to scale the object by.
+:type factor: :class:`SpatialMeasurement`
+:return: The scaled object.
+:rtype: :class:`BoundedObject`
+
+#### `suffix`
+
+```python
+def suffix(self, suffix: str) -> 'NamedObject'
+```
+
+#### `translate_ip`
+
+```python
+def translate_ip(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Translates the object by the given x and y values in place, not returning a new object.
+
+:param x: The x value to translate the object by.
+:type x: :class:`SpatialMeasurement`
+:param y: The y value to translate the object by.
+:type y: :class:`SpatialMeasurement`
+:return: This object.
+:rtype: :class:`BoundedObject`
+
+#### `translated`
+
+```python
+def translated(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'BoundedObject'
+```
+
+Returns a new object which is a translated version of the object by the given x and y values.
+
+:param x: The x value to translate the object by.
+:type x: :class:`SpatialMeasurement`
+:param y: The y value to translate the object by.
+:type y: :class:`SpatialMeasurement`
+:return: The translated object.
+:rtype: :class:`BoundedObject`
+
+### Circle
+
+```python
+class Circle
+```
+
+Class for representing a circle boundary, extending the :class:`Boundary` class. Circles can be used to represent the shape of an object in 2D space.
+
+:param x: The x value of the center of the circle.
+:type x: :class:`SpatialMeasurement`
+:param y: The y value of the center of the circle.
+:type y: :class:`SpatialMeasurement`
+:param radius: The radius of the circle.
+:type radius: :class:`SpatialMeasurement`
+
+#### `__init__`
+
+```python
+def __init__(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, radius: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `discretized`
+
+```python
+def discretized(self, curve_segments: int = 5) -> gamegine.representation.bounds.DiscreteBoundary
+```
+
+Return a polygonal approximation of the boundary.
+
+#### `get_3d`
+
+```python
+def get_3d(self, z_start: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = 0, z_end: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = 0) -> 'Cylinder'
+```
+
+#### `reflect_x`
+
+```python
+def reflect_x(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Circle'
+```
+
+Return a copy mirrored across the provided vertical axis.
+
+#### `reflect_y`
+
+```python
+def reflect_y(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Circle'
+```
+
+Return a copy mirrored across the provided horizontal axis.
+
+#### `scale`
+
+```python
+def scale(self, factor: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Circle'
+```
+
+Return a copy scaled uniformly by ``factor``.
+
+#### `translate`
+
+```python
+def translate(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Circle'
+```
+
+Return a copy shifted by the supplied offsets.
+
+### Cylinder
+
+```python
+class Cylinder
+```
+
+Class for representing a cylinder.
+
+#### `__init__`
+
+```python
+def __init__(self, radius: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, height: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, transform: gamegine.representation.bounds.Transform3D = None, curve_segments: int = 16)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `buffered`
+
+```python
+def buffered(self, distance: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'DiscreteBoundary'
+```
+
+Returns a buffered version of the boundary, providing a certain amount of padding around the boundary. Used to indicate safe areas which account for object sizes.
+
+:param distance: The distance to buffer the boundary by.
+:type distance: :class:`SpatialMeasurement`
+:return: The buffered boundary.
+:rtype: :class:`DiscreteBoundary`
+
+#### `contains_point`
+
+```python
+def contains_point(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` if the point is strictly inside the polygon.
+
+#### `discretized`
+
+```python
+def discretized(self, curve_segments: int = None) -> 'Cylinder'
+```
+
+Returns self for already discretized 3D boundaries.
+
+#### `get_3d`
+
+```python
+def get_3d(self, z_start: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in), z_end: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Returns the 3D version of the boundary. Simply returns self.
+
+#### `get_3d_vertices`
+
+```python
+def get_3d_vertices(self)
+```
+
+Returns the 3D vertices of the boundary.
+
+#### `get_bounded_rectangle`
+
+```python
+def get_bounded_rectangle(self) -> 'Rectangle'
+```
+
+Returns the bounded rectangle of the boundary.
+
+:return: The bounded rectangle of the boundary.
+:rtype: :class:`Rectangle`
+
+#### `get_bullet_shape`
+
+```python
+def get_bullet_shape(self)
+```
+
+Return a Bullet shape for physics.
+
+This requires the Bullet/pybullet-dependent modules. To keep this
+module importable without pybullet, the import is done lazily here.
+
+#### `get_slice`
+
+```python
+def get_slice(self, z: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> gamegine.representation.bounds.DiscreteBoundary
+```
+
+Returns a slice of the boundary at a certain z value.
+
+#### `get_transform`
+
+```python
+def get_transform(self) -> gamegine.representation.bounds.Transform3D
+```
+
+Returns the transform of the boundary.
+
+#### `get_vertices`
+
+```python
+def get_vertices(self) -> List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]
+```
+
+Expose the ordered vertex list describing the polygon.
+
+#### `get_z_interval`
+
+```python
+def get_z_interval(self) -> Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]
+```
+
+Returns the z interval of the boundary.
+
+#### `intersects_line`
+
+```python
+def intersects_line(self, x1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, x2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` when the polyline intersects the given segment.
+
+#### `intersects_rectangle`
+
+```python
+def intersects_rectangle(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, max_x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, max_y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` if any portion of the boundary overlaps the rectangle.
+
+#### `project_to_2d`
+
+```python
+def project_to_2d(self) -> 'Polygon'
+```
+
+Projects the 3D boundary onto the XY-plane.
+
+#### `reflect_x`
+
+```python
+def reflect_x(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Reflects the boundary over the plane x = axis.
+
+#### `reflect_y`
+
+```python
+def reflect_y(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Reflects the boundary over the plane y = axis.
+
+#### `reflect_z`
+
+```python
+def reflect_z(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Reflects the boundary over the plane z = axis.
+
+#### `rotate`
+
+```python
+def rotate(self, yaw: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement = Measurement(0.0, rad), pitch: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement = Measurement(0.0, rad), roll: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement = Measurement(0.0, rad)) -> 'Boundary3D'
+```
+
+Rotates the boundary by the given yaw, pitch, and roll angles.
+
+#### `scale`
+
+```python
+def scale(self, sx: float = 1, sy: float = 1, sz: float = 1) -> 'Boundary3D'
+```
+
+Scales the boundary by the given factors.
+
+#### `translate`
+
+```python
+def translate(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, z: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Translates the boundary by the given x, y, z values.
+
+### DiscreteBoundary
+
+```python
+class DiscreteBoundary
+```
+
+Base class for representing discrete boundaries which can be marked by a series of points, extending the :class:`Boundary` class. Discrete boundaries can be used to represent the shape of an object in 2D space. Can be used in all the manner of the base class, but also provides methods for checking if the boundary intersects a line, rectangle, or point, and for getting the bounded rectangle of the boundary.
+
+#### `buffered`
+
+```python
+def buffered(self, distance: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'DiscreteBoundary'
+```
+
+Returns a buffered version of the boundary, providing a certain amount of padding around the boundary. Used to indicate safe areas which account for object sizes.
+
+:param distance: The distance to buffer the boundary by.
+:type distance: :class:`SpatialMeasurement`
+:return: The buffered boundary.
+:rtype: :class:`DiscreteBoundary`
+
+#### `contains_point`
+
+```python
+def contains_point(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` if the point is strictly inside the polygon.
+
+#### `discretized`
+
+```python
+def discretized(self, curve_segments: int = 5) -> 'DiscreteBoundary'
+```
+
+Discrete boundaries are already polygonal, so return ``self``.
+
+#### `get_3d`
+
+```python
+def get_3d(self, z_start: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, ft), z_end: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, ft)) -> 'DiscreteBoundary3D'
+```
+
+Returns the 3D version of the boundary.
+
+:param z_start: The starting z value of the boundary.
+:type z_start: :class:`SpatialMeasurement`
+:param z_end: The ending z value of the boundary.
+:type z_end: :class:`SpatialMeasurement`
+:return: The 3D version of the boundary.
+:rtype: :class:`DiscreteBoundary3D`
+
+#### `get_bounded_rectangle`
+
+```python
+def get_bounded_rectangle(self) -> 'Rectangle'
+```
+
+Returns the bounded rectangle of the boundary.
+
+:return: The bounded rectangle of the boundary.
+:rtype: :class:`Rectangle`
+
+#### `get_vertices`
+
+```python
+def get_vertices(self) -> List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]
+```
+
+Expose the ordered vertex list describing the polygon.
+
+#### `intersects_line`
+
+```python
+def intersects_line(self, x1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, x2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` when the polyline intersects the given segment.
+
+#### `intersects_rectangle`
+
+```python
+def intersects_rectangle(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, max_x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, max_y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` if any portion of the boundary overlaps the rectangle.
+
+#### `reflect_x`
+
+```python
+def reflect_x(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Boundary'
+```
+
+Return a copy mirrored across the provided vertical axis.
+
+#### `reflect_y`
+
+```python
+def reflect_y(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Boundary'
+```
+
+Return a copy mirrored across the provided horizontal axis.
+
+#### `scale`
+
+```python
+def scale(self, factor: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Boundary'
+```
+
+Return a copy scaled uniformly by ``factor``.
+
+#### `translate`
+
+```python
+def translate(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Boundary'
+```
+
+Return a copy shifted by the supplied offsets.
+
+### DiscreteBoundary3D
+
+```python
+class DiscreteBoundary3D
+```
+
+Base class for representing discrete boundaries in 3D space.
+
+#### `__init__`
+
+```python
+def __init__(self, transform: gamegine.representation.bounds.Transform3D = None)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `buffered`
+
+```python
+def buffered(self, distance: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'DiscreteBoundary'
+```
+
+Returns a buffered version of the boundary, providing a certain amount of padding around the boundary. Used to indicate safe areas which account for object sizes.
+
+:param distance: The distance to buffer the boundary by.
+:type distance: :class:`SpatialMeasurement`
+:return: The buffered boundary.
+:rtype: :class:`DiscreteBoundary`
+
+#### `contains_point`
+
+```python
+def contains_point(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` if the point is strictly inside the polygon.
+
+#### `discretized`
+
+```python
+def discretized(self, curve_segments: int = 5) -> 'DiscreteBoundary3D'
+```
+
+Returns self for already discretized 3D boundaries.
+
+#### `get_3d`
+
+```python
+def get_3d(self, z_start: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in), z_end: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Returns the 3D version of the boundary. Simply returns self.
+
+#### `get_3d_vertices`
+
+```python
+def get_3d_vertices(self) -> List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]
+```
+
+Returns the 3D vertices of the boundary.
+
+#### `get_bounded_rectangle`
+
+```python
+def get_bounded_rectangle(self) -> 'Rectangle'
+```
+
+Returns the bounded rectangle of the boundary.
+
+:return: The bounded rectangle of the boundary.
+:rtype: :class:`Rectangle`
+
+#### `get_bullet_shape`
+
+```python
+def get_bullet_shape(self)
+```
+
+Return a Bullet shape for physics.
+
+This requires the Bullet/pybullet-dependent modules. To keep this
+module importable without pybullet, the import is done lazily here.
+
+#### `get_slice`
+
+```python
+def get_slice(self, z: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> gamegine.representation.bounds.DiscreteBoundary
+```
+
+Returns a slice of the boundary at a certain z value.
+
+#### `get_transform`
+
+```python
+def get_transform(self) -> gamegine.representation.bounds.Transform3D
+```
+
+Returns the transform of the boundary.
+
+#### `get_vertices`
+
+```python
+def get_vertices(self) -> List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]
+```
+
+Expose the ordered vertex list describing the polygon.
+
+#### `get_z_interval`
+
+```python
+def get_z_interval(self) -> Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]
+```
+
+Returns the z interval of the boundary.
+
+#### `intersects_line`
+
+```python
+def intersects_line(self, x1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, x2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` when the polyline intersects the given segment.
+
+#### `intersects_rectangle`
+
+```python
+def intersects_rectangle(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, max_x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, max_y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` if any portion of the boundary overlaps the rectangle.
+
+#### `project_to_2d`
+
+```python
+def project_to_2d(self) -> gamegine.representation.bounds.DiscreteBoundary
+```
+
+Projects the 3D boundary onto the XY-plane.
+
+#### `reflect_x`
+
+```python
+def reflect_x(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Reflects the boundary over the plane x = axis.
+
+#### `reflect_y`
+
+```python
+def reflect_y(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Reflects the boundary over the plane y = axis.
+
+#### `reflect_z`
+
+```python
+def reflect_z(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Reflects the boundary over the plane z = axis.
+
+#### `rotate`
+
+```python
+def rotate(self, yaw: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement = Measurement(0.0, rad), pitch: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement = Measurement(0.0, rad), roll: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement = Measurement(0.0, rad)) -> 'Boundary3D'
+```
+
+Rotates the boundary by the given yaw, pitch, and roll angles.
+
+#### `scale`
+
+```python
+def scale(self, sx: float = 1, sy: float = 1, sz: float = 1) -> 'Boundary3D'
+```
+
+Scales the boundary by the given factors.
+
+#### `translate`
+
+```python
+def translate(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, z: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Translates the boundary by the given x, y, z values.
+
+### Line
+
+```python
+class Line
+```
+
+Class for representing a line boundary, extending the :class:`DiscreteBoundary` class. Lines can be used to represent the shape of an object in 2D space.
+
+:param x1: The x value of the first point of the line.
+:type x1: :class:`SpatialMeasurement`
+:param y1: The y value of the first point of the line.
+:type y1: :class:`SpatialMeasurement`
+:param x2: The x value of the second point of the line.
+:type x2: :class:`SpatialMeasurement`
+:param y2: The y value of the second point of the line.
+:type y2: :class:`SpatialMeasurement`
+
+#### `__init__`
+
+```python
+def __init__(self, x1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, x2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `buffered`
+
+```python
+def buffered(self, distance: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'DiscreteBoundary'
+```
+
+Returns a buffered version of the boundary, providing a certain amount of padding around the boundary. Used to indicate safe areas which account for object sizes.
+
+:param distance: The distance to buffer the boundary by.
+:type distance: :class:`SpatialMeasurement`
+:return: The buffered boundary.
+:rtype: :class:`DiscreteBoundary`
+
+#### `contains_point`
+
+```python
+def contains_point(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` if the point is strictly inside the polygon.
+
+#### `discretized`
+
+```python
+def discretized(self, curve_segments: int = 5) -> gamegine.representation.bounds.DiscreteBoundary
+```
+
+Discrete boundaries are already polygonal, so return ``self``.
+
+#### `get_3d`
+
+```python
+def get_3d(self, z_start: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, ft), z_end: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, ft)) -> 'DiscreteBoundary3D'
+```
+
+Returns the 3D version of the boundary.
+
+:param z_start: The starting z value of the boundary.
+:type z_start: :class:`SpatialMeasurement`
+:param z_end: The ending z value of the boundary.
+:type z_end: :class:`SpatialMeasurement`
+:return: The 3D version of the boundary.
+:rtype: :class:`DiscreteBoundary3D`
+
+#### `get_bounded_rectangle`
+
+```python
+def get_bounded_rectangle(self) -> 'Rectangle'
+```
+
+Returns the bounded rectangle of the boundary.
+
+:return: The bounded rectangle of the boundary.
+:rtype: :class:`Rectangle`
+
+#### `get_vertices`
+
+```python
+def get_vertices(self) -> List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]
+```
+
+Expose the ordered vertex list describing the polygon.
+
+#### `intersects_line`
+
+```python
+def intersects_line(self, x1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, x2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` when the polyline intersects the given segment.
+
+#### `intersects_rectangle`
+
+```python
+def intersects_rectangle(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, max_x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, max_y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` if any portion of the boundary overlaps the rectangle.
+
+#### `reflect_x`
+
+```python
+def reflect_x(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Line'
+```
+
+Return a copy mirrored across the provided vertical axis.
+
+#### `reflect_y`
+
+```python
+def reflect_y(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Line'
+```
+
+Return a copy mirrored across the provided horizontal axis.
+
+#### `scale`
+
+```python
+def scale(self, factor: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Line'
+```
+
+Return a copy scaled uniformly by ``factor``.
+
+#### `translate`
+
+```python
+def translate(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Line'
+```
+
+Return a copy shifted by the supplied offsets.
+
+### Point
+
+```python
+class Point
+```
+
+Class for representing a point boundary, extending the :class:`DiscreteBoundary3D` class. Points can be used to represent a point in 3D space.
+
+:param x: The x value of the point.
+:type x: :class:`SpatialMeasurement`
+:param y: The y value of the point.
+:type y: :class:`SpatialMeasurement`
+:param z: The z value of the point.
+:type z: :class:`SpatialMeasurement`
+
+#### `__init__`
+
+```python
+def __init__(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, z: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = 0)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `buffered`
+
+```python
+def buffered(self, distance: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'DiscreteBoundary'
+```
+
+Returns a buffered version of the boundary, providing a certain amount of padding around the boundary. Used to indicate safe areas which account for object sizes.
+
+:param distance: The distance to buffer the boundary by.
+:type distance: :class:`SpatialMeasurement`
+:return: The buffered boundary.
+:rtype: :class:`DiscreteBoundary`
+
+#### `contains_point`
+
+```python
+def contains_point(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` if the point is strictly inside the polygon.
+
+#### `discretized`
+
+```python
+def discretized(self, curve_segments: int = 5) -> gamegine.representation.bounds.DiscreteBoundary
+```
+
+Returns self for already discretized 3D boundaries.
+
+#### `draw`
+
+```python
+def draw(self, render_scale)
+```
+
+#### `get_3d`
+
+```python
+def get_3d(self, z_start: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in), z_end: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Returns the 3D version of the boundary. Simply returns self.
+
+#### `get_3d_vertices`
+
+```python
+def get_3d_vertices(self) -> List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]
+```
+
+Returns the 3D vertices of the boundary.
+
+#### `get_bounded_rectangle`
+
+```python
+def get_bounded_rectangle(self) -> 'Rectangle'
+```
+
+Returns the bounded rectangle of the boundary.
+
+:return: The bounded rectangle of the boundary.
+:rtype: :class:`Rectangle`
+
+#### `get_bullet_shape`
+
+```python
+def get_bullet_shape(self)
+```
+
+Return a Bullet shape for physics.
+
+This requires the Bullet/pybullet-dependent modules. To keep this
+module importable without pybullet, the import is done lazily here.
+
+#### `get_slice`
+
+```python
+def get_slice(self, z: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> gamegine.representation.bounds.DiscreteBoundary
+```
+
+Returns a slice of the boundary at a certain z value.
+
+#### `get_transform`
+
+```python
+def get_transform(self) -> gamegine.representation.bounds.Transform3D
+```
+
+Returns the transform of the boundary.
+
+#### `get_vertices`
+
+```python
+def get_vertices(self) -> List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]
+```
+
+Expose the ordered vertex list describing the polygon.
+
+#### `get_z_interval`
+
+```python
+def get_z_interval(self) -> Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]
+```
+
+Returns the z interval of the boundary.
+
+#### `intersects_line`
+
+```python
+def intersects_line(self, x1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, x2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` when the polyline intersects the given segment.
+
+#### `intersects_rectangle`
+
+```python
+def intersects_rectangle(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, max_x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, max_y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` if any portion of the boundary overlaps the rectangle.
+
+#### `project_to_2d`
+
+```python
+def project_to_2d(self) -> 'Point'
+```
+
+Projects the 3D boundary onto the XY-plane.
+
+#### `reflect_x`
+
+```python
+def reflect_x(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Reflects the boundary over the plane x = axis.
+
+#### `reflect_y`
+
+```python
+def reflect_y(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Reflects the boundary over the plane y = axis.
+
+#### `reflect_z`
+
+```python
+def reflect_z(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Reflects the boundary over the plane z = axis.
+
+#### `rotate`
+
+```python
+def rotate(self, yaw: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement = Measurement(0.0, rad), pitch: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement = Measurement(0.0, rad), roll: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement = Measurement(0.0, rad)) -> 'Boundary3D'
+```
+
+Rotates the boundary by the given yaw, pitch, and roll angles.
+
+#### `scale`
+
+```python
+def scale(self, sx: float = 1, sy: float = 1, sz: float = 1) -> 'Boundary3D'
+```
+
+Scales the boundary by the given factors.
+
+#### `translate`
+
+```python
+def translate(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, z: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Translates the boundary by the given x, y, z values.
+
+### Polygon
+
+```python
+class Polygon
+```
+
+Class for representing a polygon boundary, extending the :class:`DiscreteBoundary` class. Polygons can be used to represent the shape of an object in 2D space.
+
+:param points: The points of the polygon.
+:type points: List[Tuple[:class:`SpatialMeasurement`, :class:`SpatialMeasurement`]]
+
+#### `__init__`
+
+```python
+def __init__(self, points: List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]])
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `buffered`
+
+```python
+def buffered(self, distance: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'DiscreteBoundary'
+```
+
+Returns a buffered version of the boundary, providing a certain amount of padding around the boundary. Used to indicate safe areas which account for object sizes.
+
+:param distance: The distance to buffer the boundary by.
+:type distance: :class:`SpatialMeasurement`
+:return: The buffered boundary.
+:rtype: :class:`DiscreteBoundary`
+
+#### `contains_point`
+
+```python
+def contains_point(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` if the point is strictly inside the polygon.
+
+#### `discretized`
+
+```python
+def discretized(self, curve_segments: int = 5) -> gamegine.representation.bounds.DiscreteBoundary
+```
+
+Discrete boundaries are already polygonal, so return ``self``.
+
+#### `get_3d`
+
+```python
+def get_3d(self, z_start: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, ft), z_end: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, ft)) -> 'DiscreteBoundary3D'
+```
+
+Returns the 3D version of the boundary.
+
+:param z_start: The starting z value of the boundary.
+:type z_start: :class:`SpatialMeasurement`
+:param z_end: The ending z value of the boundary.
+:type z_end: :class:`SpatialMeasurement`
+:return: The 3D version of the boundary.
+:rtype: :class:`DiscreteBoundary3D`
+
+#### `get_bounded_rectangle`
+
+```python
+def get_bounded_rectangle(self) -> 'Rectangle'
+```
+
+Returns the bounded rectangle of the boundary.
+
+:return: The bounded rectangle of the boundary.
+:rtype: :class:`Rectangle`
+
+#### `get_vertices`
+
+```python
+def get_vertices(self) -> List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]
+```
+
+Expose the ordered vertex list describing the polygon.
+
+#### `intersects_line`
+
+```python
+def intersects_line(self, x1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, x2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` when the polyline intersects the given segment.
+
+#### `intersects_rectangle`
+
+```python
+def intersects_rectangle(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, max_x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, max_y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` if any portion of the boundary overlaps the rectangle.
+
+#### `reflect_x`
+
+```python
+def reflect_x(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Polygon'
+```
+
+Return a copy mirrored across the provided vertical axis.
+
+#### `reflect_y`
+
+```python
+def reflect_y(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Polygon'
+```
+
+Return a copy mirrored across the provided horizontal axis.
+
+#### `scale`
+
+```python
+def scale(self, factor: float) -> 'Polygon'
+```
+
+Return a copy scaled uniformly by ``factor``.
+
+#### `translate`
+
+```python
+def translate(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Polygon'
+```
+
+Return a copy shifted by the supplied offsets.
+
+### PolygonalPrism
+
+```python
+class PolygonalPrism
+```
+
+Class for representing a polygonal prism.
+
+#### `__init__`
+
+```python
+def __init__(self, points: List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]], height: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, transform: gamegine.representation.bounds.Transform3D = None)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `buffered`
+
+```python
+def buffered(self, distance: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'DiscreteBoundary'
+```
+
+Returns a buffered version of the boundary, providing a certain amount of padding around the boundary. Used to indicate safe areas which account for object sizes.
+
+:param distance: The distance to buffer the boundary by.
+:type distance: :class:`SpatialMeasurement`
+:return: The buffered boundary.
+:rtype: :class:`DiscreteBoundary`
+
+#### `contains_point`
+
+```python
+def contains_point(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` if the point is strictly inside the polygon.
+
+#### `discretized`
+
+```python
+def discretized(self, curve_segments: int = 5) -> 'PolygonalPrism'
+```
+
+Returns self for already discretized 3D boundaries.
+
+#### `get_2d_local_points`
+
+```python
+def get_2d_local_points(self) -> List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]
+```
+
+#### `get_3d`
+
+```python
+def get_3d(self, z_start: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in), z_end: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Returns the 3D version of the boundary. Simply returns self.
+
+#### `get_3d_vertices`
+
+```python
+def get_3d_vertices(self) -> List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]
+```
+
+Returns the 3D vertices of the boundary.
+
+#### `get_bounded_rectangle`
+
+```python
+def get_bounded_rectangle(self) -> 'Rectangle'
+```
+
+Returns the bounded rectangle of the boundary.
+
+:return: The bounded rectangle of the boundary.
+:rtype: :class:`Rectangle`
+
+#### `get_bullet_shape`
+
+```python
+def get_bullet_shape(self)
+```
+
+Return a Bullet shape for physics.
+
+This requires the Bullet/pybullet-dependent modules. To keep this
+module importable without pybullet, the import is done lazily here.
+
+#### `get_max_x`
+
+```python
+def get_max_x(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+#### `get_max_y`
+
+```python
+def get_max_y(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+#### `get_min_x`
+
+```python
+def get_min_x(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+#### `get_min_y`
+
+```python
+def get_min_y(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+#### `get_slice`
+
+```python
+def get_slice(self, z: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> gamegine.representation.bounds.DiscreteBoundary
+```
+
+Returns a slice of the boundary at a certain z value.
+
+#### `get_transform`
+
+```python
+def get_transform(self) -> gamegine.representation.bounds.Transform3D
+```
+
+Returns the transform of the boundary.
+
+#### `get_vertices`
+
+```python
+def get_vertices(self) -> List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]
+```
+
+Expose the ordered vertex list describing the polygon.
+
+#### `get_z_interval`
+
+```python
+def get_z_interval(self) -> Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]
+```
+
+Returns the z interval of the boundary.
+
+#### `intersects_line`
+
+```python
+def intersects_line(self, x1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, x2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` when the polyline intersects the given segment.
+
+#### `intersects_rectangle`
+
+```python
+def intersects_rectangle(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, max_x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, max_y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` if any portion of the boundary overlaps the rectangle.
+
+#### `project_to_2d`
+
+```python
+def project_to_2d(self) -> 'Polygon'
+```
+
+Projects the 3D boundary onto the XY-plane.
+
+#### `reflect_x`
+
+```python
+def reflect_x(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Reflects the boundary over the plane x = axis.
+
+#### `reflect_y`
+
+```python
+def reflect_y(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Reflects the boundary over the plane y = axis.
+
+#### `reflect_z`
+
+```python
+def reflect_z(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Reflects the boundary over the plane z = axis.
+
+#### `rotate`
+
+```python
+def rotate(self, yaw: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement = Measurement(0.0, rad), pitch: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement = Measurement(0.0, rad), roll: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement = Measurement(0.0, rad)) -> 'Boundary3D'
+```
+
+Rotates the boundary by the given yaw, pitch, and roll angles.
+
+#### `scale`
+
+```python
+def scale(self, sx: float = 1, sy: float = 1, sz: float = 1) -> 'Boundary3D'
+```
+
+Scales the boundary by the given factors.
+
+#### `translate`
+
+```python
+def translate(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, z: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.0, in)) -> 'Boundary3D'
+```
+
+Translates the boundary by the given x, y, z values.
+
+### Rectangle
+
+```python
+class Rectangle
+```
+
+Class for representing a rectangle boundary, extending the :class:`DiscreteBoundary` class. Rectangles can be used to represent the shape of an object in 2D space. Includes additional methods for getting the minimum and maximum x and y values of the rectangle.
+
+:param x: The x value of the bottom left corner of the rectangle.
+:type x: :class:`SpatialMeasurement`
+:param y: The y value of the bottom left corner of the rectangle.
+:type y: :class:`SpatialMeasurement`
+:param width: The width of the rectangle.
+:type width: :class:`SpatialMeasurement`
+:param height: The height of the rectangle.
+:type height: :class:`SpatialMeasurement`
+
+#### `__init__`
+
+```python
+def __init__(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, width: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, height: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `buffered`
+
+```python
+def buffered(self, distance: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'DiscreteBoundary'
+```
+
+Returns a buffered version of the boundary, providing a certain amount of padding around the boundary. Used to indicate safe areas which account for object sizes.
+
+:param distance: The distance to buffer the boundary by.
+:type distance: :class:`SpatialMeasurement`
+:return: The buffered boundary.
+:rtype: :class:`DiscreteBoundary`
+
+#### `contains_point`
+
+```python
+def contains_point(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` if the point is strictly inside the polygon.
+
+#### `discretized`
+
+```python
+def discretized(self, curve_segments: int = 5) -> gamegine.representation.bounds.DiscreteBoundary
+```
+
+Discrete boundaries are already polygonal, so return ``self``.
+
+#### `from_center`
+
+```python
+def from_center(center: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement], width: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, height: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Rectangle'
+```
+
+Creates a rectangle from the center point, width, and height.
+
+:param center: The center point of the rectangle.
+:type center: Tuple[:class:`SpatialMeasurement`, :class:`SpatialMeasurement`]
+:param width: The width of the rectangle.
+:type width: :class:`SpatialMeasurement`
+:param height: The height of the rectangle.
+:type height: :class:`SpatialMeasurement`
+:return: The rectangle.
+:rtype: :class:`Rectangle`
+
+#### `get_3d`
+
+```python
+def get_3d(self, z_start=Measurement(0.0, ft), z_end=Measurement(0.0, ft))
+```
+
+Returns the 3D version of the boundary.
+
+:param z_start: The starting z value of the boundary.
+:type z_start: :class:`SpatialMeasurement`
+:param z_end: The ending z value of the boundary.
+:type z_end: :class:`SpatialMeasurement`
+:return: The 3D version of the boundary.
+:rtype: :class:`DiscreteBoundary3D`
+
+#### `get_bounded_rectangle`
+
+```python
+def get_bounded_rectangle(self) -> 'Rectangle'
+```
+
+Returns the bounded rectangle of the boundary.
+
+:return: The bounded rectangle of the boundary.
+:rtype: :class:`Rectangle`
+
+#### `get_center`
+
+```python
+def get_center(self) -> Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]
+```
+
+Returns the center of the rectangle.
+
+:return: The center of the rectangle.
+:rtype: Tuple[:class:`SpatialMeasurement`, :class:`SpatialMeasurement`]
+
+#### `get_max_x`
+
+```python
+def get_max_x(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+Returns the maximum x value of the rectangle, being the x value of the right side of the rectangle.
+
+:return: The maximum x value of the rectangle.
+:rtype: :class:`SpatialMeasurement`
+
+#### `get_max_y`
+
+```python
+def get_max_y(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+Returns the maximum y value of the rectangle, being the y value of the bottom side of the rectangle.
+
+:return: The maximum y value of the rectangle.
+:rtype: :class:`SpatialMeasurement`
+
+#### `get_min_x`
+
+```python
+def get_min_x(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+Returns the minimum x value of the rectangle, being the x value of the left side of the rectangle.
+
+:return: The minimum x value of the rectangle.
+:rtype: :class:`SpatialMeasurement`
+
+#### `get_min_y`
+
+```python
+def get_min_y(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+Returns the minimum y value of the rectangle, being the y value of the top side of the rectangle.
+
+:return: The minimum y value of the rectangle.
+:rtype: :class:`SpatialMeasurement`
+
+#### `get_vertices`
+
+```python
+def get_vertices(self) -> List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]
+```
+
+Expose the ordered vertex list describing the polygon.
+
+#### `intersects_line`
+
+```python
+def intersects_line(self, x1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, x2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` when the polyline intersects the given segment.
+
+#### `intersects_rectangle`
+
+```python
+def intersects_rectangle(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, max_x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, max_y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` if any portion of the boundary overlaps the rectangle.
+
+#### `reflect_x`
+
+```python
+def reflect_x(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Rectangle'
+```
+
+Return a copy mirrored across the provided vertical axis.
+
+#### `reflect_y`
+
+```python
+def reflect_y(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Rectangle'
+```
+
+Return a copy mirrored across the provided horizontal axis.
+
+#### `scale`
+
+```python
+def scale(self, factor: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Rectangle'
+```
+
+Return a copy scaled uniformly by ``factor``.
+
+#### `translate`
+
+```python
+def translate(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Rectangle'
+```
+
+Return a copy shifted by the supplied offsets.
+
+### Square
+
+```python
+class Square
+```
+
+Class for representing a rectangle boundary, extending the :class:`DiscreteBoundary` class. Rectangles can be used to represent the shape of an object in 2D space. Includes additional methods for getting the minimum and maximum x and y values of the rectangle.
+
+:param x: The x value of the bottom left corner of the rectangle.
+:type x: :class:`SpatialMeasurement`
+:param y: The y value of the bottom left corner of the rectangle.
+:type y: :class:`SpatialMeasurement`
+:param width: The width of the rectangle.
+:type width: :class:`SpatialMeasurement`
+:param height: The height of the rectangle.
+:type height: :class:`SpatialMeasurement`
+
+#### `__init__`
+
+```python
+def __init__(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, side: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `buffered`
+
+```python
+def buffered(self, distance: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'DiscreteBoundary'
+```
+
+Returns a buffered version of the boundary, providing a certain amount of padding around the boundary. Used to indicate safe areas which account for object sizes.
+
+:param distance: The distance to buffer the boundary by.
+:type distance: :class:`SpatialMeasurement`
+:return: The buffered boundary.
+:rtype: :class:`DiscreteBoundary`
+
+#### `contains_point`
+
+```python
+def contains_point(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` if the point is strictly inside the polygon.
+
+#### `discretized`
+
+```python
+def discretized(self, curve_segments: int = 5) -> gamegine.representation.bounds.DiscreteBoundary
+```
+
+Discrete boundaries are already polygonal, so return ``self``.
+
+#### `from_center`
+
+```python
+def from_center(center: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement], width: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, height: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Rectangle'
+```
+
+Creates a rectangle from the center point, width, and height.
+
+:param center: The center point of the rectangle.
+:type center: Tuple[:class:`SpatialMeasurement`, :class:`SpatialMeasurement`]
+:param width: The width of the rectangle.
+:type width: :class:`SpatialMeasurement`
+:param height: The height of the rectangle.
+:type height: :class:`SpatialMeasurement`
+:return: The rectangle.
+:rtype: :class:`Rectangle`
+
+#### `get_3d`
+
+```python
+def get_3d(self, z_start=Measurement(0.0, ft), z_end=Measurement(0.0, ft))
+```
+
+Returns the 3D version of the boundary.
+
+:param z_start: The starting z value of the boundary.
+:type z_start: :class:`SpatialMeasurement`
+:param z_end: The ending z value of the boundary.
+:type z_end: :class:`SpatialMeasurement`
+:return: The 3D version of the boundary.
+:rtype: :class:`DiscreteBoundary3D`
+
+#### `get_bounded_rectangle`
+
+```python
+def get_bounded_rectangle(self) -> 'Rectangle'
+```
+
+Returns the bounded rectangle of the boundary.
+
+:return: The bounded rectangle of the boundary.
+:rtype: :class:`Rectangle`
+
+#### `get_center`
+
+```python
+def get_center(self) -> Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]
+```
+
+Returns the center of the rectangle.
+
+:return: The center of the rectangle.
+:rtype: Tuple[:class:`SpatialMeasurement`, :class:`SpatialMeasurement`]
+
+#### `get_max_x`
+
+```python
+def get_max_x(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+Returns the maximum x value of the rectangle, being the x value of the right side of the rectangle.
+
+:return: The maximum x value of the rectangle.
+:rtype: :class:`SpatialMeasurement`
+
+#### `get_max_y`
+
+```python
+def get_max_y(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+Returns the maximum y value of the rectangle, being the y value of the bottom side of the rectangle.
+
+:return: The maximum y value of the rectangle.
+:rtype: :class:`SpatialMeasurement`
+
+#### `get_min_x`
+
+```python
+def get_min_x(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+Returns the minimum x value of the rectangle, being the x value of the left side of the rectangle.
+
+:return: The minimum x value of the rectangle.
+:rtype: :class:`SpatialMeasurement`
+
+#### `get_min_y`
+
+```python
+def get_min_y(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+Returns the minimum y value of the rectangle, being the y value of the top side of the rectangle.
+
+:return: The minimum y value of the rectangle.
+:rtype: :class:`SpatialMeasurement`
+
+#### `get_vertices`
+
+```python
+def get_vertices(self) -> List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]
+```
+
+Expose the ordered vertex list describing the polygon.
+
+#### `intersects_line`
+
+```python
+def intersects_line(self, x1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, x2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` when the polyline intersects the given segment.
+
+#### `intersects_rectangle`
+
+```python
+def intersects_rectangle(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, max_x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, max_y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Return ``True`` if any portion of the boundary overlaps the rectangle.
+
+#### `reflect_x`
+
+```python
+def reflect_x(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Rectangle'
+```
+
+Return a copy mirrored across the provided vertical axis.
+
+#### `reflect_y`
+
+```python
+def reflect_y(self, axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Rectangle'
+```
+
+Return a copy mirrored across the provided horizontal axis.
+
+#### `scale`
+
+```python
+def scale(self, factor: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Rectangle'
+```
+
+Return a copy scaled uniformly by ``factor``.
+
+#### `translate`
+
+```python
+def translate(self, x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> 'Rectangle'
+```
+
+Return a copy shifted by the supplied offsets.
+
+### Transform3D
+
+```python
+class Transform3D
+```
+
+Class representing a 3D transformation including position, rotation, and scale.
+
+#### `__init__`
+
+```python
+def __init__(self, position: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement] = (Measurement(0.0, ft), Measurement(0.0, ft), Measurement(0.0, ft)), rotation: Tuple[gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement, gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement, gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement] = (Measurement(0.0, rad), Measurement(0.0, rad), Measurement(0.0, rad)), scale: Tuple[float, float, float] = (1, 1, 1))
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `apply`
+
+```python
+def apply(self, points: List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]], center: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement] = (Measurement(0.0, ft), Measurement(0.0, ft), Measurement(0.0, ft))) -> List[Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]]
+```
+
+Applies the transformation to a list of 3D points.
+
+#### `reflect_pos_x`
+
+```python
+def reflect_pos_x(self) -> None
+```
+
+Reflects the position over the x-axis.
+
+#### `reflect_pos_y`
+
+```python
+def reflect_pos_y(self) -> None
+```
+
+Reflects the position over the y-axis.
+
+#### `reflect_pos_z`
+
+```python
+def reflect_pos_z(self) -> None
+```
+
+Reflects the position over the z-axis.
+
+## Functions
+
+### CircularPattern
+
+```python
+def CircularPattern(objects: List[gamegine.representation.bounds.BoundedObject], center: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement], angle: gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement, num_objects: int, prefix_func: Callable[[int], str]) -> List[gamegine.representation.bounds.BoundedObject]
+```
+
+Creates a circular pattern of objects around a center point, allowing for a :class:`BoundedObject` to be rotated and copied around a center point.
+
+:param objects: The objects to create a circular pattern of.
+:type objects: List[:class:`BoundedObject`]
+:param center: The center point of the circular pattern.
+:type center: Tuple[:class:`SpatialMeasurement`, :class:`SpatialMeasurement`]
+:param angle: The angle to rotate each object by.
+:type angle: :class:`AngularMeasurement`
+:param num_objects: The number of objects to create in the circular pattern, inclusive of the original objects.
+:type num_objects: int
+:param prefix_func: The function to prefix the name of each object with.
+:type prefix_func: Callable[[int], str]
+:return: The objects in the circular pattern.
+:rtype: List[:class:`BoundedObject`]
+
+### ExpandedBounds
+
+```python
+def ExpandedBounds(bounds: List[gamegine.representation.bounds.Boundary], robot_radius: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(21.0, in), discretization_quality=4) -> List[gamegine.representation.bounds.DiscreteBoundary]
+```
+
+Returns the expanded bounds of a list of boundaries, providing a certain amount of padding around the boundaries to account for object sizes.
+
+:param bounds: The boundaries to get the expanded bounds of.
+:type bounds: List[:class:`Boundary`]
+:param robot_radius: The radius of the robot to expand the bounds by.
+:type robot_radius: :class:`SpatialMeasurement`
+:param discretization_quality: The quality of discretization to use when expanding the bounds.
+:type discretization_quality: int
+:return: The expanded bounds of the boundaries.
+:rtype: List[:class:`DiscreteBoundary`]
+
+### ExpandedObjectBounds
+
+```python
+def ExpandedObjectBounds(objects: List[gamegine.representation.bounds.BoundedObject], robot_radius: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(21.0, in), discretization_quality=4) -> List[gamegine.representation.bounds.DiscreteBoundary]
+```
+
+Returns the expanded bounds of a list of objects, providing a certain amount of padding around the objects to account for object sizes.
+
+:param objects: The objects to get the expanded bounds of.
+:type objects: List[:class:`BoundedObject`]
+:param robot_radius: The radius of the robot to expand the bounds by.
+:type robot_radius: :class:`SpatialMeasurement`
+:param discretization_quality: The quality of discretization to use when expanding the bounds.
+:type discretization_quality: int
+:return: The expanded bounds of the objects.
+:rtype: List[:class:`DiscreteBoundary`]
+
+### LineIntersectsAnyBound
+
+```python
+def LineIntersectsAnyBound(bounds: List[gamegine.representation.bounds.DiscreteBoundary], x1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y1: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, x2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, y2: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement) -> bool
+```
+
+Checks if a line intersects any of the given boundaries.
+
+:param bounds: The boundaries to check for intersection.
+:type bounds: List[:class:`DiscreteBoundary`]
+:param x1: The x value of the first point of the line.
+:type x1: :class:`SpatialMeasurement`
+:param y1: The y value of the first point of the line.
+:type y1: :class:`SpatialMeasurement`
+:param x2: The x value of the second point of the line.
+:type x2: :class:`SpatialMeasurement`
+:param y2: The y value of the second point of the line.
+:type y2: :class:`SpatialMeasurement`
+:return: True if the line intersects any of the boundaries, False otherwise.
+:rtype: bool
+
+### RegularPolygon
+
+```python
+def RegularPolygon(center: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement], radius: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, num_sides: int)
+```
+
+Creates a regular polygon from the center, radius, and number of sides.
+
+:param center: The center of the polygon.
+:type center: Tuple[:class:`SpatialMeasurement`, :class:`SpatialMeasurement`]
+:param radius: The radius of the polygon.
+:type radius: :class:`SpatialMeasurement`
+:param num_sides: The number of sides of the polygon.
+:type num_sides: int
+:return: The regular polygon.
+:rtype: :class:`Polygon`
+
+### SymmetricalX
+
+```python
+def SymmetricalX(objects: List[gamegine.representation.bounds.BoundedObject], axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, prefix: str, prefix_og: str = '') -> List[gamegine.representation.bounds.BoundedObject]
+```
+
+Creates a symmetrical pattern of objects across the x-axis at the given axis, copying the objects and mirroring them across the axis.
+
+:param objects: The objects to create a symmetrical pattern of.
+:type objects: List[:class:`BoundedObject`]
+:param axis: The axis to create the symmetrical pattern across, x = axis will be the axis of symmetry.
+:type axis: :class:`SpatialMeasurement`
+:param prefix: The prefix to add to the name of each object.
+:type prefix: str
+:param prefix_og: The prefix to add to the name of the original objects.
+:type prefix_og: str
+:return: The objects in the symmetrical pattern.
+:rtype: List[:class:`BoundedObject`]
+
+### SymmetricalXY
+
+```python
+def SymmetricalXY(objects: List[gamegine.representation.bounds.BoundedObject], axis_x: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, axis_y: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, prefix: str, prefix_og: str = '') -> List[gamegine.representation.bounds.BoundedObject]
+```
+
+Creates a symmetrical pattern of objects across both the x and y axes at the given axes, copying the objects and mirroring them across the axes.
+
+:param objects: The objects to create a symmetrical pattern of.
+:type objects: List[:class:`BoundedObject`]
+:param axis_x: The x-axis to create the symmetrical pattern across, x = axis will be the axis of symmetry.
+:type axis_x: :class:`SpatialMeasurement`
+:param axis_y: The y-axis to create the symmetrical pattern across, y = axis will be the axis of symmetry.
+:type axis_y: :class:`SpatialMeasurement`
+:param prefix: The prefix to add to the name of each object.
+:type prefix: str
+:param prefix_og: The prefix to add to the name of the original objects.
+:type prefix_og: str
+:return: The objects in the symmetrical pattern.
+:rtype: List[:class:`BoundedObject`]
+
+### SymmetricalY
+
+```python
+def SymmetricalY(objects: List[gamegine.representation.bounds.BoundedObject], axis: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, prefix: str, prefix_og: str = '') -> List[gamegine.representation.bounds.BoundedObject]
+```
+
+Creates a symmetrical pattern of objects across the y-axis at the given axis, copying the objects and mirroring them across the axis.
+
+:param objects: The objects to create a symmetrical pattern of.
+:type objects: List[:class:`BoundedObject`]
+:param axis: The axis to create the symmetrical pattern across, y = axis will be the axis of symmetry.
+:type axis: :class:`SpatialMeasurement`
+:param prefix: The prefix to add to the name of each object.
+:type prefix: str
+:param prefix_og: The prefix to add to the name of the original objects.
+:type prefix_og: str
+:return: The objects in the symmetrical pattern.
+:rtype: List[:class:`BoundedObject`]
+

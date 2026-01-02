@@ -1,0 +1,104 @@
+---
+title: gamegine.analysis.trajectory.generator
+---
+
+# gamegine.analysis.trajectory.generator
+
+## Classes
+
+### OfflineTrajectoryGenerator
+
+```python
+class OfflineTrajectoryGenerator
+```
+
+Abstract base class for offline trajectory generators that compute specific paths.
+
+#### `generate`
+
+```python
+def generate(self, robot_name: str, robot: gamegine.representation.robot.SwerveRobot, start_state: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement], target_state: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement], path: gamegine.analysis.pathfinding.Path, traversal_space: Any, constraints: Any = None, no_safety_corridor: bool = False) -> gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectory
+```
+
+Generates a full trajectory from start to target.
+
+:param robot_name: Name of the robot
+:param robot: The robot instance containing physical and drivetrain config
+:param start_state: Tuple of (x, y, heading) for start
+:param target_state: Tuple of (x, y, heading) for target
+:param path: The geometric path to follow guide
+:param traversal_space: Space containing obstacles and mesh
+:param constraints: Optional additional constraints
+:param no_safety_corridor: Whether to ignore safety corridor constraints
+:return: Generated SwerveTrajectory
+
+### OnlineTrajectoryGenerator
+
+```python
+class OnlineTrajectoryGenerator
+```
+
+Abstract base class for online trajectory generators (MPC, etc).
+
+#### `step`
+
+```python
+def step(self, current_state: Any, target_state: Any, constraints: Any) -> Any
+```
+
+Calculates the next control output based on current state.
+STUB: To be implemented in future phases.
+
+### SplineTrajectoryGenerator
+
+```python
+class SplineTrajectoryGenerator
+```
+
+Offline trajectory generator that uses cubic splines directly.
+
+This generator bypasses the complex optimization solver by:
+1. Fitting a smooth cubic spline through the A* path points
+2. Computing a time-optimal velocity profile with curvature limiting
+3. Generating kinematically-consistent trajectory states
+
+Centripetal acceleration is limited by wheel friction: a_centripetal &lt;= µ * g
+
+Benefits:
+- No solver failures (factorization, line search, etc.)
+- Much faster computation
+- Inherits obstacle avoidance from A* path
+
+#### `__init__`
+
+```python
+def __init__(self, max_velocity: gamegine.utils.NCIM.ComplexDimensions.velocity.Velocity = Measurement(4.0, m/s), max_acceleration: gamegine.utils.NCIM.ComplexDimensions.acceleration.Acceleration = Measurement(3.0, m/s^2), min_curvature_radius: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.3, m), resolution: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement = Measurement(0.15, m))
+```
+
+:param max_velocity: Maximum linear velocity
+:param max_acceleration: Maximum linear acceleration (for tangential motion)
+:param min_curvature_radius: Minimum turning radius
+:param resolution: Distance between output trajectory points
+
+#### `generate`
+
+```python
+def generate(self, robot_name: str, robot: gamegine.representation.robot.SwerveRobot, start_state: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement], target_state: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement], path: gamegine.analysis.pathfinding.Path, expanded_obstacles: Any = None, constraints: Any = None, no_safety_corridor: bool = False, robot_constraints: Any = None) -> gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectory
+```
+
+Generates a trajectory using cubic spline interpolation.
+
+Uses the SwerveRobot's drivetrain, physics (mass, MOI), and wheel friction
+to compute a physically-accurate trajectory with motor curve integration.
+
+:param robot: SwerveRobot with drivetrain and physics. If None, falls back to robot_constraints.
+:param expanded_obstacles: ExpandedObjectBounds for collision validation.
+
+### TrajectoryGenerator
+
+```python
+class TrajectoryGenerator
+```
+
+Abstract base class for all trajectory generators.
+

@@ -1,0 +1,86 @@
+---
+title: gamegine.utils.NCIM.ComplexDimensions.electricpot
+---
+
+# gamegine.utils.NCIM.ComplexDimensions.electricpot
+
+## Classes
+
+### ElectricPot
+
+```python
+class ElectricPot
+```
+
+A class representing an electric potential complex measurement, composed of kg m^2 / A s^3. Inherits from the :class:`ComplexMeasurement` class.
+
+:param magnitude: The magnitude of the measurement.
+:type magnitude: float
+:param unit: The unit of the measurement.
+:type unit: :class:`ElectricPot
+:param base_magnitude: The base magnitude of the measurement, used for internal creation. Defaults to None.
+:type base_magnitude: float, optional
+
+#### `__init__`
+
+```python
+def __init__(self, magnitude: float, unit: gamegine.utils.NCIM.ComplexDimensions.electricpot.ElectricPotUnit, base_magnitude=None) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `convert_to`
+
+```python
+def convert_to(self, target_unit: gamegine.utils.NCIM.core.Unit) -> 'Measurement'
+```
+
+Convert this measurement to another unit and return a new Measurement object.
+
+#### `to`
+
+```python
+def to(self, target_unit: gamegine.utils.NCIM.core.Unit) -> float
+```
+
+Convert this measurement to another unit and return the magnitude as a float.
+This maintains backward compatibility with legacy NCIM.
+
+### ElectricPotUnit
+
+```python
+class ElectricPotUnit
+```
+
+A class representing an electric potential complex unit, composed kg m^2 / A s^3, in addition to creating a :class:`ElectricPot` of the same type when called. Inherits from the :class:`ComplexUnit` class.
+
+:param mass: The mass unit of the electric potential.
+:type mass: :class:`MassUnit`
+:param spatial: The spatial unit of the electric potential.
+:type spatial: :class:`SpatialUnit`
+:param current: The current unit of the electric potential.
+:type current: :class:`CurrentUnit`
+:param time: The temporal unit of the electric potential.
+:type time: :class:`TemporalUnit`
+
+#### `__init__`
+
+```python
+def __init__(self, mass: gamegine.utils.NCIM.Dimensions.mass.MassUnit, spatial: gamegine.utils.NCIM.Dimensions.spatial.SpatialUnit, current: gamegine.utils.NCIM.Dimensions.current.CurrentUnit, time: gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit) -> None
+```
+
+Legacy shim for ComplexUnit(units_table).
+Converts the dict \{Unit: power\} into dimensions/scale/symbol.
+
+#### `from_base`
+
+```python
+def from_base(self, value: float) -> float
+```
+
+#### `to_base`
+
+```python
+def to_base(self, value: float) -> float
+```
+

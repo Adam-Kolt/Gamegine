@@ -1,0 +1,34 @@
+---
+title: gamegine.analysis.trajectory.sleipnir
+---
+
+# gamegine.analysis.trajectory.sleipnir
+
+## Classes
+
+### SleipnirOfflineGenerator
+
+```python
+class SleipnirOfflineGenerator
+```
+
+Implementation of OfflineTrajectoryGenerator using Sleipnir optimization library.
+
+#### `generate`
+
+```python
+def generate(self, robot_name: str, robot: gamegine.representation.robot.SwerveRobot, start_state: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement], target_state: Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.angular.AngularMeasurement], path: gamegine.analysis.pathfinding.Path, traversal_space: Any, constraints: Any = None, no_safety_corridor: bool = False) -> gamegine.analysis.trajectory.lib.TrajGen.SwerveTrajectory
+```
+
+Generates a full trajectory from start to target.
+
+:param robot_name: Name of the robot
+:param robot: The robot instance containing physical and drivetrain config
+:param start_state: Tuple of (x, y, heading) for start
+:param target_state: Tuple of (x, y, heading) for target
+:param path: The geometric path to follow guide
+:param traversal_space: Space containing obstacles and mesh
+:param constraints: Optional additional constraints
+:param no_safety_corridor: Whether to ignore safety corridor constraints
+:return: Generated SwerveTrajectory
+

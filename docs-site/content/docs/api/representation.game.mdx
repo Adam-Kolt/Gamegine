@@ -1,0 +1,206 @@
+---
+title: gamegine.representation.game
+---
+
+# gamegine.representation.game
+
+## Classes
+
+### Game
+
+```python
+class Game
+```
+
+A class representing an FRC Game. Serves as the base container for all other representation objects such as obstacles, interactables, and zones. Also stores any and all game logic and state variables.
+
+:param name: The name of the game. Defaults to "FRC Game".
+:type name: str, optional
+
+#### `__init__`
+
+```python
+def __init__(self, name: str = 'FRC Game') -> None
+```
+
+Constructor method for the Game class. Initializes the game with a name and default field size of 15m x 15m.
+
+#### `add_interactable`
+
+```python
+def add_interactable(self, interactable: gamegine.representation.interactable.RobotInteractable) -> 'Game'
+```
+
+#### `add_obstacle`
+
+```python
+def add_obstacle(self, obstacle: gamegine.representation.obstacle.Obstacle) -> 'Game'
+```
+
+Adds an obstacle to the game.
+
+:param obstacle: The obstacle to add.
+:type obstacle: :class:`Obstacle`
+
+#### `add_obstacles`
+
+```python
+def add_obstacles(self, obstacles: List[gamegine.representation.obstacle.Obstacle]) -> 'Game'
+```
+
+Adds a list of obstacles to the game.
+
+:param obstacles: The obstacles to add.
+:type obstacles: List[:class:`Obstacle`]
+:return: The game object with the added obstacles.
+:rtype: :class:`Game`
+
+#### `add_zone`
+
+```python
+def add_zone(self, zone) -> 'Game'
+```
+
+#### `enable_field_border_obstacles`
+
+```python
+def enable_field_border_obstacles(self) -> 'Game'
+```
+
+Enables the field border obstacles.
+
+#### `full_field_x`
+
+```python
+def full_field_x(self)
+```
+
+Returns the size of the field along the x-axis.
+
+:return: The size of the field along the x-axis.
+:rtype: :class:`SpatialMeasurement`
+
+#### `full_field_y`
+
+```python
+def full_field_y(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+Returns the size of the field along the y-axis.
+
+:return: The size of the field along the y-axis.
+:rtype: :class:`SpatialMeasurement`
+
+#### `get_field_size`
+
+```python
+def get_field_size(self) -> Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]
+```
+
+Returns the field size of the game.
+
+:return: The field size of the game.
+:rtype: Tuple[:class:`SpatialMeasurement`, :class:`SpatialMeasurement`]
+
+#### `get_interactables`
+
+```python
+def get_interactables(self) -> List[gamegine.representation.interactable.RobotInteractable]
+```
+
+#### `get_obstacle`
+
+```python
+def get_obstacle(self, name: str) -> gamegine.representation.obstacle.Obstacle
+```
+
+Returns the obstacle with the given name.
+
+:param name: The name of the obstacle.
+:type name: str
+:return: The obstacle with the given name.
+:rtype: :class:`Obstacle`
+
+#### `get_obstacles`
+
+```python
+def get_obstacles(self) -> List[gamegine.representation.obstacle.Obstacle]
+```
+
+Returns all obstacles in the game.
+
+:return: All obstacles in the game.
+:rtype: List[:class:`Obstacle`]
+
+#### `half_field_size`
+
+```python
+def half_field_size(self) -> Tuple[gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement]
+```
+
+Returns the half of the field size of the game.
+
+:return: The half of the field size of the game.
+:rtype: Tuple[:class:`SpatialMeasurement`, :class:`SpatialMeasurement`]
+
+#### `half_field_x`
+
+```python
+def half_field_x(self) -> gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement
+```
+
+Returns the half of the field size of the game along the x-axis.
+
+:return: The half of the field size of the game along the x-axis.
+:rtype: :class:`SpatialMeasurement`
+
+#### `half_field_y`
+
+```python
+def half_field_y(self)
+```
+
+Returns the half of the field size of the game along the y-axis.
+
+:return: The half of the field size of the game along the y-axis.
+:rtype: :class:`SpatialMeasurement`
+
+#### `modify_obstacle`
+
+```python
+def modify_obstacle(self, obstacle: gamegine.representation.obstacle.Obstacle) -> 'Game'
+```
+
+Replaces an existing obstacle with a new one, allowing for modifications to the obstacle. If the obstacle does not exist, it will be added.
+
+:param obstacle: The obstacle to modify.
+:type obstacle: :class:`Obstacle`
+:return: The game object with the modified obstacle.
+:rtype: :class:`Game`
+
+#### `modify_obstacles`
+
+```python
+def modify_obstacles(self, obstacles: List[gamegine.representation.obstacle.Obstacle]) -> 'Game'
+```
+
+Replaces existing obstacles with new ones, allowing for modifications to the obstacles. If an obstacle does not exist, it will be added.
+
+:param obstacles: The obstacles to modify.
+:type obstacles: List[:class:`Obstacle`]
+:return: The game object with the modified obstacles.
+:rtype: :class:`Game`
+
+#### `set_field_size`
+
+```python
+def set_field_size(self, width: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement, height: gamegine.utils.NCIM.Dimensions.spatial.SpatialMeasurement)
+```
+
+Sets the field size of the game.
+
+:param width: The width of the field.
+:type width: :class:`SpatialMeasurement`
+:param height: The height of the field.
+:type height: :class:`SpatialMeasurement`
+

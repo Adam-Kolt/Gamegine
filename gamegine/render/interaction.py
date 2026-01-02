@@ -40,8 +40,8 @@ class InteractionManager:
         """
         Register a hit test function for a type.
         
-        The tester should return True if the point (x, y) hits the object.
-        Coordinates are in world units (meters).
+        :param obj_type: The class type to register.
+        :param tester: Function taking (obj, x, y) and returning True if hit.
         """
         self._hit_testers[obj_type] = tester
     
@@ -49,12 +49,10 @@ class InteractionManager:
         """
         Test if a point hits an object.
         
-        Args:
-            obj: The object to test
-            x, y: Point in world coordinates (meters)
-        
-        Returns:
-            True if the point hits the object
+        :param obj: The object to test.
+        :param x: World X coordinate.
+        :param y: World Y coordinate.
+        :return: True if the point hits the object.
         """
         obj_type = type(obj)
         
@@ -78,12 +76,10 @@ class InteractionManager:
         """
         Find the first object hit by a point.
         
-        Args:
-            objects: List of (object, layer_name) tuples
-            x, y: Point in world coordinates
-        
-        Returns:
-            HitTestResult if an object was hit, None otherwise
+        :param objects: List of (object, layer_name) tuples.
+        :param x: World X coordinate.
+        :param y: World Y coordinate.
+        :return: HitTestResult if an object was hit, None otherwise.
         """
         for obj, layer in objects:
             if self.hit_test(obj, x, y):
@@ -109,26 +105,41 @@ class InteractionManager:
         return self._selected_obj
     
     def set_hovered(self, obj: Any):
-        """Set the hovered object."""
+        """Set the hovered object.
+        
+        :param obj: The object to set as hovered.
+        """
         if obj != self._hovered_obj:
             self._hovered_obj = obj
             for callback in self._hover_callbacks:
                 callback(obj)
     
     def set_selected(self, obj: Any):
-        """Set the selected object."""
+        """Set the selected object.
+        
+        :param obj: The object to set as selected.
+        """
         self._selected_obj = obj
     
     def on_hover(self, callback: Callable[[Any], None]):
-        """Register a hover callback."""
+        """Register a hover callback.
+        
+        :param callback: Function to call when an object is hovered.
+        """
         self._hover_callbacks.append(callback)
     
     def on_click(self, callback: Callable[[Any], None]):
-        """Register a click callback."""
+        """Register a click callback.
+        
+        :param callback: Function to call when an object is clicked.
+        """
         self._click_callbacks.append(callback)
     
     def handle_click(self, obj: Any):
-        """Handle a click on an object."""
+        """Handle a click on an object.
+        
+        :param obj: The object that was clicked.
+        """
         self._selected_obj = obj
         for callback in self._click_callbacks:
             callback(obj)

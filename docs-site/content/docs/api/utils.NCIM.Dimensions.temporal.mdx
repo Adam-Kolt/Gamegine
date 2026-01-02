@@ -1,0 +1,69 @@
+---
+title: gamegine.utils.NCIM.Dimensions.temporal
+---
+
+# gamegine.utils.NCIM.Dimensions.temporal
+
+## Classes
+
+### TemporalMeasurement
+
+```python
+class TemporalMeasurement
+```
+
+A class representing a temporal measurement.
+
+#### `__init__`
+
+```python
+def __init__(self, magnitude: float, unit: gamegine.utils.NCIM.Dimensions.temporal.TemporalUnit, base_magnitude=None)
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `convert_to`
+
+```python
+def convert_to(self, target_unit: gamegine.utils.NCIM.core.Unit) -> 'Measurement'
+```
+
+Convert this measurement to another unit and return a new Measurement object.
+
+#### `to`
+
+```python
+def to(self, target_unit: gamegine.utils.NCIM.core.Unit) -> float
+```
+
+Convert this measurement to another unit and return the magnitude as a float.
+This maintains backward compatibility with legacy NCIM.
+
+### TemporalUnit
+
+```python
+class TemporalUnit
+```
+
+A class representing a temporal unit of measurement.
+
+#### `__init__`
+
+```python
+def __init__(self, scale: float = 1.0, display: str = '', shift: float = 0.0) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `from_base`
+
+```python
+def from_base(self, value: float) -> float
+```
+
+#### `to_base`
+
+```python
+def to_base(self, value: float) -> float
+```
+

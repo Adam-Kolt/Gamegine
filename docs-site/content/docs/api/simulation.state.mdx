@@ -1,0 +1,302 @@
+---
+title: gamegine.simulation.state
+---
+
+# gamegine.simulation.state
+
+## Classes
+
+### StateSpace
+
+```python
+class StateSpace
+```
+
+A class for representing a state space, which is a collection of values.
+
+:param values: A dictionary of values in the state space.
+:type values: Dict[str, ValueEntry]
+:param spaces: A dictionary of sub-state spaces.
+:type spaces: Dict[str, StateSpace]
+
+#### `__init__`
+
+```python
+def __init__(self) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `createSpace`
+
+```python
+def createSpace(self, name: str) -> 'StateSpace'
+```
+
+Creates a new sub-state space with the given name.
+
+:param name: The name of the new sub-state
+:type name: str
+:return: The new sub-state space.
+:rtype: :class:`StateSpace`
+
+#### `get`
+
+```python
+def get(self, space: str) -> 'StateSpace'
+```
+
+Returns the sub-state space with the given name.
+
+:param space: The name of the sub-state
+:type space: str
+:return: The sub-state space with the given name.
+:rtype: :class:`StateSpace`
+
+#### `getValue`
+
+```python
+def getValue(self, name: str) -> gamegine.simulation.state.ValueEntry
+```
+
+Returns the value entry with the given name.
+
+:param name: The name of the value entry.
+:type name: str
+:return: The value entry with the given name.
+:rtype: :class:`ValueEntry`
+
+#### `registerSpace`
+
+```python
+def registerSpace(self, name: str, space: 'StateSpace') -> 'StateSpace'
+```
+
+Registers a sub-state space with the given name.
+
+:param name: The name of the sub-state
+:type name: str
+:param space: The sub-state space to register.
+:type space: :class:`StateSpace
+:return: The sub-state space that was registered.
+:rtype: :class:`StateSpace`
+
+#### `setValue`
+
+```python
+def setValue(self, name: str, value) -> gamegine.simulation.state.ValueEntry
+```
+
+Sets the value of the value entry with the given name.
+
+:param name: The name of the value entry.
+:type name: str
+:param value: The value to set.
+:return: The value entry with the given name.
+:rtype: :class:`ValueEntry`
+
+### ValueChange
+
+```python
+class ValueChange
+```
+
+A class for representing a change to a value in a state space. Used as outputs of interactable objects.
+
+:param entry: The value entry to change.
+:type entry: ValueEntry
+:param value: The value to change the entry to.
+
+#### `__init__`
+
+```python
+def __init__(self, entry: gamegine.simulation.state.ValueEntry, value) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `apply`
+
+```python
+def apply(self) -> gamegine.simulation.state.ValueEntry
+```
+
+Applies the value change to the state space.
+
+:return: The new updated value entry.
+:rtype: ValueEntry
+
+#### `current`
+
+```python
+def current(self)
+```
+
+Returns the current value of the entry.
+
+:return: The current value of the entry.
+
+#### `requested`
+
+```python
+def requested(self)
+```
+
+Returns the value that the entry is requested to be changed to.
+
+:return: The value that the entry is requested to be changed to.
+
+### ValueDecrease
+
+```python
+class ValueDecrease
+```
+
+A class for representing a decrease in a value in a state space. Used as outputs of interactable objects.
+
+:param entry: The value entry to decrease.
+:type entry: ValueEntry
+:param value: The value to decrease the entry by.
+
+#### `__init__`
+
+```python
+def __init__(self, entry: gamegine.simulation.state.ValueEntry, value) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `apply`
+
+```python
+def apply(self) -> gamegine.simulation.state.ValueEntry
+```
+
+Applies the value change to the state space.
+
+:return: The new updated value entry.
+:rtype: ValueEntry
+
+#### `current`
+
+```python
+def current(self)
+```
+
+Returns the current value of the entry.
+
+:return: The current value of the entry.
+
+#### `requested`
+
+```python
+def requested(self)
+```
+
+Returns the value that the entry is requested to be changed to.
+
+:return: The value that the entry is requested to be changed to.
+
+### ValueEntry
+
+```python
+class ValueEntry
+```
+
+A generic class for storing a value in a state space.
+
+:param value: The value to store.
+:type value: T
+
+#### `__init__`
+
+```python
+def __init__(self, value: ~T, name: str = '') -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `get`
+
+```python
+def get(self) -> ~T
+```
+
+Returns the value stored in the entry.
+
+:return: The value stored in the entry.
+:rtype: T
+
+#### `get_name`
+
+```python
+def get_name(self) -> str
+```
+
+Returns the name of the entry.
+
+:return: The name of the entry.
+:rtype: str
+
+#### `set`
+
+```python
+def set(self, value: ~T)
+```
+
+Sets the value stored in the entry.
+
+:param value: The value to store.
+:type value: T
+
+### ValueIncrease
+
+```python
+class ValueIncrease
+```
+
+A class for representing an increase in a value in a state space. Used as outputs of interactable objects.
+
+:param entry: The value entry to increase.
+:type entry: ValueEntry
+:param value: The value to increase the entry by.
+
+#### `__init__`
+
+```python
+def __init__(self, entry: gamegine.simulation.state.ValueEntry, value) -> None
+```
+
+Initialize self.  See help(type(self)) for accurate signature.
+
+#### `apply`
+
+```python
+def apply(self) -> gamegine.simulation.state.ValueEntry
+```
+
+Applies the value change to the state space.
+
+:return: The new updated value entry.
+:rtype: ValueEntry
+
+#### `current`
+
+```python
+def current(self)
+```
+
+Returns the current value of the entry.
+
+:return: The current value of the entry.
+
+#### `requested`
+
+```python
+def requested(self)
+```
+
+Returns the value that the entry is requested to be changed to.
+
+:return: The value that the entry is requested to be changed to.
+
