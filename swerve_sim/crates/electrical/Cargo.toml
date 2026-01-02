@@ -1,0 +1,16 @@
+[package]
+name = "electrical"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+simcore = { path = "../simcore" }
+serde = { workspace = true }
+ode_solvers = { workspace = true } 
+ndarray = { workspace = true }
+eframe.workspace = true
+egui.workspace = true
+egui_plot.workspace = true
+
+[dev-dependencies]
+mechanics = { path = "../mechanics" }

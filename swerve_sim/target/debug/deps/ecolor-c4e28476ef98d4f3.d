@@ -1,0 +1,10 @@
+/Users/adamkoltuniuk/Documents/Learning/Rust/swerve_sim/target/debug/deps/ecolor-c4e28476ef98d4f3.d: /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.32.1/src/lib.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.32.1/src/color32.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.32.1/src/hsva_gamma.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.32.1/src/hsva.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.32.1/src/rgba.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.32.1/src/hex_color_runtime.rs
+
+/Users/adamkoltuniuk/Documents/Learning/Rust/swerve_sim/target/debug/deps/libecolor-c4e28476ef98d4f3.rmeta: /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.32.1/src/lib.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.32.1/src/color32.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.32.1/src/hsva_gamma.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.32.1/src/hsva.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.32.1/src/rgba.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.32.1/src/hex_color_runtime.rs
+
+/Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.32.1/src/lib.rs:
+/Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.32.1/src/color32.rs:
+/Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.32.1/src/hsva_gamma.rs:
+/Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.32.1/src/hsva.rs:
+/Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.32.1/src/rgba.rs:
+/Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ecolor-0.32.1/src/hex_color_runtime.rs:

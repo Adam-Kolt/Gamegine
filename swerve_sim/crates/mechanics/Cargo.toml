@@ -1,0 +1,14 @@
+[package]
+name = "mechanics"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+simcore = { path = "../simcore" }
+log = { workspace = true }
+nalgebra = { workspace = true }
+serde = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+plotters = { workspace = true }

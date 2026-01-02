@@ -1,0 +1,35 @@
+[workspace]
+members = [
+"crates/simcore",
+"crates/mechanics",
+"crates/electrical",
+"crates/control",
+"crates/app",
+"crates/swerve_sim_py",
+]
+resolver = "2"
+
+
+[workspace.package]
+name = "swerve_sim"
+version = "0.1.0"
+edition = "2021"
+
+[workspace.dependencies]
+ndarray = "0.16.1"
+ndarray-linalg = "0.17.0"
+plotters = "0.3.7"
+egui = { version = "0.32.1"}
+eframe = { version = "0.32.1"}
+egui_plot = "0.33.0"
+nalgebra = "0.33.2"
+uom = "0.37.0"
+rand = "0.8"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1"
+log = "0.4"
+simplelog = "0.12"
+approx = "0.5"
+ode_solvers = "0.6"
+pyo3 = { version = "0.22", features = ["extension-module"] }

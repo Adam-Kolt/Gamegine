@@ -1,0 +1,14 @@
+[package]
+name = "swerve-sim-app"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+simcore = { path = "../simcore" }
+mechanics = { path = "../mechanics" }
+electrical = { path = "../electrical" }
+control = { path = "../control" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+log = { workspace = true }
+simplelog = { workspace = true }

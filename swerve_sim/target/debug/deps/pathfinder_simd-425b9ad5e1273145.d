@@ -1,0 +1,9 @@
+/Users/adamkoltuniuk/Documents/Learning/Rust/swerve_sim/target/debug/deps/pathfinder_simd-425b9ad5e1273145.d: /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/lib.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/extras.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/scalar/mod.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/scalar/swizzle_f32x4.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/scalar/swizzle_i32x4.rs
+
+/Users/adamkoltuniuk/Documents/Learning/Rust/swerve_sim/target/debug/deps/libpathfinder_simd-425b9ad5e1273145.rmeta: /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/lib.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/extras.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/scalar/mod.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/scalar/swizzle_f32x4.rs /Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/scalar/swizzle_i32x4.rs
+
+/Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/lib.rs:
+/Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/extras.rs:
+/Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/scalar/mod.rs:
+/Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/scalar/swizzle_f32x4.rs:
+/Users/adamkoltuniuk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pathfinder_simd-0.5.5/src/scalar/swizzle_i32x4.rs:
