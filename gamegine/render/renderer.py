@@ -286,6 +286,10 @@ class Renderer(arcade.Window):
         self._selectables: Dict[int, Tuple[Any, Callable[[float, float], bool]]] = {}  # id(obj) → (obj, hit_test_fn)
         self._info_card_progress: float = 0.0  # 0=hidden, 1=visible
         self._info_card_target: float = 0.0    # Target for animation
+        
+        # Dynamic providers - callables that return objects to render each frame
+        self._dynamic_providers: List[Tuple[Callable[[], Any], str]] = []  # (provider, layer_name)
+        self._tracked_robot: Optional[Callable[[], Any]] = None  # Robot state provider
     
     # -------------------------------------------------------------------------
     # Factory Method
@@ -435,6 +439,45 @@ class Renderer(arcade.Window):
         return self._layers[name]
     
     # -------------------------------------------------------------------------
+    # Dynamic Data Providers
+    # -------------------------------------------------------------------------
+    
+    def add_dynamic(self, provider: Callable[[], Any], layer: str = "objects"):
+        """Add a dynamic object via provider function.
+        
+        The provider is called each frame to get the current object to render.
+        This separates game logic from rendering - the game updates the data,
+        the renderer reads it via the provider.
+        
+        :param provider: Callable that returns the object to render.
+        :param layer: Layer name to render object in (default: "objects").
+        
+        Example:
+            robot_state = RobotState(...)
+            renderer.add_dynamic(lambda: robot_state)
+            # Game logic updates robot_state, renderer reads it each frame
+        """
+        self._dynamic_providers.append((provider, layer))
+    
+    def track_robot(self, robot_provider: Callable[[], Any]):
+        """Track a robot for rendering.
+        
+        The robot provider is called each frame to get the current robot state.
+        The robot is rendered on top of other elements.
+        
+        :param robot_provider: Callable returning robot state object.
+        
+        Example:
+            renderer.track_robot(lambda: game.get_robot_state("MainBot"))
+        """
+        self._tracked_robot = robot_provider
+    
+    def clear_dynamic(self):
+        """Clear all dynamic providers and tracked robot."""
+        self._dynamic_providers.clear()
+        self._tracked_robot = None
+    
+    # -------------------------------------------------------------------------
     # Event Registration (Decorator-style)
     # -------------------------------------------------------------------------
     
@@ -561,6 +604,28 @@ class Renderer(arcade.Window):
                                 handler(obj, self._canvas, self._theme, self._display_level, self)
                             except Exception as e:
                                 print(f"Handler error for {type(obj).__name__}: {e}")
+            
+            # Dynamic providers - render objects from callables each frame
+            for provider, layer_name in self._dynamic_providers:
+                try:
+                    obj = provider()
+                    if obj is not None:
+                        handler = ObjectRendererRegistry.get_handler(obj)
+                        if handler:
+                            handler(obj, self._canvas, self._theme, self._display_level, self)
+                except Exception as e:
+                    print(f"Dynamic provider error: {e}")
+            
+            # Tracked robot - rendered on top
+            if self._tracked_robot is not None:
+                try:
+                    robot = self._tracked_robot()
+                    if robot is not None:
+                        handler = ObjectRendererRegistry.get_handler(robot)
+                        if handler:
+                            handler(robot, self._canvas, self._theme, self._display_level, self)
+                except Exception as e:
+                    print(f"Tracked robot render error: {e}")
             
             # HUD
             self._draw_alerts()
@@ -970,6 +1035,152 @@ class Renderer(arcade.Window):
     def to_pixels(value: "SpatialMeasurement") -> float:
         """Convert a measurement to pixels."""
         return get_canvas().to_pixels(value)
+
+    # -------------------------------------------------------------------------
+    # Frame Control API (for manual animation loops)
+    # -------------------------------------------------------------------------
+
+    @property
+    def render_scale(self) -> float:
+        """Returns the render scale (pixels per meter)."""
+        return self._canvas.render_scale
+
+    def begin_frame(self):
+        """
+        Begin a frame for manual rendering. Call this at start of render loop.
+        Clears the screen and draws background/grid.
+        """
+        self.clear(color=self._theme.background)
+        
+        # Grid
+        if self._show_grid and self._field_size:
+            self._draw_grid()
+        
+        # Field border
+        if self._field_size:
+            self._draw_field_border()
+
+    def end_frame(self):
+        """
+        End a frame and present to screen. Call this at end of render loop.
+        Flips the arcade display buffer.
+        """
+        self.flip()
+
+    def draw_element(self, obj: Any):
+        """Draw a single element immediately using arcade."""
+        handler = ObjectRendererRegistry.get_handler(obj)
+        if handler:
+            try:
+                handler(obj, self._canvas, self._theme, self._display_level, self)
+            except Exception as e:
+                print(f"draw_element error for {type(obj).__name__}: {e}")
+
+    def draw_elements(self, objs):
+        """Draw multiple elements immediately using arcade."""
+        for obj in objs:
+            self.draw_element(obj)
+
+    def draw_static_elements(self):
+        """Draw static game elements (obstacles from game). Grid/border are drawn in begin_frame()."""
+        # Draw obstacles from game if loaded
+        if self._game:
+            for obs in self._game.get_obstacles():
+                self.draw_element(obs)
+
+    def draw_text(self, text: str, x: float, y: float, color=(0, 0, 0), font_size: int = 18):
+        """
+        Draw text at screen coordinates using arcade.
+        
+        :param text: Text to draw
+        :param x: X position in pixels
+        :param y: Y position in pixels
+        :param color: RGB tuple
+        :param font_size: Font size
+        """
+        arcade.draw_text(text, x, y, color, font_size)
+
+    def draw_rect(self, x: float, y: float, width: float, height: float, color=(255, 255, 255)):
+        """
+        Draw a filled rectangle using arcade.
+        
+        :param x: X position (left) in pixels
+        :param y: Y position (bottom) in pixels
+        :param width: Width in pixels
+        :param height: Height in pixels
+        :param color: RGB tuple
+        """
+        arcade.draw_lbwh_rectangle_filled(x, y, width, height, color)
+
+    def step(self, delta_time: float = 1/60) -> bool:
+        """
+        Process one step of the render loop. Use for manual animation.
+        Returns True to continue, False if window should close.
+        
+        Usage:
+            while renderer.step():
+                renderer.begin_frame()
+                renderer.draw_elements(objects)
+                renderer.end_frame()
+        """
+        # Process arcade dispatch events
+        self.dispatch_events()
+        
+        # Check for close
+        if not self._running:
+            return False
+        
+        # Update time
+        self._elapsed_time += delta_time
+        
+        # Call registered update callbacks
+        for cb in self._on_update:
+            cb(delta_time)
+        
+        return True
+
+    def should_close(self) -> bool:
+        """Check if the window should close."""
+        return not getattr(self, '_running', True)
+
+    def set_game(self, game: "Game"):
+        """Set the game for rendering."""
+        from gamegine.utils.NCIM.Dimensions.spatial import Meter
+        self._game = game
+        if game:
+            field_w, field_h = game.get_field_size()
+            self._field_size = (field_w.to(Meter), field_h.to(Meter))
+
+    def init_display(self):
+        """Initialize display - no-op for arcade-based renderer."""
+        pass  # Arcade handles this in __init__
+
+    def set_render_scale(self, scale):
+        """Set the render scale."""
+        from gamegine.utils.NCIM.Dimensions.spatial import Meter
+        # Scale could be a Measurement or a float
+        if hasattr(scale, 'to'):
+            # It's a measurement - treat as pixels per unit
+            self._canvas._settings.render_scale = 1.0 / scale.to(Meter)
+        else:
+            self._canvas._settings.render_scale = float(scale)
+
+    # Legacy compatibility - loop() now uses arcade
+    def loop(self) -> bool:
+        """
+        Manual render loop step. Processes events and returns True to continue.
+        
+        Usage:
+            while renderer.loop():
+                renderer.draw_elements(obstacles)
+                renderer.render_frame()
+        """
+        self.dispatch_events()
+        return getattr(self, '_running', True)
+
+    def render_frame(self):
+        """Flip the display buffer using arcade."""
+        self.flip()
 
 
 # =============================================================================

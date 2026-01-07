@@ -84,8 +84,8 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
     
     def __init__(
         self,
-        max_velocity: Velocity = MetersPerSecond(4.0),
-        max_acceleration: Acceleration = MeterPerSecondSquared(3.0),
+        max_velocity: Velocity = MetersPerSecond(5.0),
+        max_acceleration: Acceleration = MeterPerSecondSquared(6.0),
         min_curvature_radius: SpatialMeasurement = Meter(0.3),
         resolution: SpatialMeasurement = Meter(0.15),
     ):
@@ -395,7 +395,7 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         start_state: Tuple[SpatialMeasurement, SpatialMeasurement, AngularMeasurement],
         target_state: Tuple[SpatialMeasurement, SpatialMeasurement, AngularMeasurement],
         path: pathfinding.Path,
-        expanded_obstacles: Any = None,
+        traversal_space: Any = None,
         constraints: Any = None,
         no_safety_corridor: bool = False,
         robot_constraints: Any = None,  # Deprecated, use robot instead
@@ -487,11 +487,10 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         # Normalize to [0, 1] for spline parameter
         t_input = arc_lengths / total_length
         
-        # Use ALL path points as knots (no downsampling) to prevent corner-cutting
-        # If expanded_obstacles is provided, validate and subdivide as needed
-        if expanded_obstacles is not None:
+  
+        if traversal_space is not None:
             x_knots, y_knots, t_knots = self._validate_and_subdivide_spline(
-                x_arr, y_arr, t_input, expanded_obstacles, resolution_m, max_iterations=10
+                x_arr, y_arr, t_input, traversal_space.obstacles, resolution_m, max_iterations=10
             )
         else:
             x_knots = x_arr

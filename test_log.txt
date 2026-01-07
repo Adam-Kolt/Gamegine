@@ -1,0 +1,35 @@
+Starting Conditions: 
+Robot: DunceBot
+Starting Position: (Measurement(297.438046, in), Measurement(78.712, in))
+Starting Rotation: 0.0000 °
+Starting Gamepieces: {<class 'gamepieces.Coral'>: 1}
+Scoring Times Config: 
+Coral Pickup Time: 1.0000 s
+L1 Score Time: 1.0000 s
+L2 Score Time: 2.0000 s
+L3 Score Time: 4.0000 s
+L4 Score Time: 6.0000 s
+Algae Dislodge Time: 1.0000 s
+Strategy: 
+Priority Cycle: ['l4', 'l3', 'l2', 'l1']
+Bother Algae: True
+
+5.5532368490171455 : Robot DunceBot moved to (146.7460 in, 120.8039 in, 60.0000 °), taking 5.5532 s seconds : [x 297.4380 in -> 146.7460 in, y 78.7120 in -> 120.8039 in, heading 0.0000 ° -> 60.0000 °, current_time 0 += 5.5532368490171455]
+11.553236849017146 : Robot DunceBot performed l4 on Red Reef, taking 6.0000 s seconds : [reef_score 0 += 7, score 0 += 7, row_score 0 += 7, A False -> True]
+14.203676611512257 : Robot DunceBot moved to (45.0000 in, 45.0000 in, 45.0000 °), taking 2.6504 s seconds : [x 146.7460 in -> 45.0000 in, y 120.8039 in -> 45.0000 in, heading 60.0000 ° -> 45.0000 °, current_time 11.553236849017146 += 2.6504397624951115]
+15.203676611512257 : Robot DunceBot performed PickupCoral on TopPickup, taking 1.0000 s seconds : []
+18.770283166107536 : Robot DunceBot moved to (146.7460 in, 120.8039 in, 60.0000 °), taking 3.5666 s seconds : [x 45.0000 in -> 146.7460 in, y 45.0000 in -> 120.8039 in, heading 45.0000 ° -> 60.0000 °, current_time 15.203676611512257 += 3.566606554595279]
+24.770283166107536 : Robot DunceBot performed l4 on Red Reef, taking 6.0000 s seconds : [reef_score 7 += 5, score 7 += 5, row_score 7 += 5, B False -> True]
+27.420722928602647 : Robot DunceBot moved to (45.0000 in, 45.0000 in, 45.0000 °), taking 2.6504 s seconds : [x 146.7460 in -> 45.0000 in, y 120.8039 in -> 45.0000 in, heading 60.0000 ° -> 45.0000 °, current_time 24.770283166107536 += 2.6504397624951115]
+58.320722928602805 : Robot DunceBot performed PickupCoral on TopPickup, taking 30.9000 s seconds : []
+61.88732948319809 : Robot DunceBot moved to (146.7460 in, 120.8039 in, 60.0000 °), taking 3.5666 s seconds : [x 45.0000 in -> 146.7460 in, y 45.0000 in -> 120.8039 in, heading 45.0000 ° -> 60.0000 °, current_time 58.320722928602805 += 3.566606554595279]
+67.88732948319809 : Robot DunceBot performed l4 on Red Reef, taking 6.0000 s seconds : [reef_score 12 += 5, score 12 += 5, row_score 12 += 5, C False -> True]
+70.5377692456932 : Robot DunceBot moved to (45.0000 in, 45.0000 in, 45.0000 °), taking 2.6504 s seconds : [x 146.7460 in -> 45.0000 in, y 120.8039 in -> 45.0000 in, heading 60.0000 ° -> 45.0000 °, current_time 67.88732948319809 += 2.6504397624951115]
+101.43776924569335 : Robot DunceBot performed PickupCoral on TopPickup, taking 30.9000 s seconds : []
+105.00437580028863 : Robot DunceBot moved to (146.7460 in, 120.8039 in, 60.0000 °), taking 3.5666 s seconds : [x 45.0000 in -> 146.7460 in, y 45.0000 in -> 120.8039 in, heading 45.0000 ° -> 60.0000 °, current_time 101.43776924569335 += 3.566606554595279]
+111.00437580028863 : Robot DunceBot performed l4 on Red Reef, taking 6.0000 s seconds : [reef_score 17 += 5, score 17 += 5, row_score 17 += 5, D False -> True]
+113.65481556278374 : Robot DunceBot moved to (45.0000 in, 45.0000 in, 45.0000 °), taking 2.6504 s seconds : [x 146.7460 in -> 45.0000 in, y 120.8039 in -> 45.0000 in, heading 60.0000 ° -> 45.0000 °, current_time 111.00437580028863 += 2.6504397624951115]
+144.5548155627839 : Robot DunceBot performed PickupCoral on TopPickup, taking 30.9000 s seconds : []
+148.12142211737915 : Robot DunceBot moved to (146.7460 in, 120.8039 in, 60.0000 °), taking 3.5666 s seconds : [x 45.0000 in -> 146.7460 in, y 45.0000 in -> 120.8039 in, heading 45.0000 ° -> 60.0000 °, current_time 144.5548155627839 += 3.566606554595279]
+154.12142211737915 : Robot DunceBot attempted to perform l4 on Red Reef, but the time cutoff was reached : []
+Score: 22

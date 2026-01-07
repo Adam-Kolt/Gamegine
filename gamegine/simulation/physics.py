@@ -1,10 +1,10 @@
 from dataclasses import dataclass, field
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 from gamegine.analysis import pathfinding
 from gamegine.analysis.meshing import Map, TriangulatedGraph
 from gamegine.analysis.trajectory.lib.TrajGen import SwerveTrajectory
-from gamegine.analysis.trajectory.sleipnir import SleipnirOfflineGenerator
+from gamegine.analysis.trajectory.generator import TrajectoryGenerator, SplineTrajectoryGenerator
 from gamegine.representation import obstacle
 from gamegine.representation.bounds import ExpandedObjectBounds
 from gamegine.representation.robot import SwerveRobot
@@ -15,6 +15,19 @@ from gamegine.utils.NCIM.Dimensions.spatial import (
     Inch,
     SpatialMeasurement,
 )
+from gamegine.utils.NCIM.ComplexDimensions.velocity import MetersPerSecond
+from gamegine.utils.NCIM.ComplexDimensions.acceleration import MeterPerSecondSquared
+from gamegine.utils.NCIM.Dimensions.spatial import Meter
+
+
+def _default_trajectory_generator():
+    """Factory for default SplineTrajectoryGenerator."""
+    return SplineTrajectoryGenerator(
+        MetersPerSecond(5.0),
+        MeterPerSecondSquared(14),
+        Meter(0.1),
+        Meter(0.15),
+    )
 
 
 @dataclass
@@ -26,12 +39,14 @@ class PhysicsConfig:
     :param trajectory_resolution: Resolution for trajectory generation.
     :param stretch_factor: Stretch factor for meshing.
     :param min_spacing: Minimum spacing between nodes.
+    :param trajectory_generator: The trajectory generator to use (defaults to SplineTrajectoryGenerator).
     """
     mesh_resolution: SpatialMeasurement = Feet(2)
     discretization_quality: int = 4
     trajectory_resolution: SpatialMeasurement = Centimeter(10)
     stretch_factor: float = 1.5
     min_spacing: SpatialMeasurement = Centimeter(8)
+    trajectory_generator: Optional[TrajectoryGenerator] = field(default_factory=_default_trajectory_generator)
 
 
 @dataclass
@@ -54,7 +69,8 @@ class PhysicsEngine:
         self.robot_traversal_space: Dict[str, TraversalSpace] = {}
         self.trajectories: Dict[str, Dict] = {}
         self.latest_trajectory: SwerveTrajectory = None
-        self.trajectory_generator = SleipnirOfflineGenerator()
+        # Use configured trajectory generator (defaults to SplineTrajectoryGenerator)
+        self.trajectory_generator = config.trajectory_generator
 
     def prepare_traversal_space(
         self,

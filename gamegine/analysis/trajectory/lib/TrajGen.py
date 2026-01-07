@@ -262,6 +262,18 @@ class SwerveTrajectory(Trajectory):
     def __str__(self) -> str:
         return f"Swerve Trajectory: {len(self.points)} points, {self.get_length()} length, {self.get_travel_time()} time. Optimized for {self.robot_constraints}."
 
+    def get_info_card_items(self):
+        """Return dynamic info for the info card."""
+        from gamegine.utils.NCIM.Dimensions.spatial import Meter
+        from gamegine.utils.NCIM.Dimensions.temporal import Second
+        
+        return {
+            "Type": "Swerve Trajectory",
+            "Duration": f"{self.get_travel_time().to(Second):.2f} s",
+            "Length": f"{self.get_length().to(Meter):.2f} m",
+            "Points": str(len(self.points))
+        }
+
     def interpolate_trajectory_states(
         self, state1: TrajectoryState, state2: TrajectoryState, t: TemporalMeasurement
     ) -> TrajectoryState:

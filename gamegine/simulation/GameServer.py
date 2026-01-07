@@ -93,7 +93,7 @@ class AbstractGameServer(ABC):
         return self.match.get_log()
         
     @abstractmethod
-    def drive_robot(self, robot_name: str, x: SpatialMeasurement, y: SpatialMeasurement, theta: float, no_safety_corridor=False) -> None:
+    def drive_robot(self, robot_name: str, x: SpatialMeasurement, y: SpatialMeasurement, theta: AngularMeasurement, no_safety_corridor=False) -> None:
         pass
     
     # Expose game_state as property for backward compatibility
@@ -151,7 +151,7 @@ class DiscreteGameServer(AbstractGameServer):
         robot_name: str,
         x: SpatialMeasurement,
         y: SpatialMeasurement,
-        theta: float,
+        theta: AngularMeasurement,
         no_safety_corridor=False,
     ) -> None:
         if robot_name not in self.robots:
@@ -165,7 +165,7 @@ class DiscreteGameServer(AbstractGameServer):
 
         path = self.__pathfind(robot_name, x, y)
         trajectory = self.__trajectory(
-            robot_name, x, y, Radian(theta), path, no_safety_corridor
+            robot_name, x, y, theta, path, no_safety_corridor
         )
 
         changes = [
@@ -190,6 +190,8 @@ class DiscreteGameServer(AbstractGameServer):
             f"Robot {robot_name} moved to ({x}, {y}, {theta}), taking {trajectory.get_travel_time()} seconds",
             changes,
         )
+        
+        return trajectory  # Return trajectory for animation
 
     def prepare_traversal_space(self, robot_name: str) -> TraversalSpace:
         if robot_name not in self.robots:
@@ -264,7 +266,8 @@ class DiscreteGameServer(AbstractGameServer):
         robot_name,
         time_cutoff=None,
         no_safety_cooridor=False,
-    ) -> bool:
+    ) -> Tuple[bool, "SwerveTrajectory"]:
+        """Drive to interactable and process action. Returns (success, trajectory)."""
         drive_point = self.match.get_navigation_point(
             interactable_name, interaction_name, robot_name
         )
@@ -272,16 +275,17 @@ class DiscreteGameServer(AbstractGameServer):
         if drive_point is None:
              raise ValueError("Interactable does not have a navigation point")
 
-        self.drive_robot(
+        trajectory = self.drive_robot(
             robot_name,
             drive_point[0],
             drive_point[1],
             drive_point[2],
             no_safety_cooridor,
         )
-        return self.match.process_action(
+        result = self.match.process_action(
             interactable_name, interaction_name, robot_name, time_cutoff
         )
+        return result, trajectory
 
         name = robot.name.replace(self.ROBOT_PREFIX, "")
         self.robots[name] = robot
@@ -316,7 +320,7 @@ class ContinuousGameServer(AbstractGameServer):
         # 2. Update Match Time
         return super().update(dt)
 
-    def drive_robot(self, robot_name: str, x: SpatialMeasurement, y: SpatialMeasurement, theta: float, no_safety_corridor=False) -> None:
+    def drive_robot(self, robot_name: str, x: SpatialMeasurement, y: SpatialMeasurement, theta: AngularMeasurement, no_safety_corridor=False) -> None:
         # In continuous, this might set a setpoint for a controller?
         pass
 

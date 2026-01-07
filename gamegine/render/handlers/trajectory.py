@@ -93,19 +93,29 @@ try:
     from gamegine.utils.NCIM.Dimensions.spatial import Meter
     
     @ObjectRendererRegistry.register(SwerveTrajectory)
-    def render_swerve_trajectory(obj: Any, canvas: Canvas, theme: Theme, display_level: DisplayLevel, renderer=None):
-        """Render a SwerveTrajectory with optional debug info."""
+    def render_swerve_trajectory(obj: Any, canvas: Canvas, theme: Theme, display_level: DisplayLevel, renderer=None, progress: float = 1.0):
+        """Render a SwerveTrajectory with optional debug info.
+        
+        :param progress: Float 0.0-1.0 indicating how much of trajectory to draw (for progressive rendering)
+        """
         if not hasattr(obj, 'points') or len(obj.points) < 2:
             return
         
-        points = obj.points
+        all_points = obj.points
+        
+        # Calculate how many points to draw based on progress
+        if progress < 1.0:
+            n_draw = max(2, int(len(all_points) * progress))
+            points = all_points[:n_draw]
+        else:
+            points = all_points
         
         # Register as selectable with hit test
         if renderer is not None:
             def hit_test(wx, wy):
                 """Check if point is near the trajectory."""
-                for i in range(0, len(points), max(1, len(points) // 20)):
-                    pt = points[i]
+                for i in range(0, len(all_points), max(1, len(all_points) // 20)):
+                    pt = all_points[i]
                     px = pt.x.to(Meter) if hasattr(pt.x, 'to') else float(pt.x)
                     py = pt.y.to(Meter) if hasattr(pt.y, 'to') else float(pt.y)
                     if math.sqrt((wx - px)**2 + (wy - py)**2) < 0.3:  # 30cm hit radius
@@ -128,7 +138,7 @@ try:
             line_color = ArcadeColor(100, 149, 237, 255)  # Cornflower blue (lighter)
             line_width = 4
         
-        # Draw trajectory line
+        # Draw trajectory line (only up to progress)
         for i in range(len(points) - 1):
             p1, p2 = points[i], points[i + 1]
             arcade.draw_line(
