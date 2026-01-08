@@ -256,6 +256,7 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         motor_omega = RadiansPerSecond(motor_omega_rad_s)
         # Note: get_torque already applies gearing to give wheel-side torque
         available_wheel_torque = module.get_torque(RadiansPerSecond(wheel_omega_rad_s))
+
         torque_nm = available_wheel_torque.to(NewtonMeter)
         
         # Convert wheel torque to force at ground: F = τ / r_wheel
@@ -291,6 +292,7 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         
         # Clamp to configured max
         max_accel = self.max_acceleration.to(MeterPerSecondSquared)
+        print(f"torque = {torque_nm}, total force = {total_force}, omega_wheel = {wheel_omega_rad_s}")
         return (min(max_linear_accel, max_accel), min(max_angular_accel, max_accel / module_radius_m))
     
     def _compute_module_states(

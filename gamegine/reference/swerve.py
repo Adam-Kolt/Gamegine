@@ -42,7 +42,7 @@ class SwerveModule:
             self.drive_motor.motor.get_torque_at(
                 speed, self.drive_motor.power.supply_current_limit
             )
-            * self.drive_gear_ratio
+            / self.drive_gear_ratio
         )
 
     def get_max_torque(self) -> Torque:

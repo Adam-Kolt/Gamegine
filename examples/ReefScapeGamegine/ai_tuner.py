@@ -71,6 +71,10 @@ from gamegine.utils.logging import GetLogger
 from gamepieces import Algae, Coral
 from scoring import ReefState
 import matplotlib.pyplot as plt
+import matplotlib
+
+matplotlib.pyplot.set_loglevel (level = 'warning')
+
 
 GetLogger().setLevel(logging.CRITICAL)
 

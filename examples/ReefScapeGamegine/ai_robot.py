@@ -55,7 +55,7 @@ from scoring import ReefState
 
 ROBOT_WIDTH = Inch(32)
 ROBOT_LENGTH = Inch(32)
-ROBOT_MASS = Pound(50)
+ROBOT_MASS = Pound(120)
 ROBOT_MOI = Pound(120) * Inch(30) ** 2
 ROBOT_SWERVE = SwerveConfig(
     SwerveModule(
