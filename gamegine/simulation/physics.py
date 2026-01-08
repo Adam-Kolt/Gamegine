@@ -24,7 +24,7 @@ def _default_trajectory_generator():
     """Factory for default SplineTrajectoryGenerator."""
     return SplineTrajectoryGenerator(
         MetersPerSecond(5.0),
-        MeterPerSecondSquared(14),
+        MeterPerSecondSquared(9),
         Meter(0.1),
         Meter(0.15),
     )

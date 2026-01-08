@@ -17,7 +17,7 @@ from gamegine.simulation.state import StateSpace, ValueChange, ValueEntry, Value
 from gamegine.utils.NCIM.Dimensions.spatial import Inch, SpatialMeasurement
 from gamegine.utils.NCIM.Dimensions.mass import Ounce, Pound
 
-from gamegine.render.renderer import Renderer
+from gamegine.render.renderer import Renderer, run
 from gamegine.representation.bounds import (
     CircularPattern,
     Cylinder,
@@ -44,9 +44,10 @@ from gamegine.utils.NCIM.ncim import (
     Second,
     TemporalMeasurement,
 )
-from gamegine.utils.logging import GetLogger
+from gamegine.utils.logging import GetLogger, SetLoggingLevel
 from gamepieces import Coral
 from scoring import ReefState
+SetLoggingLevel(logging.INFO)
 
 # ROBOT GEOMETRY SETUP
 
