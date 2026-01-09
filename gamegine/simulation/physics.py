@@ -18,6 +18,7 @@ from gamegine.utils.NCIM.Dimensions.spatial import (
 from gamegine.utils.NCIM.ComplexDimensions.velocity import MetersPerSecond
 from gamegine.utils.NCIM.ComplexDimensions.acceleration import MeterPerSecondSquared
 from gamegine.utils.NCIM.Dimensions.spatial import Meter
+from gamegine.analysis.trajectory.dynamic_obstacles import TrajectoryObstacle, DynamicObstacle
 
 
 def _default_trajectory_generator():
@@ -71,6 +72,9 @@ class PhysicsEngine:
         self.latest_trajectory: SwerveTrajectory = None
         # Use configured trajectory generator (defaults to SplineTrajectoryGenerator)
         self.trajectory_generator = config.trajectory_generator
+        # Active trajectories for dynamic obstacle avoidance
+        # Maps robot_name -> (trajectory, start_time, robot_radius)
+        self.active_trajectories: Dict[str, Tuple[SwerveTrajectory, float, float]] = {}
 
     def prepare_traversal_space(
         self,
@@ -157,6 +161,8 @@ class PhysicsEngine:
         path: pathfinding.Path,
         traversal_space: TraversalSpace,
         no_safety_corridor=False,
+        start_time: float = 0.0,
+        avoid_other_robots: bool = True,
     ) -> SwerveTrajectory:
         """Generates a swerve trajectory for the robot.
 
@@ -167,6 +173,8 @@ class PhysicsEngine:
         :param path: The path to follow.
         :param traversal_space: The traversal space definition.
         :param no_safety_corridor: If True, skips safety corridor generation.
+        :param start_time: Absolute start time for this trajectory (for dynamic obstacle avoidance).
+        :param avoid_other_robots: If True, avoid other robots' active trajectories.
         :return: The generated SwerveTrajectory.
         :rtype: SwerveTrajectory
         """
@@ -174,8 +182,18 @@ class PhysicsEngine:
         x, y, heading = target_state
 
         trajectory_key = (start_x, start_y, start_heading, x, y, heading)
-        if trajectory_key in self.trajectories.get(robot_name, {}):
+        # Don't use cache when avoiding other robots (dynamic obstacles change each time)
+        if not avoid_other_robots and trajectory_key in self.trajectories.get(robot_name, {}):
             return self.trajectories[robot_name][trajectory_key]
+        
+        # Get dynamic obstacles from other robots
+        dynamic_obstacles = None
+        if avoid_other_robots:
+            dynamic_obstacles = self.get_dynamic_obstacles_for(
+                robot_name, 
+                start_time, 
+                robot.get_bounding_radius().to(Meter) if hasattr(robot.get_bounding_radius(), 'to') else float(robot.get_bounding_radius())
+            )
 
         trajectory = self.trajectory_generator.generate(
             robot_name,
@@ -185,7 +203,9 @@ class PhysicsEngine:
             path,
             traversal_space,
             constraints=self.config,
-            no_safety_corridor=no_safety_corridor
+            no_safety_corridor=no_safety_corridor,
+            dynamic_obstacles=dynamic_obstacles,
+            trajectory_start_time=start_time,
         )
 
         if robot_name not in self.trajectories:
@@ -202,3 +222,57 @@ class PhysicsEngine:
         :rtype: SwerveTrajectory
         """
         return self.latest_trajectory
+
+    def register_active_trajectory(
+        self,
+        robot_name: str,
+        trajectory: SwerveTrajectory,
+        start_time: float,
+        robot_radius: float,
+    ) -> None:
+        """Register a trajectory as active for dynamic obstacle avoidance.
+        
+        Other robots generating trajectories will avoid this robot.
+        
+        :param robot_name: Name of the robot following this trajectory.
+        :param trajectory: The SwerveTrajectory being followed.
+        :param start_time: Absolute start time of the trajectory (seconds).
+        :param robot_radius: Bounding radius of the robot (meters).
+        """
+        self.active_trajectories[robot_name] = (trajectory, start_time, robot_radius)
+    
+    def clear_active_trajectory(self, robot_name: str) -> None:
+        """Clear an active trajectory when the robot completes its action.
+        
+        :param robot_name: Name of the robot whose trajectory to clear.
+        """
+        self.active_trajectories.pop(robot_name, None)
+    
+    def clear_all_active_trajectories(self) -> None:
+        """Clear all active trajectories (e.g., on environment reset)."""
+        self.active_trajectories.clear()
+    
+    def get_dynamic_obstacles_for(
+        self,
+        robot_name: str,
+        query_start_time: float,
+        query_robot_radius: float,
+    ) -> List[DynamicObstacle]:
+        """Get dynamic obstacles representing other robots' active trajectories.
+        
+        :param robot_name: Name of the robot doing the query (excluded from obstacles).
+        :param query_start_time: When the querying robot's trajectory will start.
+        :param query_robot_radius: Bounding radius of the querying robot.
+        :return: List of TrajectoryObstacle instances for all other robots.
+        """
+        obstacles = []
+        for other_name, (traj, start_time, radius) in self.active_trajectories.items():
+            if other_name == robot_name:
+                continue  # Don't avoid yourself
+            obstacles.append(TrajectoryObstacle(
+                trajectory=traj,
+                start_time=start_time,
+                robot_radius=radius,
+                query_robot_radius=query_robot_radius,
+            ))
+        return obstacles

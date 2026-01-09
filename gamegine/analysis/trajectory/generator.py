@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Any, Tuple, List
+from typing import Any, Tuple, List, Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from gamegine.analysis.trajectory.dynamic_obstacles import DynamicObstacle
 
 from gamegine.analysis.trajectory.lib.TrajGen import SwerveTrajectory
 from gamegine.analysis import pathfinding
@@ -108,6 +111,8 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         expanded_obstacles,
         resolution_m: float,
         max_iterations: int = 10,
+        dynamic_obstacles: Optional[List['DynamicObstacle']] = None,
+        time_estimator: Optional[callable] = None,
     ) -> 'Tuple[np.ndarray, np.ndarray, np.ndarray]':
         """Iteratively validate and subdivide spline until it avoids all obstacles.
         
@@ -150,19 +155,29 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
             eval_x = cs_x(t_dense)
             eval_y = cs_y(t_dense)
             
-            # Check for collisions
+            # Check for collisions (static and dynamic)
             collision_indices = []
             for i, (x, y) in enumerate(zip(eval_x, eval_y)):
                 point = (Meter(float(x)), Meter(float(y)))
-                # Check if point is inside any obstacle
+                
+                # Check static obstacles
+                collision_found = False
                 for obstacle in expanded_obstacles:
                     if obstacle.contains_point(*point):
                         collision_indices.append(i)
+                        collision_found = True
                         break
+                
+                # Check dynamic obstacles if no static collision found
+                if not collision_found and dynamic_obstacles and time_estimator:
+                    t_at_point = time_estimator(t_dense[i])
+                    for dyn_obs in dynamic_obstacles:
+                        if dyn_obs.contains_point_at_time(float(x), float(y), t_at_point):
+                            collision_indices.append(i)
+                            break
             
             if not collision_indices:
                 # No collisions, we're done
-                print(f"[SplineTrajectoryGenerator] Validated after {iteration} subdivision(s). {len(t_knots)} knots.")
                 break
             
             # Find which segments need subdivision
@@ -196,8 +211,6 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
             x_knots = np.array(new_x)
             y_knots = np.array(new_y)
             t_knots = np.array(new_t)
-            
-            print(f"[SplineTrajectoryGenerator] Iteration {iteration + 1}: Added {len(segments_to_subdivide)} midpoint(s). Now {len(t_knots)} knots.")
         
         return x_knots, y_knots, t_knots
     
@@ -292,7 +305,6 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         
         # Clamp to configured max
         max_accel = self.max_acceleration.to(MeterPerSecondSquared)
-        print(f"torque = {torque_nm}, total force = {total_force}, omega_wheel = {wheel_omega_rad_s}")
         return (min(max_linear_accel, max_accel), min(max_angular_accel, max_accel / module_radius_m))
     
     def _compute_module_states(
@@ -401,6 +413,8 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         constraints: Any = None,
         no_safety_corridor: bool = False,
         robot_constraints: Any = None,  # Deprecated, use robot instead
+        dynamic_obstacles: Optional[List['DynamicObstacle']] = None,
+        trajectory_start_time: float = 0.0,
     ) -> SwerveTrajectory:
         """Generates a trajectory using cubic spline interpolation.
         
@@ -408,7 +422,9 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         to compute a physically-accurate trajectory with motor curve integration.
         
         :param robot: SwerveRobot with drivetrain and physics. If None, falls back to robot_constraints.
-        :param expanded_obstacles: ExpandedObjectBounds for collision validation.
+        :param traversal_space: TraversalSpace containing static obstacles.
+        :param dynamic_obstacles: List of DynamicObstacle for time-aware collision avoidance.
+        :param trajectory_start_time: Absolute start time for this trajectory (for dynamic obstacle checking).
         """
         from scipy.interpolate import CubicSpline
         import numpy as np
@@ -489,10 +505,21 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         # Normalize to [0, 1] for spline parameter
         t_input = arc_lengths / total_length
         
+        # Create time estimator for dynamic obstacle checking
+        # Estimates time to reach a point based on arc length fraction and average velocity
+        # This is a rough estimate - will be refined in the velocity profiling step
+        estimated_travel_time = total_length / (max_vel_mps * 0.5)  # Conservative estimate at half max velocity
+        
+        def time_estimator(t_param: float) -> float:
+            """Estimate absolute time to reach a point at parameter t (0 to 1)."""
+            return trajectory_start_time + t_param * estimated_travel_time
   
         if traversal_space is not None:
             x_knots, y_knots, t_knots = self._validate_and_subdivide_spline(
-                x_arr, y_arr, t_input, traversal_space.obstacles, resolution_m, max_iterations=10
+                x_arr, y_arr, t_input, traversal_space.obstacles, resolution_m, 
+                max_iterations=10,
+                dynamic_obstacles=dynamic_obstacles,
+                time_estimator=time_estimator,
             )
         else:
             x_knots = x_arr
