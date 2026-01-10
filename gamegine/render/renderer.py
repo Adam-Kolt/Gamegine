@@ -1164,6 +1164,11 @@ class Renderer(arcade.Window):
             self._canvas._settings.render_scale = 1.0 / scale.to(Meter)
         else:
             self._canvas._settings.render_scale = float(scale)
+    
+    def on_close(self):
+        """Handle window close event."""
+        self._running = False
+        super().on_close()
 
     # Legacy compatibility - loop() now uses arcade
     def loop(self) -> bool:

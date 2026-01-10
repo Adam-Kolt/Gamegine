@@ -32,6 +32,7 @@ from gamegine.utils.NCIM.ncim import (
     RadiansPerSecond,
     RadiansPerSecondSquared,
     Second,
+    Meter,
 )
 from gamegine.simulation.rules import RuleEngine
 from gamegine.utils.logging import Info, Warn, Debug
@@ -42,6 +43,8 @@ class ServerConfig:
     mesh_resolution: SpatialMeasurement = Feet(2)
     discretization_quality: int = 4
     physics_config: PhysicsConfig = field(default_factory=PhysicsConfig)
+    fast_mode: bool = False  # Skip trajectory generation, use teleport with time estimate
+    default_max_velocity: float = 5.0  # m/s for fast mode time estimation
 
 
 @dataclass
@@ -163,11 +166,22 @@ class DiscreteGameServer(AbstractGameServer):
             Debug(f"Robot {robot_name} is already at ({x}, {y}), no need to move")
             return
 
+        # Get current time before trajectory generation (for dynamic obstacle avoidance)
+        current_time = self.match.game_state.current_time.get()
+        
         path = self.__pathfind(robot_name, x, y)
         trajectory = self.__trajectory(
-            robot_name, x, y, theta, path, no_safety_corridor
+            robot_name, x, y, theta, path, no_safety_corridor, current_time
         )
-
+        
+        # Register trajectory for dynamic obstacle avoidance by other robots
+        robot = self.robots[robot_name]
+        radius = robot.get_bounding_radius()
+        radius_m = radius.to(Meter) if hasattr(radius, 'to') else float(radius)
+        self.physics_engine.register_active_trajectory(
+            robot_name, trajectory, current_time, radius_m
+        )
+        
         changes = [
             ValueChange(robot_state.x, x),
             ValueChange(robot_state.y, y),
@@ -192,6 +206,47 @@ class DiscreteGameServer(AbstractGameServer):
         )
         
         return trajectory  # Return trajectory for animation
+
+    def drive_robot_fast(
+        self,
+        robot_name: str,
+        x: SpatialMeasurement,
+        y: SpatialMeasurement,
+        theta: AngularMeasurement,
+    ) -> float:
+        """Fast mode: teleport robot with time estimation (no trajectory).
+        
+        Returns the estimated travel time in seconds.
+        """
+        if robot_name not in self.robots:
+            raise ValueError("Robot not added")
+
+        robot_state: RobotState = self.match.game_state.get("robots").get(robot_name)
+        
+        # Calculate straight-line distance
+        current_x = robot_state.x.get().to(Meter)
+        current_y = robot_state.y.get().to(Meter)
+        target_x = x.to(Meter) if hasattr(x, 'to') else float(x)
+        target_y = y.to(Meter) if hasattr(y, 'to') else float(y)
+        
+        distance = math.hypot(target_x - current_x, target_y - current_y)
+        travel_time = distance / self.config.default_max_velocity
+        
+        # Teleport instantly
+        changes = [
+            ValueChange(robot_state.x, x),
+            ValueChange(robot_state.y, y),
+            ValueChange(robot_state.heading, theta),
+            ValueIncrease(self.match.game_state.current_time, travel_time),
+        ]
+        self.match.apply_changes(changes)
+        
+        return travel_time
+
+    def soft_reset(self) -> None:
+        """Reset game state without recreating server (for pooling)."""
+        self.match.reset()
+        self.physics_engine.clear_all_active_trajectories()
 
     def prepare_traversal_space(self, robot_name: str) -> TraversalSpace:
         if robot_name not in self.robots:
@@ -233,6 +288,7 @@ class DiscreteGameServer(AbstractGameServer):
         heading: AngularMeasurement,
         path: pathfinding.Path,
         no_safety_corridor=False,
+        start_time: float = 0.0,
     ) -> SwerveTrajectory:
         robot_state: RobotState = self.match.game_state.get("robots").get(robot_name)
         traversal_space = self.prepare_traversal_space(robot_name)
@@ -247,7 +303,9 @@ class DiscreteGameServer(AbstractGameServer):
             target_state,
             path,
             traversal_space,
-            no_safety_corridor
+            no_safety_corridor,
+            start_time=start_time,
+            avoid_other_robots=True,
         )
 
     def get_trajectories(self, robot_name) -> Dict:

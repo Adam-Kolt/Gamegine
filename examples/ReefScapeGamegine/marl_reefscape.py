@@ -275,6 +275,7 @@ class MARLVisualizer:
         traj_times = {}
         action_times = {}
         action_names = {}
+        wait_times = {}
         
         for agent in self.env.agents:
             info = infos.get(agent, {})
@@ -282,14 +283,21 @@ class MARLVisualizer:
             traj_times[agent] = info.get("trajectory_time", 0.0)
             action_times[agent] = info.get("action_time", 0.1)
             action_names[agent] = info.get("action_name", "WAIT")
+            wait_times[agent] = info.get("wait_before_start", 0.0)
         
-        # Calculate animation duration (max of all agents' action times)
-        max_traj_time = max(traj_times.values()) if traj_times else 0.0
+        # Calculate animation duration including wait times
+        # Total time for each agent = wait + trajectory + action_pause
+        max_total_time = 0
+        for agent in self.env.agents:
+            total = wait_times[agent] + traj_times[agent]
+            if total > max_total_time:
+                max_total_time = total
+        
         max_action_time = max(action_times.values()) if action_times else 0.1
         
         # Action pause = time spent on interaction after driving
-        action_pause = max(0, max_action_time - max_traj_time)
-        total_anim_time = max_traj_time + action_pause
+        action_pause = max(0, max_action_time - max_total_time)
+        total_anim_time = max_total_time + action_pause
         
         if total_anim_time < 0.05:
             total_anim_time = 0.05  # Minimum animation time
@@ -339,11 +347,18 @@ class MARLVisualizer:
             for agent in self.env.agents:
                 traj = trajectories[agent]
                 traj_duration = traj_times[agent]
+                wait_time = infos.get(agent, {}).get("wait_before_start", 0)
                 
                 if traj is not None and traj_duration > 0:
-                    if anim_time < traj_duration:
+                    # Apply wait_before_start: robot doesn't move until wait_time passes
+                    effective_time = anim_time - wait_time
+                    
+                    if effective_time < 0:
+                        # Still waiting - robot at start position
+                        robot_state = traj.get_at_time(Second(0))
+                    elif effective_time < traj_duration:
                         # Driving phase - interpolate along trajectory
-                        robot_state = traj.get_at_time(Second(anim_time))
+                        robot_state = traj.get_at_time(Second(effective_time))
                     else:
                         # Action phase - robot at end of trajectory
                         robot_state = traj.get_at_time(traj.get_travel_time())
@@ -364,7 +379,7 @@ class MARLVisualizer:
                 10, self.renderer.height - 25, (0, 0, 0), 18
             )
             self.renderer.draw_text(
-                f"Anim: {anim_time:.1f}s / {total_anim_time:.1f}s (Drive: {max_traj_time:.1f}s + Action: {action_pause:.1f}s)",
+                f"Anim: {anim_time:.1f}s / {total_anim_time:.1f}s (Drive: {max_total_time:.1f}s + Action: {action_pause:.1f}s)",
                 10, self.renderer.height - 45, (0, 0, 0), 14
             )
             

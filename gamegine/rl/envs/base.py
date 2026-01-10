@@ -67,8 +67,10 @@ class BaseGamegineEnv(ABC):
         self.server.load_from_game(self.game)
         
         for robot_config in self.config.robots:
-            self.server.add_robot(robot_config.robot)
-            self.server.init_robot(robot_config.name, robot_config.start_state)
+            # Use config name instead of robot.name to allow agent-specific naming
+            robot_name = robot_config.name
+            self.server.match.add_robot(robot_name, robot_config.robot)
+            self.server.init_robot(robot_name, robot_config.start_state)
             
             # Initialize robot interaction configs
             for interaction_config in robot_config.robot.interaction_configs:

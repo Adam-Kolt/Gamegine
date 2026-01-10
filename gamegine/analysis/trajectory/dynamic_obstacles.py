@@ -9,19 +9,20 @@ Key classes:
 - TrajectoryObstacle: Wraps a SwerveTrajectory as a moving circular obstacle
 """
 from abc import ABC, abstractmethod
-from typing import List, Optional, Protocol, Tuple
+from typing import List, Optional, Tuple
 from dataclasses import dataclass
 
 from gamegine.utils.NCIM.Dimensions.spatial import SpatialMeasurement, Meter
 
 
-class DynamicObstacle(Protocol):
-    """Protocol for obstacles that vary with time.
+class DynamicObstacle(ABC):
+    """Abstract base class for obstacles that vary with time.
     
     Used for collision checking during trajectory generation where the
     obstacle's position depends on the query time.
     """
     
+    @abstractmethod
     def contains_point_at_time(
         self, 
         x: float, 
@@ -35,25 +36,57 @@ class DynamicObstacle(Protocol):
         :param t: Time in seconds (absolute game time)
         :returns: True if collision detected
         """
-        ...
+        pass
     
+    @abstractmethod
     def get_bounding_radius(self) -> float:
         """Get bounding radius for fast rejection tests.
         
         :returns: Radius in meters that bounds the obstacle at any time
         """
-        ...
+        pass
     
+    @abstractmethod
     def get_time_bounds(self) -> Tuple[float, float]:
         """Get the time interval during which this obstacle is active.
         
         :returns: (start_time, end_time) in seconds
         """
-        ...
+        pass
 
+    def get_time_to_exit(self, x: float, y: float, t_initial: float, max_iterations: int = 1000) -> float:
+        """Get the time when the obstacle exits this point.
+        
+        :param x: X coordinate in meters
+        :param y: Y coordinate in meters  
+        :param t_initial: Time in seconds (absolute game time)
+        :param max_iterations: Maximum iterations to prevent infinite loop
+        :returns: Time in seconds when obstacle exits, or t_initial + 100s if timeout
+        """
+        # Get time bounds to avoid checking past obstacle's active period
+        start_time, end_time = self.get_time_bounds()
+        
+        guess = t_initial
+        iterations = 0
+        
+        while self.contains_point_at_time(x, y, guess):
+            guess += 0.1
+            iterations += 1
+            
+            # Timeout protection
+            if iterations >= max_iterations:
+                return t_initial + 100.0  # Return a large delay as fallback
+            
+            # If we've passed the obstacle's active period, it's exited
+            if guess > end_time + 1.0:
+                return guess
+        
+        return guess
+
+    
 
 @dataclass
-class TrajectoryObstacle:
+class TrajectoryObstacle(DynamicObstacle):
     """A moving circular obstacle defined by a robot following a trajectory.
     
     The obstacle is a circle centered at the robot's position along the
@@ -123,8 +156,9 @@ class TrajectoryObstacle:
         obs_x = state.x.to(Meter) if hasattr(state.x, 'to') else float(state.x)
         obs_y = state.y.to(Meter) if hasattr(state.y, 'to') else float(state.y)
         
-        # Check distance against combined radii
-        combined_radius = self.robot_radius + self.query_robot_radius
+        # Check distance against combined radii with safety buffer
+        safety_multiplier = 1.5
+        combined_radius = (self.robot_radius + self.query_robot_radius) * safety_multiplier
         distance_sq = (x - obs_x)**2 + (y - obs_y)**2
         
         return distance_sq < combined_radius**2
@@ -163,7 +197,7 @@ class TrajectoryObstacle:
 
 
 @dataclass
-class StationaryCircleObstacle:
+class StationaryCircleObstacle(DynamicObstacle):
     """A stationary circular obstacle at a fixed position.
     
     Useful for representing robots that have completed their trajectories

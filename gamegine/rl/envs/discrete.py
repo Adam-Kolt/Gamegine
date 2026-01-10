@@ -280,19 +280,7 @@ class MultiAgentDiscreteEnv(BaseGamegineEnv):
                         action_valid[agent] = bool(result)
                         trajectories[agent] = None
                     
-                    # Register trajectory for dynamic obstacle avoidance by other robots
-                    if trajectories[agent] is not None and hasattr(self.server, 'physics_engine'):
-                        robot = self.server.robots.get(agent)
-                        if robot:
-                            from gamegine.utils.NCIM.Dimensions.spatial import Meter
-                            radius = robot.get_bounding_radius()
-                            radius_m = radius.to(Meter) if hasattr(radius, 'to') else float(radius)
-                            self.server.physics_engine.register_active_trajectory(
-                                agent,
-                                trajectories[agent],
-                                time_before,
-                                radius_m,
-                            )
+                    # Trajectory registration is now handled by DiscreteGameServer.drive_robot
                     
                     # Update busy_until based on actual action time
                     self._busy_until[agent] = time_after

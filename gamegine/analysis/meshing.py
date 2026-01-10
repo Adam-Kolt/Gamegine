@@ -82,10 +82,8 @@ class Map:
         """
 
         if node1 not in self.encoding:
-            Debug(f"Node at {node1} does not exist. Attempting to add node.")
             self.add_node(node1[0], node1[1])
         if node2 not in self.encoding:
-            Debug(f"Node at {node2} does not exist. Attempting to add node.")
             self.add_node(node2[0], node2[1])
 
         node1_id = self.encoding[node1]

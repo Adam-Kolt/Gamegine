@@ -113,6 +113,7 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         max_iterations: int = 10,
         dynamic_obstacles: Optional[List['DynamicObstacle']] = None,
         time_estimator: Optional[callable] = None,
+        trajectory_start_time: float = 0.0,
     ) -> 'Tuple[np.ndarray, np.ndarray, np.ndarray]':
         """Iteratively validate and subdivide spline until it avoids all obstacles.
         
@@ -129,6 +130,7 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         :param expanded_obstacles: ExpandedObjectBounds to check collisions against
         :param resolution_m: Resolution for dense evaluation (meters)
         :param max_iterations: Maximum subdivision iterations
+        :param trajectory_start_time: Start time of this trajectory
         :return: Tuple of (x_knots, y_knots, t_knots) for the validated spline
         """
         from scipy.interpolate import CubicSpline
@@ -138,6 +140,9 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         x_knots = x_arr.copy()
         y_knots = y_arr.copy()
         t_knots = t_arr.copy()
+        
+        # Track dynamic collision segments (t_param ranges where robot should slow down)
+        dynamic_collision_segments = []  # List of (t_start, t_end) normalized params
         
         for iteration in range(max_iterations):
             # Fit spline with current knots
@@ -156,7 +161,9 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
             eval_y = cs_y(t_dense)
             
             # Check for collisions (static and dynamic)
-            collision_indices = []
+            static_collision_indices = []
+            dynamic_collision_t_params = []  # t_param values where dynamic collision occurs
+            
             for i, (x, y) in enumerate(zip(eval_x, eval_y)):
                 point = (Meter(float(x)), Meter(float(y)))
                 
@@ -164,7 +171,7 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
                 collision_found = False
                 for obstacle in expanded_obstacles:
                     if obstacle.contains_point(*point):
-                        collision_indices.append(i)
+                        static_collision_indices.append(i)
                         collision_found = True
                         break
                 
@@ -173,17 +180,47 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
                     t_at_point = time_estimator(t_dense[i])
                     for dyn_obs in dynamic_obstacles:
                         if dyn_obs.contains_point_at_time(float(x), float(y), t_at_point):
-                            collision_indices.append(i)
+                            # Record collision info: t_param, our arrival time, obstacle exit time
+                            obs_end = dyn_obs.get_time_to_exit(float(x), float(y), t_at_point)
+                            dynamic_collision_t_params.append((t_dense[i], t_at_point, obs_end))
                             break
             
-            if not collision_indices:
-                # No collisions, we're done
+            # Only static collisions can be fixed by subdivision
+            if not static_collision_indices:
+                # No static collisions - compute required slowdown
+                if dynamic_collision_t_params:
+                    # Find earliest collision point and required delay
+                    first_collision = min(dynamic_collision_t_params, key=lambda x: x[0])
+                    t_param_collision, our_arrival_time, obstacle_exit_time = first_collision
+                    
+                    # We need to arrive at collision point AFTER obstacle exits
+                    # Required arrival time = obstacle_exit_time + small buffer
+                    buffer_time = 0.0  # seconds buffer after obstacle clears
+                    required_arrival = obstacle_exit_time + buffer_time
+                    
+                    # How much do we need to slow down?
+                    # If our_arrival_time < required_arrival, we need to slow down
+                    if our_arrival_time < required_arrival:
+                        # Slowdown applies from start to collision point
+                        t_start = 0.0  # Start slowing from beginning
+                        t_end = t_param_collision
+                        
+                        # Compute slowdown factor: 
+                        # We want to travel the segment [0, t_param_collision] in time (required_arrival - start_time) instead of (our_arrival_time - start_time)
+                        # slowdown_factor = desired_time / original_time
+                        original_segment_time = our_arrival_time - trajectory_start_time
+                        desired_segment_time = required_arrival - trajectory_start_time
+                        slowdown_factor = original_segment_time / desired_segment_time if desired_segment_time > 0 else 0.5
+                        
+                        # Clamp to reasonable range
+                        slowdown_factor = max(0.2, min(1.0, slowdown_factor))
+                        
+                        dynamic_collision_segments.append((t_start, t_end, slowdown_factor))
                 break
             
-            # Find which segments need subdivision
-            # Map collision indices back to knot segments
+            # Find which segments need subdivision (static collisions only)
             segments_to_subdivide = set()
-            for coll_idx in collision_indices:
+            for coll_idx in static_collision_indices:
                 t_coll = t_dense[coll_idx]
                 # Find which knot segment this falls into
                 for seg_idx in range(len(t_knots) - 1):
@@ -212,7 +249,8 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
             y_knots = np.array(new_y)
             t_knots = np.array(new_t)
         
-        return x_knots, y_knots, t_knots
+        # Return knots and dynamic collision segments (t_param ranges to slow down in)
+        return x_knots, y_knots, t_knots, dynamic_collision_segments
     
     def _compute_motor_limited_acceleration(
         self,
@@ -510,17 +548,23 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         # This is a rough estimate - will be refined in the velocity profiling step
         estimated_travel_time = total_length / (max_vel_mps * 0.5)  # Conservative estimate at half max velocity
         
+        # Track segments where velocity should be reduced for dynamic obstacle avoidance
+        slowdown_segments = []  # List of (t_start, t_end) normalized params
+        
         def time_estimator(t_param: float) -> float:
             """Estimate absolute time to reach a point at parameter t (0 to 1)."""
             return trajectory_start_time + t_param * estimated_travel_time
   
         if traversal_space is not None:
-            x_knots, y_knots, t_knots = self._validate_and_subdivide_spline(
+            result = self._validate_and_subdivide_spline(
                 x_arr, y_arr, t_input, traversal_space.obstacles, resolution_m, 
                 max_iterations=10,
                 dynamic_obstacles=dynamic_obstacles,
                 time_estimator=time_estimator,
+                trajectory_start_time=trajectory_start_time,
             )
+            x_knots, y_knots, t_knots, dynamic_collision_segments = result
+            slowdown_segments = dynamic_collision_segments
         else:
             x_knots = x_arr
             y_knots = y_arr
@@ -563,6 +607,19 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         v_curvature_limit = np.sqrt(centripetal_limit / curvature_safe)
         # Clamp to max velocity (this handles near-zero curvature giving huge v_limit)
         v_curvature_limit = np.minimum(v_curvature_limit, max_vel_mps)
+        
+        # Apply velocity reduction in dynamic obstacle slowdown segments
+        if slowdown_segments:
+            for segment in slowdown_segments:
+                t_start, t_end = segment[0], segment[1]
+                slowdown_factor = segment[2] if len(segment) > 2 else 0.5
+                # Find indices that fall within this segment
+                for i in range(n_output):
+                    t_param = t_dense[i]
+                    if t_start <= t_param <= t_end:
+                        # Apply computed slowdown factor
+                        v_curvature_limit[i] *= slowdown_factor
+        
         # Compute heading change rate for angular velocity consideration
         start_theta = start_state[2].to(Radian)
         end_theta = target_state[2].to(Radian)
@@ -750,4 +807,7 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
                 max_velocity=self.max_velocity,
             )
         
-        return SwerveTrajectory(states, final_constraints)
+        trajectory = SwerveTrajectory(states, final_constraints)
+        # Attach slowdown segment info for visualization/debugging
+        trajectory.slowdown_segments = slowdown_segments
+        return trajectory

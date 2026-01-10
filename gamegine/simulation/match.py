@@ -105,6 +105,30 @@ class MatchController:
         for interactable in game.get_interactables():
             self.add_interactable(interactable)
 
+    def reset(self) -> None:
+        """Reset game state without reloading the game (for pooling).
+        
+        Resets time, scores, and robot states while keeping game/interactables.
+        """
+        if self.game is None:
+            return
+        
+        # Reset time and scores
+        self.game_state.current_time.set(0)
+        self.game_state.score.set(0)
+        if hasattr(self.game_state, 'red_score'):
+            self.game_state.red_score.set(0)
+        if hasattr(self.game_state, 'blue_score'):
+            self.game_state.blue_score.set(0)
+        
+        # Clear log
+        self.clear_log()
+        
+        # Reset interactables to initial state
+        for interactable in self.game.get_interactables():
+            if hasattr(interactable, 'reset'):
+                interactable.reset()
+
     def set_obstacles(self, obstacles: List[obstacle.Obstacle]) -> None:
         """Sets the obstacles present in the field.
 
