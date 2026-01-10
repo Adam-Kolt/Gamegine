@@ -34,7 +34,7 @@ from gamegine.representation.interactable import RobotInteractionConfig
 from gamegine.representation.robot import PhysicalParameters, SwerveRobot
 from gamegine.simulation.GameServer import DiscreteGameServer
 from gamegine.simulation.robot import RobotState
-from gamegine.utils.NCIM.ncim import Inch, Pound, Ampere, Feet, Degree, Second, Radian
+from gamegine.utils.NCIM.ncim import Inch, Pound, Ampere, Feet, Degree, Second, Radian, MeterPerSecondSquared
 from gamegine.utils.NCIM.Dimensions.spatial import Meter
 from gamegine.utils.logging import GetLogger, SetLoggingLevel
 
@@ -57,7 +57,7 @@ print("Pygame initialized successfully")
 ROBOT_WIDTH = Inch(32)
 ROBOT_LENGTH = Inch(32)
 ROBOT_MASS = Pound(120)
-ROBOT_MOI = Pound(120) * Inch(30) ** 2
+ROBOT_MOI = Pound(120) * Inch(15) ** 2
 
 ROBOT_SWERVE = SwerveConfig(
     SwerveModule(
@@ -96,7 +96,7 @@ def create_robot(name: str, mass_multiplier: int) -> SwerveRobot:
         name,
         ROBOT_SWERVE,
         ROBOT_GEOMETRY,
-        PhysicalParameters(ROBOT_MASS * mass_multiplier, ROBOT_MOI),
+        PhysicalParameters(ROBOT_MASS * mass_multiplier, ROBOT_MOI, MeterPerSecondSquared(6.0), MeterPerSecondSquared(6.0)),
     )
     robot.override_bounding_radius(Inch(16))
     return robot
@@ -207,7 +207,7 @@ def create_marl_env(num_agents: int = 3, render_mode: str = None):
     ]
     
     for i in range(num_agents):
-        robot = create_robot(f"Blue{i+1}", mass_multiplier=i+1)
+        robot = create_robot(f"Blue{i+1}", mass_multiplier=(i+1)**2)
         add_robot_interactions(robot)
         
         start_pos = start_positions[i % len(start_positions)]

@@ -25,7 +25,7 @@ def _default_trajectory_generator():
     """Factory for default SplineTrajectoryGenerator."""
     return SplineTrajectoryGenerator(
         MetersPerSecond(5.0),
-        MeterPerSecondSquared(9),
+        MeterPerSecondSquared(9.8),
         Meter(0.1),
         Meter(0.15),
     )
@@ -163,6 +163,7 @@ class PhysicsEngine:
         no_safety_corridor=False,
         start_time: float = 0.0,
         avoid_other_robots: bool = True,
+        battery_model = None,
     ) -> SwerveTrajectory:
         """Generates a swerve trajectory for the robot.
 
@@ -175,6 +176,7 @@ class PhysicsEngine:
         :param no_safety_corridor: If True, skips safety corridor generation.
         :param start_time: Absolute start time for this trajectory (for dynamic obstacle avoidance).
         :param avoid_other_robots: If True, avoid other robots' active trajectories.
+        :param battery_model: Optional BatteryModel for voltage-aware acceleration limiting.
         :return: The generated SwerveTrajectory.
         :rtype: SwerveTrajectory
         """
@@ -206,6 +208,7 @@ class PhysicsEngine:
             no_safety_corridor=no_safety_corridor,
             dynamic_obstacles=dynamic_obstacles,
             trajectory_start_time=start_time,
+            battery_model=battery_model,
         )
 
         if robot_name not in self.trajectories:

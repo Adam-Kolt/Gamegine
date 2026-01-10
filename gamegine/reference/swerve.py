@@ -36,14 +36,28 @@ class SwerveModule:
         default_factory=lambda: Wheel(Inch(4), TreadDB.vexPro_versawheel)
     )
 
-    def get_torque(self, speed: Omega) -> Torque:
-        """Calculates the torque output of the drive motor at a given speed."""
-        return (
-            self.drive_motor.motor.get_torque_at(
-                speed, self.drive_motor.power.supply_current_limit
-            )
-            / self.drive_gear_ratio
-        )
+    def get_torque(self, speed: Omega, available_voltage=None) -> Torque:
+        """Calculates the torque output at the wheel at a given wheel speed.
+        
+        The input speed is the wheel angular velocity. We must:
+        1. Convert wheel speed to motor speed (motor spins faster by gear ratio)
+        2. Get motor torque at that motor speed (with current and voltage limits)
+        3. Convert motor torque to wheel torque (torque is multiplied by gear ratio)
+        
+        :param speed: Wheel angular velocity
+        :param available_voltage: Battery terminal voltage (None = use nominal 12V)
+        :return: Available wheel torque at this operating point
+        """
+        # Wheel speed -> Motor speed (motor is faster)
+        motor_speed = speed * self.drive_gear_ratio.get_ratio()
+        
+        # Get motor torque at motor speed with current/voltage limits
+        motor_torque = self.drive_motor.get_torque_at(motor_speed, available_voltage)
+        
+        # Motor torque -> Wheel torque (torque is amplified through gearing)
+        wheel_torque = motor_torque * self.drive_gear_ratio.get_ratio()
+        
+        return wheel_torque
 
     def get_max_torque(self) -> Torque:
         """Returns the maximum torque of the drive motor."""

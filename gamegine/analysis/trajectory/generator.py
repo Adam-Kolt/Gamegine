@@ -260,8 +260,9 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         robot_mass_kg: float,
         robot_moi_kgm2: float,
         module_radius_m: float,
+        battery_model=None,
     ) -> tuple:
-        """Compute maximum acceleration at given velocity, accounting for rotation.
+        """Compute maximum acceleration at given velocity, accounting for rotation and battery.
         
         When the robot is both translating and rotating, motor torque is split between:
         - Translation force: F_trans = m * a_linear / 4
@@ -270,17 +271,23 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         The available motor torque is shared, so max linear acceleration is reduced
         when angular velocity/acceleration is demanded.
         
+        With battery_model, voltage sag under load is accounted for, and current draw
+        is limited to prevent RoboRIO brownout.
+        
         :param linear_velocity_mps: Current linear velocity in m/s
         :param angular_velocity_rps: Current angular velocity in rad/s
         :param swerve_config: SwerveConfig with module specifications
         :param robot_mass_kg: Robot mass in kg
         :param robot_moi_kgm2: Robot moment of inertia in kg*m^2
         :param module_radius_m: Distance from robot center to module in m
+        :param battery_model: Optional BatteryModel for voltage-aware limiting
         :return: Tuple of (max_linear_accel_mps2, max_angular_accel_rps2)
         """
         from gamegine.utils.NCIM.ComplexDimensions.omega import RadiansPerSecond
         from gamegine.utils.NCIM.ComplexDimensions.torque import NewtonMeter
         from gamegine.utils.NCIM.Dimensions.spatial import Meter
+        from gamegine.utils.NCIM.ComplexDimensions.electricpot import Volt
+        from gamegine.utils.NCIM.Dimensions.current import Ampere
         import math
         
         module = swerve_config.module
@@ -299,14 +306,29 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         # Convert module linear speed to wheel angular velocity
         wheel_omega_rad_s = module_linear_speed / wheel_radius_m
         
-        # Convert wheel speed to motor speed (through gearing)
-        # Motor runs faster than wheel by gear_ratio
-        motor_omega_rad_s = wheel_omega_rad_s * gear_ratio
+        # Determine available voltage (accounting for battery sag)
+        available_voltage = None
+        if battery_model is not None:
+            # Estimate current draw: assume all 4 motors at supply limit as worst case
+            supply_limit = module.drive_motor.power.supply_current_limit
+            supply_limit_a = supply_limit.to(Ampere) if hasattr(supply_limit, 'to') else float(supply_limit)
+            
+            # Check brownout limit
+            max_total_current = battery_model.get_max_current_before_brownout()
+            max_per_motor = max_total_current.to(Ampere) / 4  # 4 drive motors
+            
+            # Use the more restrictive limit
+            effective_supply_limit = min(supply_limit_a, max_per_motor)
+            
+            # Get terminal voltage at this current draw
+            estimated_total_current = Ampere(effective_supply_limit * 4)
+            available_voltage = battery_model.get_terminal_voltage(estimated_total_current)
         
-        # Query motor torque at motor-side speed
-        motor_omega = RadiansPerSecond(motor_omega_rad_s)
-        # Note: get_torque already applies gearing to give wheel-side torque
-        available_wheel_torque = module.get_torque(RadiansPerSecond(wheel_omega_rad_s))
+        # Query module torque at wheel-side speed with voltage limit
+        available_wheel_torque = module.get_torque(
+            RadiansPerSecond(wheel_omega_rad_s), 
+            available_voltage=available_voltage
+        )
 
         torque_nm = available_wheel_torque.to(NewtonMeter)
         
@@ -316,30 +338,20 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         # Total force from all 4 modules
         total_force = force_per_module * 4
         
-        # Split force between translation and rotation based on current demands
-        # Simple model: allocate proportionally to velocity components
-        total_velocity = linear_velocity_mps + rotational_linear_component + 0.1  # epsilon
-        translation_fraction = (linear_velocity_mps + 0.05) / total_velocity
-        rotation_fraction = (rotational_linear_component + 0.05) / total_velocity
+        # For trajectory planning: assume all 4 modules contribute to linear acceleration
+        # (Swerve modules orient to push in the desired direction)
+        # The rotation is handled separately by steering - it doesn't steal torque from translation
+        trans_force = total_force
         
-        # Force available for translation
-        trans_force = total_force * translation_fraction
-        # Torque available for rotation (force * module_radius)
-        rot_force = total_force * rotation_fraction
-        rot_torque = rot_force * module_radius_m
-        
-        # Compute accelerations
-        # a_linear = F / m
+        # Compute linear acceleration: a = F / m
         if robot_mass_kg > 0:
             max_linear_accel = trans_force / robot_mass_kg
         else:
             max_linear_accel = self.max_acceleration.to(MeterPerSecondSquared)
         
-        # α = τ / I
-        if robot_moi_kgm2 > 0:
-            max_angular_accel = rot_torque / robot_moi_kgm2
-        else:
-            max_angular_accel = 10.0  # Default rad/s^2
+        # Angular acceleration is limited by how fast we can reorient
+        # For trajectory planning, use a reasonable default
+        max_angular_accel = 15.0  # rad/s^2 (typical for FRC swerve)
         
         # Clamp to configured max
         max_accel = self.max_acceleration.to(MeterPerSecondSquared)
@@ -432,10 +444,14 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
             else:
                 wheel_alpha_val = 0.0
             
+            # Calculate motor torque
+            motor_torque = swerve_config.module.get_torque(RadiansPerSecond(wheel_omega_val))
+
             module_states.append(SwerveModuleState(
                 wheel_angle=Radian(wheel_angle),
                 wheel_omega=RadiansPerSecond(wheel_omega_val),
                 wheel_alpha=RadiansPerSecondSquared(wheel_alpha_val),
+                motor_torque=motor_torque,
             ))
         
         return module_states
@@ -453,6 +469,7 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         robot_constraints: Any = None,  # Deprecated, use robot instead
         dynamic_obstacles: Optional[List['DynamicObstacle']] = None,
         trajectory_start_time: float = 0.0,
+        battery_model = None,  # Optional BatteryModel for voltage-aware limits
     ) -> SwerveTrajectory:
         """Generates a trajectory using cubic spline interpolation.
         
@@ -463,6 +480,7 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         :param traversal_space: TraversalSpace containing static obstacles.
         :param dynamic_obstacles: List of DynamicObstacle for time-aware collision avoidance.
         :param trajectory_start_time: Absolute start time for this trajectory (for dynamic obstacle checking).
+        :param battery_model: Optional BatteryModel for voltage-aware acceleration limiting.
         """
         from scipy.interpolate import CubicSpline
         import numpy as np
@@ -491,6 +509,8 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         friction_coeff = 1.0  # Default
         use_motor_curve = False
         module_radius_m = 0.4  # Default module distance from center
+        robot_max_accel = None  # User-set acceleration limit (None = use motor curve)
+        robot_max_decel = None  # User-set deceleration limit (None = same as accel)
         
         # Prefer robot object if available
         if robot is not None:
@@ -506,6 +526,15 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
             if hasattr(robot, 'physics') and robot.physics is not None:
                 robot_mass_kg = robot.physics.mass.to(Kilogram)
                 robot_moi_kgm2 = robot.physics.moi.to(KilogramMetersSquared)
+                # Extract user-set acceleration limits
+                if hasattr(robot.physics, 'max_acceleration') and robot.physics.max_acceleration is not None:
+                    robot_max_accel = robot.physics.max_acceleration.to(MeterPerSecondSquared)
+                else:
+                    robot_max_accel = None
+                if hasattr(robot.physics, 'max_deceleration') and robot.physics.max_deceleration is not None:
+                    robot_max_decel = robot.physics.max_deceleration.to(MeterPerSecondSquared)
+                else:
+                    robot_max_decel = robot_max_accel  # Default: same as acceleration
         # Fallback to robot_constraints for backward compatibility
         elif robot_constraints is not None:
             if hasattr(robot_constraints, 'swerve_config') and robot_constraints.swerve_config is not None:
@@ -519,6 +548,12 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
                 robot_mass_kg = robot_constraints.physical_parameters.mass.to(Kilogram)
                 if hasattr(robot_constraints.physical_parameters, 'moi'):
                     robot_moi_kgm2 = robot_constraints.physical_parameters.moi.to(KilogramMetersSquared)
+        
+        # Apply robot-level acceleration limits if set
+        if robot_max_accel is not None:
+            max_accel_mps2 = min(max_accel_mps2, robot_max_accel)
+        if robot_max_decel is None:
+            robot_max_decel = max_accel_mps2  # Default to generator's max_accel
         
         # Centripetal acceleration limit from friction: a_c = µ * g
         centripetal_limit = friction_coeff * GRAVITY_M_S2
@@ -571,22 +606,44 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
             t_knots = t_input
         
         # Fit cubic splines using all knots
-        cs_x = CubicSpline(t_knots, x_knots, bc_type='natural')
-        cs_y = CubicSpline(t_knots, y_knots, bc_type='natural')
+        # For short paths (2 points) or if spline fails, use straight line interpolation
+        use_straight_line = (len(x_knots) <= 2)
+        
+        if not use_straight_line:
+            try:
+                cs_x = CubicSpline(t_knots, x_knots, bc_type='natural')
+                cs_y = CubicSpline(t_knots, y_knots, bc_type='natural')
+            except Exception as e:
+                # Fallback to straight line if spline fails
+                use_straight_line = True
         
         # Generate dense output points at desired resolution
         n_output = max(int(total_length / resolution_m) + 1, 2)
         t_dense = np.linspace(0, 1, n_output)
         
-        # Evaluate spline at dense points
-        smooth_x = cs_x(t_dense)
-        smooth_y = cs_y(t_dense)
+        if use_straight_line:
+            # Simple linear interpolation for short/problematic paths
+            smooth_x = np.interp(t_dense, t_knots, x_knots)
+            smooth_y = np.interp(t_dense, t_knots, y_knots)
+        else:
+            # Evaluate spline at dense points
+            smooth_x = cs_x(t_dense)
+            smooth_y = cs_y(t_dense)
         
-        # Compute derivatives
-        dx_dt = cs_x(t_dense, 1)
-        dy_dt = cs_y(t_dense, 1)
-        d2x_dt2 = cs_x(t_dense, 2)
-        d2y_dt2 = cs_y(t_dense, 2)
+        # Compute derivatives (differently for spline vs straight line)
+        if use_straight_line:
+            # For straight line: constant derivatives (direction vector)
+            dx_total = x_knots[-1] - x_knots[0]
+            dy_total = y_knots[-1] - y_knots[0]
+            dx_dt = np.full(n_output, dx_total)
+            dy_dt = np.full(n_output, dy_total)
+            d2x_dt2 = np.zeros(n_output)  # No curvature
+            d2y_dt2 = np.zeros(n_output)
+        else:
+            dx_dt = cs_x(t_dense, 1)
+            dy_dt = cs_y(t_dense, 1)
+            d2x_dt2 = cs_x(t_dense, 2)
+            d2y_dt2 = cs_y(t_dense, 2)
         
         # Compute speed (magnitude of tangent) and curvature
         speed_sq = dx_dt**2 + dy_dt**2
@@ -621,9 +678,18 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
                         v_curvature_limit[i] *= slowdown_factor
         
         # Compute heading change rate for angular velocity consideration
+        # Normalize to shortest rotational path (within -π to +π)
         start_theta = start_state[2].to(Radian)
         end_theta = target_state[2].to(Radian)
-        total_heading_change = abs(end_theta - start_theta)
+        heading_diff = end_theta - start_theta
+        # Wrap to [-π, π] for shortest path
+        while heading_diff > np.pi:
+            heading_diff -= 2 * np.pi
+        while heading_diff < -np.pi:
+            heading_diff += 2 * np.pi
+        # Compute target heading using shortest path
+        end_theta_adjusted = start_theta + heading_diff
+        total_heading_change = abs(heading_diff)
         
         # Ensure start and end at rest
         v_curvature_limit[0] = 0
@@ -647,7 +713,7 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
             # Use motor curve for acceleration if swerve_config available
             if use_motor_curve and swerve_config is not None:
                 accel_limit, _ = self._compute_motor_limited_acceleration(
-                    v_prev, omega_estimate, swerve_config, robot_mass_kg, robot_moi_kgm2, module_radius_m
+                    v_prev, omega_estimate, swerve_config, robot_mass_kg, robot_moi_kgm2, module_radius_m, battery_model
                 )
             else:
                 accel_limit = max_accel_mps2
@@ -656,21 +722,17 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
             v_max_from_accel = np.sqrt(v_prev**2 + 2 * accel_limit * ds)
             forward_vel[i] = min(v_curvature_limit[i], v_max_from_accel)
         
-        # Backward pass: respect deceleration limits (motor curve aware for regenerative braking)
+        # Backward pass: respect deceleration limits
+        # Regenerative braking: back-EMF aids the motor, so braking torque is HIGH at all speeds
+        # Use robot_max_decel (user-configurable) or fall back to max_accel
         backward_vel = np.zeros(n_output)
         backward_vel[-1] = 0
         for i in range(n_output - 2, -1, -1):
             v_next = backward_vel[i+1]
             ds = segment_lengths[i]
-            omega_estimate = forward_omega[i]
             
-            # Use motor curve for deceleration
-            if use_motor_curve and swerve_config is not None:
-                decel_limit, _ = self._compute_motor_limited_acceleration(
-                    v_next, omega_estimate, swerve_config, robot_mass_kg, robot_moi_kgm2, module_radius_m
-                )
-            else:
-                decel_limit = max_accel_mps2
+            # Use robot-configured deceleration limit
+            decel_limit = robot_max_decel
             
             v_max_from_decel = np.sqrt(v_next**2 + 2 * decel_limit * ds)
             backward_vel[i] = min(forward_vel[i], v_max_from_decel)
@@ -703,10 +765,9 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
                 accel_x[i] = (vel_x[i+1] - vel_x[i]) / dt
                 accel_y[i] = (vel_y[i+1] - vel_y[i]) / dt
         
-        # Compute heading (theta) - interpolate between start and end
-        start_theta = start_state[2].to(Radian)
-        end_theta = target_state[2].to(Radian)
-        theta_values = np.linspace(start_theta, end_theta, n_output)
+        # Compute heading (theta) - interpolate using shortest rotational path
+        # (end_theta_adjusted was computed earlier with wrap to [-π, π])
+        theta_values = np.linspace(start_theta, end_theta_adjusted, n_output)
         
         # Build unit constructors
         VEL_UNIT = VelocityUnit(Meter, Second)

@@ -49,7 +49,7 @@ class RuleEngine:
         gamepiece_state = robot_state.gamepieces.get()
 
         if gamepiece not in gamepiece_state:
-            gamepiece_state[gamepiece] = 1
+            gamepiece_state[gamepiece] = 0
 
         gamepiece_state[gamepiece] += 1
 

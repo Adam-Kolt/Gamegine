@@ -3,6 +3,7 @@ from gamegine.utils.NCIM.ComplexDimensions.acceleration import Acceleration
 from gamegine.utils.NCIM.ComplexDimensions.alpha import Alpha, RadiansPerSecondSquared
 from gamegine.utils.NCIM.ComplexDimensions.omega import Omega, RadiansPerSecond
 from gamegine.utils.NCIM.ComplexDimensions.velocity import MetersPerSecond, Velocity
+from gamegine.utils.NCIM.ComplexDimensions.torque import Torque, NewtonMeter
 from gamegine.utils.NCIM.Dimensions.angular import AngularMeasurement
 from gamegine.utils.NCIM.Dimensions.spatial import SpatialMeasurement
 from gamegine.utils.NCIM.Dimensions.temporal import Second, TemporalMeasurement
@@ -75,6 +76,7 @@ class SwerveModuleState:
     wheel_angle: AngularMeasurement
     wheel_omega: Omega
     wheel_alpha: Alpha
+    motor_torque: Torque = field(default_factory=lambda: NewtonMeter(0.0))
 
     def get_wheel_velocity_magnitude(self) -> Velocity:
         """Returns the magnitude of the velocity vector of the wheel at the current state.

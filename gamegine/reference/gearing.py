@@ -92,20 +92,35 @@ class GearSeries:
         return self.ratio
 
     def __mul__(self, other):
-        """Multiplies the object by the gear ratio of the gear system."""
-        return other / self.get_ratio()
+        """Multiplies the value by the gear ratio.
+        
+        Example: speed * gear_ratio = speed * ratio
+        Use case: Converting output speed to input speed (motor spins faster)
+        """
+        return other * self.get_ratio()
 
     def __rmul__(self, other):
-        """Multiplies the object by the gear ratio of the gear system."""
-        return other / self.get_ratio()
+        """Multiplies the value by the gear ratio.
+        
+        Example: speed * gear_ratio = speed * ratio
+        Use case: Converting output speed to input speed (motor spins faster)
+        """
+        return other * self.get_ratio()
 
     def __truediv__(self, other):
-        """Divides the object by the gear ratio of the gear system."""
-        return other * self.get_ratio()
+        """Divides the value by the gear ratio.
+        
+        Example: gear_ratio / speed -> ratio / speed (unusual usage)
+        """
+        return self.get_ratio() / other
 
     def __rtruediv__(self, other):
-        """Divides the object by the gear ratio of the gear system."""
-        return other * self.get_ratio()
+        """Divides the value by the gear ratio.
+        
+        Example: speed / gear_ratio = speed / ratio
+        Use case: Converting input speed to output speed (wheel spins slower)
+        """
+        return other / self.get_ratio()
 
     def __add__(self, other) -> "GearSeries":
         """Adds the object by the gear ratio of the gear system."""

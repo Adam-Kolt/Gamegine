@@ -36,16 +36,15 @@ class CoralStation(RobotInteractable):
     def max_coral_condition(
         interactableState: StateSpace, robotState: RobotState, gameState: GameState
     ):
-        return robotState.gamepieces.get()[Coral] < 1
+        return robotState.gamepieces.get().get(Coral, 0) < 1
 
     @staticmethod
     def coral_pickup(
         interactableState: StateSpace, robotState: RobotState, gameState: GameState
     ):
-        robotState.gamepieces.get()[Coral] = (
-            robotState.gamepieces.get().get(Coral, 0) + 1
-        )
-        return []
+        inventory = robotState.gamepieces.get().copy()
+        inventory[Coral] = inventory.get(Coral, 0) + 1
+        return [ValueChange(robotState.gamepieces, inventory)]
 
     @staticmethod
     def get_interactions() -> List["InteractionOption"]:

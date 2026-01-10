@@ -127,7 +127,11 @@ class ReefState(StateSpace):
         self.registerSpace("l2", ReefRow())
         self.registerSpace("l3", ReefRow())
         self.registerSpace("l4", ReefRow())
-        self.registerSpace("algae", ReefRow())
+        # Initialize Algae row (Algae starts present on all faces)
+        algae_row = ReefRow()
+        for col in ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]:
+            algae_row.set_column(col, True)
+        self.registerSpace("algae", algae_row)
 
     @property
     def reef_score(self):
@@ -247,7 +251,7 @@ class Reef(RobotInteractable):
             interactableState: ReefState, robotState: RobotState, gameState: GameState
         ):
             changes = []
-            robotState.gamepieces.get()[Coral] -= 1
+            # Removed in-place decrement
 
             row: ReefRow = interactableState.get(level)
 
@@ -265,6 +269,12 @@ class Reef(RobotInteractable):
                 ]
             )
 
+            # Decrement Coral explicitly
+            inventory = robotState.gamepieces.get().copy()
+            if inventory.get(Coral, 0) > 0:
+                inventory[Coral] -= 1
+                changes.append(ValueChange(robotState.gamepieces, inventory))
+
             return changes
 
         return scoring_function
@@ -275,8 +285,6 @@ class Reef(RobotInteractable):
             interactableState: ReefState, robotState: RobotState, gameState: GameState
         ):
             changes = []
-            robotState.gamepieces.get()[Coral] -= 1
-
             row: L1Row = interactableState.get("l1")
 
             changes.extend(
@@ -287,6 +295,12 @@ class Reef(RobotInteractable):
                     ValueIncrease(row.get_column(column), 1),
                 ]
             )
+
+            # Decrement Coral explicitly
+            inventory = robotState.gamepieces.get().copy()
+            if inventory.get(Coral, 0) > 0:
+                inventory[Coral] -= 1
+                changes.append(ValueChange(robotState.gamepieces, inventory))
 
             return changes
 
@@ -308,7 +322,9 @@ class Reef(RobotInteractable):
             interactableState: ReefState, robotState: RobotState, gameState: GameState
         ):
             if pickup:
-                robotState.gamepieces[Algae] = robotState.gamepieces.get(Algae, 0) + 1
+                inventory = robotState.gamepieces.get().copy()
+                inventory[Algae] = inventory.get(Algae, 0) + 1
+                robotState.gamepieces.set(inventory)
 
             algae: ReefRow = interactableState.get("algae")
             return [
@@ -336,7 +352,7 @@ class Reef(RobotInteractable):
             interactableState: ReefState, robotState: RobotState, gameState: GameState
         ):
             changes = []
-            robotState.gamepieces.get()[Coral] -= 1
+            # Removed in-place decrement
             
             # Find first open column
             chosen_column = None
@@ -346,7 +362,7 @@ class Reef(RobotInteractable):
                     break
             
             if chosen_column is None:
-                return changes  # No open positions (shouldn't happen if condition passed)
+                return changes  # No open positions
             
             row = interactableState.get(level)
             
@@ -369,6 +385,12 @@ class Reef(RobotInteractable):
                     ValueIncrease(row.row_score, points),
                     ValueChange(row.get_column(chosen_column), True),
                 ])
+
+            # Decrement Coral explicitly
+            inventory = robotState.gamepieces.get().copy()
+            if inventory.get(Coral, 0) > 0:
+                inventory[Coral] -= 1
+                changes.append(ValueChange(robotState.gamepieces, inventory))
 
             return changes
 
@@ -614,6 +636,12 @@ class Processor(RobotInteractable):
                 ValueIncrease(interactableState.processor, 1),
             ]
         )
+        
+        # Decrement Algae
+        inventory = robotState.gamepieces.get().copy()
+        if inventory.get(Algae, 0) > 0:
+             inventory[Algae] -= 1
+             changes.append(ValueChange(robotState.gamepieces, inventory))
 
         return changes
 

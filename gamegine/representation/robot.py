@@ -25,12 +25,23 @@ from gamegine.utils.NCIM.ncim import (
 )
 
 
+from gamegine.utils.NCIM.ComplexDimensions.acceleration import Acceleration, MeterPerSecondSquared
+
+
 @dataclass
 class PhysicalParameters:
-    """Stores the physical parameters of a robot, including mass, moment of inertia, and center of mass."""
+    """Stores the physical parameters of a robot, including mass, moment of inertia, and acceleration limits.
+    
+    :param mass: Robot mass
+    :param moi: Moment of inertia
+    :param max_acceleration: User-set maximum acceleration limit (caps motor-derived values)
+    :param max_deceleration: User-set maximum deceleration/braking limit (None = same as max_acceleration)
+    """
 
     mass: MassMeasurement
     moi: MOI
+    max_acceleration: Acceleration = None  # None = no user limit (use motor curve)
+    max_deceleration: Acceleration = None  # None = same as max_acceleration
 
 
 class Robot(NamedObject):

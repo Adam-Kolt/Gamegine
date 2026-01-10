@@ -54,3 +54,6 @@ gamegine/analysis/__pycache__/meshing.cpython-310.pyc
 /docs-site/node_modules/
 /docs-site/.next/
 /docs-site/.source/
+
+AGENTS.md
+GEMINI.md

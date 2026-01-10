@@ -38,7 +38,7 @@ from gamegine.analysis.trajectory.lib.problemVariables import (
     PointVariables,
     SwervePointVariables,
 )
-from gamegine.analysis.trajectory.lib.trajectoryStates import TrajectoryState
+from gamegine.analysis.trajectory.lib.trajectoryStates import TrajectoryState, SwerveTrajectoryState, SwerveModuleState
 from gamegine.reference.swerve import SwerveConfig
 # from gamegine.render.drawable import Drawable  # Removed: rendering handled by handlers
 from gamegine.representation.robot import PhysicalParameters
@@ -320,6 +320,38 @@ class SwerveTrajectory(Trajectory):
         alpha = curr_alpha
         
         dt = t
+
+        # Interpolate Swerve Module States if available
+        if isinstance(state1, SwerveTrajectoryState) and isinstance(state2, SwerveTrajectoryState):
+            module_states = []
+            ratio = dt_val.to(Second) / state1.dt.to(Second) if state1.dt.to(Second) > 0 else 0.0
+            
+            for i in range(len(state1.module_states)):
+                m1 = state1.module_states[i]
+                m2 = state2.module_states[i]
+                
+                # Simple linear interpolation for modules
+                # TODO: Handle angle wrapping if needed, but generator usually produces continuous angles?
+                w_angle = m1.wheel_angle + (m2.wheel_angle - m1.wheel_angle) * ratio
+                w_omega = m1.wheel_omega + (m2.wheel_omega - m1.wheel_omega) * ratio
+                w_alpha = m1.wheel_alpha + (m2.wheel_alpha - m1.wheel_alpha) * ratio
+                
+                # Interpolate torque
+                torque = None
+                if m1.motor_torque is not None and m2.motor_torque is not None:
+                    torque = m1.motor_torque + (m2.motor_torque - m1.motor_torque) * ratio
+                
+                module_states.append(SwerveModuleState(
+                    wheel_angle=w_angle,
+                    wheel_omega=w_omega,
+                    wheel_alpha=w_alpha,
+                    motor_torque=torque
+                ))
+                
+            return SwerveTrajectoryState(
+                x, y, theta, vel_x, vel_y, acc_x, acc_y, omega, alpha, dt,
+                module_states=module_states
+            )
 
         return TrajectoryState(
             x, y, theta, vel_x, vel_y, acc_x, acc_y, omega, alpha, dt

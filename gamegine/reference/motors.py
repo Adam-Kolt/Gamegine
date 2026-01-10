@@ -42,37 +42,72 @@ class MotorSpecification:
     def get_torque_at(
         self,
         speed: Omega,
-        max_current: CurrentMeasurement,
-        max_stator_current: CurrentMeasurement = Ampere(0),
+        supply_current_limit: CurrentMeasurement,
+        stator_current_limit: CurrentMeasurement = Ampere(0),
+        available_voltage: ElectricPot = None,
     ) -> Torque:
-        """Calculates the torque output of the motor at a given speed, with a given current limit.
+        """
+        Calculates the torque output of the motor at a given speed with current limiting.
 
-        :param speed: The speed at which to calculate the torque.
-        :type speed: :class:`Omega`
-        :param max_current: The maximum current limit of the motor.
-        :type max_current: :class:`CurrentMeasurement`
-        :param max_stator_current: The maximum stator current limit of the motor. Defaults to Ampere(0).
-        :type max_stator_current: :class:`CurrentMeasurement`, optional
-        :return: The torque output of the motor at the given speed.
-        :rtype: :class:`Torque`"""
-        # Kinda a cooked implementation TODO: Verify, Fix, Refactor Plz
-        if speed > self.free_speed:
-            speed = self.free_speed
+        The motor torque is limited by BOTH:
+        1. The torque-speed curve (back-EMF reduces available torque at high speed)
+        2. The current limit (τ_max = kT × I_limit)
 
-        if speed == 0:
-            stator = self.stall_current
+        :param speed: The motor shaft speed
+        :param supply_current_limit: PDH/PDP supply current limit per motor
+        :param stator_current_limit: Motor controller stator current limit (0 = unlimited)
+        :param available_voltage: Battery terminal voltage (None = use nominal 12V)
+        :return: Available torque at this operating point
+        """
+        from gamegine.utils.NCIM.ComplexDimensions.omega import RadiansPerSecond
+        
+        # Use nominal voltage if not specified
+        if available_voltage is None:
+            available_voltage = self.maxVoltage
+        
+        # Get values in base units
+        speed_val = speed.to(RadiansPerSecond) if hasattr(speed, 'to') else float(speed)
+        free_speed_val = self.free_speed.to(RadiansPerSecond) if hasattr(self.free_speed, 'to') else float(self.free_speed)
+        supply_limit_val = supply_current_limit.to(Ampere) if hasattr(supply_current_limit, 'to') else float(supply_current_limit)
+        stator_limit_val = stator_current_limit.to(Ampere) if hasattr(stator_current_limit, 'to') else float(stator_current_limit)
+        stall_torque_val = self.stall_torque.to(NewtonMeter) if hasattr(self.stall_torque, 'to') else float(self.stall_torque)
+        kT_val = float(self.kT)  # Nm/A
+        available_v = available_voltage.to(Volt) if hasattr(available_voltage, 'to') else float(available_voltage)
+        nominal_v = self.maxVoltage.to(Volt) if hasattr(self.maxVoltage, 'to') else float(self.maxVoltage)
+        
+        # Clamp speed to positive values up to free speed
+        speed_val = max(0, min(speed_val, free_speed_val))
+        
+        # Voltage scaling: if battery voltage is lower, free speed is reduced
+        voltage_ratio = available_v / nominal_v if nominal_v > 0 else 1.0
+        effective_free_speed = free_speed_val * voltage_ratio
+        
+        # If we're already at/above the voltage-limited free speed, no torque available
+        if speed_val >= effective_free_speed:
+            return NewtonMeter(0)
+        
+        # Torque from torque-speed curve (linear relationship)
+        # τ = τ_stall × (1 - ω/ω_free) × voltage_ratio
+        # The voltage_ratio affects stall torque too (less voltage = less current = less torque)
+        torque_from_curve = stall_torque_val * voltage_ratio * (1 - speed_val / effective_free_speed)
+        
+        # Current required to produce this torque
+        current_for_torque = torque_from_curve / kT_val if kT_val > 0 else float('inf')
+        
+        # Apply current limits
+        effective_current_limit = supply_limit_val
+        if stator_limit_val > 0:
+            effective_current_limit = min(effective_current_limit, stator_limit_val)
+        
+        # If curve torque requires more current than allowed, limit it
+        if current_for_torque > effective_current_limit:
+            # Current-limited torque
+            torque_output = kT_val * effective_current_limit
         else:
-            voltage = speed / self.kV
-            stator = self.maxVoltage / voltage * max_current
-
-        if stator > max_stator_current and max_stator_current != Ampere(0):
-            stator = max_stator_current
-        max_torque_possible = self.kT * stator
-        torque = self.stall_torque * (1 - speed / self.free_speed)
-        if torque > max_torque_possible:
-            torque = max_torque_possible
-
-        return torque
+            # Curve-limited torque
+            torque_output = torque_from_curve
+        
+        return NewtonMeter(max(0, torque_output))
 
 
 @dataclass
@@ -105,15 +140,18 @@ class MotorConfig:
     motor: MotorSpecification
     power: PowerConfig
 
-    def get_torque_at(self, speed: Omega) -> Torque:
+    def get_torque_at(self, speed: Omega, available_voltage: ElectricPot = None) -> Torque:
         """Calculates the torque output of the motor at a given speed.
 
         :param speed: The speed at which to calculate the torque.
-        :type speed: :class:`Omega`
+        :param available_voltage: Battery terminal voltage (None = use nominal)
         :return: The torque output of the motor at the given speed.
-        :rtype: :class:`Torque`"""
+        """
         return self.motor.get_torque_at(
-            speed, self.power.supply_current_limit, self.power.stator_current_limit
+            speed, 
+            self.power.supply_current_limit, 
+            self.power.stator_current_limit,
+            available_voltage
         )
 
     def get_max_speed(self) -> Omega:

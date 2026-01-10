@@ -47,7 +47,7 @@ from gamegine.utils.NCIM.ncim import (
 from gamegine.utils.logging import GetLogger, SetLoggingLevel
 from gamepieces import Coral
 from scoring import ReefState
-SetLoggingLevel(logging.INFO)
+SetLoggingLevel(logging.CRITICAL)
 
 # ROBOT GEOMETRY SETUP
 
