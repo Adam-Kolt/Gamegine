@@ -95,14 +95,26 @@ class PhysicsEngine:
         if robot_name in self.robot_traversal_space:
             return self.robot_traversal_space[robot_name]
 
+        # Filter obstacles based on robot height (for Obstacle3D instances)
+        robot_height = robot.get_height()
+        filtered_obstacles = []
+        for obs in game_obstacles:
+            # Obstacle3D has applies_to_robot method for height filtering
+            if hasattr(obs, 'applies_to_robot'):
+                if obs.applies_to_robot(robot_height):
+                    filtered_obstacles.append(obs)
+            else:
+                # Regular obstacles always apply
+                filtered_obstacles.append(obs)
+
         obstacles = ExpandedObjectBounds(
-            game_obstacles,
+            filtered_obstacles,
             robot.get_bounding_radius(),
             self.config.discretization_quality,
         )
 
         map_obstacles = ExpandedObjectBounds(
-            game_obstacles,
+            filtered_obstacles,
             Inch(2) + robot.get_bounding_radius(),
             self.config.discretization_quality,
         )
@@ -164,6 +176,7 @@ class PhysicsEngine:
         start_time: float = 0.0,
         avoid_other_robots: bool = True,
         battery_model = None,
+        speed_zones: Optional[List] = None,
     ) -> SwerveTrajectory:
         """Generates a swerve trajectory for the robot.
 
@@ -177,6 +190,7 @@ class PhysicsEngine:
         :param start_time: Absolute start time for this trajectory (for dynamic obstacle avoidance).
         :param avoid_other_robots: If True, avoid other robots' active trajectories.
         :param battery_model: Optional BatteryModel for voltage-aware acceleration limiting.
+        :param speed_zones: Optional list of TraversalZone for velocity limiting.
         :return: The generated SwerveTrajectory.
         :rtype: SwerveTrajectory
         """
@@ -209,6 +223,7 @@ class PhysicsEngine:
             dynamic_obstacles=dynamic_obstacles,
             trajectory_start_time=start_time,
             battery_model=battery_model,
+            speed_zones=speed_zones,
         )
 
         if robot_name not in self.trajectories:

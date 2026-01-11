@@ -1,5 +1,7 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from gamegine.representation.zone import TraversalZone
 
 from gamegine.representation.bounds import Rectangle
 from gamegine.representation.interactable import RobotInteractable
@@ -210,9 +212,24 @@ class Game(object):
 
 
 
-    def add_zone(self, zone) -> "Game":
+    def add_zone(self, zone: "TraversalZone") -> "Game":
+        """Adds a traversal zone to the game.
+        
+        :param zone: The zone to add.
+        :type zone: :class:`TraversalZone`
+        :return: The game object with the added zone.
+        :rtype: :class:`Game`
+        """
         if zone.name in self.zones:
             raise Exception(f"Zone {zone.name} already exists. Names must be unique.")
 
         self.zones[zone.name] = zone
         return self
+
+    def get_zones(self) -> List["TraversalZone"]:
+        """Returns all traversal zones in the game.
+        
+        :return: All zones in the game.
+        :rtype: List[:class:`TraversalZone`]
+        """
+        return list(self.zones.values())

@@ -118,6 +118,29 @@ class Robot(NamedObject):
         :rtype: :class:`PhysicalParameters`"""
         return self.physics
 
+    def get_height(self) -> SpatialMeasurement:
+        """Returns the maximum height of the robot.
+        
+        Computed from the Z intervals of the robot's structure components.
+        If no structure is defined, returns a default height of 4 feet.
+        
+        :return: The maximum height of the robot.
+        :rtype: :class:`SpatialMeasurement`
+        """
+        from gamegine.utils.NCIM.Dimensions.spatial import Feet
+        
+        if not self.structure:
+            return Feet(4)  # Default robot height
+        
+        max_z = Feet(0)
+        for part in self.structure:
+            if hasattr(part, 'get_z_interval'):
+                _, z_max = part.get_z_interval()
+                if z_max > max_z:
+                    max_z = z_max
+        
+        return max_z if max_z > Feet(0) else Feet(4)
+
     def override_bounding_radius(self, radius: SpatialMeasurement) -> None:
         """Overrides the bounding radius of the robot.
 

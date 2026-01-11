@@ -113,3 +113,49 @@ class Polygonal(Obstacle):
         self, name: str, points: List[Tuple[SpatialMeasurement, SpatialMeasurement]]
     ) -> None:
         super().__init__(name, Polygon(points))
+
+
+class Obstacle3D(Obstacle):
+    """Represents an obstacle with 3D extent for height-based filtering.
+    
+    Useful for obstacles like bars that only affect robots above a certain height.
+    
+    :param name: The name of the obstacle.
+    :type name: str
+    :param bounds_2d: The 2D boundary for collision detection.
+    :type bounds_2d: :class:`Boundary`
+    :param z_min: The minimum height (clearance) of the obstacle.
+    :type z_min: :class:`SpatialMeasurement`
+    :param z_max: The maximum height of the obstacle.
+    :type z_max: :class:`SpatialMeasurement`
+    """
+
+    def __init__(
+        self,
+        name: str,
+        bounds_2d: Boundary,
+        z_min: SpatialMeasurement,
+        z_max: SpatialMeasurement,
+    ) -> None:
+        super().__init__(name, bounds_2d)
+        self.z_min = z_min
+        self.z_max = z_max
+    
+    def get_z_interval(self) -> Tuple[SpatialMeasurement, SpatialMeasurement]:
+        """Returns the height interval of this obstacle.
+        
+        :return: Tuple of (z_min, z_max).
+        """
+        return (self.z_min, self.z_max)
+    
+    def applies_to_robot(self, robot_height: SpatialMeasurement) -> bool:
+        """Check if this obstacle applies to a robot of the given height.
+        
+        A robot is blocked if its height exceeds the obstacle's clearance (z_min).
+        For example, a bar at z_min=3ft allows robots under 3ft to pass freely.
+        
+        :param robot_height: The maximum height of the robot.
+        :returns: True if the robot is too tall to pass, False otherwise.
+        """
+        return robot_height > self.z_min
+

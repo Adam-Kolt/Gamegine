@@ -470,6 +470,7 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         dynamic_obstacles: Optional[List['DynamicObstacle']] = None,
         trajectory_start_time: float = 0.0,
         battery_model = None,  # Optional BatteryModel for voltage-aware limits
+        speed_zones: Optional[List] = None,  # TraversalZone list for velocity limiting
     ) -> SwerveTrajectory:
         """Generates a trajectory using cubic spline interpolation.
         
@@ -664,6 +665,18 @@ class SplineTrajectoryGenerator(OfflineTrajectoryGenerator):
         v_curvature_limit = np.sqrt(centripetal_limit / curvature_safe)
         # Clamp to max velocity (this handles near-zero curvature giving huge v_limit)
         v_curvature_limit = np.minimum(v_curvature_limit, max_vel_mps)
+        
+        # Apply zone-based velocity limits
+        if speed_zones:
+            for i in range(n_output):
+                point_x = Meter(float(smooth_x[i]))
+                point_y = Meter(float(smooth_y[i]))
+                for zone in speed_zones:
+                    if zone.contains_point(point_x, point_y):
+                        v_curvature_limit[i] = min(
+                            v_curvature_limit[i], 
+                            max_vel_mps * zone.speed_multiplier
+                        )
         
         # Apply velocity reduction in dynamic obstacle slowdown segments
         if slowdown_segments:

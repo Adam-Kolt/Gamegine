@@ -244,6 +244,7 @@ def VisibilityGraph(
     required_points: List[Tuple[SpatialMeasurement, SpatialMeasurement]] = [],
     clip_to: Tuple[SpatialMeasurement, SpatialMeasurement] = None,
     discretization_quality: int = 4,
+    speed_zones: List = None,
 ) -> Map:
     """Create a visibility graph that links mutually visible obstacle vertices.
 
@@ -251,6 +252,10 @@ def VisibilityGraph(
     and connects any pair of points that can see each other without intersecting an
     obstacle.  Additional waypoints can be injected through ``required_points`` and the
     search space can optionally be clipped to a bounding rectangle.
+    
+    :param speed_zones: Optional list of TraversalZone objects. Edges crossing these
+        zones have their weights scaled by the zone's weight_multiplier (inverse of
+        speed_multiplier).
     """
     map = Map("Visibility Graph")
     discrete_bounds = [
@@ -286,8 +291,40 @@ def VisibilityGraph(
             )
 
             if not LineIntersectsAnyBound(discrete_bounds, *intersection_line):
-                map.add_edge(point, points[j])
+                # Calculate base edge weight (distance)
+                base_weight = GetDistanceBetween(point, points[j])
+                
+                # Apply zone weight multipliers
+                weight = base_weight
+                if speed_zones:
+                    weight = _apply_zone_weights(point, points[j], base_weight, speed_zones)
+                
+                map.add_edge(point, points[j], weight=weight)
     return map
+
+
+def _apply_zone_weights(
+    p1: Tuple[SpatialMeasurement, SpatialMeasurement],
+    p2: Tuple[SpatialMeasurement, SpatialMeasurement],
+    base_weight: float,
+    zones: List,
+) -> float:
+    """Apply zone speed multipliers to edge weight.
+    
+    For edges where either endpoint is inside a zone, the weight is scaled
+    by the zone's weight multiplier. Uses midpoint containment as approximation.
+    """
+    # Check midpoint for zone containment (simple approximation)
+    mid_x = (p1[0] + p2[0]) / 2
+    mid_y = (p1[1] + p2[1]) / 2
+    
+    max_multiplier = 1.0
+    for zone in zones:
+        if zone.contains_point(mid_x, mid_y):
+            zone_mult = zone.get_weight_multiplier()
+            max_multiplier = max(max_multiplier, zone_mult)
+    
+    return base_weight * max_multiplier
 
 
 def TriangulatedGraph(
