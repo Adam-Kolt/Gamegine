@@ -128,7 +128,7 @@ objs = SymmetricalX(
                         Inch(161.62) - Inch(51.76),
                     ),
                 ]
-            ).get_3d(Inch(27.83), Inch(74.5)),
+            ).get_3d(Inch(60), Inch(74.5)), # Raised from 27.83 to 60 to clear tags
         ),
         # Circular("Note 1", Inch(114.010), Inch(47.638), Inch(7)),
         # Circular("Note 2", Inch(114.010), Inch(47.638) + Inch(43.000), Inch(7)),
@@ -150,7 +150,7 @@ points = [point.get_vertices()[0] for point in starting_points]
 apriltag_list = [
     AprilTag(
         Inch(593.68),
-        Inch(313.57),
+        Inch(311.57), # Nudged Y-2 (Source)
         Inch(53.38),
         Degree(-120),
         1,
@@ -158,14 +158,14 @@ apriltag_list = [
     ),
     AprilTag(
         Inch(637.21),
-        Inch(288.46),
+        Inch(286.46), # Nudged Y-2 (Source)
         Inch(53.38),
         Degree(-120),
         2,
         AprilTagFamily.TAG_36h11,
     ),
     AprilTag(
-        Inch(652.73),
+        Inch(649.0), # Nudged X-3.7 (Speaker)
         Inch(127.08),
         Inch(57.13),
         Degree(-180),
@@ -173,7 +173,7 @@ apriltag_list = [
         AprilTagFamily.TAG_36h11,
     ),
     AprilTag(
-        Inch(652.73),
+        Inch(649.0), # Nudged X-3.7 (Speaker)
         Inch(104.83),
         Inch(57.13),
         Degree(-180),
@@ -181,23 +181,23 @@ apriltag_list = [
         AprilTagFamily.TAG_36h11,
     ),
     AprilTag(
-        Inch(578.77), Inch(0.25), Inch(53.38), Degree(-270), 5, AprilTagFamily.TAG_36h11
+        Inch(578.77), Inch(3.0), Inch(53.38), Degree(-270), 5, AprilTagFamily.TAG_36h11 # Nudged Y+2.75
     ),
     AprilTag(
-        Inch(72.5), Inch(0.25), Inch(53.38), Degree(-270), 6, AprilTagFamily.TAG_36h11
+        Inch(72.5), Inch(3.0), Inch(53.38), Degree(-270), 6, AprilTagFamily.TAG_36h11 # Nudged Y+2.75
     ),
     AprilTag(
-        Inch(-1.5), Inch(104.83), Inch(57.13), Degree(0), 7, AprilTagFamily.TAG_36h11
+        Inch(2.0), Inch(104.83), Inch(57.13), Degree(0), 7, AprilTagFamily.TAG_36h11 # Nudged X+3.5
     ),
     AprilTag(
-        Inch(-1.5), Inch(127.08), Inch(57.13), Degree(0), 8, AprilTagFamily.TAG_36h11
+        Inch(2.0), Inch(127.08), Inch(57.13), Degree(0), 8, AprilTagFamily.TAG_36h11 # Nudged X+3.5
     ),
     AprilTag(
-        Inch(14.02), Inch(288.46), Inch(53.38), Degree(-60), 9, AprilTagFamily.TAG_36h11
+        Inch(14.02), Inch(286.46), Inch(53.38), Degree(-60), 9, AprilTagFamily.TAG_36h11 # Nudged Y-2 (Source)
     ),
     AprilTag(
         Inch(57.54),
-        Inch(313.57),
+        Inch(311.57), # Nudged Y-2 (Source)
         Inch(53.38),
         Degree(-60),
         10,

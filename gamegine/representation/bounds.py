@@ -380,6 +380,14 @@ class Boundary3D(Boundary):
     def y(self, value):
         self.transform.position[1] = value
 
+    @property
+    def z(self):
+        return self.transform.position[2]
+
+    @z.setter
+    def z(self, value):
+        self.transform.position[2] = value
+
     def rotate(
         self,
         yaw: AngularMeasurement = Radian(0),

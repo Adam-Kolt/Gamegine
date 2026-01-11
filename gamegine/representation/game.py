@@ -1,7 +1,8 @@
-from typing import Dict, List, Tuple, TYPE_CHECKING
+from typing import Dict, List, Optional, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from gamegine.representation.zone import TraversalZone
+    from gamegine.representation.apriltag import AprilTag
 
 from gamegine.representation.bounds import Rectangle
 from gamegine.representation.interactable import RobotInteractable
@@ -27,6 +28,7 @@ class Game(object):
 
         self.static_obstacles = {}
         self.interactables: Dict[str, RobotInteractable] = {}
+        self.apriltags: Dict[int, "AprilTag"] = {}
         self.zones = {}
         self.global_states = {}
         self.field_borders = False
@@ -233,3 +235,52 @@ class Game(object):
         :rtype: List[:class:`TraversalZone`]
         """
         return list(self.zones.values())
+
+    # =========================================================================
+    # AprilTag Management
+    # =========================================================================
+
+    def add_apriltag(self, tag: "AprilTag") -> "Game":
+        """Adds an AprilTag to the game.
+        
+        :param tag: The AprilTag to add.
+        :type tag: :class:`AprilTag`
+        :return: The game object with the added tag.
+        :rtype: :class:`Game`
+        :raises Exception: If a tag with the same ID already exists.
+        """
+        if tag.id in self.apriltags:
+            raise Exception(f"AprilTag {tag.id} already exists. IDs must be unique.")
+        
+        self.apriltags[tag.id] = tag
+        return self
+
+    def add_apriltags(self, tags: List["AprilTag"]) -> "Game":
+        """Adds a list of AprilTags to the game.
+        
+        :param tags: The AprilTags to add.
+        :type tags: List[:class:`AprilTag`]
+        :return: The game object with the added tags.
+        :rtype: :class:`Game`
+        """
+        for tag in tags:
+            self.add_apriltag(tag)
+        return self
+
+    def get_apriltags(self) -> List["AprilTag"]:
+        """Returns all AprilTags in the game.
+        
+        :return: All AprilTags in the game.
+        :rtype: List[:class:`AprilTag`]
+        """
+        return list(self.apriltags.values())
+
+    def get_apriltag_by_id(self, tag_id: int) -> Optional["AprilTag"]:
+        """Returns the AprilTag with the given ID.
+        
+        :param tag_id: The ID of the tag to retrieve.
+        :type tag_id: int
+        :return: The AprilTag with the given ID, or None if not found.
+        :rtype: Optional[:class:`AprilTag`]
+        """
+        return self.apriltags.get(tag_id)
