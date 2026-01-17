@@ -236,6 +236,48 @@ class Game(object):
         """
         return list(self.zones.values())
 
+    def add_zones(self, zones: List["TraversalZone"]) -> "Game":
+        """Adds a list of traversal zones to the game.
+        
+        :param zones: The zones to add.
+        :type zones: List[:class:`TraversalZone`]
+        :return: The game object with the added zones.
+        :rtype: :class:`Game`
+        """
+        for zone in zones:
+            self.add_zone(zone)
+        return self
+
+    def add_field_objects(self, objects: List) -> "Game":
+        """Add a mix of obstacles and zones to the game.
+        
+        This is a convenience method for adding multiple field objects
+        (obstacles and zones) in a single call.
+        
+        :param objects: List of Obstacle or TraversalZone instances.
+        :type objects: List
+        :return: The game object with the added objects.
+        :rtype: :class:`Game`
+        """
+        for obj in objects:
+            if isinstance(obj, obstacle.Obstacle):
+                self.add_obstacle(obj)
+            else:
+                # Assume it's a zone
+                self.add_zone(obj)
+        return self
+
+    def get_all_field_objects(self) -> List:
+        """Return combined list of obstacles and zones.
+        
+        Useful for applying transformations (like mirroring) to all
+        field geometry at once.
+        
+        :return: All obstacles and zones in the game.
+        :rtype: List
+        """
+        return list(self.static_obstacles.values()) + list(self.zones.values())
+
     # =========================================================================
     # AprilTag Management
     # =========================================================================

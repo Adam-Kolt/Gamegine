@@ -24,7 +24,7 @@ from gamegine.analysis.trajectory.dynamic_obstacles import TrajectoryObstacle, D
 def _default_trajectory_generator():
     """Factory for default SplineTrajectoryGenerator."""
     return SplineTrajectoryGenerator(
-        MetersPerSecond(5.0),
+        MetersPerSecond(10.0),
         MeterPerSecondSquared(9.8),
         Meter(0.1),
         Meter(0.15),

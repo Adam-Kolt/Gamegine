@@ -42,11 +42,15 @@ impl MotorConstant {
     }
 
     pub fn kraken_x60() -> Self {
-        MotorConstant::from_recalc_values(502.1, 0.0194, 0.107)
+        MotorConstant::from_recalc_values(509.3, 0.0191, 0.107)
     }
 
     pub fn neo() -> Self {
-        MotorConstant::from_recalc_values(493.5, 0.0181, 0.070)
+        MotorConstant::from_recalc_values(496.3, 0.0194, 0.082)
+    }
+
+    pub fn kraken_x44() -> Self {
+        MotorConstant::from_recalc_values(653.8, 0.0147, 0.071)
     }
 }
 

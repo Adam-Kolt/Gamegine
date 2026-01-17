@@ -417,6 +417,22 @@ class Renderer(arcade.Window):
         """
         for p in padding:
             self._layers["safety_padding"].add(p)
+
+    def add_game_objects(self, game: "Game"):
+        """Add all obstacles and zones from a Game instance.
+        
+        This is the recommended way to load field geometry. It automatically
+        extracts and renders all obstacles and zones with appropriate styling.
+        
+        :param game: The Game instance to extract objects from.
+        """
+        # Add obstacles
+        for obs in game.get_obstacles():
+            self._layers["obstacles"].add(obs)
+        
+        # Add zones (render beneath obstacles)
+        for zone in game.get_zones():
+            self._layers["obstacles"].add(zone)
     
     def remove(self, obj: Any):
         """Remove an object from all layers.

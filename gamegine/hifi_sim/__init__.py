@@ -79,6 +79,12 @@ class Motor:
         return PyMotor.neo()
 
     @staticmethod
+    def kraken_x44():
+        """Create a Kraken X44 motor model."""
+        if not _RUST_AVAILABLE: return None
+        return PyMotor.kraken_x44()
+
+    @staticmethod
     def create(kv: float, kt: float, km: float):
         """Create a custom motor model."""
         if not _RUST_AVAILABLE: return None

@@ -126,6 +126,37 @@ except ImportError:
 
 
 # =============================================================================
+# TraversalZone Handler
+# =============================================================================
+
+try:
+    from gamegine.representation.zone import TraversalZone
+    
+    @ObjectRendererRegistry.register(TraversalZone)
+    def render_traversal_zone(obj: Any, canvas: Canvas, theme: Theme, display_level: DisplayLevel, renderer=None):
+        """Render a TraversalZone with distinct styling."""
+        if not hasattr(obj, 'bounds'):
+            return
+        
+        bounds = obj.bounds
+        
+        # Try to discretize for rendering
+        if hasattr(bounds, 'discretized'):
+            disc = bounds.discretized(8)
+            if hasattr(disc, 'get_vertices'):
+                vertices = disc.get_vertices()
+                if len(vertices) >= 3:
+                    pixel_points = [
+                        (canvas.to_pixels(p[0]), canvas.to_pixels(p[1]))
+                        for p in vertices
+                    ]
+                    arcade.draw_polygon_filled(pixel_points, theme.zone_fill)
+                    arcade.draw_polygon_outline(pixel_points, theme.zone_outline, 2)
+except ImportError:
+    pass
+
+
+# =============================================================================
 # Safety Padding (Expanded Bounds) - List Handler
 # =============================================================================
 

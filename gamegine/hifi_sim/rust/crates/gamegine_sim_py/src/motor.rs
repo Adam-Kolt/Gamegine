@@ -30,6 +30,14 @@ impl PyMotor {
         }
     }
 
+    /// Create a Kraken X44 motor
+    #[staticmethod]
+    fn kraken_x44() -> Self {
+        PyMotor {
+            inner: MotorConstant::kraken_x44(),
+        }
+    }
+
     /// Create a custom motor from recalc values
     /// 
     /// Args:

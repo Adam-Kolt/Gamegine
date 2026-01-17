@@ -137,6 +137,10 @@ class Theme:
     obstacle_outline: ArcadeColor = field(default_factory=lambda: GRAY)
     safety_padding: ArcadeColor = field(default_factory=lambda: ArcadeColor(255, 100, 100, 40))
     
+    # Zones (traversal modifiers)
+    zone_fill: ArcadeColor = field(default_factory=lambda: ArcadeColor(100, 200, 100, 80))
+    zone_outline: ArcadeColor = field(default_factory=lambda: ArcadeColor(50, 150, 50, 200))
+    
     # Trajectories (Royal Blue!)
     trajectory_line: ArcadeColor = field(default_factory=lambda: ROYAL_BLUE)
     trajectory_point: ArcadeColor = field(default_factory=lambda: ROYAL_BLUE_DARK)
