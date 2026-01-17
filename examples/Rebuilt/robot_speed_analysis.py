@@ -48,7 +48,7 @@ ROBOT_WIDTH = Inch(30)
 ROBOT_HEIGHT = Inch(20)  # Short enough to pass under bars
 
 # Weight range to test (100lb to 150lb in 10lb increments)
-WEIGHTS = [Pound(w) for w in range(100+20, 115+20, 3)]
+WEIGHTS = [Pound(w) for w in range(100, 210, 15)]
 
 # All Thrifty Swerve gear ratio combinations
 GEAR_CONFIGS = [

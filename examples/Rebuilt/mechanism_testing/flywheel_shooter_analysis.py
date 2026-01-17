@@ -114,8 +114,8 @@ class FlywheelShooter:
         self.config = config
         
         # Create motor and battery for each side
-        self._motor_top = Motor.kraken_x44()
-        self._motor_bottom = Motor.kraken_x44()
+        self._motor_top = Motor.kraken_x60()
+        self._motor_bottom = Motor.kraken_x60()
         self._battery = Battery.frc_standard()
         
         # Create link configs (radius=0 for rotational output)
@@ -991,8 +991,8 @@ def run_analysis(
         target_exit_velocity_mps=target_velocity_mps,
         ball_mass_kg=ball_mass_kg,
         energy_transfer_efficiency=energy_efficiency,
-        gear_ratio=3.0,
-        flywheel_moi=0.001,  # 6 g⋅m²
+        gear_ratio=2.0,
+        flywheel_moi=0.000731599134,
     )
     
     shooter = FlywheelShooter(default_config)
@@ -1033,16 +1033,16 @@ def run_analysis(
     print("-" * 60)
     
     comparison_configs = [
-        FlywheelShooterConfig(gear_ratio=3.0, flywheel_moi=0.004, 
+        FlywheelShooterConfig(gear_ratio=1.0, flywheel_moi=0.004, 
                              target_exit_velocity_mps=target_velocity_mps,
                              energy_transfer_efficiency=energy_efficiency),
-        FlywheelShooterConfig(gear_ratio=3.5, flywheel_moi=0.006,
+        FlywheelShooterConfig(gear_ratio=1.25, flywheel_moi=0.004,
                              target_exit_velocity_mps=target_velocity_mps,
                              energy_transfer_efficiency=energy_efficiency),
-        FlywheelShooterConfig(gear_ratio=4.0, flywheel_moi=0.008,
+        FlywheelShooterConfig(gear_ratio=1.5, flywheel_moi=0.004,
                              target_exit_velocity_mps=target_velocity_mps,
                              energy_transfer_efficiency=energy_efficiency),
-        FlywheelShooterConfig(gear_ratio=4.5, flywheel_moi=0.010,
+        FlywheelShooterConfig(gear_ratio=1.75, flywheel_moi=0.004,
                              target_exit_velocity_mps=target_velocity_mps,
                              energy_transfer_efficiency=energy_efficiency),
     ]
@@ -1061,10 +1061,12 @@ def run_analysis(
         print("-" * 60)
         print("PART 3: Optimization Sweep")
         print("-" * 60)
+
+        Gears = []
         
         optimizer = OptimizationRunner(
-            gear_ratios=[x for x in np.linspace(1.0, 10.0, 20)],
-            flywheel_mois=[x for x in np.linspace(0.001, 0.1, 30)],
+            gear_ratios=[x for x in np.linspace(0.8, 1.6, 100)],
+            flywheel_mois=[x for x in np.linspace(0.002, 0.00117055861*3, 30)],
             base_config=default_config,
         )
         

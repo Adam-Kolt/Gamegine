@@ -1,0 +1,10 @@
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "gamegine_sim_py"
+version = "0.1.0"
+description = "Python bindings for Gamegine high-fidelity simulation"
+requires-python = ">=3.8"
+columns = ["pyo3", "sim"]
