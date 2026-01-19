@@ -229,7 +229,7 @@ class Renderer(arcade.Window):
         width: int = 800,
         height: int = 600,
         title: str = "Gamegine",
-        render_scale: float = 100.0,
+        render_scale: float = 50.0,
         theme: Optional[Theme] = None,
     ):
         if Renderer._instance is not None:
@@ -329,7 +329,7 @@ class Renderer(arcade.Window):
         if game:
             from gamegine.utils.NCIM.Dimensions.spatial import Meter
             field_w, field_h = game.get_field_size()
-            scale = 100  # pixels per meter
+            scale = 80  # pixels per meter
             width = width or int(field_w.to(Meter) * scale)
             height = height or int(field_h.to(Meter) * scale)
             title = title or game.name

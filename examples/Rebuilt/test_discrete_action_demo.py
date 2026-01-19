@@ -38,8 +38,8 @@ def test_demo_initialization():
         assert robot is not None, "Robot creation failed"
         print("[OK] Robot creation successful")
         
-        # Test actions list
-        assert len(ROBOT_CONFIGS) == 3, "Should have 3 robot configs"
+        # Test actions list - now includes both alliances (3 Blue + 3 Red)
+        assert len(ROBOT_CONFIGS) == 6, "Should have 6 robot configs (3 Blue + 3 Red)"
         print(f"[OK] {len(ROBOT_CONFIGS)} robot configs defined")
         
         print("\n[PASS] Demo initialization tests passed\n")

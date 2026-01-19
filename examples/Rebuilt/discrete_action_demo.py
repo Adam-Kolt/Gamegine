@@ -138,14 +138,28 @@ class RobotConfig:
     start_y: Meter
     policy: str  # "cycle", "zone", "defender"
     color: Tuple[int, int, int]
+    alliance: Alliance = Alliance.BLUE
 
+
+# Field length for mirroring Red side
+from examples.Rebuilt.Rebuilt import FIELD_LENGTH
 
 # 3 Blue alliance robots with distinct starting positions and policies
-ROBOT_CONFIGS = [
-    RobotConfig("BlueBot1", Feet(6), HALF_WIDTH - Feet(6), "cycle", (52, 152, 219)),   # Blue - Cycle bot
-    RobotConfig("BlueBot2", Feet(6), HALF_WIDTH, "zone", (46, 204, 113)),              # Green - Zone bot
-    RobotConfig("BlueBot3", Feet(6), HALF_WIDTH + Feet(6), "defender", (155, 89, 182)), # Purple - Defender
+BLUE_ROBOT_CONFIGS = [
+    RobotConfig("BlueBot1", Feet(6), HALF_WIDTH - Feet(6), "cycle", (52, 152, 219), Alliance.BLUE),   # Blue - Cycle
+    RobotConfig("BlueBot2", Feet(6), HALF_WIDTH, "zone", (46, 204, 113), Alliance.BLUE),              # Green - Zone
+    RobotConfig("BlueBot3", Feet(6), HALF_WIDTH + Feet(6), "defender", (155, 89, 182), Alliance.BLUE), # Purple - Defender
 ]
+
+# 3 Red alliance robots mirrored on opposite side
+RED_ROBOT_CONFIGS = [
+    RobotConfig("RedBot1", FIELD_LENGTH - Feet(6), HALF_WIDTH + Feet(6), "cycle", (231, 76, 60), Alliance.RED),    # Red - Cycle
+    RobotConfig("RedBot2", FIELD_LENGTH - Feet(6), HALF_WIDTH, "zone", (241, 196, 15), Alliance.RED),              # Yellow - Zone
+    RobotConfig("RedBot3", FIELD_LENGTH - Feet(6), HALF_WIDTH - Feet(6), "defender", (230, 126, 34), Alliance.RED), # Orange - Defender
+]
+
+# All robots combined
+ROBOT_CONFIGS = BLUE_ROBOT_CONFIGS + RED_ROBOT_CONFIGS
 
 
 @dataclass 
@@ -176,8 +190,20 @@ class RobotAnimState:
 
 def select_next_action(robot_name: str, robot_state: RobotState, 
                         game_state: GameState, policy: str,
-                        actions_performed: int, has_climbed: bool) -> Optional[DemoAction]:
-    """Select next action based on robot's policy and current state.
+                        actions_performed: int, has_climbed: bool,
+                        alliance: Alliance = Alliance.BLUE,
+                        hub_active: bool = True) -> Optional[DemoAction]:
+    """Select next action based on robot's policy, alliance, and hub activation state.
+    
+    Args:
+        robot_name: Robot identifier
+        robot_state: Current robot state
+        game_state: Current game state
+        policy: Robot policy ("cycle", "zone", "defender")
+        actions_performed: Number of actions completed
+        has_climbed: Whether robot has climbed
+        alliance: Robot's alliance (BLUE or RED)
+        hub_active: Whether this robot's alliance hub is currently active
     
     Returns None if no more actions (e.g., robot has climbed and is done).
     """
@@ -188,59 +214,95 @@ def select_next_action(robot_name: str, robot_state: RobotState,
     # Get match time
     current_time = game_state.current_time.get() if hasattr(game_state, 'current_time') else 0
     
-    # Check if should climb (last 10 seconds and enough actions done)
+    # Alliance-specific names
+    is_blue = alliance == Alliance.BLUE
+    depot = "Blue Depot" if is_blue else "Red Depot"
+    alliance_zone = "Blue Alliance Zone" if is_blue else "Red Alliance Zone"
+    tower = "Blue Tower" if is_blue else "Red Tower"
+    
+    # Shooting locations based on alliance
+    if is_blue:
+        near_locs = ["BLUE Near Top", "BLUE Near Bot"]
+        mid_locs = ["BLUE Mid Top", "BLUE Mid Bot"]
+        far_locs = ["BLUE Far Top", "BLUE Far Bot"]
+    else:
+        near_locs = ["RED Near Top", "RED Near Bot"]
+        mid_locs = ["RED Mid Top", "RED Mid Bot"]
+        far_locs = ["RED Far Top", "RED Far Bot"]
+    
+    # Check if should climb (endgame and enough actions done)
     if current_time > 130 and not has_climbed and actions_performed >= 5:
-        return DemoAction("Blue Tower", "climb_level_2", "Climb for endgame!")
+        return DemoAction(tower, "climb_level_2", "Climb for endgame!")
     
     if has_climbed:
         return None  # Done for the match
     
+    # INACTIVE HUB STRATEGY: Shuttle or defend instead of shooting
+    if not hub_active:
+        # During inactive phase, focus on gathering and shuttling (no shooting)
+        if policy == "defender":
+            # Defender becomes more aggressive - try to steal from neutral zone
+            if ball_count < 5:
+                return DemoAction("Neutral Zone", "pickup_1", "Steal from Neutral!")
+            else:
+                return DemoAction(alliance_zone, "pickup_1", "Guard zone")  # Just cycle position
+        else:
+            # Other policies shuttle balls to alliance zone for later
+            if ball_count < 5:
+                return DemoAction(depot, "pickup_5", "Gather for later")
+            else:
+                # Shuttle to alliance zone instead of shooting
+                loc = mid_locs[actions_performed % 2]
+                return DemoAction(loc, "shuttle", f"Shuttle while inactive")
+    
+    # ACTIVE HUB STRATEGY: Normal scoring behavior
     if policy == "cycle":
         # Cycle bot: Depot -> Near shooting location -> repeat
         if ball_count < 5:
-            return DemoAction("Blue Depot", "pickup_5", "Restock from Depot")
+            return DemoAction(depot, "pickup_5", "Restock from Depot")
         else:
-            # Rotate between shooting locations
-            locations = ["BLUE Near Top", "BLUE Near Bot", "BLUE Mid Top"]
+            # Rotate between near/mid shooting locations (high accuracy)
+            locations = near_locs + [mid_locs[0]]
             loc = locations[actions_performed % len(locations)]
             return DemoAction(loc, "shoot", f"Shoot from {loc}")
     
     elif policy == "zone":
-        # Zone bot: Neutral Zone / Alliance Zone -> Far shooting -> repeat
+        # Zone bot: Neutral Zone / Alliance Zone -> Mid/Far shooting -> repeat
         if ball_count < 3:
             # Alternate between zones
             if actions_performed % 3 == 0:
                 return DemoAction("Neutral Zone", "pickup_1", "Get from Neutral Zone")
             else:
-                return DemoAction("Blue Alliance Zone", "pickup_1", "Get from Alliance Zone")
+                return DemoAction(alliance_zone, "pickup_1", "Get from Alliance Zone")
         else:
-            locations = ["BLUE Mid Top", "BLUE Mid Bot", "BLUE Far Top"]
+            # Mix of mid and far shots
+            locations = mid_locs + far_locs[:1]
             loc = locations[actions_performed % len(locations)]
             return DemoAction(loc, "shoot", f"Shoot from {loc}")
     
     elif policy == "defender":
-        # Defender: Collect some, shoot a bit, then climb early
+        # Defender: Quick scores early, then shuttle, then climb early
         if actions_performed < 3:
             if ball_count < 5:
-                return DemoAction("Blue Depot", "pickup_5", "Quick pickup")
+                return DemoAction(depot, "pickup_5", "Quick pickup")
             else:
-                return DemoAction("BLUE Near Top", "shoot", "Quick score")
+                return DemoAction(near_locs[0], "shoot", "Quick score")
         elif actions_performed < 6:
             # Shuttle to help teammates
             if ball_count < 5:
-                return DemoAction("Blue Depot", "pickup_5", "Grab for shuttle")
+                return DemoAction(depot, "pickup_5", "Grab for shuttle")
             else:
-                return DemoAction("BLUE Mid Bot", "shuttle", "Pass to zone")
+                return DemoAction(mid_locs[1], "shuttle", "Pass to zone")
         else:
             # Climb early for guaranteed points
             if not has_climbed:
-                return DemoAction("Blue Tower", "climb_level_3", "Early climb for 30 pts!")
+                return DemoAction(tower, "climb_level_3", "Early climb for 30 pts!")
     
-    # Default: just shoot if we have balls
+    # Default: just shoot if we have balls, otherwise pickup
     if ball_count > 0:
-        return DemoAction("BLUE Near Top", "shoot", "Default shot")
+        return DemoAction(near_locs[0], "shoot", "Default shot")
     else:
-        return DemoAction("Blue Depot", "pickup_1", "Default pickup")
+        return DemoAction(depot, "pickup_1", "Default pickup")
 
 
 
@@ -1094,12 +1156,17 @@ class MultiRobotHUD:
         arcade.draw_text(hub_status, x, y, hub_color, 12)
         y -= line_height + 5
         
-        # Score
+        # Scores for both alliances
         game_state = self.demo.server.match.game_state
         blue_score = game_state.blue_score.get() if hasattr(game_state, 'blue_score') else 0
+        red_score = game_state.red_score.get() if hasattr(game_state, 'red_score') else 0
         arcade.draw_text(
-            f"⭐ Blue Score: {blue_score}",
-            x, y, (100, 180, 255), 15, bold=True
+            f"🔵 Blue: {blue_score}",
+            x, y, (100, 180, 255), 14, bold=True
+        )
+        arcade.draw_text(
+            f"🔴 Red: {red_score}",
+            x + 120, y, (255, 100, 100), 14, bold=True
         )
         y -= line_height + 10
         
@@ -1498,13 +1565,19 @@ class MultiRobotDemo:
         if not robot_state:
             return
         
-        # Select action based on policy
+        # Determine hub activation for this robot's alliance
+        blue_active, red_active = self.phase_manager.get_hub_activation(self.phase_manager.current_phase)
+        hub_active = blue_active if config.alliance == Alliance.BLUE else red_active
+        
+        # Select action based on policy, alliance, and hub activation
         action = select_next_action(
             name, robot_state,
             self.server.match.game_state,
             config.policy,
             anim_state.actions_performed,
-            anim_state.has_climbed
+            anim_state.has_climbed,
+            config.alliance,
+            hub_active
         )
         
         if action is None:
