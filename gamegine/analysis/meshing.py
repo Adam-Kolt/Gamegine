@@ -311,16 +311,18 @@ def _apply_zone_weights(
 ) -> float:
     """Apply zone speed multipliers to edge weight.
     
-    For edges where either endpoint is inside a zone, the weight is scaled
-    by the zone's weight multiplier. Uses midpoint containment as approximation.
+    Checks if the edge segment intersects with any zone boundary. If the line
+    passes through a zone (even if endpoints/midpoint are outside), the weight
+    is scaled by the zone's weight multiplier.
     """
-    # Check midpoint for zone containment (simple approximation)
-    mid_x = (p1[0] + p2[0]) / 2
-    mid_y = (p1[1] + p2[1]) / 2
-    
     max_multiplier = 1.0
+    
     for zone in zones:
-        if zone.contains_point(mid_x, mid_y):
+        # Get discretized boundary for intersection testing
+        discrete = zone.bounds.discretized()
+        
+        # Check if line segment intersects the zone boundary (full intersection test)
+        if discrete.intersects_line(p1[0], p1[1], p2[0], p2[1]):
             zone_mult = zone.get_weight_multiplier()
             max_multiplier = max(max_multiplier, zone_mult)
     
@@ -332,12 +334,17 @@ def TriangulatedGraph(
     triangle_size: SpatialMeasurement,
     field_bounds: Tuple[SpatialMeasurement, SpatialMeasurement],
     discretization_quality: int = 4,
+    speed_zones: List = None,
 ) -> Map:
     """Generate a regular triangular lattice that excludes blocked cells.
 
     Nodes whose centres intersect an obstacle or fall outside the field bounds are
     skipped.  Remaining nodes are fully connected within each triangle in order to
     preserve symmetry.
+    
+    :param speed_zones: Optional list of TraversalZone objects. Edges crossing these
+        zones have their weights scaled by the zone's weight_multiplier (inverse of
+        speed_multiplier).
     """
     map = Map("Triangulated Graph")
     discrete_bounds = [
@@ -372,5 +379,13 @@ def TriangulatedGraph(
                     p2 = good_points[j]
                     # Check edge validity
                     if not LineIntersectsAnyBound(discrete_bounds, p1[0], p1[1], p2[0], p2[1]):
-                        map.add_edge(p1, p2)
+                        # Calculate base edge weight (distance)
+                        base_weight = GetDistanceBetween(p1, p2)
+                        
+                        # Apply zone weight multipliers
+                        weight = base_weight
+                        if speed_zones:
+                            weight = _apply_zone_weights(p1, p2, base_weight, speed_zones)
+                        
+                        map.add_edge(p1, p2, weight=weight)
     return map

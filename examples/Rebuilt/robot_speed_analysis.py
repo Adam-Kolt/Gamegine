@@ -81,13 +81,13 @@ START_POS = (TRENCH_LINE - BUMP_WIDTH, Feet(3), Degree(0))
 
 ROUTE_1_WAYPOINTS = [
     (HALF_LENGTH, HALF_WIDTH, Degree(0)),           # Neutral zone
-    (TRENCH_LINE - BUMP_WIDTH - Feet(3), HALF_WIDTH, Degree(0)), # Blue HUB
+    (TRENCH_LINE - BUMP_WIDTH - Feet(0), HALF_WIDTH, Degree(0)), # Blue HUB
 ]
 
 ROUTE_2_WAYPOINTS = [
-    (Feet(4), HALF_WIDTH, Degree(180)),             # Blue Depot
-    (TRENCH_LINE - BUMP_WIDTH - Feet(3), HALF_WIDTH, Degree(0)), # Blue HUB
-    (TOWER_OFFSET_FROM_WALL, HALF_WIDTH, Degree(180)), # Blue Tower
+    (Meter(0.521), Meter(5.939), Degree(0)),             # Blue Depot
+    (TRENCH_LINE - BUMP_WIDTH - Feet(0), HALF_WIDTH, Degree(0)), # Blue HUB
+    (TOWER_OFFSET_FROM_WALL, HALF_WIDTH, Degree(0)), # Blue Tower
 ]
 
 # Red HUB is on opposite side of field
@@ -169,12 +169,13 @@ def calculate_route_time(game, robot, start_pos, waypoints, battery_model=None):
     current_pos = start_pos
     
     for target in waypoints:
-        # Prepare traversal space
+        # Prepare traversal space with speed zones for pathfinding weights
         traversal_space = server.physics_engine.prepare_traversal_space(
             robot.name,
             robot,
             list(game.get_obstacles()),
             game.get_field_size(),
+            speed_zones=game.get_zones(),
         )
         
         # Find path
@@ -420,7 +421,7 @@ def draw_zone(zone, canvas, theme, display_level, renderer=None):
         points = [(x, y), (x + w, y), (x + w, y + h), (x, y + h)]
         arcade.draw_polygon_filled(points, color)
         arcade.draw_text(
-            f"{zone.name}\n{int(zone.speed_multiplier*100)}% speed",
+            f"{int(zone.speed_multiplier*100)}%",
             x + w/2, y + h/2, (255, 255, 255, 200), 12,
             anchor_x="center", anchor_y="center",
         )
@@ -457,7 +458,8 @@ class VisualDemo:
         for target in self.route_waypoints:
             traversal_space = self.server.physics_engine.prepare_traversal_space(
                 self.robot.name, self.robot, 
-                list(game.get_obstacles()), game.get_field_size()
+                list(game.get_obstacles()), game.get_field_size(),
+                speed_zones=game.get_zones(),
             )
             path = self.server.physics_engine.pathfind(
                 self.robot.name, current_pos[0], current_pos[1],
@@ -714,11 +716,25 @@ def plot_acceleration_curves(weight=Pound(120)):
 
 
 class MultiRobotRace:
-    """Visual race comparing all gear ratios on Route 3 at 120lb."""
+    """Visual race comparing all gear ratios on a route.
     
-    def __init__(self, game, weight=Pound(150)):
+    Can be used interactively (press SPACE to start) or in export mode
+    to automatically run and save as video.
+    
+    :param game: The game/field to race on.
+    :param weight: Robot weight to use.
+    :param route_waypoints: List of waypoints defining the route.
+    :param route_name: Display name for the route.
+    :param export_video_path: If set, auto-run and save video to this path.
+    """
+    
+    def __init__(self, game, weight=Pound(150), route_waypoints=None, 
+                 route_name="Route", export_video_path=None):
         self.game = game
         self.weight = weight
+        self.route_waypoints = route_waypoints or ROUTE_2_WAYPOINTS
+        self.route_name = route_name
+        self.export_video_path = export_video_path
         
         # Colors for each gear ratio (RGB)
         self.colors = [
@@ -742,16 +758,17 @@ class MultiRobotRace:
             robot = create_robot(f"Robot_{gear_name}", weight, pinion, stage2)
             self.robots.append((robot, gear_name))
             
-            # Generate trajectories for Route 3
+            # Generate trajectories for the route
             server.add_robot(robot)
             server.init_robot(robot.name, RobotState(*START_POS))
             
             trajs = []
             current_pos = START_POS
-            for target in ROUTE_3_WAYPOINTS:
+            for target in self.route_waypoints:
                 traversal_space = server.physics_engine.prepare_traversal_space(
                     robot.name, robot,
-                    list(game.get_obstacles()), game.get_field_size()
+                    list(game.get_obstacles()), game.get_field_size(),
+                    speed_zones=game.get_zones(),
                 )
                 path = server.physics_engine.pathfind(
                     robot.name, current_pos[0], current_pos[1],
@@ -863,21 +880,21 @@ class MultiRobotRace:
         self.renderer.on_key_press_callback(self.on_key)
         
         from gamegine.render import AlertType
-        self.renderer.show_alert(
-            f"GEAR RATIO RACE - Route 3 @ {float(weight.to(Pound)):.0f}lb | SPACE to start",
-            AlertType.SUCCESS, 8.0
-        )
+        if self.export_video_path:
+            # Auto-start for video export mode
+            self.renderer.show_alert(
+                f"GEAR RATIO RACE - {self.route_name} @ {float(weight.to(Pound)):.0f}lb | Recording...",
+                AlertType.INFO, 3.0
+            )
+        else:
+            self.renderer.show_alert(
+                f"GEAR RATIO RACE - {self.route_name} @ {float(weight.to(Pound)):.0f}lb | SPACE to start",
+                AlertType.SUCCESS, 8.0
+            )
     
     def on_key(self, key, modifiers):
-        if key == arcade.key.SPACE:
-            self.is_animating = True
-            self.anim_time = 0.0
-            self.traj_indices = [0] * len(self.robots)
-            self.traj_times = [0.0] * len(self.robots)
-            self.finished = [False] * len(self.robots)
-            self.robot_states = [RobotState(*START_POS) for _ in self.robots]
-            from gamegine.render import AlertType
-            self.renderer.show_alert("RACE STARTED!", AlertType.INFO, 2.0)
+        if key == arcade.key.SPACE and not self.is_animating:
+            self._start_race()
     
     def update(self, dt):
         if not self.is_animating:
@@ -921,9 +938,45 @@ class MultiRobotRace:
                 f"WINNER: {winner_name} @ {self.total_times[winner_idx]:.2f}s | SPACE to replay",
                 AlertType.SUCCESS, 10.0
             )
+            
+            # Handle video export mode
+            if self.export_video_path and self.renderer.is_recording:
+                self._finish_export()
+    
+    def _finish_export(self):
+        """Finish video export after race completes."""
+        # Hold on final frame for 2 seconds (at 60fps = 120 frames)
+        for _ in range(120):
+            self.renderer._capture_frame()
+        
+        self.renderer.stop_recording()
+        self.renderer.save_video(self.export_video_path)
+        arcade.close_window()
     
     def run(self):
+        """Run interactive race (press SPACE to start)."""
         arcade.run()
+    
+    def run_and_export(self):
+        """Run race and export to video automatically."""
+        if not self.export_video_path:
+            raise ValueError("export_video_path must be set for run_and_export()")
+        
+        # Start recording and auto-start animation
+        self.renderer.start_recording(fps=60)
+        self._start_race()
+        arcade.run()
+    
+    def _start_race(self):
+        """Start the race animation."""
+        self.is_animating = True
+        self.anim_time = 0.0
+        self.traj_indices = [0] * len(self.robots)
+        self.traj_times = [0.0] * len(self.robots)
+        self.finished = [False] * len(self.robots)
+        self.robot_states = [RobotState(*START_POS) for _ in self.robots]
+        from gamegine.render import AlertType
+        self.renderer.show_alert("RACE STARTED!", AlertType.INFO, 2.0)
 
 
 def main():
@@ -952,5 +1005,66 @@ def main():
     plot_acceleration_curves(Pound(120))
 
 
+def export_all_route_videos(game, output_dir: str = ".", weight=Pound(150)):
+    """Export MP4 videos for all three route races.
+    
+    Creates three videos:
+    - route1_race.mp4 (Start → Center → HUB)
+    - route2_race.mp4 (Start → Depot → HUB → Tower)
+    - route3_race.mp4 (Start → Red HUB → Blue HUB)
+    
+    :param game: The game/field to race on.
+    :param output_dir: Directory to save videos to.
+    :param weight: Robot weight to use.
+    """
+    import os
+    
+    routes = [
+        (ROUTE_1_WAYPOINTS, "Route 1 (Center→HUB)", "route1_race.mp4"),
+        (ROUTE_2_WAYPOINTS, "Route 2 (Depot→HUB→Tower)", "route2_race.mp4"),
+        (ROUTE_3_WAYPOINTS, "Route 3 (RedHUB→BlueHUB)", "route3_race.mp4"),
+    ]
+    
+    for waypoints, route_name, filename in routes:
+        output_path = os.path.join(output_dir, filename)
+        print(f"\n{'='*60}")
+        print(f"Exporting: {route_name}")
+        print(f"Output: {output_path}")
+        print(f"{'='*60}")
+        
+        # Reset renderer singleton for each race
+        Renderer.reset()
+        
+        race = MultiRobotRace(
+            game, 
+            weight=weight,
+            route_waypoints=waypoints,
+            route_name=route_name,
+            export_video_path=output_path
+        )
+        race.run_and_export()
+    
+    print(f"\n✓ All {len(routes)} route videos exported successfully!")
+
+
 if __name__ == "__main__":
-    main()
+    import sys
+    
+    if "--export-videos" in sys.argv:
+        # Video export mode
+        print("\n" + "=" * 70)
+        print("EXPORTING ROUTE RACE VIDEOS")
+        print("=" * 70 + "\n")
+        
+        game = create_rebuilt_game()
+        
+        # Default output directory or use --output-dir
+        output_dir = "."
+        for i, arg in enumerate(sys.argv):
+            if arg == "--output-dir" and i + 1 < len(sys.argv):
+                output_dir = sys.argv[i + 1]
+        
+        export_all_route_videos(game, output_dir)
+    else:
+        # Normal analysis mode
+        main()

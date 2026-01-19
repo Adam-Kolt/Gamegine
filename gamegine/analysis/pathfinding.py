@@ -250,31 +250,66 @@ def shortcut_tuple_path(
     return out
 
 
+def _apply_edge_zone_weight(
+    p1: Tuple[SpatialMeasurement, SpatialMeasurement],
+    p2: Tuple[SpatialMeasurement, SpatialMeasurement],
+    zones: List,
+) -> float:
+    """Calculate edge weight with zone speed multipliers applied.
+    
+    Checks if the edge segment intersects with any zone boundary. If the line
+    passes through a zone (even if endpoints/midpoint are outside), the weight
+    is scaled by the zone's weight multiplier.
+    """
+    base_weight = GetDistanceBetween(p1, p2)
+    
+    if not zones:
+        return base_weight
+    
+    max_multiplier = 1.0
+    for zone in zones:
+        # Get discretized boundary for intersection testing
+        discrete = zone.bounds.discretized()
+        
+        # Check if line segment intersects the zone boundary (full intersection test)
+        if discrete.intersects_line(p1[0], p1[1], p2[0], p2[1]):
+            zone_mult = zone.get_weight_multiplier()
+            max_multiplier = max(max_multiplier, zone_mult)
+    
+    return base_weight * max_multiplier
+
+
 def findPath(
     map: Map,
     start: Tuple[SpatialMeasurement, SpatialMeasurement],
     end: Tuple[SpatialMeasurement, SpatialMeasurement],
     pathfinder: Pathfinder = DirectedAStar,
     initial_connection_policy: InitialConnectionPolicy = InitialConnectionPolicy.ConnectToClosest,
+    speed_zones: List = None,
 ) -> Path:
     """High level helper that runs a pathfinder on NCIM coordinates.
 
     ``start`` and ``end`` are mapped onto the mesh according to
     ``initial_connection_policy``.  The returned object is drawable and can be fed directly
     into the trajectory generation pipeline.
+    
+    :param speed_zones: Optional list of TraversalZone objects. Temporary edges connecting
+        start/end points to the mesh have their weights scaled by zone weight_multipliers.
     """
     match initial_connection_policy:
         case InitialConnectionPolicy.ConnectToClosest:
             connect_start = map.get_closest_node(*start)
             if start != connect_start[1]:
-                map.add_edge(start, connect_start[1])
+                weight = _apply_edge_zone_weight(start, connect_start[1], speed_zones)
+                map.add_edge(start, connect_start[1], weight=weight)
                 start_node = map.encode_coordinates(*start)
             else:
                 start_node = connect_start[0]
 
             connect_end = map.get_closest_node(*end)
             if end != connect_end[1]:
-                map.add_edge(end, connect_end[1])
+                weight = _apply_edge_zone_weight(end, connect_end[1], speed_zones)
+                map.add_edge(end, connect_end[1], weight=weight)
                 end_node = map.encode_coordinates(*end)
             else:
                 end_node = connect_end[0]

@@ -290,6 +290,12 @@ class Renderer(arcade.Window):
         # Dynamic providers - callables that return objects to render each frame
         self._dynamic_providers: List[Tuple[Callable[[], Any], str]] = []  # (provider, layer_name)
         self._tracked_robot: Optional[Callable[[], Any]] = None  # Robot state provider
+        
+        # Recording state - for video/screenshot capture
+        self._is_recording: bool = False
+        self._recorded_frames: List[Any] = []  # PIL Images
+        self._recording_fps: int = 60
+        self._recording_path: Optional[str] = None
     
     # -------------------------------------------------------------------------
     # Factory Method
@@ -587,6 +593,113 @@ class Renderer(arcade.Window):
         return None
     
     # -------------------------------------------------------------------------
+    # Recording & Screenshots
+    # -------------------------------------------------------------------------
+    
+    @property
+    def is_recording(self) -> bool:
+        """Check if video recording is currently active."""
+        return self._is_recording
+    
+    def start_recording(self, fps: int = 60):
+        """Start recording frames for video export.
+        
+        :param fps: Frames per second for the output video.
+        
+        Example:
+            renderer.start_recording(fps=30)
+            # ... run animation ...
+            renderer.save_video("output.mp4")
+        """
+        self._is_recording = True
+        self._recording_fps = fps
+        self._recorded_frames = []
+    
+    def stop_recording(self) -> int:
+        """Stop recording and return the number of frames captured.
+        
+        :return: Number of frames recorded.
+        """
+        self._is_recording = False
+        return len(self._recorded_frames)
+    
+    def save_screenshot(self, path: str):
+        """Save the current frame as a PNG image.
+        
+        :param path: Output file path (should end in .png).
+        """
+        image = arcade.get_image()
+        image.save(path)
+    
+    def save_video(self, path: str, fps: int = None):
+        """Save recorded frames as an MP4 video using efficient H.264 encoding.
+        
+        Requires imageio and imageio-ffmpeg to be installed:
+            pip install imageio imageio-ffmpeg
+        
+        :param path: Output file path (should end in .mp4).
+        :param fps: Frames per second (uses recording fps if not specified).
+        
+        Example:
+            renderer.start_recording(fps=30)
+            # ... run animation ...
+            renderer.stop_recording()
+            renderer.save_video("output.mp4")
+        """
+        if not self._recorded_frames:
+            print("Warning: No frames recorded. Call start_recording() first.")
+            return
+        
+        try:
+            import imageio
+        except ImportError:
+            print("Error: imageio required for video export. Install with: pip install imageio imageio-ffmpeg")
+            return
+        
+        output_fps = fps or self._recording_fps
+        
+        print(f"Encoding video: {len(self._recorded_frames)} frames @ {output_fps} fps...")
+        
+        # Convert PIL images to numpy arrays for imageio
+        import numpy as np
+        
+        # Use imageio's ffmpeg writer for H.264 encoding
+        writer = imageio.get_writer(
+            path,
+            fps=output_fps,
+            codec='libx264',
+            quality=8,  # 0-10, higher is better
+            pixelformat='yuv420p',  # Compatible with most players
+            macro_block_size=16,
+        )
+        
+        try:
+            for i, frame in enumerate(self._recorded_frames):
+                # PIL Image to numpy array
+                arr = np.array(frame)
+                # Convert RGBA to RGB if needed (video players expect RGB)
+                if arr.shape[2] == 4:
+                    arr = arr[:, :, :3]
+                writer.append_data(arr)
+                
+                # Progress indicator for large videos
+                if (i + 1) % 60 == 0:
+                    print(f"  Encoded {i + 1}/{len(self._recorded_frames)} frames...")
+        finally:
+            writer.close()
+        
+        print(f"Video saved: {path} ({len(self._recorded_frames)} frames @ {output_fps} fps)")
+        
+        # Clear frames after saving to free memory
+        self._recorded_frames = []
+    
+    def _capture_frame(self):
+        """Internal: Capture current frame if recording is active."""
+        if self._is_recording:
+            image = arcade.get_image()
+            self._recorded_frames.append(image)
+    
+    # -------------------------------------------------------------------------
     # Rendering
     # -------------------------------------------------------------------------
     
@@ -646,6 +759,9 @@ class Renderer(arcade.Window):
             # HUD
             self._draw_alerts()
             self._draw_info_card()
+            
+            # Capture frame if recording
+            self._capture_frame()
         except Exception as e:
             print(f"on_draw error: {e}")
             import traceback

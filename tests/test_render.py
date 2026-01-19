@@ -456,5 +456,53 @@ class TestIntegration:
         assert not hasattr(Path, 'draw') or not callable(getattr(Path, 'draw', None))
 
 
+# =============================================================================
+# Recording Tests
+# =============================================================================
+
+class TestRecording:
+    """Tests for video recording functionality."""
+    
+    def test_recording_state_default(self):
+        """Test that recording is off by default."""
+        from gamegine.render.renderer import Renderer
+        
+        # Reset singleton for clean state
+        Renderer.reset()
+        
+        # Can't easily test without display, verify class has the property
+        assert hasattr(Renderer, 'is_recording')
+    
+    def test_recording_methods_exist(self):
+        """Test that recording methods are defined."""
+        from gamegine.render.renderer import Renderer
+        
+        assert hasattr(Renderer, 'start_recording')
+        assert hasattr(Renderer, 'stop_recording')
+        assert hasattr(Renderer, 'save_video')
+        assert hasattr(Renderer, 'save_screenshot')
+        assert hasattr(Renderer, '_capture_frame')
+    
+    def test_recording_state_tracking_attributes(self):
+        """Test that recording state attributes are properly initialized."""
+        from gamegine.render.renderer import Renderer
+        
+        # These would be set on instance, verify the default values are expected types
+        # (Can't instantiate without display, but we can check method signatures)
+        import inspect
+        
+        # Verify start_recording has fps parameter
+        sig = inspect.signature(Renderer.start_recording)
+        assert 'fps' in sig.parameters
+        assert sig.parameters['fps'].default == 60
+        
+        # Verify save_video has required parameters
+        sig = inspect.signature(Renderer.save_video)
+        assert 'path' in sig.parameters
+        assert 'fps' in sig.parameters
+        assert 'codec' in sig.parameters
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+

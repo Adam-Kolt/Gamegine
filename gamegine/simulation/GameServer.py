@@ -258,11 +258,15 @@ class DiscreteGameServer(AbstractGameServer):
         if game is None:
              raise ValueError("Game not loaded")
 
+        # Get zones from game for pathfinding weight scaling
+        speed_zones = game.get_zones() if hasattr(game, 'get_zones') else None
+
         return self.physics_engine.prepare_traversal_space(
             robot_name,
             self.robots[robot_name],
             self.match.get_obstacles(),
             game.get_field_size(),
+            speed_zones=speed_zones,
         )
 
     def __pathfind(

@@ -55,6 +55,7 @@ class TraversalSpace:
     """Represents the navigable space for a robot, including map and obstacles."""
     traversal_map: Map
     obstacles: List[obstacle.Obstacle] = field(default_factory=list)
+    speed_zones: List = field(default_factory=list)  # TraversalZone list for path weighting
 
 
 class PhysicsEngine:
@@ -82,6 +83,7 @@ class PhysicsEngine:
         robot: SwerveRobot,
         game_obstacles: List[obstacle.Obstacle],
         field_size: Tuple[SpatialMeasurement, SpatialMeasurement],
+        speed_zones: List = None,
     ) -> TraversalSpace:
         """Generates and caches the traversal space for a specific robot.
 
@@ -89,6 +91,7 @@ class PhysicsEngine:
         :param robot: The robot instance (used for bounding radius).
         :param game_obstacles: List of game obstacles.
         :param field_size: Dimensions of the field (width, height).
+        :param speed_zones: Optional list of TraversalZone for pathfinding weights.
         :return: The generated TraversalSpace.
         :rtype: TraversalSpace
         """
@@ -124,10 +127,11 @@ class PhysicsEngine:
             self.config.mesh_resolution,
             field_size,
             self.config.discretization_quality,
+            speed_zones=speed_zones,
         )
 
         traversal_space = TraversalSpace(
-            traversal_map=triangle_map, obstacles=obstacles
+            traversal_map=triangle_map, obstacles=obstacles, speed_zones=speed_zones or []
         )
 
         self.robot_traversal_space[robot_name] = traversal_space
@@ -160,6 +164,7 @@ class PhysicsEngine:
             (target_x, target_y),
             pathfinding.AStar,
             pathfinding.InitialConnectionPolicy.ConnectToClosest,
+            speed_zones=traversal_space.speed_zones,
         )
         path.shortcut(traversal_space.obstacles)
         return path

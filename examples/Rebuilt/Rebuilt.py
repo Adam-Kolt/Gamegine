@@ -86,12 +86,12 @@ blue_side_zones = [
     TraversalZone(
         "Bump 1",
         Rectangle(TRENCH_LINE - BUMP_WIDTH/2, TRENCH_1_LENGTH + PILLAR_WIDTH, BUMP_WIDTH, BUMP_LENGTH),
-        0.5
+        0.01
     ),
     TraversalZone(
         "Bump 2",
         Rectangle(TRENCH_LINE - BUMP_WIDTH/2, FIELD_WIDTH - TRENCH_2_LENGTH - BUMP_LENGTH - PILLAR_WIDTH, BUMP_WIDTH, BUMP_LENGTH),
-        0.5
+        0.01
     ),
 ]
 
@@ -114,8 +114,8 @@ def generate_neutral_zone_positions() -> List[Tuple[SpatialMeasurement, SpatialM
     nz_x_start = HALF_LENGTH - nz_width / 2
     nz_y_start = HALF_WIDTH - nz_depth / 2
     
-    # Ball spacing (7" diameter, add some margin)
-    ball_spacing = Inch(9)
+    # Ball spacing (5.91" diameter, add some margin)
+    ball_spacing = Inch(6)
     
     # Calculate grid
     cols = int(float(nz_width.to(Inch)) / float(ball_spacing.to(Inch)))

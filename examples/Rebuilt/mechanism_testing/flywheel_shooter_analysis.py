@@ -737,7 +737,7 @@ def plot_burst_sequence(shooter: FlywheelShooter, n_balls: int, feed_rate_hz: fl
     # Then run burst
     burst_data = shooter.run_burst(n_balls, feed_rate_hz, jitter)
     
-    fig, axes = plt.subplots(3, 1, figsize=(14, 10), sharex=True)
+    fig, axes = plt.subplots(4, 1, figsize=(14, 12), sharex=True)
     
     # Combine spinup and burst times
     burst_times = burst_data["times"] + spinup_data["spinup_time"]
@@ -760,7 +760,7 @@ def plot_burst_sequence(shooter: FlywheelShooter, n_balls: int, feed_rate_hz: fl
     axes[0].axhline(shooter.config.target_exit_velocity_mps, color='gray',
                    linestyle='--', label='Target', alpha=0.5)
     axes[0].set_ylabel('Surface Velocity (m/s)')
-    axes[0].set_title(f'Burst Sequence: {n_balls} balls at {feed_rate_hz} Hz')
+    axes[0].set_title(f'Burst Sequence: {n_balls} balls at {feed_rate_hz} Hz {shooter.config.gear_ratio} GR {shooter.config.flywheel_moi} kg*m^2 MOI')
     axes[0].legend(loc='lower right')
     axes[0].grid(True, alpha=0.3)
     
@@ -786,10 +786,25 @@ def plot_burst_sequence(shooter: FlywheelShooter, n_balls: int, feed_rate_hz: fl
     axes[2].axhline(shooter.config.target_exit_velocity_mps, color='red',
                    linestyle='--', label='Target')
     axes[2].set_ylabel('Exit Velocity (m/s)')
-    axes[2].set_xlabel('Time (s)')
     axes[2].set_title('Ball Exit Velocities')
     axes[2].legend()
     axes[2].grid(True, alpha=0.3)
+    
+    # Battery voltage plot
+    axes[3].plot(spinup_data["times"], spinup_data["voltage"],
+                'purple', linewidth=1.5, label='Battery Voltage')
+    axes[3].plot(burst_times, burst_data["voltage"],
+                'purple', linewidth=1.5)
+    axes[3].axhline(12.0, color='gray', linestyle='--', alpha=0.5, label='Nominal 12V')
+    axes[3].set_ylabel('Battery Voltage (V)')
+    axes[3].set_xlabel('Time (s)')
+    axes[3].set_title('Battery Voltage (Sag During High Current)')
+    axes[3].legend(loc='lower right')
+    axes[3].grid(True, alpha=0.3)
+    # Set reasonable y-limits for voltage
+    v_min = min(np.min(spinup_data["voltage"]), np.min(burst_data["voltage"]))
+    v_max = max(np.max(spinup_data["voltage"]), np.max(burst_data["voltage"]))
+    axes[3].set_ylim(max(0, v_min - 0.5), min(14, v_max + 0.5))
     
     plt.tight_layout()
     
@@ -991,8 +1006,8 @@ def run_analysis(
         target_exit_velocity_mps=target_velocity_mps,
         ball_mass_kg=ball_mass_kg,
         energy_transfer_efficiency=energy_efficiency,
-        gear_ratio=2.0,
-        flywheel_moi=0.000731599134,
+        gear_ratio=1.27,
+        flywheel_moi=0.0035,
     )
     
     shooter = FlywheelShooter(default_config)
@@ -1065,8 +1080,8 @@ def run_analysis(
         Gears = []
         
         optimizer = OptimizationRunner(
-            gear_ratios=[x for x in np.linspace(0.8, 1.6, 100)],
-            flywheel_mois=[x for x in np.linspace(0.002, 0.00117055861*3, 30)],
+            gear_ratios=[x for x in np.linspace(0.8, 1.8, 20)],
+            flywheel_mois=[x for x in np.linspace(0.002, 0.00117055861*3, 10)],
             base_config=default_config,
         )
         
