@@ -20,9 +20,11 @@ from typing import List, Tuple, Optional, Dict, Any
 from dataclasses import dataclass
 
 from examples.Rebuilt.Rebuilt import create_rebuilt_game, HALF_LENGTH, HALF_WIDTH
-from examples.Rebuilt.scoring import Fuel, NeutralZone, AllianceZone, Depot
+from examples.Rebuilt.scoring import Fuel, NeutralZone, AllianceZone, Depot, Hub, Tower
+from examples.Rebuilt.shooting_locations import ShootingLocation
 
 from gamegine.representation.robot import SwerveRobot, PhysicalParameters
+from gamegine.render.renderer import Renderer, DisplayLevel, AlertType, ObjectRendererRegistry
 from gamegine.reference import gearing, motors
 from gamegine.reference.swerve import SwerveConfig, SwerveModule
 from gamegine.simulation.GameServer import DiscreteGameServer, ServerConfig
@@ -271,6 +273,124 @@ class GameStateHUD:
 
 
 # =============================================================================
+# RENDERING HANDLERS
+# =============================================================================
+
+def draw_shooting_location(obj, canvas, theme, display_level, renderer=None):
+    """Draw a shooting location as a target crosshair."""
+    if not isinstance(obj, ShootingLocation):
+        return
+        
+    # Use SpatialMeasurement directly
+    x = obj.bounds.x
+    y = obj.bounds.y
+    radius = Inch(12) 
+    
+    color = (100, 150, 255) if obj.alliance == Alliance.BLUE else (255, 100, 100)
+    
+    # Draw crosshair using canvas methods (handles scaling)
+    canvas.draw_line(x - radius, y, x + radius, y, color, 2)
+    canvas.draw_line(x, y - radius, x, y + radius, color, 2)
+    canvas.draw_circle(x, y, radius, color, filled=False, line_width=2)
+    
+    # Draw label
+    # Offset text slightly above
+    text_offset = Inch(18)
+    canvas.draw_text(obj.location_key, x, y + text_offset, color, 10, anchor_x="center")
+
+def draw_depot(obj, canvas, theme, display_level, renderer=None):
+    """Draw depot as a dashed box."""
+    if not isinstance(obj, Depot):
+        return
+    
+    # Get center and dimensions as SpatialMeasurement
+    if hasattr(obj.bounds, 'get_center'):
+        center = obj.bounds.get_center()
+        cx, cy = center[0], center[1]
+    else:
+        cx, cy = obj.bounds.x, obj.bounds.y
+
+    # Dimensions
+    if hasattr(obj.bounds, 'width'):
+         width, height = obj.bounds.width, obj.bounds.height
+    else:
+         width, height = Inch(48), Inch(48)
+    
+    color = (100, 150, 255) if obj.alliance == Alliance.BLUE else (255, 100, 100)
+    
+    # Canvas.draw_rectangle takes center
+    canvas.draw_rectangle(cx, cy, width, height, color, filled=False, line_width=2)
+    canvas.draw_text(obj.name, cx, cy, color, 10, anchor_x="center", anchor_y="center")
+
+def draw_hub(obj, canvas, theme, display_level, renderer=None):
+    """Draw Hub as a hexagon."""
+    if not isinstance(obj, Hub):
+         return
+         
+    x = obj.bounds.x
+    y = obj.bounds.y
+    radius = Inch(24)
+    
+    color = (100, 150, 255) if obj.alliance == Alliance.BLUE else (255, 100, 100)
+    
+    # Draw Hub visual
+    fill_color = (0, 0, 255, 100) if obj.alliance == Alliance.BLUE else (255, 0, 0, 100)
+    canvas.draw_circle(x, y, radius, fill_color, filled=True)
+    canvas.draw_circle(x, y, radius, color, filled=False, line_width=3)
+    
+    canvas.draw_text("HUB", x, y, (255, 255, 255), 12, anchor_x="center", anchor_y="center") # Bold not supported in canvas wrapper yet
+
+def draw_tower(obj, canvas, theme, display_level, renderer=None):
+    """Draw Tower as a rectangle."""
+    if not isinstance(obj, Tower):
+        return
+        
+    if hasattr(obj.bounds, 'get_center'):
+        center = obj.bounds.get_center()
+        cx, cy = center[0], center[1]
+        width, height = obj.bounds.width, obj.bounds.height
+    else:
+        cx, cy = obj.bounds.x, obj.bounds.y
+        width, height = Inch(30), Inch(30)
+    
+    color = (150, 150, 150) # Grey
+    
+    canvas.draw_rectangle(cx, cy, width, height, color, filled=True)
+    canvas.draw_text("TWR", cx, cy, (0,0,0), 10, anchor_x="center", anchor_y="center")
+
+def draw_alliance_zone(obj, canvas, theme, display_level, renderer=None):
+    """Draw Alliance Zone."""
+    if not isinstance(obj, AllianceZone):
+        return
+        
+    if hasattr(obj.bounds, 'get_center'):
+        center = obj.bounds.get_center()
+        cx, cy = center[0], center[1]
+        width, height = obj.bounds.width, obj.bounds.height
+    else:
+        cx, cy = obj.bounds.x, obj.bounds.y
+        width, height = Inch(60), Inch(60)
+    
+    color = (100, 150, 255, 100) if obj.alliance == Alliance.BLUE else (255, 100, 100, 100)
+    
+    canvas.draw_rectangle(cx, cy, width, height, color, filled=True)
+    canvas.draw_text("ZONE", cx, cy, (255,255,255), 10, anchor_x="center", anchor_y="center")
+
+def draw_neutral_zone(obj, canvas, theme, display_level, renderer=None):
+    """Draw Neutral Zone."""
+    if not isinstance(obj, NeutralZone):
+        return
+        
+    x = obj.bounds.x
+    y = obj.bounds.y
+    radius = Inch(36)
+    
+    canvas.draw_circle(x, y, radius, (200, 200, 200, 80), filled=True)
+    canvas.draw_circle(x, y, radius, (150, 150, 150), filled=False, line_width=2)
+    canvas.draw_text("Neutral", x, y, (50, 50, 50), 10, anchor_x="center", anchor_y="center")
+
+
+# =============================================================================
 # MAIN DEMO
 # =============================================================================
 
@@ -330,6 +450,18 @@ class DiscreteActionDemo:
         # Register HUD render handler
         from gamegine.render.renderer import ObjectRendererRegistry
         ObjectRendererRegistry.register_handler(GameStateHUD, lambda obj, canvas, theme, display_level, renderer=None: obj.draw(canvas, theme, display_level, renderer))
+        
+        # Register INTERACTABLE handlers for visualization
+        ObjectRendererRegistry.register_handler(ShootingLocation, draw_shooting_location)
+        ObjectRendererRegistry.register_handler(Depot, draw_depot)
+        ObjectRendererRegistry.register_handler(Hub, draw_hub)
+        ObjectRendererRegistry.register_handler(Tower, draw_tower)
+        ObjectRendererRegistry.register_handler(AllianceZone, draw_alliance_zone)
+        ObjectRendererRegistry.register_handler(NeutralZone, draw_neutral_zone)
+
+        # Add all interactables to renderer so they are drawn
+        for interactable in self.game.get_interactables():
+             self.renderer.add(interactable)
         
         self.renderer.add_dynamic(lambda: self.hud, "ui")
         

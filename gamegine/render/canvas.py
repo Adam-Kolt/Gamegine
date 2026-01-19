@@ -102,10 +102,15 @@ class Canvas:
         pw = self.to_pixels(width)
         ph = self.to_pixels(height)
         
+        # Convert center to bottom-left
+        left = px - pw / 2
+        bottom = py - ph / 2
+        
         if filled:
-            arcade.draw_rectangle_filled(px, py, pw, ph, color, tilt_angle)
+            # lbwh functions do not support tilt_angle currently
+            arcade.draw_lbwh_rectangle_filled(left, bottom, pw, ph, color)
         else:
-            arcade.draw_rectangle_outline(px, py, pw, ph, color, line_width, tilt_angle)
+            arcade.draw_lbwh_rectangle_outline(left, bottom, pw, ph, color, line_width)
     
     def draw_polygon(
         self,

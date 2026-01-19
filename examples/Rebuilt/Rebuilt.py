@@ -195,7 +195,7 @@ def create_rebuilt_game() -> Game:
     # Hub positions (near center, offset toward each alliance)
     blue_hub_x = Meter(4.629)
     red_hub_x = FIELD_LENGTH - blue_hub_x
-    hub_y = Meter(6.024)
+    hub_y = FIELD_WIDTH / 2
     
     blue_hub = Hub(
         center=(blue_hub_x, hub_y),

@@ -294,29 +294,29 @@ def create_shooting_locations_for_alliance(
     # Calculate positions based on alliance side
     # Blue alliance is on the left (x=0), Red on the right (x=max)
     is_blue = alliance == Alliance.BLUE
-    direction = 1 if is_blue else -1  # Direction away from Hub
+    direction = -1 if is_blue else 1  # Direction away from Hub
     
     # Offset from center of field for top/bottom positions
-    top_offset = field_width * 0.25
-    bot_offset = field_width * -0.25
+    top_offset = field_width * 0.1
+    bot_offset = field_width * -0.1
     
     hub_x = hub_center[0]
     hub_y = hub_center[1]
     
     # Heading faces Hub
     facing_hub = Degree(0) if is_blue else Degree(180)
-    near = Meter(1)
-    mid = Meter(2)
-    far = Meter(3)
+    near = Meter(1.5)
+    mid = Meter(2.5)
+    far = Meter(3.5)
 
     # Location Spects (x_offset, y_offset, distance, accuracy)
     location_specs = [
         ("NEAR_TOP", near * direction, top_offset, 2.0, 0.95),
         ("NEAR_BOT", near * direction, bot_offset, 2.0, 0.95),
-        ("MID_TOP", mid * direction, top_offset, 4.0, 0.80),
-        ("MID_BOT", mid * direction, bot_offset, 4.0, 0.80),
-        ("FAR_TOP", far * direction, top_offset, 6.0, 0.60),
-        ("FAR_BOT", far * direction, bot_offset, 6.0, 0.60),
+        ("MID_TOP", mid * direction, top_offset * 1.25, 4.0, 0.80),
+        ("MID_BOT", mid * direction, bot_offset * 1.25, 4.0, 0.80),
+        ("FAR_TOP", far * direction, top_offset * 1.75, 6.0, 0.60),
+        ("FAR_BOT", far * direction, bot_offset * 1.75, 6.0, 0.60),
     ]
     
     for key, x_offset, y_offset, distance, accuracy in location_specs:
