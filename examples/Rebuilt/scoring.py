@@ -699,3 +699,175 @@ class AllianceZone(RobotInteractable):
                 _create_defend_zone_action(self.defense_config.defense_duration),
             ),
         ]
+
+
+# =============================================================================
+# MATCH PHASE MANAGER
+# =============================================================================
+
+from enum import Enum
+
+class MatchPhase(Enum):
+    """Match phases for hub activation."""
+    AUTO = "auto"           # 0-20s: Both hubs active during autonomous
+    TRANSITION = "transition"  # 20-30s: Transition period, neither hub active
+    PERIOD_1 = "period_1"   # 30-55s: Auto winner's hub active
+    PERIOD_2 = "period_2"   # 55-80s: Other team's hub active
+    PERIOD_3 = "period_3"   # 80-105s: Auto winner's hub active
+    PERIOD_4 = "period_4"   # 105-130s: Other team's hub active
+    ENDGAME = "endgame"     # 130-160s: Both hubs active
+
+
+class MatchPhaseManager:
+    """Manages match phases and hub activation for REBUILT.
+    
+    Match Timeline:
+    - AUTO (0-20s): Both hubs active
+    - TRANSITION (20-30s): Neither hub active while determining auto winner
+    - PERIOD 1 (30-55s): Auto winner's hub active
+    - PERIOD 2 (55-80s): Other team's hub active  
+    - PERIOD 3 (80-105s): Auto winner's hub active
+    - PERIOD 4 (105-130s): Other team's hub active
+    - ENDGAME (130-160s): Both hubs active
+    """
+    
+    # Match timing constants
+    AUTO_END = 20.0
+    TRANSITION_END = 30.0
+    PERIOD_DURATION = 25.0
+    ENDGAME_START = 130.0
+    MATCH_END = 160.0
+    
+    def __init__(self):
+        self.current_phase = MatchPhase.AUTO
+        self.auto_winner = None  # Alliance that won auto (most points)
+        self.blue_auto_score = 0
+        self.red_auto_score = 0
+        self._last_update_time = 0.0
+    
+    def determine_auto_winner(self, blue_score: int, red_score: int):
+        """Determine which alliance won autonomous.
+        
+        Called at the end of AUTO period to set which alliance gets first activation.
+        """
+        self.blue_auto_score = blue_score
+        self.red_auto_score = red_score
+        
+        if blue_score > red_score:
+            self.auto_winner = Alliance.BLUE
+        elif red_score > blue_score:
+            self.auto_winner = Alliance.RED
+        else:
+            # Tie: default to BLUE (could also do coinflip)
+            self.auto_winner = Alliance.BLUE
+    
+    def get_phase_for_time(self, time: float) -> MatchPhase:
+        """Get the match phase for a given time."""
+        if time < self.AUTO_END:
+            return MatchPhase.AUTO
+        elif time < self.TRANSITION_END:
+            return MatchPhase.TRANSITION
+        elif time < self.TRANSITION_END + self.PERIOD_DURATION:
+            return MatchPhase.PERIOD_1
+        elif time < self.TRANSITION_END + 2 * self.PERIOD_DURATION:
+            return MatchPhase.PERIOD_2
+        elif time < self.TRANSITION_END + 3 * self.PERIOD_DURATION:
+            return MatchPhase.PERIOD_3
+        elif time < self.ENDGAME_START:
+            return MatchPhase.PERIOD_4
+        else:
+            return MatchPhase.ENDGAME
+    
+    def get_hub_activation(self, phase: MatchPhase) -> Tuple[bool, bool]:
+        """Get hub activation status (blue_active, red_active) for a phase.
+        
+        Returns (blue_hub_active, red_hub_active).
+        """
+        if phase == MatchPhase.AUTO:
+            return (True, True)  # Both active during auto
+        
+        elif phase == MatchPhase.TRANSITION:
+            return (False, False)  # Neither active during transition
+        
+        elif phase == MatchPhase.ENDGAME:
+            return (True, True)  # Both active during endgame
+        
+        else:
+            # Alternating periods based on auto winner
+            # Odd periods (1, 3): auto winner active
+            # Even periods (2, 4): other team active
+            winner_active = phase in [MatchPhase.PERIOD_1, MatchPhase.PERIOD_3]
+            
+            if self.auto_winner == Alliance.BLUE:
+                return (winner_active, not winner_active)
+            else:
+                return (not winner_active, winner_active)
+    
+    def update(self, current_time: float, game_state: GameState) -> bool:
+        """Update hub activation based on current time.
+        
+        Returns True if phase changed.
+        """
+        new_phase = self.get_phase_for_time(current_time)
+        phase_changed = new_phase != self.current_phase
+        
+        # At end of AUTO, determine winner
+        if self.current_phase == MatchPhase.AUTO and new_phase == MatchPhase.TRANSITION:
+            blue_score = game_state.blue_score.get() if hasattr(game_state, 'blue_score') else 0
+            red_score = game_state.red_score.get() if hasattr(game_state, 'red_score') else 0
+            self.determine_auto_winner(blue_score, red_score)
+        
+        if phase_changed:
+            self.current_phase = new_phase
+            
+            # Update hub activation status in game state
+            blue_active, red_active = self.get_hub_activation(new_phase)
+            
+            try:
+                interactables = game_state.get("interactables")
+                if interactables:
+                    blue_hub = interactables.get("Blue Hub")
+                    red_hub = interactables.get("Red Hub")
+                    
+                    if blue_hub and hasattr(blue_hub, 'setValue'):
+                        blue_hub.setValue("is_active", blue_active)
+                    if red_hub and hasattr(red_hub, 'setValue'):
+                        red_hub.setValue("is_active", red_active)
+            except Exception as e:
+                pass  # Silently handle missing hub states
+        
+        self._last_update_time = current_time
+        return phase_changed
+    
+    def get_phase_name(self) -> str:
+        """Get human-readable phase name."""
+        names = {
+            MatchPhase.AUTO: "AUTO",
+            MatchPhase.TRANSITION: "TRANSITION",
+            MatchPhase.PERIOD_1: "PERIOD 1",
+            MatchPhase.PERIOD_2: "PERIOD 2",
+            MatchPhase.PERIOD_3: "PERIOD 3",
+            MatchPhase.PERIOD_4: "PERIOD 4",
+            MatchPhase.ENDGAME: "ENDGAME",
+        }
+        return names.get(self.current_phase, "UNKNOWN")
+    
+    def get_time_remaining_in_phase(self, current_time: float) -> float:
+        """Get time remaining in current phase."""
+        phase = self.get_phase_for_time(current_time)
+        
+        if phase == MatchPhase.AUTO:
+            return self.AUTO_END - current_time
+        elif phase == MatchPhase.TRANSITION:
+            return self.TRANSITION_END - current_time
+        elif phase == MatchPhase.PERIOD_1:
+            return (self.TRANSITION_END + self.PERIOD_DURATION) - current_time
+        elif phase == MatchPhase.PERIOD_2:
+            return (self.TRANSITION_END + 2 * self.PERIOD_DURATION) - current_time
+        elif phase == MatchPhase.PERIOD_3:
+            return (self.TRANSITION_END + 3 * self.PERIOD_DURATION) - current_time
+        elif phase == MatchPhase.PERIOD_4:
+            return self.ENDGAME_START - current_time
+        else:
+            return self.MATCH_END - current_time
+

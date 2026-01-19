@@ -87,12 +87,12 @@ blue_side_zones = [
     TraversalZone(
         "Bump 1",
         Rectangle(TRENCH_LINE - BUMP_WIDTH/2, TRENCH_1_LENGTH + PILLAR_WIDTH, BUMP_WIDTH, BUMP_LENGTH),
-        0.01
+        0.005  # 0.5% of normal speed - realistic bump slowdown
     ),
     TraversalZone(
         "Bump 2",
         Rectangle(TRENCH_LINE - BUMP_WIDTH/2, FIELD_WIDTH - TRENCH_2_LENGTH - BUMP_LENGTH - PILLAR_WIDTH, BUMP_WIDTH, BUMP_LENGTH),
-        0.01
+        0.005  # 0.5% of normal speed - realistic bump slowdown
     ),
 ]
 
