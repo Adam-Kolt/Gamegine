@@ -44,6 +44,8 @@ class PhysicalParameters:
     max_deceleration: Acceleration = None  # None = same as max_acceleration
 
 
+from gamegine.representation.capabilities import RobotCapabilities
+
 class Robot(NamedObject):
     """Represents a robot on the field.
 
@@ -52,17 +54,22 @@ class Robot(NamedObject):
     :param structure: The structure of the robot.
     :type structure: List[:class:`Boundary3D`]
     :param physics: The physical parameters of the robot.
-    :type physics: :class:`PhysicalParameters`"""
+    :type physics: :class:`PhysicalParameters`
+    :param capabilities: The capabilities of the robot (for versatile training).
+    :type capabilities: :class:`RobotCapabilities`
+    """
 
     def __init__(
         self,
         name: str,
         structure: List[Boundary3D] = [],
         physics: PhysicalParameters = None,
+        capabilities: RobotCapabilities = None,
     ) -> None:
         super().__init__("Robot " + name)
         self.structure = structure
         self.physics = physics
+        self.capabilities = capabilities
         self.interaction_configs = {}
         self.override_radius = None
 
@@ -158,8 +165,9 @@ class SwerveRobot(Robot):
         drivetrain: SwerveConfig,
         structure: List[Boundary3D] = [],
         physics: PhysicalParameters = None,
+        capabilities: RobotCapabilities = None,
     ) -> None:
-        super().__init__(name, structure, physics)
+        super().__init__(name, structure, physics, capabilities)
         self.drivetrain = drivetrain
 
     def get_drivetrain(self) -> SwerveConfig:

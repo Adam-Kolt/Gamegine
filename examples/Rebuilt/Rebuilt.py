@@ -165,6 +165,39 @@ ALL_PIECES = NEUTRAL_ZONE_PIECES + BLUE_DEPOT_PIECES + RED_DEPOT_PIECES
 # GAME FACTORY
 # =============================================================================
 
+class RebuiltGame(Game):
+    """Rebuilt game with RL observation support."""
+    
+    def get_observation_space_size(self) -> int:
+        # 1. Neutral Zone Fuel (1)
+        # 2. Blue Depot Fuel (1)
+        # 3. Red Depot Fuel (1)
+        # 4. Blue Alliance Zone Fuel (1)
+        # 5. Red Alliance Zone Fuel (1)
+        return 5
+
+    def get_observation(self, game_state) -> List[float]:
+        # Extract interactables
+        interactables = game_state.get("interactables") if game_state else None
+        if not interactables:
+            return [0.0] * 5
+            
+        # Helper to get fuel count safely
+        def get_fuel(name):
+            obj = interactables.get(name)
+            # Access underlying Value object if it exists
+            return float(obj.fuel_available.get()) if obj and hasattr(obj, "fuel_available") else 0.0
+
+        # Normalize against typical max capacities
+        nz_fuel = get_fuel("Neutral Zone") / RebuiltMatchConfig.NEUTRAL_ZONE_FUEL
+        blue_depot = get_fuel("Blue Depot") / RebuiltMatchConfig.DEPOT_FUEL
+        red_depot = get_fuel("Red Depot") / RebuiltMatchConfig.DEPOT_FUEL
+        blue_zone = get_fuel("Blue Alliance Zone") / 50.0 # Estimate max
+        red_zone = get_fuel("Red Alliance Zone") / 50.0   # Estimate max
+        
+        return [nz_fuel, blue_depot, red_depot, blue_zone, red_zone]
+
+
 def create_rebuilt_game() -> Game:
     """Create the REBUILT 2026 game with all field elements.
     
@@ -176,7 +209,7 @@ def create_rebuilt_game() -> Game:
     - Alliance Zones (team fuel storage, fills from shuttling/misses)
     - Shooting Locations (6 per alliance, varying accuracy)
     """
-    game = Game("Rebuilt 2026")
+    game = RebuiltGame("Rebuilt 2026")
     
     # Field size
     game.set_field_size(FIELD_LENGTH, FIELD_WIDTH)

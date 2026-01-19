@@ -24,6 +24,10 @@ from gamegine.simulation.robot import RobotState
 from gamegine.first.alliance import Alliance
 from gamegine.rl.config import EnvConfig, RobotConfig, TrainingConfig
 from gamegine.rl.envs.base import BaseGamegineEnv
+from gamegine.representation.capabilities import RobotCapabilities
+from gamegine.utils.NCIM.ncim import Inch, Degree
+from gamegine.utils.NCIM.Dimensions.spatial import Meter
+import random
 
 
 class AllianceEnv(MultiAgentEnv):
@@ -151,6 +155,22 @@ class AllianceEnv(MultiAgentEnv):
         # Basic observation: position, heading, time, scores
         # This can be extended based on config
         obs_dim = 10  # x, y, heading, vx, vy, time, red_score, blue_score, gamepieces, ...
+        
+        if self.training_config.use_capability_context:
+            obs_dim += RobotCapabilities.vector_size()
+            
+        if self.server and self.server.match and self.server.match.game:
+             obs_dim += self.server.match.game.get_observation_space_size()
+             
+        # Add opponent observations
+        if self.training_config.observe_opponent_states:
+            # 3 opponents * 5 vars (x,y,theta,vx,vy)
+            obs_dim += 3 * 5
+            
+        if self.training_config.observe_opponent_capabilities:
+            # 3 opponents * capability vector size
+            obs_dim += 3 * RobotCapabilities.vector_size()
+            
         return spaces.Box(low=-np.inf, high=np.inf, shape=(obs_dim,), dtype=np.float32)
     
     def _build_action_space(self, robot_name: str) -> spaces.Space:
@@ -196,6 +216,9 @@ class AllianceEnv(MultiAgentEnv):
         self._prev_blue_score = 0
         self._step_count = 0
         
+        if self.training_config.randomize_capabilities:
+            self._randomize_capabilities()
+        
         # Build initial observations
         observations = {}
         infos = {}
@@ -203,8 +226,47 @@ class AllianceEnv(MultiAgentEnv):
             robot_name = self._agent_to_robot[agent_id]
             observations[agent_id] = self._get_observation(agent_id)
             infos[agent_id] = {"robot_name": robot_name}
-        
+            
         return observations, infos
+
+    def _randomize_capabilities(self):
+        """Randomize robot capabilities based on configuration ranges."""
+        ranges = self.training_config.capability_ranges
+        
+        # Helper to sample float range
+        def sample(key, default):
+            if key in ranges:
+                low, high = ranges[key]
+                return random.uniform(low, high)
+            return default
+            
+        for robot_name in self._agent_to_robot.values():
+            robot = self.server.robots.get(robot_name)
+            if not robot:
+                continue
+            
+            # Create new random capabilities
+            # Use gamegine units
+            from gamegine.utils.NCIM.ncim import MetersPerSecond, Meter, RadiansPerSecond
+            from gamegine.utils.NCIM.ComplexDimensions.acceleration import MeterPerSecondSquared
+            
+            # Default baselines from existing capabilities or standard defaults
+            base_caps = robot.capabilities or RobotCapabilities()
+            
+            new_caps = RobotCapabilities(
+                max_speed=MetersPerSecond(sample("max_speed", float(base_caps.max_speed))),
+                max_acceleration=MeterPerSecondSquared(sample("max_acceleration", float(base_caps.max_acceleration))),
+                rotational_speed=RadiansPerSecond(sample("rotational_speed", float(base_caps.rotational_speed))),
+                gamepiece_capacity=base_caps.gamepiece_capacity.copy(),
+                interaction_profiles=base_caps.interaction_profiles.copy() # Could randomize these too later
+            )
+            
+            # Apply to robot
+            robot.capabilities = new_caps
+            
+            # Also update physical parameters if needed (e.g. max_acceleration limits physics)
+            if robot.physics:
+                robot.physics.max_acceleration = new_caps.max_acceleration
     
     def step(
         self,
@@ -384,6 +446,79 @@ class AllianceEnv(MultiAgentEnv):
         
         # Could add gamepiece counts, opponent positions, etc.
         
+        if self.training_config.use_capability_context:
+            # Append capability vector
+            robot = self.server.robots.get(robot_name)
+            if robot and hasattr(robot, "capabilities") and robot.capabilities:
+                cap_vec = robot.capabilities.to_vector()
+                # Extend obs array
+                obs = np.concatenate([obs, np.array(cap_vec, dtype=np.float32)])
+            else:
+                # Pad with default/zeros if no capabilities
+                obs = np.concatenate([obs, np.zeros(RobotCapabilities.vector_size(), dtype=np.float32)])
+        
+        if self.server and self.server.match and self.server.match.game:
+             game_obs = self.server.match.game.get_observation(game_state)
+             if game_obs:
+                  obs = np.concatenate([obs, np.array(game_obs, dtype=np.float32)])
+        
+        # Append opponent observations
+        if self.training_config.observe_opponent_states or self.training_config.observe_opponent_capabilities:
+            max_opponents = 3
+            # Identify opponents keys
+            if "red" in agent_id:
+                opponents = [aid for aid in self._blue_agents]
+            else:
+                opponents = [aid for aid in self._red_agents]
+            
+            # Ensure consistent order by sorting
+            opponents.sort()
+            
+            # Helper to get normalized opponent state
+            def get_opp_state(opp_idx):
+                if opp_idx >= len(opponents):
+                    return np.zeros(5, dtype=np.float32)
+                
+                opp_id = opponents[opp_idx]
+                opp_robot_name = self._agent_to_robot[opp_id]
+                opp_robot_state = self.server.game_state.get("robots").get(opp_robot_name)
+                
+                if not opp_robot_state:
+                    return np.zeros(5, dtype=np.float32)
+
+                field_size = self.game.get_field_size()
+                fx = float(field_size[0].to(Meter))
+                fy = float(field_size[1].to(Meter))
+
+                vals = [
+                    float(opp_robot_state.x.get().to(Meter)) / fx,
+                    float(opp_robot_state.y.get().to(Meter)) / fy,
+                    float(opp_robot_state.heading.get().to(Degree)) / 360.0,
+                    0.0, # vx placeholder
+                    0.0  # vy placeholder
+                ]
+                return np.array(vals, dtype=np.float32)
+
+            # Helper to get opponent capabilities
+            def get_opp_caps(opp_idx):
+                if opp_idx >= len(opponents):
+                    return np.zeros(RobotCapabilities.vector_size(), dtype=np.float32)
+                    
+                opp_id = opponents[opp_idx]
+                opp_robot_name = self._agent_to_robot[opp_id]
+                robot = self.server.robots.get(opp_robot_name)
+                
+                if robot and hasattr(robot, "capabilities") and robot.capabilities:
+                    return robot.capabilities.to_vector()
+                return np.zeros(RobotCapabilities.vector_size(), dtype=np.float32)
+
+            for i in range(max_opponents):
+                if self.training_config.observe_opponent_states:
+                    obs = np.concatenate([obs, get_opp_state(i)])
+                
+                if self.training_config.observe_opponent_capabilities:
+                    obs = np.concatenate([obs, get_opp_caps(i)])
+
         return obs
     
     def render(self, mode: str = "human"):

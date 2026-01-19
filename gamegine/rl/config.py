@@ -60,11 +60,23 @@ class TrainingConfig:
     :param share_reward: If True, all robots on an alliance share the same reward.
     :param opponent_policy_id: Policy ID for opponent in vs_opponent mode.
     :param competitive_reward: If True, reward = Δ(our_score - opponent_score).
+    :param use_capability_context: If True, append capability vector to observations.
+    :param randomize_capabilities: If True, sample random capabilities each reset.
+    :param capability_ranges: Min/max ranges for randomization (e.g., {"max_speed": (3.0, 5.0)}).
     """
     mode: Literal["solo", "self_play", "vs_opponent"] = "solo"
     share_reward: bool = True
     opponent_policy_id: Optional[str] = None
     competitive_reward: bool = True  # Use score differential vs absolute score
+    
+    # Capabilities (Versatile Strategy Net)
+    use_capability_context: bool = False
+    randomize_capabilities: bool = False
+    capability_ranges: Dict[str, Tuple[float, float]] = field(default_factory=dict)
+    
+    # Opponent Awareness
+    observe_opponent_states: bool = False  # If True, add opponent x,y,theta,vx,vy
+    observe_opponent_capabilities: bool = False # If True, add opponent capabilities
 
 
 @dataclass

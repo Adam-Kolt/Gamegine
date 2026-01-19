@@ -326,3 +326,28 @@ class Game(object):
         :rtype: Optional[:class:`AprilTag`]
         """
         return self.apriltags.get(tag_id)
+
+    # =========================================================================
+    # RL Observation Interface
+    # =========================================================================
+
+    def get_observation_space_size(self) -> int:
+        """Returns the size of the game-specific observation vector.
+        
+        Override this in subclasses to add game-specific context to the RL observation.
+        
+        :return: Number of float values in the observation vector.
+        """
+        return 0
+
+    def get_observation(self, game_state) -> List[float]:
+        """Returns the game-specific observation vector.
+        
+        Override this in subclasses to extract game state (e.g. gamepiece counts).
+        Values should generally be normalized to [0, 1] or [-1, 1].
+        
+        :param game_state: The current GameState object.
+        :return: List of float values representing the game state.
+        """
+        # Default: return empty list
+        return []
