@@ -20,7 +20,8 @@ from gamegine.utils.NCIM.Dimensions.spatial import Meter, Feet, Inch, SpatialMea
 from gamegine.utils.NCIM.Dimensions.angular import Degree
 
 # Import scoring components
-from examples.Rebuilt.scoring import Hub, Tower, Depot, Fuel
+from examples.Rebuilt.scoring import Hub, Tower, Depot, Fuel, NeutralZone, AllianceZone
+from examples.Rebuilt.shooting_locations import ShootingLocation, create_shooting_locations_for_alliance
 
 
 # =============================================================================
@@ -165,7 +166,16 @@ ALL_PIECES = NEUTRAL_ZONE_PIECES + BLUE_DEPOT_PIECES + RED_DEPOT_PIECES
 # =============================================================================
 
 def create_rebuilt_game() -> Game:
-    """Create the REBUILT 2026 game with all field elements."""
+    """Create the REBUILT 2026 game with all field elements.
+    
+    Includes:
+    - Hubs (scoring towers)
+    - Towers (endgame climbing)
+    - Depots (alliance-specific fuel pickup)
+    - Neutral Zone (shared fuel storage, fills from Hub scores)
+    - Alliance Zones (team fuel storage, fills from shuttling/misses)
+    - Shooting Locations (6 per alliance, varying accuracy)
+    """
     game = Game("Rebuilt 2026")
     
     # Field size
@@ -183,19 +193,19 @@ def create_rebuilt_game() -> Game:
     # --- Add Scoring Interactables ---
     
     # Hub positions (near center, offset toward each alliance)
-    blue_hub_x = HALF_LENGTH - Feet(5)
-    red_hub_x = HALF_LENGTH + Feet(5)
-    hub_y = HALF_WIDTH
+    blue_hub_x = Meter(4.629)
+    red_hub_x = FIELD_LENGTH - blue_hub_x
+    hub_y = Meter(6.024)
     
     blue_hub = Hub(
         center=(blue_hub_x, hub_y),
-        navigation_point=(blue_hub_x + Feet(3), hub_y, Degree(180)),
+        navigation_point=(blue_hub_x - Meter(1), hub_y, Degree(180)),
         alliance=Alliance.BLUE,
         name="Blue Hub",
     )
     red_hub = Hub(
         center=(red_hub_x, hub_y),
-        navigation_point=(red_hub_x - Feet(3), hub_y, Degree(0)),
+        navigation_point=(red_hub_x + Meter(1), hub_y, Degree(0)),
         alliance=Alliance.RED,
         name="Red Hub",
     )
@@ -220,22 +230,69 @@ def create_rebuilt_game() -> Game:
     game.add_interactable(blue_tower)
     game.add_interactable(red_tower)
     
-    # Depot positions (FUEL pickup)
+    # Depot positions (FUEL pickup - starts with 24 balls each)
     blue_depot = Depot(
-        center=(Feet(4), HALF_WIDTH),
-        navigation_point=(Feet(6), HALF_WIDTH, Degree(180)),
+        center=(Meter(0.692), Meter(6.024)),
+        navigation_point=(Meter(0.692), Meter(6.024), Degree(0)),
         alliance=Alliance.BLUE,
         name="Blue Depot",
+        initial_fuel=24,
     )
     red_depot = Depot(
-        center=(FIELD_LENGTH - Feet(4), HALF_WIDTH),
-        navigation_point=(FIELD_LENGTH - Feet(6), HALF_WIDTH, Degree(0)),
+        center=(Meter(FIELD_LENGTH - Meter(0.692)), Meter(6.024)),
+        navigation_point=(Meter(FIELD_LENGTH - Meter(0.692)), Meter(6.024), Degree(180)),
         alliance=Alliance.RED,
         name="Red Depot",
+        initial_fuel=24,
     )
     
     game.add_interactable(blue_depot)
     game.add_interactable(red_depot)
+    
+    # --- Neutral Zone (center of field, shared storage) ---
+    neutral_zone = NeutralZone(
+        center=(HALF_LENGTH, HALF_WIDTH),
+        navigation_point=(HALF_LENGTH, HALF_WIDTH, Degree(0)),
+        name="Neutral Zone",
+        initial_fuel=0,  # Starts empty, fills from Hub scores
+    )
+    game.add_interactable(neutral_zone)
+    
+    # --- Alliance Zones (team storage, fills from shuttling/misses) ---
+    blue_alliance_zone = AllianceZone(
+        center=(Meter(2.5), HALF_WIDTH),
+        navigation_point=(Meter(2.5), HALF_WIDTH, Degree(0)),
+        alliance=Alliance.BLUE,
+        name="Blue Alliance Zone",
+        initial_fuel=0,
+    )
+    red_alliance_zone = AllianceZone(
+        center=(FIELD_LENGTH - Meter(2.5), HALF_WIDTH),
+        navigation_point=(FIELD_LENGTH - Meter(2.5), HALF_WIDTH, Degree(180)),
+        alliance=Alliance.RED,
+        name="Red Alliance Zone",
+        initial_fuel=0,
+    )
+    
+    game.add_interactable(blue_alliance_zone)
+    game.add_interactable(red_alliance_zone)
+    
+    # --- Shooting Locations (6 per alliance) ---
+    blue_shooting_locations = create_shooting_locations_for_alliance(
+        Alliance.BLUE,
+        (blue_hub_x, hub_y),
+        FIELD_WIDTH,
+    )
+    for loc in blue_shooting_locations:
+        game.add_interactable(loc)
+    
+    red_shooting_locations = create_shooting_locations_for_alliance(
+        Alliance.RED,
+        (red_hub_x, hub_y),
+        FIELD_WIDTH,
+    )
+    for loc in red_shooting_locations:
+        game.add_interactable(loc)
 
     return game
 

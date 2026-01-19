@@ -427,8 +427,7 @@ class Reef(RobotInteractable):
             return []
         return dislodge_algae
 
-    @staticmethod
-    def get_interactions():
+    def get_interactions(self):
         scoring_columns = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"]
         options = []
 
@@ -645,8 +644,7 @@ class Processor(RobotInteractable):
 
         return changes
 
-    @staticmethod
-    def get_interactions():
+    def get_interactions(self):
         return [
             InteractionOption(
                 "processor",
@@ -724,8 +722,7 @@ class Barge(RobotInteractable):
                 ValueChange(interactableState.getValue(cage), True),
             ]
 
-    @staticmethod
-    def get_interactions():
+    def get_interactions(self):
         return [
             InteractionOption(
                 "Deep1",
@@ -808,8 +805,7 @@ class Net(RobotInteractable):
 
         return changes
 
-    @staticmethod
-    def get_interactions():
+    def get_interactions(self):
         return [
             InteractionOption(
                 "Net",

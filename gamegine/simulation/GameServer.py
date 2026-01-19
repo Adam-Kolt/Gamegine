@@ -162,9 +162,10 @@ class DiscreteGameServer(AbstractGameServer):
 
         robot_state: RobotState = self.match.game_state.get("robots").get(robot_name)
 
-        if (x, y) == (robot_state.x.get(), robot_state.y.get()):
-            Debug(f"Robot {robot_name} is already at ({x}, {y}), no need to move")
-            return
+        dist = ((x.to(Inch) - robot_state.x.get().to(Inch))**2 + (y.to(Inch) - robot_state.y.get().to(Inch))**2)**0.5
+        if dist < 1.0:
+            print(f"DEBUG: Robot {robot_name} is already at ({x}, {y}) (Dist: {dist}), no need to move")
+            return None
 
         # Get current time before trajectory generation (for dynamic obstacle avoidance)
         current_time = self.match.game_state.current_time.get()

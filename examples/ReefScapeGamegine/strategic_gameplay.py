@@ -111,7 +111,9 @@ def add_robot_interactions(robot: SwerveRobot):
     robot.add_interaction_config(RobotInteractionConfig(Names.BottomCoralStation, "PickupCoral", has_no_coral, lambda s,r,g: CORAL_PICKUP_TIME))
 
     # Reef interaction options from Source of Truth
-    reef_options = {opt.identifier: opt for opt in Reef.get_interactions()}
+    # Instantiate a temporary Reef object since get_interactions is now an instance method
+    temp_reef = Reef((Inch(0), Inch(0)), (Inch(0), Inch(0), Degree(0)))
+    reef_options = {opt.identifier: opt for opt in temp_reef.get_interactions()}
     
     Reef_Position = (Inch(176.746), Reefscape.half_field_y())
     away = Inch(32.5800055942) + ROBOT_LENGTH + Inch(3)

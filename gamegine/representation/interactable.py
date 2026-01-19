@@ -42,7 +42,6 @@ class RobotInteractable(BoundedObject):
         """Abstract method for initializing the state space of the interactable object."""
         pass
 
-    @staticmethod
     @abstractmethod
     def get_interactions(self) -> List["InteractionOption"]:
         """Gets the available interactions for the robot with the interactable object.
@@ -51,9 +50,7 @@ class RobotInteractable(BoundedObject):
         :rtype: List[:class:`InteractionOption`]"""
         pass
 
-
-    @classmethod
-    def get_interaction(cls, identifier: str) -> "InteractionOption":
+    def get_interaction(self, identifier: str) -> "InteractionOption":
         """Gets the interaction option with the given identifier.
 
         :param identifier: The unique identifier for the interaction option.
@@ -61,7 +58,7 @@ class RobotInteractable(BoundedObject):
         :return: The InteractionOption object with the given identifier.
         :rtype: :class:`InteractionOption`
         """
-        for interaction in cls.get_interactions():
+        for interaction in self.get_interactions():
             if interaction.identifier == identifier:
                 return interaction
         return None

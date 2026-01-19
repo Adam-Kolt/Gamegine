@@ -174,6 +174,15 @@ class Hub(RobotInteractable):
                 inventory[Fuel] -= 1
                 changes.append(ValueChange(robotState.gamepieces, inventory))
             
+            # Add scored ball to Neutral Zone (recycle mechanic)
+            try:
+                neutral_zone_state = gameState.get("interactables").get("Neutral Zone")
+                if neutral_zone_state is not None:
+                    changes.append(ValueIncrease(neutral_zone_state.fuel_available, 1))
+            except (KeyError, AttributeError):
+                # Neutral Zone not registered yet, skip recycle
+                pass
+            
             return changes
         
         return score_fuel
@@ -325,24 +334,118 @@ class Tower(RobotInteractable):
 
 
 # =============================================================================
-# DEPOT (FUEL PICKUP LOCATION)
+# CONFIGURATION CLASSES
 # =============================================================================
 
-class DepotState(StateSpace):
-    """State for a Depot FUEL pickup location."""
+from dataclasses import dataclass
+
+
+@dataclass
+class DefenseConfig:
+    """Configurable defense parameters."""
+    time_multiplier: float = 1.5  # How much to slow down opponent pickups
+    defense_duration: float = 5.0  # How long a defense action lasts
+    cooldown: float = 2.0  # Time before robot can defend again
+
+
+@dataclass
+class RobotStorageConfig:
+    """Configurable robot ball storage."""
+    max_ball_capacity: int = 30  # Maximum balls robot can carry
+    intake_rate: float = 1.0  # Multiplier for pickup time
+
+
+# Global defense config (can be overridden)
+DEFAULT_DEFENSE_CONFIG = DefenseConfig()
+
+
+# =============================================================================
+# ZONE STATE BASE CLASS
+# =============================================================================
+
+class ZoneState(StateSpace):
+    """Base state for fuel storage zones with defense tracking."""
     
-    def __init__(self, initial_fuel: int = 24):
+    def __init__(self, initial_fuel: int = 0):
         super().__init__()
         self.setValue("fuel_available", initial_fuel)
+        self.setValue("defending_robots", {})  # robot_name -> defense_end_time
     
     @property
     def fuel_available(self):
         return self.getValue("fuel_available")
+    
+    def is_defended_by(self, alliance: Alliance, current_time: float) -> bool:
+        """Check if zone is defended by the given alliance."""
+        defenders = self.getValue("defending_robots").get()
+        for robot_name, end_time in list(defenders.items()):
+            if end_time > current_time:
+                # Check alliance from robot name (assumes naming like "Blue1", "Red2")
+                if alliance.name.lower() in robot_name.lower():
+                    return True
+        return False
+    
+    def get_defense_multiplier(self, robot_alliance: Alliance, current_time: float, config: DefenseConfig = None) -> float:
+        """Get the time multiplier for a robot picking up from this zone.
+        
+        If the zone is defended by the opposing alliance, apply the multiplier.
+        """
+        if config is None:
+            config = DEFAULT_DEFENSE_CONFIG
+        
+        defenders = self.getValue("defending_robots").get()
+        for robot_name, end_time in list(defenders.items()):
+            if end_time > current_time:
+                # Check if defender is from opposing alliance
+                defender_is_blue = "blue" in robot_name.lower()
+                robot_is_blue = robot_alliance == Alliance.BLUE
+                if defender_is_blue != robot_is_blue:
+                    return config.time_multiplier
+        return 1.0
 
 
-def depot_has_fuel(interactableState: DepotState, robotState: RobotState, gameState: GameState) -> bool:
-    """Condition: Depot has FUEL available."""
-    return interactableState.fuel_available.get() > 0
+# =============================================================================
+# DEPOT (ALLIANCE FUEL PICKUP LOCATION)
+# =============================================================================
+
+class DepotState(ZoneState):
+    """State for a Depot FUEL pickup location."""
+    
+    def __init__(self, initial_fuel: int = 24):
+        super().__init__(initial_fuel)
+
+
+def _create_depot_pickup_condition(amount: int):
+    """Create condition for depot pickup of given amount."""
+    def condition(interactableState: DepotState, robotState: RobotState, gameState: GameState) -> bool:
+        available = interactableState.fuel_available.get()
+        # Check robot capacity if available
+        current_held = sum(robotState.gamepieces.get().values()) if robotState.gamepieces.get() else 0
+        max_capacity = getattr(robotState, 'max_ball_capacity', 50)  # Default high if not set
+        can_carry = max_capacity - current_held
+        return available >= amount and can_carry >= amount
+    return condition
+
+
+def _create_depot_pickup_action(amount: int):
+    """Create action for depot pickup of given amount."""
+    def action(
+        interactableState: DepotState,
+        robotState: RobotState,
+        gameState: GameState,
+    ) -> List[ValueChange]:
+        changes = []
+        
+        # Decrease Depot fuel count
+        changes.append(ValueDecrease(interactableState.fuel_available, amount))
+        
+        # Add FUEL to robot inventory
+        inventory = robotState.gamepieces.get().copy()
+        inventory[Fuel] = inventory.get(Fuel, 0) + amount
+        changes.append(ValueChange(robotState.gamepieces, inventory))
+        
+        return changes
+    return action
 
 
 class Depot(RobotInteractable):
@@ -350,6 +453,7 @@ class Depot(RobotInteractable):
     
     Robots can pick up FUEL from their alliance's Depot.
     Each Depot starts with 24 FUEL.
+    Supports discrete pickup amounts: 1, 5, or 10 balls.
     """
     
     def __init__(
@@ -358,40 +462,240 @@ class Depot(RobotInteractable):
         navigation_point: Tuple[SpatialMeasurement, SpatialMeasurement, AngularMeasurement],
         alliance: Alliance,
         name: str = "",
+        initial_fuel: int = 24,
     ):
         super().__init__(Point(*center, Inch(0)), name or f"{alliance.name} Depot", navigation_point)
         self.alliance = alliance
+        self._initial_fuel = initial_fuel
     
-    @staticmethod
-    def initializeInteractableState() -> DepotState:
-        return DepotState(initial_fuel=24)
+    def initializeInteractableState(self) -> DepotState:
+        return DepotState(initial_fuel=self._initial_fuel)
     
-    @staticmethod
-    def pickup_fuel(
-        interactableState: DepotState,
+    def get_interactions(self) -> List[InteractionOption]:
+        return [
+            InteractionOption(
+                "pickup_1",
+                f"Pick up 1 FUEL from {self.alliance.name} Depot",
+                _create_depot_pickup_condition(1),
+                _create_depot_pickup_action(1),
+            ),
+            InteractionOption(
+                "pickup_5",
+                f"Pick up 5 FUEL from {self.alliance.name} Depot",
+                _create_depot_pickup_condition(5),
+                _create_depot_pickup_action(5),
+            ),
+            InteractionOption(
+                "pickup_10",
+                f"Pick up 10 FUEL from {self.alliance.name} Depot",
+                _create_depot_pickup_condition(10),
+                _create_depot_pickup_action(10),
+            ),
+        ]
+
+
+# =============================================================================
+# NEUTRAL ZONE (SHARED FUEL PICKUP LOCATION)
+# =============================================================================
+
+class NeutralZoneState(ZoneState):
+    """State for the Neutral Zone fuel storage.
+    
+    Starts empty, gains balls when Hub is scored (+1 per score).
+    Both alliances can pick up from here.
+    """
+    
+    def __init__(self, initial_fuel: int = 0):
+        super().__init__(initial_fuel)
+
+
+def _create_zone_pickup_condition(amount: int):
+    """Create condition for zone pickup of given amount."""
+    def condition(interactableState: ZoneState, robotState: RobotState, gameState: GameState) -> bool:
+        available = interactableState.fuel_available.get()
+        current_held = sum(robotState.gamepieces.get().values()) if robotState.gamepieces.get() else 0
+        max_capacity = getattr(robotState, 'max_ball_capacity', 50)
+        can_carry = max_capacity - current_held
+        return available >= amount and can_carry >= amount
+    return condition
+
+
+def _create_zone_pickup_action(amount: int):
+    """Create action for zone pickup of given amount."""
+    def action(
+        interactableState: ZoneState,
         robotState: RobotState,
         gameState: GameState,
     ) -> List[ValueChange]:
-        """Pick up a FUEL from the Depot."""
         changes = []
         
-        # Decrease Depot fuel count
-        changes.append(ValueDecrease(interactableState.fuel_available, 1))
+        # Decrease zone fuel count
+        changes.append(ValueDecrease(interactableState.fuel_available, amount))
         
         # Add FUEL to robot inventory
         inventory = robotState.gamepieces.get().copy()
-        inventory[Fuel] = inventory.get(Fuel, 0) + 1
+        inventory[Fuel] = inventory.get(Fuel, 0) + amount
         changes.append(ValueChange(robotState.gamepieces, inventory))
         
         return changes
+    return action
+
+
+def _defend_zone_condition(interactableState: ZoneState, robotState: RobotState, gameState: GameState) -> bool:
+    """Condition: Robot is not already defending elsewhere."""
+    # For simplicity, allow defending (could add more complex logic later)
+    return True
+
+
+def _create_defend_zone_action(defense_duration: float = 5.0):
+    """Create action for defending a zone."""
+    def action(
+        interactableState: ZoneState,
+        robotState: RobotState,
+        gameState: GameState,
+    ) -> List[ValueChange]:
+        changes = []
+        
+        # Get robot name
+        robot_name = robotState.name if hasattr(robotState, 'name') else "Unknown"
+        
+        # Add robot to defenders list with end time
+        current_time = gameState.current_time.get()
+        end_time = current_time + defense_duration
+        
+        defenders = interactableState.getValue("defending_robots").get().copy()
+        defenders[robot_name] = end_time
+        changes.append(ValueChange(interactableState.getValue("defending_robots"), defenders))
+        
+        return changes
+    return action
+
+
+class NeutralZone(RobotInteractable):
+    """Neutral Zone shared fuel storage.
     
-    @staticmethod
-    def get_interactions() -> List[InteractionOption]:
+    Located in the center of the field. Both alliances can pick up from here.
+    Gains +1 ball whenever a robot scores in the Hub.
+    Can be defended to slow opponent pickups.
+    """
+    
+    def __init__(
+        self,
+        center: Tuple[SpatialMeasurement, SpatialMeasurement],
+        navigation_point: Tuple[SpatialMeasurement, SpatialMeasurement, AngularMeasurement],
+        name: str = "Neutral Zone",
+        initial_fuel: int = 0,
+        defense_config: DefenseConfig = None,
+    ):
+        super().__init__(Point(*center, Inch(0)), name, navigation_point)
+        self._initial_fuel = initial_fuel
+        self.defense_config = defense_config or DEFAULT_DEFENSE_CONFIG
+    
+    def initializeInteractableState(self) -> NeutralZoneState:
+        return NeutralZoneState(initial_fuel=self._initial_fuel)
+    
+    def get_interactions(self) -> List[InteractionOption]:
         return [
             InteractionOption(
-                "pickup_fuel",
-                "Pick up FUEL from Depot",
-                depot_has_fuel,
-                Depot.pickup_fuel,
+                "pickup_1",
+                "Pick up 1 FUEL from Neutral Zone",
+                _create_zone_pickup_condition(1),
+                _create_zone_pickup_action(1),
+            ),
+            InteractionOption(
+                "pickup_5",
+                "Pick up 5 FUEL from Neutral Zone",
+                _create_zone_pickup_condition(5),
+                _create_zone_pickup_action(5),
+            ),
+            InteractionOption(
+                "pickup_10",
+                "Pick up 10 FUEL from Neutral Zone",
+                _create_zone_pickup_condition(10),
+                _create_zone_pickup_action(10),
+            ),
+            InteractionOption(
+                "defend",
+                "Defend the Neutral Zone",
+                _defend_zone_condition,
+                _create_defend_zone_action(self.defense_config.defense_duration),
+            ),
+        ]
+
+
+# =============================================================================
+# ALLIANCE ZONE (TEAM FUEL STORAGE)
+# =============================================================================
+
+class AllianceZoneState(ZoneState):
+    """State for an Alliance Zone fuel storage.
+    
+    Starts empty, gains balls from:
+    - Missed shots (40% chance goes here)
+    - Shuttling actions from robots
+    
+    Both alliances can pick up (with defense penalty for opponents).
+    """
+    
+    def __init__(self, owning_alliance: Alliance, initial_fuel: int = 0):
+        super().__init__(initial_fuel)
+        self.setValue("owning_alliance", owning_alliance.name)
+    
+    @property
+    def owning_alliance(self) -> str:
+        return self.getValue("owning_alliance").get()
+
+
+class AllianceZone(RobotInteractable):
+    """Alliance Zone team fuel storage.
+    
+    Located near each alliance's side of the field.
+    Starts empty, filled by shuttling or missed shots.
+    Own alliance picks up normally, opponents face defense penalty.
+    Can be defended to slow opponent pickups.
+    """
+    
+    def __init__(
+        self,
+        center: Tuple[SpatialMeasurement, SpatialMeasurement],
+        navigation_point: Tuple[SpatialMeasurement, SpatialMeasurement, AngularMeasurement],
+        alliance: Alliance,
+        name: str = "",
+        initial_fuel: int = 0,
+        defense_config: DefenseConfig = None,
+    ):
+        super().__init__(Point(*center, Inch(0)), name or f"{alliance.name} Alliance Zone", navigation_point)
+        self.alliance = alliance
+        self._initial_fuel = initial_fuel
+        self.defense_config = defense_config or DEFAULT_DEFENSE_CONFIG
+    
+    def initializeInteractableState(self) -> AllianceZoneState:
+        return AllianceZoneState(owning_alliance=self.alliance, initial_fuel=self._initial_fuel)
+    
+    def get_interactions(self) -> List[InteractionOption]:
+        return [
+            InteractionOption(
+                "pickup_1",
+                f"Pick up 1 FUEL from {self.alliance.name} Alliance Zone",
+                _create_zone_pickup_condition(1),
+                _create_zone_pickup_action(1),
+            ),
+            InteractionOption(
+                "pickup_5",
+                f"Pick up 5 FUEL from {self.alliance.name} Alliance Zone",
+                _create_zone_pickup_condition(5),
+                _create_zone_pickup_action(5),
+            ),
+            InteractionOption(
+                "pickup_10",
+                f"Pick up 10 FUEL from {self.alliance.name} Alliance Zone",
+                _create_zone_pickup_condition(10),
+                _create_zone_pickup_action(10),
+            ),
+            InteractionOption(
+                "defend",
+                f"Defend the {self.alliance.name} Alliance Zone",
+                _defend_zone_condition,
+                _create_defend_zone_action(self.defense_config.defense_duration),
             ),
         ]

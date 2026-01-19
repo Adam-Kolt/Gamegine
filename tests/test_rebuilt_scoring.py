@@ -288,14 +288,20 @@ class TestGameCreation:
         assert game.name == "Rebuilt 2026"
         
         # Check interactables
+        # 2 Hubs + 2 Towers + 2 Depots + 1 Neutral Zone + 2 Alliance Zones + 12 Shooting Locations = 21
         interactables = list(game.get_interactables())
-        assert len(interactables) == 6  # 2 Hubs, 2 Towers, 2 Depots
+        assert len(interactables) == 21
         
         names = [i.name for i in interactables]
         assert "Blue Hub" in names
         assert "Red Hub" in names
         assert "Blue Tower" in names
         assert "Red Tower" in names
+        assert "Blue Depot" in names
+        assert "Red Depot" in names
+        assert "Neutral Zone" in names
+        assert "Blue Alliance Zone" in names
+        assert "Red Alliance Zone" in names
         
     def test_fuel_positions(self):
         """Test FUEL spawn positions are generated."""
@@ -303,3 +309,163 @@ class TestGameCreation:
         
         assert len(ALL_PIECES) > 200  # Should have plenty of pieces
         assert len(NEUTRAL_ZONE_PIECES) > 100  # Neutral zone has most
+
+
+class TestZoneInteractables:
+    """Tests for new zone-based interactables."""
+    
+    def test_depot_pickup_1(self):
+        """Test picking up 1 FUEL from Depot."""
+        from examples.Rebuilt.scoring import Depot, DepotState, Fuel
+        
+        game_state = GameState()
+        game_state.createSpace("interactables")
+        
+        depot = Depot(
+            center=(Feet(4), Feet(10)),
+            navigation_point=(Feet(6), Feet(10), Inch(0)),
+            alliance=Alliance.BLUE,
+            name="Blue Depot",
+            initial_fuel=24,
+        )
+        
+        depot_state = depot.initializeInteractableState()
+        game_state.get("interactables").registerSpace("Blue Depot", depot_state)
+        
+        game_state.createSpace("robots")
+        robot_state = RobotState(Feet(6), Feet(10), Inch(0))
+        robot_state.setValue("gamepieces", {})
+        robot_state.name = "TestBot"
+        game_state.get("robots").registerSpace("TestBot", robot_state)
+        
+        # Get pickup_1 interaction (should be first)
+        interactions = depot.get_interactions()
+        pickup_1 = next(i for i in interactions if i.identifier == "pickup_1")
+        
+        assert pickup_1.ableToInteract(depot_state, robot_state, game_state)
+        
+        changes = pickup_1.interact(depot_state, robot_state, game_state)
+        for change in changes:
+            change.apply()
+        
+        assert depot_state.fuel_available.get() == 23
+        assert robot_state.gamepieces.get().get(Fuel, 0) == 1
+    
+    def test_depot_pickup_10(self):
+        """Test picking up 10 FUEL from Depot."""
+        from examples.Rebuilt.scoring import Depot, DepotState, Fuel
+        
+        game_state = GameState()
+        game_state.createSpace("interactables")
+        
+        depot = Depot(
+            center=(Feet(4), Feet(10)),
+            navigation_point=(Feet(6), Feet(10), Inch(0)),
+            alliance=Alliance.BLUE,
+            name="Blue Depot",
+            initial_fuel=24,
+        )
+        
+        depot_state = depot.initializeInteractableState()
+        game_state.get("interactables").registerSpace("Blue Depot", depot_state)
+        
+        game_state.createSpace("robots")
+        robot_state = RobotState(Feet(6), Feet(10), Inch(0))
+        robot_state.setValue("gamepieces", {})
+        robot_state.name = "TestBot"
+        game_state.get("robots").registerSpace("TestBot", robot_state)
+        
+        interactions = depot.get_interactions()
+        pickup_10 = next(i for i in interactions if i.identifier == "pickup_10")
+        
+        changes = pickup_10.interact(depot_state, robot_state, game_state)
+        for change in changes:
+            change.apply()
+        
+        assert depot_state.fuel_available.get() == 14
+        assert robot_state.gamepieces.get().get(Fuel, 0) == 10
+    
+    def test_neutral_zone_starts_empty(self):
+        """Test NeutralZone initializes with 0 FUEL."""
+        from examples.Rebuilt.scoring import NeutralZone, NeutralZoneState
+        
+        nz = NeutralZone(
+            center=(Feet(27), Feet(13)),
+            navigation_point=(Feet(27), Feet(13), Inch(0)),
+            name="Neutral Zone",
+        )
+        
+        state = nz.initializeInteractableState()
+        assert state.fuel_available.get() == 0
+    
+    def test_neutral_zone_pickup_blocked_when_empty(self):
+        """Test can't pickup from empty Neutral Zone."""
+        from examples.Rebuilt.scoring import NeutralZone, NeutralZoneState, Fuel
+        
+        game_state = GameState()
+        game_state.createSpace("interactables")
+        
+        nz = NeutralZone(
+            center=(Feet(27), Feet(13)),
+            navigation_point=(Feet(27), Feet(13), Inch(0)),
+            name="Neutral Zone",
+            initial_fuel=0,
+        )
+        
+        nz_state = nz.initializeInteractableState()
+        game_state.get("interactables").registerSpace("Neutral Zone", nz_state)
+        
+        game_state.createSpace("robots")
+        robot_state = RobotState(Feet(27), Feet(13), Inch(0))
+        robot_state.setValue("gamepieces", {})
+        robot_state.name = "TestBot"
+        game_state.get("robots").registerSpace("TestBot", robot_state)
+        
+        interactions = nz.get_interactions()
+        pickup_1 = next(i for i in interactions if i.identifier == "pickup_1")
+        
+        # Should not be able to pickup from empty zone
+        assert pickup_1.ableToInteract(nz_state, robot_state, game_state) == False
+    
+    def test_hub_score_adds_to_neutral_zone(self):
+        """Test scoring in Hub adds 1 FUEL to Neutral Zone."""
+        from examples.Rebuilt.scoring import Hub, HubState, NeutralZone, NeutralZoneState, Fuel
+        
+        game_state = GameState()
+        game_state.createSpace("interactables")
+        
+        # Create Hub
+        hub = Hub(
+            center=(Feet(22), Feet(13)),
+            navigation_point=(Feet(25), Feet(13), Inch(0)),
+            alliance=Alliance.BLUE,
+            name="Blue Hub",
+        )
+        hub_state = HubState()
+        game_state.get("interactables").registerSpace("Blue Hub", hub_state)
+        
+        # Create Neutral Zone
+        nz = NeutralZone(
+            center=(Feet(27), Feet(13)),
+            navigation_point=(Feet(27), Feet(13), Inch(0)),
+            name="Neutral Zone",
+            initial_fuel=0,
+        )
+        nz_state = nz.initializeInteractableState()
+        game_state.get("interactables").registerSpace("Neutral Zone", nz_state)
+        
+        # Create robot with 1 FUEL
+        game_state.createSpace("robots")
+        robot_state = RobotState(Feet(25), Feet(13), Inch(0))
+        robot_state.setValue("gamepieces", {Fuel: 1})
+        robot_state.name = "TestBot"
+        game_state.get("robots").registerSpace("TestBot", robot_state)
+        
+        # Score in Hub
+        interaction = hub.get_interactions()[0]  # score_fuel
+        changes = interaction.interact(hub_state, robot_state, game_state)
+        for change in changes:
+            change.apply()
+        
+        # Verify Neutral Zone now has 1 FUEL (recycle mechanic)
+        assert nz_state.fuel_available.get() == 1
