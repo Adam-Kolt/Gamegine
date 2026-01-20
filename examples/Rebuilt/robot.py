@@ -31,7 +31,7 @@ def create_swerve_config():
         )
     )
 
-def create_robot(name: str, alliance: Alliance) -> SwerveRobot:
+def create_robot(name: str, alliance: Alliance, mass: Pound = Pound(125)) -> SwerveRobot:
     """Create a swerve robot for the Rebuilt game."""
     structure = [
         Rectangle.from_center((Inch(0), Inch(0)), ROBOT_WIDTH, ROBOT_WIDTH).get_3d(
@@ -44,8 +44,8 @@ def create_robot(name: str, alliance: Alliance) -> SwerveRobot:
         drivetrain=create_swerve_config(),
         structure=structure,
         physics=PhysicalParameters(
-            mass=Pound(125),
-            moi=Pound(125) * Inch(15) ** 2,
+            mass=mass,
+            moi=mass * Inch(15) ** 2,
             max_acceleration=MeterPerSecondSquared(4.0),
         ),
     )

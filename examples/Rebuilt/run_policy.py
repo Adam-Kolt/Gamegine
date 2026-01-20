@@ -37,7 +37,8 @@ from examples.Rebuilt.scoring import Hub, Tower, Depot, AllianceZone, NeutralZon
 from examples.Rebuilt.shooting_locations import ShootingLocation
 from examples.Rebuilt.discrete_action_demo import (
     draw_shooting_location, draw_depot, draw_hub, draw_tower, 
-    draw_alliance_zone, draw_neutral_zone
+    draw_alliance_zone, draw_neutral_zone,
+    AnimationLayer, ProjectileAnimation, draw_animation_layer
 )
 from gamegine.utils.logging import SetLoggingLevel
 
@@ -69,7 +70,7 @@ def run_policy(
             blue_robots=blue_configs,
             mode="self_play",
             fast_mode=True, # Use fast mode for discrete stepping visualization
-            use_server_pool=False,
+            use_server_pool=True,
             max_episode_steps=500, # Longer visualization
         )
         
@@ -98,7 +99,7 @@ def run_policy(
         
         return env
 
-    register_env("reefscape-versatile-v0", env_creator)
+    register_env("rebuilt-versatile-v0", env_creator)
     
     # Setup Algorithm
     if checkpoint_path and checkpoint_path.lower() != "none":
@@ -128,7 +129,7 @@ def run_policy(
                 enable_rl_module_and_learner=False,
                 enable_env_runner_and_connector_v2=False,
             )
-            .environment(env="reefscape-versatile-v0")
+            .environment(env="rebuilt-versatile-v0")
             .multi_agent(
                  policies={
                     "versatile_policy": PolicySpec(
@@ -300,8 +301,94 @@ def run_policy(
         state["obs"] = obs
         state["step_count"] += 1
         
-        if not render and state["step_count"] % 10 == 0:
-             print(f"Step {state['step_count']} | Rewards: {rewards}")
+        # Update animation layer if rendering
+        if render and "animation_layer" in state:
+            state["animation_layer"].update(delta_time)
+            
+            # Trigger animations based on action results
+            from gamegine.utils.NCIM.Dimensions.spatial import Inch, Feet
+            import random
+            
+            for agent_id, info in infos.items():
+                if agent_id == "__all__":
+                    continue
+                    
+                action_name = info.get("action_name", "")
+                action_valid = info.get("action_valid", False)
+                robot_name = info.get("robot_name", agent_id)
+                
+                if not action_valid:
+                    continue
+                    
+                robot_state = env.server.game_state.get_robot(robot_name)
+                if not robot_state:
+                    continue
+                
+                robot_x = robot_state.x.get() if hasattr(robot_state.x, 'get') else robot_state.x
+                robot_y = robot_state.y.get() if hasattr(robot_state.y, 'get') else robot_state.y
+                
+                # Detect pickup actions - animate ball coming TO robot
+                if "pickup" in action_name:
+                    # Get interactable position (rough estimate from field layout)
+                    # Animate from a nearby zone toward robot
+                    start_x = robot_x + Feet(random.uniform(-3, 3))
+                    start_y = robot_y + Feet(random.uniform(-3, 3))
+                    arc_offset = random.uniform(-30, 30)  # Curve the ball
+                    anim = ProjectileAnimation(
+                        (start_x, start_y), (robot_x, robot_y),
+                        duration=0.3, arc_offset=arc_offset
+                    )
+                    state["animation_layer"].add(anim)
+                
+                # Detect shoot/score actions - animate ball FROM robot
+                elif "shoot" in action_name or "score" in action_name:
+                    # Animate from robot toward hub (estimate hub position)
+                    if "red" in robot_name.lower():
+                        hub_x = Feet(2)  # Red Hub is on left
+                    else:
+                        hub_x = Feet(52)  # Blue Hub is on right
+                    hub_y = Feet(13.5)  # Field center
+                    arc_offset = random.uniform(-40, 40)  # Curve the ball outward
+                    anim = ProjectileAnimation(
+                        (robot_x, robot_y), (hub_x, hub_y),
+                        duration=0.5, arc_offset=arc_offset
+                    )
+                    state["animation_layer"].add(anim)
+        
+        # Detailed step logging (always in no-render mode, every step)
+        if not render:
+            game_state = env.server.game_state
+            match_time = game_state.current_time.get() if hasattr(game_state, 'current_time') else 0
+            red_score = game_state.red_score.get()
+            blue_score = game_state.blue_score.get()
+            
+            print(f"\n{'='*60}")
+            print(f"STEP {state['step_count']} | Match Time: {match_time:.1f}s | Score: RED {red_score} - BLUE {blue_score}")
+            print(f"{'='*60}")
+            
+            # Print each agent's action and reward
+            for agent_id in sorted(sanitized_actions.keys()):
+                action_idx = sanitized_actions[agent_id]
+                reward = rewards.get(agent_id, 0.0)
+                info = infos.get(agent_id, {})
+                action_name = info.get("action_name", f"Action[{action_idx}]")
+                action_valid = info.get("action_valid", True)
+                valid_str = "✓" if action_valid else "✗"
+                
+                # Get robot state
+                robot_name = info.get("robot_name", agent_id)
+                robot_state = env.server.game_state.get_robot(robot_name)
+                fuel_count = 0
+                if robot_state:
+                    fuel_dict = robot_state.gamepieces.get()
+                    from examples.Rebuilt.scoring import Fuel
+                    fuel_count = fuel_dict.get(Fuel, 0)
+                
+                print(f"  {agent_id:12} | {action_name:30} [{valid_str}] | Reward: {reward:+.2f} | Fuel: {fuel_count}")
+            
+            print(f"  {'─'*56}")
+            print(f"  Total Rewards: RED={sum(rewards.get(k, 0) for k in rewards if 'red' in k.lower()):.2f}, "
+                  f"BLUE={sum(rewards.get(k, 0) for k in rewards if 'blue' in k.lower()):.2f}")
 
         if terminateds.get("__all__", False) or truncateds.get("__all__", False):
             print(f"Episode finished. Terminated: {terminateds.get('__all__')}, Truncated: {truncateds.get('__all__')}")
@@ -339,7 +426,11 @@ def run_policy(
 
     if render:
         try:
+            import math
+            import arcade
             from gamegine.render.renderer import ObjectRendererRegistry
+            from gamegine.utils.NCIM.Dimensions.spatial import Inch
+            from gamegine.utils.NCIM.Dimensions.angular import Degree
             
             # Register INTERACTABLE handlers for visualization
             ObjectRendererRegistry.register_handler(ShootingLocation, draw_shooting_location)
@@ -358,23 +449,92 @@ def run_policy(
             for obs in game.get_obstacles():
                 renderer.add(obs)
             
+            # Add bump zones
+            for zone in game.get_zones():
+                renderer.add(zone)
+            
             # Add all interactables (Hub, Tower, Depot, etc)
             for interactable in game.get_interactables():
                 renderer.add(interactable)
             
-            # Add dynamic robot states (rendered each frame from current game state)
-            # Robot states stored at game_state.get_robot(name), which returns RobotState
-            for robot_name in env.server.robots.keys():
-                # Create closure to capture robot_name properly
-                def make_robot_getter(name):
-                    def get_robot_state():
-                        return env.server.match.game_state.get_robot(name)
-                    return get_robot_state
-                renderer.add_dynamic(make_robot_getter(robot_name), "robot")
+            # PolicyRobotDisplay class - draws all robots from env
+            class PolicyRobotDisplay:
+                def __init__(self, env_ref):
+                    self._env = env_ref
             
-            # Store refs in state for reset updates
+            def draw_policy_robots(display_ref, canvas, theme, display_level, renderer_ref=None):
+                """Draw all robots from the env's game state."""
+                env_instance = display_ref._env
+                if env_instance is None:
+                    return
+                
+                game_state = env_instance.server.match.game_state
+                
+                for robot_name in env_instance.server.robots.keys():
+                    robot_state = game_state.get_robot(robot_name)
+                    if robot_state is None:
+                        continue
+                    
+                    # Get position
+                    x = canvas.to_pixels(robot_state.x.get() if hasattr(robot_state.x, 'get') else robot_state.x)
+                    y = canvas.to_pixels(robot_state.y.get() if hasattr(robot_state.y, 'get') else robot_state.y)
+                    
+                    # Draw robot as colored square
+                    robot_size = canvas.to_pixels(Inch(28))
+                    half = robot_size / 2
+                    
+                    heading = float((robot_state.heading.get() if hasattr(robot_state.heading, 'get') else robot_state.heading).to(Degree))
+                    rad = math.radians(heading)
+                    cos_h, sin_h = math.cos(rad), math.sin(rad)
+                    
+                    # Compute rotated corners
+                    corners = []
+                    for dx, dy in [(-1, -1), (1, -1), (1, 1), (-1, 1)]:
+                        rx = dx * half
+                        ry = dy * half
+                        corners.append((
+                            x + rx * cos_h - ry * sin_h,
+                            y + rx * sin_h + ry * cos_h
+                        ))
+                    
+                    # Color based on alliance
+                    if "red" in robot_name.lower():
+                        color = (220, 53, 69)  # Red
+                    else:
+                        color = (0, 123, 255)  # Blue
+                    
+                    arcade.draw_polygon_filled(corners, (*color, 200))
+                    arcade.draw_polygon_outline(corners, (*color, 255), 2)
+                    
+                    # Draw robot name
+                    arcade.draw_text(
+                        robot_name, x, y + robot_size * 0.7,
+                        (255, 255, 255), 10, anchor_x="center"
+                    )
+                    
+                    # Draw fuel count
+                    from examples.Rebuilt.scoring import Fuel
+                    fuel_dict = robot_state.gamepieces.get() if hasattr(robot_state.gamepieces, 'get') else {}
+                    fuel_count = fuel_dict.get(Fuel, 0)
+                    arcade.draw_text(
+                        f"Fuel: {fuel_count}", x, y - robot_size * 0.7,
+                        (255, 255, 0), 9, anchor_x="center"
+                    )
+            
+            # Register the robot display
+            ObjectRendererRegistry.register_handler(PolicyRobotDisplay, draw_policy_robots)
+            robot_display = PolicyRobotDisplay(env)
+            renderer.add(robot_display)
+            
+            # Add animation layer for ball animations
+            ObjectRendererRegistry.register_handler(AnimationLayer, draw_animation_layer)
+            animation_layer = AnimationLayer()
+            renderer.add(animation_layer)
+            
+            # Store refs in state for reset updates and animations
             state["renderer_ref"] = renderer
             state["robot_names"] = list(env.server.robots.keys())
+            state["animation_layer"] = animation_layer
             
             # Register update callback
             renderer.on_update_callback(inference_update)

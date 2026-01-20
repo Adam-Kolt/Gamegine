@@ -14,6 +14,8 @@ import logging
 import os
 import sys
 import warnings
+import warnings
+from typing import Dict, Any, List
 
 # Suppress logging noise
 os.environ["RAY_DEDUP_LOGS"] = "1"
@@ -46,6 +48,65 @@ from gamegine.utils.NCIM.ComplexDimensions.acceleration import MeterPerSecondSqu
 from examples.Rebuilt.Rebuilt import create_rebuilt_game, FIELD_WIDTH, FIELD_LENGTH
 from examples.Rebuilt.robot import create_robot, setup_robot_interactions, ROBOT_WIDTH
 from examples.Rebuilt.scoring import Fuel
+
+
+class RebuiltRewardFunction:
+    """Custom reward function for Rebuilt 2026.
+    
+    Adds:
+    - Pickup reward: +0.1 per fuel acquired (dense signal for chain)
+    - Inactive Hub penalty: -0.5 for scoring in wrong hub phase
+    """
+    
+    def __init__(self):
+        self.prev_fuel = {}  # robot_name -> fuel_count
+        
+    def __call__(self, game_state, robot_states, action_valid, action_names):
+        rewards = {}
+        current_fuel = {}
+        
+        for name, state in robot_states.items():
+            # GET FUEL
+            fuel_dict = state.gamepieces.get()
+            fuel_count = fuel_dict.get(Fuel, 0)
+            current_fuel[name] = fuel_count
+            
+            # 1. PICKUP REWARD
+            # If fuel increased, give bonus
+            pickup_reward = 0.0
+            if name in self.prev_fuel:
+                 delta = fuel_count - self.prev_fuel[name]
+                 if delta > 0:
+                     pickup_reward = delta * 0.1  # +0.1 per fuel (small incentive)
+            
+            # 2. INACTIVE HUB PENALTY
+            # Check action name for "score_fuel" and inactive hub
+            action_name = action_names.get(name, "")
+            inactive_penalty = 0.0
+            
+            if "score_fuel" in action_name:
+                hub_name = None
+                if "Blue Hub" in action_name:
+                    hub_name = "Blue Hub"
+                elif "Red Hub" in action_name:
+                    hub_name = "Red Hub"
+                
+                if hub_name:
+                    try:
+                        hub = game_state.get("interactables")[hub_name]
+                        is_active = hub.getValue("is_active").get()
+                        if not is_active:
+                            # Penalty for scoring in inactive hub (valid but bad strategy)
+                            inactive_penalty = -0.5
+                    except KeyError:
+                        pass
+
+            rewards[name] = pickup_reward + inactive_penalty
+            
+        # Update prev
+        self.prev_fuel = current_fuel
+        
+        return rewards
 from gamegine.utils.logging import SetLoggingLevel
 
 SetLoggingLevel(logging.FATAL)
@@ -181,6 +242,9 @@ def train_versatile(
             use_server_pool=True,   # Reuse servers for speed
             max_episode_steps=200,  # Allow longer episodes for strategic learning
         )
+        
+        # Assign custom reward function
+        env.config.reward_fn = RebuiltRewardFunction()
         
         # Enable versatile strategy features
         env.training_config.use_capability_context = True

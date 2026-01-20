@@ -26,13 +26,14 @@ class RobotConfig:
 
 
 # Type alias for reward functions
-RewardFn = Callable[[GameState, Dict[str, RobotState], Dict[str, bool]], Dict[str, float]]
+RewardFn = Callable[[GameState, Dict[str, RobotState], Dict[str, bool], Dict[str, str]], Dict[str, float]]
 """
 Reward function signature:
     Args:
         game_state: Current GameState
         robot_states: Dict mapping robot_name -> RobotState
         action_valid: Dict mapping robot_name -> bool (was action valid?)
+        action_names: Dict mapping robot_name -> str (name of action taken)
     Returns:
         Dict mapping robot_name -> float reward
 """

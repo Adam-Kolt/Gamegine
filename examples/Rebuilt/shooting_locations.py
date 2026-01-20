@@ -190,8 +190,13 @@ def _create_shoot_action(alliance: Alliance, location_config: LocationConfig, sh
     return shoot_action
 
 
-def _create_shuttle_action(alliance: Alliance):
-    """Create a shuttle action to pass balls to own Alliance Zone."""
+def _create_shuttle_action(alliance: Alliance, max_transfer: int = 5):
+    """Create a shuttle action to pass balls to own Alliance Zone.
+    
+    Args:
+        alliance: The alliance to shuttle to
+        max_transfer: Maximum FUEL to transfer per action (default: 5)
+    """
     def shuttle_action(
         interactableState: ShootingLocationState,
         robotState: RobotState,
@@ -199,15 +204,16 @@ def _create_shuttle_action(alliance: Alliance):
     ) -> List[ValueChange]:
         changes = []
         
-        # Get all FUEL from robot inventory
+        # Get FUEL from robot inventory
         inventory = robotState.gamepieces.get().copy()
         fuel_count = inventory.get(Fuel, 0)
         
         if fuel_count <= 0:
             return changes
         
-        # Remove all FUEL from robot
-        inventory[Fuel] = 0
+        # Transfer up to max_transfer FUEL
+        transfer_amount = min(fuel_count, max_transfer)
+        inventory[Fuel] = fuel_count - transfer_amount
         changes.append(ValueChange(robotState.gamepieces, inventory))
         
         # Add to Alliance Zone
@@ -215,7 +221,7 @@ def _create_shuttle_action(alliance: Alliance):
             az_name = f"{alliance.name.title()} Alliance Zone"
             az_state = gameState.get("interactables").get(az_name)
             if az_state is not None:
-                changes.append(ValueIncrease(az_state.getValue("fuel_available"), fuel_count))
+                changes.append(ValueIncrease(az_state.getValue("fuel_available"), transfer_amount))
         except (KeyError, AttributeError):
             pass
         
