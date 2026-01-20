@@ -29,6 +29,7 @@ import ray
 from ray.rllib.algorithms.ppo import PPOConfig
 from ray.tune.registry import register_env
 from ray.rllib.policy.policy import PolicySpec
+from ray.rllib.algorithms.callbacks import DefaultCallbacks
 
 from gamegine.first.alliance import Alliance
 from gamegine.rl import (
@@ -44,9 +45,55 @@ from gamegine.utils.NCIM.ComplexDimensions.acceleration import MeterPerSecondSqu
 # Import Game
 from examples.Rebuilt.Rebuilt import create_rebuilt_game, FIELD_WIDTH, FIELD_LENGTH
 from examples.Rebuilt.robot import create_robot, setup_robot_interactions, ROBOT_WIDTH
+from examples.Rebuilt.scoring import Fuel
 from gamegine.utils.logging import SetLoggingLevel
 
 SetLoggingLevel(logging.FATAL)
+
+
+class GameMetricsCallback(DefaultCallbacks):
+    """Custom callback to log game-specific metrics during training."""
+    
+    def on_episode_end(self, *, episode, env_runner=None, metrics_logger=None, env=None, env_index=None, rl_module=None, **kwargs):
+        """Called at the end of each episode to record custom metrics."""
+        # Access the underlying AllianceEnv from the wrapped env
+        try:
+            # Get actual env
+            actual_env = env
+            if actual_env is None and env_runner is not None:
+                if hasattr(env_runner, "env"):
+                    actual_env = env_runner.env
+            
+            if actual_env is None:
+                return
+                
+            # Handle different env wrapper types
+            if hasattr(actual_env, "envs"):  # VectorEnv
+                actual_env = actual_env.envs[env_index if env_index is not None else 0]
+            if hasattr(actual_env, "_env"):  # Wrapped
+                actual_env = actual_env._env
+            if hasattr(actual_env, "env"):  # Gym wrapper
+                actual_env = actual_env.env
+                
+            # Get scores from game state
+            if hasattr(actual_env, "server") and actual_env.server is not None:
+                game_state = actual_env.server.match.game_state
+                red_score = game_state.red_score.get()
+                blue_score = game_state.blue_score.get()
+                
+                # New API stack: use metrics_logger
+                if metrics_logger is not None:
+                    metrics_logger.log_value("red_score", red_score, window=100)
+                    metrics_logger.log_value("blue_score", blue_score, window=100)
+                    metrics_logger.log_value("score_diff", red_score - blue_score, window=100)
+                # Old API stack fallback: use episode.custom_metrics
+                elif hasattr(episode, "custom_metrics"):
+                    episode.custom_metrics["red_score"] = red_score
+                    episode.custom_metrics["blue_score"] = blue_score
+                    episode.custom_metrics["score_diff"] = red_score - blue_score
+        except Exception:
+            # If we can't get scores, just skip (don't crash training)
+            pass
 
 
 def create_robot_configs(alliance: Alliance, game, num_robots: int = 3):
@@ -78,6 +125,7 @@ def create_robot_configs(alliance: Alliance, game, num_robots: int = 3):
             y=y,
             heading=heading,
             alliance=alliance,
+            gamepieces={Fuel: 8},  # Start with fuel for immediate scoring capability
         )
         
         configs.append(RobotConfig(
@@ -131,6 +179,7 @@ def train_versatile(
             mode="self_play",
             fast_mode=True,         # Fast mode recommended for large training runs
             use_server_pool=True,   # Reuse servers for speed
+            max_episode_steps=200,  # Allow longer episodes for strategic learning
         )
         
         # Enable versatile strategy features
@@ -175,7 +224,7 @@ def train_versatile(
     print(f"  > Capability Context: {obs_sample.shape[0] - 10}")
     temp_env.close()
     
-    # 4. Configure PPO
+    # 4. Configure PPO with optimized hyperparameters for overnight training
     config = (
         PPOConfig()
         .environment(env="reefscape-versatile-v0")
@@ -193,20 +242,40 @@ def train_versatile(
             policies_to_train=["versatile_policy"],
         )
         .training(
+            # Learning rate with decay
             lr=3e-4,
+            # Discount factor - high for strategic games
             gamma=0.99,
-            train_batch_size=4000,
+            # GAE lambda for advantage estimation
+            lambda_=0.95,
+            # Larger batch for more stable gradients
+            train_batch_size=8000,
+            # Mini-batch size
+            minibatch_size=512,
+            # Number of SGD epochs per batch
+            num_epochs=10,
+            # PPO clip range
+            clip_param=0.2,
+            # Entropy bonus for exploration (IMPORTANT!)
+            entropy_coeff=0.01,
+            # Value function loss coefficient
+            vf_loss_coeff=0.5,
+            # Gradient clipping
+            grad_clip=0.5,
         )
         .env_runners(
             num_env_runners=num_workers,
-            num_envs_per_env_runner=2, 
+            num_envs_per_env_runner=2,
+            # Longer rollouts for strategic learning
+            rollout_fragment_length=200,
         )
+        .callbacks(GameMetricsCallback)
     )
     
     algo = config.build()
     
     print(f"\nTraining for {iterations} iterations...")
-    
+    import os
     for i in range(iterations):
         result = algo.train()
         
@@ -215,12 +284,39 @@ def train_versatile(
         mean_reward = env_runners.get("episode_return_mean", 0) or env_runners.get("episode_reward_mean", 0) or result.get("episode_reward_mean", 0) or 0
         episodes = env_runners.get("num_episodes", 0) or result.get("episodes_this_iter", 0) or 0
         
-        print(f"Iteration {i+1:3d} | Reward: {mean_reward:7.2f} | Episodes: {episodes}")
+        # Get episode length info
+        ep_len = env_runners.get("episode_len_mean", 0) or result.get("episode_len_mean", 0) or 0
+        
+        # Get custom metrics if available (from callbacks using metrics_logger)
+        # In new API, metrics_logger values appear directly in env_runners
+        red_score = env_runners.get("red_score", 0)
+        blue_score = env_runners.get("blue_score", 0)
+        
+        # Debug: show available keys on first iteration
+        if i == 0:
+            # Look for score-related keys
+            score_keys = [k for k in env_runners.keys() if 'score' in k.lower()]
+            print(f"  [DEBUG] env_runners keys with 'score': {score_keys}")
+        
+        # Build output line
+        metrics_str = f"Iteration {i+1:3d} | Reward: {mean_reward:7.2f} | Ep: {episodes:3} | Len: {ep_len:5.1f}"
+        if red_score or blue_score:
+            metrics_str += f" | Red:{red_score:.0f} Blue:{blue_score:.0f}"
+        print(metrics_str)
         
         if (i+1) % checkpoint_freq == 0:
-            checkpoint = algo.save()
-            print(f"Saved checkpoint to {checkpoint}")
             
+            checkpoint_dir = os.path.join(os.path.dirname(__file__), "checkpoints")
+            os.makedirs(checkpoint_dir, exist_ok=True)
+            checkpoint = algo.save(checkpoint_dir)
+            print(f"Saved checkpoint to {checkpoint}")
+
+    # Always save final checkpoint
+    checkpoint_dir = os.path.join(os.path.dirname(__file__), "checkpoints")
+    os.makedirs(checkpoint_dir, exist_ok=True)
+    checkpoint = algo.save(checkpoint_dir)
+    print(f"Saved final checkpoint to {checkpoint}")
+    
     algo.stop()
     ray.shutdown()
     print("\nTraining complete.")
@@ -230,7 +326,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--iterations", type=int, default=100)
     parser.add_argument("--workers", type=int, default=2)
-    parser.add_argument("--robots", type=int, default=2)
+    parser.add_argument("--robots", type=int, default=3)
     args = parser.parse_args()
     
     train_versatile(args.iterations, args.robots, args.workers)

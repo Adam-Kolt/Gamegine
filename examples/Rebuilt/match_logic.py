@@ -347,7 +347,7 @@ class RebuiltMatchController:
         if current_period != self._last_period:
             events.append(f"Period transition: {self._last_period.value} -> {current_period.value}")
             
-            # On AUTO end, determine winner
+            # On AUTO end, determine winner and unclimb robots
             if self._last_period == MatchPeriod.AUTO and current_period == MatchPeriod.TRANSITION:
                 self._auto_winner = determine_auto_winner(self.game_state)
                 try:
@@ -355,6 +355,11 @@ class RebuiltMatchController:
                 except KeyError:
                     pass
                 events.append(f"AUTO winner: {self._auto_winner}")
+                
+                # Unclimb all robots that climbed during AUTO
+                unclimbed = self._unclimb_auto_robots()
+                if unclimbed:
+                    events.append(f"Unclimbed robots: {unclimbed}")
             
             # Update Hub states based on new period
             if self._auto_winner:
@@ -375,6 +380,39 @@ class RebuiltMatchController:
         self._check_award_rp(Alliance.BLUE, events)
         
         return events
+    
+    def _unclimb_auto_robots(self) -> List[str]:
+        """Unclimb all robots that climbed during AUTO period.
+        
+        Returns list of robot names that were unclimbed.
+        """
+        unclimbed = []
+        try:
+            interactables = self.game_state.get("interactables")
+            
+            # Process both alliance towers
+            for tower_name in ["Red Tower", "Blue Tower"]:
+                try:
+                    tower_state = interactables.get(tower_name)
+                    auto_climbed = tower_state.getValue("auto_climbed_robots").get()
+                    
+                    if auto_climbed:
+                        # Remove these robots from climbed_robots list
+                        climbed = tower_state.getValue("climbed_robots").get().copy()
+                        for robot_name in auto_climbed:
+                            if robot_name in climbed:
+                                climbed.remove(robot_name)
+                                unclimbed.append(robot_name)
+                        
+                        # Update the tower state
+                        tower_state.setValue("climbed_robots", climbed)
+                        tower_state.setValue("auto_climbed_robots", [])
+                except KeyError:
+                    pass
+        except KeyError:
+            pass
+        
+        return unclimbed
     
     def _check_award_rp(self, alliance: Alliance, events: List[str]):
         """Check and award ranking points for an alliance."""

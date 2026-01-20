@@ -206,6 +206,8 @@ class TowerState(StateSpace):
     """State for a Tower climbing structure.
     
     Tracks robots at each climb level and total tower points.
+    During AUTO, up to 2 robots can climb (any level counts as L1 for 15 pts).
+    At end of AUTO, climbed robots "unclimb" and rejoin the match.
     """
     
     def __init__(self):
@@ -216,6 +218,8 @@ class TowerState(StateSpace):
         self.setValue("level_3_count", 0)
         # Track which robots have climbed (to prevent double-climbing)
         self.setValue("climbed_robots", [])
+        # Track robots that climbed during AUTO (for unclimbing at AUTO end)
+        self.setValue("auto_climbed_robots", [])
     
     @property
     def tower_score(self):
@@ -236,6 +240,10 @@ class TowerState(StateSpace):
     def has_climbed(self, robot_name: str) -> bool:
         """Check if a robot has already climbed."""
         return robot_name in self.getValue("climbed_robots").get()
+    
+    def get_auto_climb_count(self) -> int:
+        """Get number of robots that climbed during AUTO."""
+        return len(self.getValue("auto_climbed_robots").get())
 
 
 def robot_not_climbed_condition(interactableState: TowerState, robotState: RobotState, gameState: GameState) -> bool:
@@ -244,19 +252,43 @@ def robot_not_climbed_condition(interactableState: TowerState, robotState: Robot
     return not interactableState.has_climbed(robot_name)
 
 
+def can_climb_auto_l1(interactableState: TowerState, robotState: RobotState, gameState: GameState) -> bool:
+    """Condition: L1 climb allowed in AUTO if fewer than 2 robots have climbed, or in TELEOP."""
+    if not robot_not_climbed_condition(interactableState, robotState, gameState):
+        return False
+    
+    if is_auto(gameState):
+        # In AUTO: limit to 2 robots per alliance
+        return interactableState.get_auto_climb_count() < 2
+    else:
+        # In TELEOP: always allowed
+        return True
+
+
 def can_climb_level_2_or_3(interactableState: TowerState, robotState: RobotState, gameState: GameState) -> bool:
-    """Condition: Only in TELEOP (not AUTO), and robot hasn't climbed."""
-    return not is_auto(gameState) and robot_not_climbed_condition(interactableState, robotState, gameState)
+    """Condition: L2/L3 allowed in AUTO (counts as L1 for 15pts) or TELEOP (full points)."""
+    if not robot_not_climbed_condition(interactableState, robotState, gameState):
+        return False
+    
+    if is_auto(gameState):
+        # In AUTO: limit to 2 robots per alliance (same as L1)
+        return interactableState.get_auto_climb_count() < 2
+    else:
+        # In TELEOP: always allowed
+        return True
 
 
 class Tower(RobotInteractable):
     """Tower climbing structure for REBUILT.
     
-    Robots can climb to Level 1 (AUTO or TELEOP), Level 2 or 3 (TELEOP only).
-    Points:
-    - Level 1: 15 pts AUTO, 10 pts TELEOP
-    - Level 2: 20 pts TELEOP
-    - Level 3: 30 pts TELEOP
+    AUTO Period (15 seconds):
+    - Up to 2 robots per alliance can climb any level for 15 pts each
+    - Robots "unclimb" at end of AUTO and rejoin match
+    
+    TELEOP/ENDGAME:
+    - Level 1: 10 pts
+    - Level 2: 20 pts
+    - Level 3: 30 pts
     """
     
     def __init__(
@@ -283,9 +315,16 @@ class Tower(RobotInteractable):
         ) -> List[ValueChange]:
             changes = []
             
+            robot_name = robotState.name if hasattr(robotState, 'name') else robotState.getValue("name").get()
+            
             # Determine points based on match period
             if is_auto(gameState):
-                points = points_auto
+                points = points_auto  # Always 15 for AUTO climb
+                
+                # Track AUTO climb for unclimbing later
+                auto_climbed = interactableState.getValue("auto_climbed_robots").get().copy()
+                auto_climbed.append(robot_name)
+                changes.append(ValueChange(interactableState.getValue("auto_climbed_robots"), auto_climbed))
             else:
                 points = points_teleop
             
@@ -299,12 +338,12 @@ class Tower(RobotInteractable):
             
             # Mark robot as climbed
             climbed_list = interactableState.getValue("climbed_robots").get().copy()
-            robot_name = robotState.name if hasattr(robotState, 'name') else robotState.getValue("name").get()
             climbed_list.append(robot_name)
             changes.append(ValueChange(interactableState.getValue("climbed_robots"), climbed_list))
             
-            # Mark robot as game over (cannot take other actions)
-            robotState.setValue("gameover", True)
+            # Mark robot as game over ONLY in TELEOP (not AUTO - they unclimb)
+            if not is_auto(gameState):
+                robotState.setValue("gameover", True)
             
             return changes
         
@@ -315,20 +354,20 @@ class Tower(RobotInteractable):
             InteractionOption(
                 "climb_level_1",
                 f"Climb to Level 1 on {self.alliance.name} Tower",
-                robot_not_climbed_condition,
+                can_climb_auto_l1,  # Updated to use AUTO-aware condition
                 Tower.__generate_climb_function(1, 15, 10, self.alliance),
             ),
             InteractionOption(
                 "climb_level_2",
                 f"Climb to Level 2 on {self.alliance.name} Tower",
                 can_climb_level_2_or_3,
-                Tower.__generate_climb_function(2, 0, 20, self.alliance),
+                Tower.__generate_climb_function(2, 15, 20, self.alliance),  # 15 pts in AUTO
             ),
             InteractionOption(
                 "climb_level_3",
                 f"Climb to Level 3 on {self.alliance.name} Tower",
                 can_climb_level_2_or_3,
-                Tower.__generate_climb_function(3, 0, 30, self.alliance),
+                Tower.__generate_climb_function(3, 15, 30, self.alliance),  # 15 pts in AUTO
             ),
         ]
 

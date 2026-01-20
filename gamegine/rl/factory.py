@@ -123,6 +123,7 @@ def make_alliance_env(
     server_class: Type[AbstractGameServer] = None,
     fast_mode: bool = False,
     use_server_pool: bool = False,
+    max_episode_steps: int = None,
 ):
     """Create an alliance-based training environment.
     
@@ -169,6 +170,7 @@ def make_alliance_env(
         training=training_config,
         fast_mode=fast_mode,
         use_server_pool=use_server_pool,
+        max_episode_steps=max_episode_steps,
     )
     
     if server_class is None:
