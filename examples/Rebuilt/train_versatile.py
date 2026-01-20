@@ -269,6 +269,16 @@ def train_versatile(
             # Longer rollouts for strategic learning
             rollout_fragment_length=200,
         )
+        .rl_module(
+            # Larger network for complex multi-agent strategy
+            # Obs space: ~40+ dims (robot state + capabilities + 3 opponents + game state)
+            # Action space: 51 discrete actions
+            model_config={
+                "fcnet_hiddens": [512, 512, 512],  # Deeper for strategic reasoning
+                "fcnet_activation": "relu",
+                "vf_share_layers": False,  # Separate value network for stability
+            }
+        )
         .callbacks(GameMetricsCallback)
     )
     
