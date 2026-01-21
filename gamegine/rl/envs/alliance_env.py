@@ -296,13 +296,21 @@ class AllianceEnv(MultiAgentEnv):
         return observations, infos
 
     def _randomize_capabilities(self):
-        """Randomize robot capabilities based on configuration ranges."""
-        ranges = self.training_config.capability_ranges
+        """Randomize robot capabilities based on configuration ranges.
+        
+        Randomizes:
+        - Movement capabilities (speed, acceleration, rotation)
+        - Interaction profiles (per-action durations and accuracy)
+        - Physical properties (mass, etc.)
+        """
+        cap_ranges = self.training_config.capability_ranges
+        interaction_ranges = self.training_config.interaction_ranges
+        physical_ranges = self.training_config.physical_ranges
         
         # Helper to sample float range
-        def sample(key, default):
-            if key in ranges:
-                low, high = ranges[key]
+        def sample(ranges_dict, key, default):
+            if key in ranges_dict:
+                low, high = ranges_dict[key]
                 return random.uniform(low, high)
             return default
             
@@ -312,27 +320,57 @@ class AllianceEnv(MultiAgentEnv):
                 continue
             
             # Create new random capabilities
-            # Use gamegine units
-            from gamegine.utils.NCIM.ncim import MetersPerSecond, Meter, RadiansPerSecond
+            from gamegine.utils.NCIM.ncim import MetersPerSecond, Meter, RadiansPerSecond, Second
             from gamegine.utils.NCIM.ComplexDimensions.acceleration import MeterPerSecondSquared
+            from gamegine.representation.capabilities import RobotCapabilities, InteractionProfile
             
             # Default baselines from existing capabilities or standard defaults
             base_caps = robot.capabilities or RobotCapabilities()
             
+            # Randomize interaction profiles
+            new_profiles = {}
+            for interaction_name, (min_dur, max_dur) in interaction_ranges.items():
+                # Sample duration
+                duration = random.uniform(min_dur, max_dur)
+                
+                # Optionally vary accuracy based on duration (faster robots = less accurate?)
+                # For now, use a simple inverse relationship
+                # Fastest (min_dur) -> 0.95 accuracy, Slowest (max_dur) -> 1.0 accuracy
+                if max_dur > min_dur:
+                    speed_factor = (duration - min_dur) / (max_dur - min_dur)  # 0 = fastest, 1 = slowest
+                    accuracy = 0.90 + speed_factor * 0.10  # 0.90 to 1.0
+                else:
+                    accuracy = 1.0
+                
+                new_profiles[interaction_name] = InteractionProfile(
+                    base_duration=Second(duration),
+                    accuracy=accuracy,
+                )
+            
+            # Merge with existing profiles (randomized ones override)
+            merged_profiles = base_caps.interaction_profiles.copy()
+            merged_profiles.update(new_profiles)
+            
             new_caps = RobotCapabilities(
-                max_speed=MetersPerSecond(sample("max_speed", float(base_caps.max_speed))),
-                max_acceleration=MeterPerSecondSquared(sample("max_acceleration", float(base_caps.max_acceleration))),
-                rotational_speed=RadiansPerSecond(sample("rotational_speed", float(base_caps.rotational_speed))),
+                max_speed=MetersPerSecond(sample(cap_ranges, "max_speed", float(base_caps.max_speed))),
+                max_acceleration=MeterPerSecondSquared(sample(cap_ranges, "max_acceleration", float(base_caps.max_acceleration))),
+                rotational_speed=RadiansPerSecond(sample(cap_ranges, "rotational_speed", float(base_caps.rotational_speed))),
                 gamepiece_capacity=base_caps.gamepiece_capacity.copy(),
-                interaction_profiles=base_caps.interaction_profiles.copy() # Could randomize these too later
+                interaction_profiles=merged_profiles,
             )
             
             # Apply to robot
             robot.capabilities = new_caps
             
-            # Also update physical parameters if needed (e.g. max_acceleration limits physics)
+            # Update physical parameters
             if robot.physics:
                 robot.physics.max_acceleration = new_caps.max_acceleration
+                
+                # Randomize mass if configured
+                if "mass" in physical_ranges:
+                    from gamegine.utils.NCIM.Dimensions.mass import Kilogram
+                    new_mass = sample(physical_ranges, "mass", 50.0)
+                    robot.physics.mass = Kilogram(new_mass)
     
     def step(
         self,
@@ -467,24 +505,43 @@ class AllianceEnv(MultiAgentEnv):
     def _get_action_duration(self, robot_name: str, interactable_name: str, interaction_name: str) -> float:
         """Calculate how long an action will take.
         
+        Uses robot capabilities if available, otherwise falls back to defaults.
+        
         For driving + action, this includes:
         - Trajectory travel time (if not fast_mode)
-        - Action execution time
+        - Action execution time (from capability profiles)
         """
-        # Check interactable_name first (for WAIT), then interaction_name
-        if interactable_name in self._default_action_durations:
-            base_duration = self._default_action_durations[interactable_name]
-        elif interaction_name in self._default_action_durations:
-            base_duration = self._default_action_durations[interaction_name]
-        else:
-            base_duration = 1.0  # Default fallback
+        # Get robot and its capabilities
+        robot = self.server.robots.get(robot_name)
+        base_duration = None
+        
+        # Try to get duration from robot capabilities
+        if robot and robot.capabilities:
+            # Check both interactable:interaction combo and just interaction_name
+            profile = robot.capabilities.get_interaction_profile(interaction_name)
+            if profile and float(profile.base_duration) > 0:
+                base_duration = float(profile.base_duration)
+            else:
+                # Try composite key
+                composite_key = f"{interactable_name}:{interaction_name}"
+                profile = robot.capabilities.get_interaction_profile(composite_key)
+                if profile and float(profile.base_duration) > 0:
+                    base_duration = float(profile.base_duration)
+        
+        # Fall back to hardcoded defaults if no capability profile
+        if base_duration is None:
+            if interactable_name in self._default_action_durations:
+                base_duration = self._default_action_durations[interactable_name]
+            elif interaction_name in self._default_action_durations:
+                base_duration = self._default_action_durations[interaction_name]
+            else:
+                base_duration = 1.0  # Default fallback
         
         # In fast mode, skip driving time
         if self._fast_mode:
             return base_duration
         
-        # For full mode, estimate trajectory time based on distance
-        # This is a rough estimate - actual trajectory time is calculated during execution
+        # For full mode, estimate trajectory time based on distance and robot speed
         try:
             robot_state = self.server.game_state.get_robot(robot_name)
             if robot_state:
@@ -496,8 +553,15 @@ class AllianceEnv(MultiAgentEnv):
                     dx = float((nav_point[0] - robot_state.x.get()).to(Meter))
                     dy = float((nav_point[1] - robot_state.y.get()).to(Meter))
                     distance = (dx**2 + dy**2)**0.5
-                    # Assume ~3 m/s average speed for rough estimate
-                    drive_time = distance / 3.0
+                    
+                    # Use robot's max speed if available, otherwise default
+                    avg_speed = 3.0  # Default m/s
+                    if robot and robot.capabilities:
+                        # Use ~60% of max speed as average for trajectory
+                        avg_speed = float(robot.capabilities.max_speed) * 0.6
+                        avg_speed = max(avg_speed, 1.0)  # At least 1 m/s
+                    
+                    drive_time = distance / avg_speed
                     return base_duration + drive_time
         except:
             pass

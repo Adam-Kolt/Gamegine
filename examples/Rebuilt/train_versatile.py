@@ -16,7 +16,7 @@ import sys
 import warnings
 import warnings
 from typing import Dict, Any, List
-
+import multiprocessing
 # Suppress logging noise
 os.environ["RAY_DEDUP_LOGS"] = "1"
 os.environ["RAY_SCHEDULER_EVENTS"] = "0"
@@ -48,65 +48,10 @@ from gamegine.utils.NCIM.ComplexDimensions.acceleration import MeterPerSecondSqu
 from examples.Rebuilt.Rebuilt import create_rebuilt_game, FIELD_WIDTH, FIELD_LENGTH
 from examples.Rebuilt.robot import create_robot, setup_robot_interactions, ROBOT_WIDTH
 from examples.Rebuilt.scoring import Fuel
+from examples.Rebuilt.reward_function import AdvancedRebuiltRewardFunction
 
 
-class RebuiltRewardFunction:
-    """Custom reward function for Rebuilt 2026.
-    
-    Adds:
-    - Pickup reward: +0.1 per fuel acquired (dense signal for chain)
-    - Inactive Hub penalty: -0.5 for scoring in wrong hub phase
-    """
-    
-    def __init__(self):
-        self.prev_fuel = {}  # robot_name -> fuel_count
-        
-    def __call__(self, game_state, robot_states, action_valid, action_names):
-        rewards = {}
-        current_fuel = {}
-        
-        for name, state in robot_states.items():
-            # GET FUEL
-            fuel_dict = state.gamepieces.get()
-            fuel_count = fuel_dict.get(Fuel, 0)
-            current_fuel[name] = fuel_count
-            
-            # 1. PICKUP REWARD
-            # If fuel increased, give bonus
-            pickup_reward = 0.0
-            if name in self.prev_fuel:
-                 delta = fuel_count - self.prev_fuel[name]
-                 if delta > 0:
-                     pickup_reward = delta * 0.1  # +0.1 per fuel (small incentive)
-            
-            # 2. INACTIVE HUB PENALTY
-            # Check action name for "score_fuel" and inactive hub
-            action_name = action_names.get(name, "")
-            inactive_penalty = 0.0
-            
-            if "score_fuel" in action_name:
-                hub_name = None
-                if "Blue Hub" in action_name:
-                    hub_name = "Blue Hub"
-                elif "Red Hub" in action_name:
-                    hub_name = "Red Hub"
-                
-                if hub_name:
-                    try:
-                        hub = game_state.get("interactables")[hub_name]
-                        is_active = hub.getValue("is_active").get()
-                        if not is_active:
-                            # Penalty for scoring in inactive hub (valid but bad strategy)
-                            inactive_penalty = -0.5
-                    except KeyError:
-                        pass
 
-            rewards[name] = pickup_reward + inactive_penalty
-            
-        # Update prev
-        self.prev_fuel = current_fuel
-        
-        return rewards
 from gamegine.utils.logging import SetLoggingLevel
 
 SetLoggingLevel(logging.FATAL)
@@ -202,7 +147,7 @@ def create_robot_configs(alliance: Alliance, game, num_robots: int = 3):
 def train_versatile(
     iterations: int = 100, 
     num_robots: int = 2, 
-    num_workers: int = 2,
+    num_workers: int = 0, # 0 = Auto-detect
     checkpoint_freq: int = 10,
 ):
     """Run the versatile training loop."""
@@ -213,6 +158,13 @@ def train_versatile(
     print("Game State Context:   ENABLED")
     print("=" * 60)
     
+    # Auto-detect workers if 0
+    if num_workers == 0:
+        # Leave 2 cores for OS/overhead
+        # M4 chips have P-cores and E-cores. Ray handles this decently.
+        num_workers = max(1, multiprocessing.cpu_count() - 2)
+        print(f"Auto-detected {multiprocessing.cpu_count()} cores. Using {num_workers} workers.")
+    
     ray.init(ignore_reinit_error=True)
     
     # 1. Define Capability Ranges (Min, Max)
@@ -222,8 +174,36 @@ def train_versatile(
         "max_acceleration": (1.0, 6.0),    # 1.0 m/s^2 to 6.0 m/s^2
         "rotational_speed": (3.0, 10.0),   # 3 rad/s to 10 rad/s
     }
+    
+    # 2. Define Interaction Ranges (duration in seconds)
+    # Maps interaction_name -> (min_duration, max_duration)
+    interaction_ranges = {
+        # Shooting: best robots shoot 30 balls/sec, worst ~1 ball/sec
+        "score_fuel": (0.033, 1.0),
+        
+        # Pickup actions
+        "pickup_1": (0.2, 1.0),
+        "pickup_5": (0.5, 2.5),
+        "pickup_10": (1.0, 5.0),
+        
+        # Climbing: L1 is fastest, L3 is slowest
+        "climb_level_1": (2.0, 10.0),
+        "climb_level_2": (3.0, 15.0),
+        "climb_level_3": (4.0, 20.0),
+        
+        # Defense
+        "defend": (0.5, 2.0),
+        
+        # Shuttling
+        "shuttle": (0.5, 2.0),
+    }
+    
+    # 3. Define Physical Ranges
+    physical_ranges = {
+        "mass": (30.0, 60.0),  # Robot mass in kg (66-132 lbs)
+    }
 
-    # 2. Configure Environment Factory
+    # 4. Configure Environment Factory
     def env_creator(cfg):
         # Create game instance with observation support
         game = create_rebuilt_game()
@@ -244,12 +224,14 @@ def train_versatile(
         )
         
         # Assign custom reward function
-        env.config.reward_fn = RebuiltRewardFunction()
+        env.config.reward_fn = AdvancedRebuiltRewardFunction()
         
         # Enable versatile strategy features
         env.training_config.use_capability_context = True
         env.training_config.randomize_capabilities = True
         env.training_config.capability_ranges = capability_ranges
+        env.training_config.interaction_ranges = interaction_ranges
+        env.training_config.physical_ranges = physical_ranges
         
         # Enable opponent awareness
         env.training_config.observe_opponent_states = True
@@ -305,6 +287,7 @@ def train_versatile(
             policy_mapping_fn=lambda agent_id, *args, **kwargs: "versatile_policy",
             policies_to_train=["versatile_policy"],
         )
+        .framework("torch") # Explicitly use Torch
         .training(
             # Learning rate with decay
             lr=3e-4,
@@ -312,10 +295,10 @@ def train_versatile(
             gamma=0.99,
             # GAE lambda for advantage estimation
             lambda_=0.95,
-            # Larger batch for more stable gradients
-            train_batch_size=8000,
-            # Mini-batch size
-            minibatch_size=512,
+            # Larger batch for more stable gradients - M4 can handle this
+            train_batch_size=16000, 
+            # Mini-batch size - increased for M4 memory bandwidth
+            minibatch_size=2048,
             # Number of SGD epochs per batch
             num_epochs=10,
             # PPO clip range
@@ -329,7 +312,7 @@ def train_versatile(
         )
         .env_runners(
             num_env_runners=num_workers,
-            num_envs_per_env_runner=2,
+            num_envs_per_env_runner=10, # Vectorize more envs per worker to maximize CPU usage
             # Longer rollouts for strategic learning
             rollout_fragment_length=200,
         )
@@ -399,7 +382,7 @@ def train_versatile(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--iterations", type=int, default=100)
-    parser.add_argument("--workers", type=int, default=2)
+    parser.add_argument("--workers", type=int, default=0) # 0 = Auto
     parser.add_argument("--robots", type=int, default=3)
     args = parser.parse_args()
     

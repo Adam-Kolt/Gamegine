@@ -78,6 +78,16 @@ class TrainingConfig:
     # Opponent Awareness
     observe_opponent_states: bool = False  # If True, add opponent x,y,theta,vx,vy
     observe_opponent_capabilities: bool = False # If True, add opponent capabilities
+    
+    # Interaction Randomization (for Versatile Strategy Networks)
+    # Maps interaction name -> (min_duration_seconds, max_duration_seconds)
+    # Example: {"score_fuel": (0.033, 1.0), "climb_level_3": (4.0, 20.0)}
+    interaction_ranges: Dict[str, Tuple[float, float]] = field(default_factory=dict)
+    
+    # Physical property randomization
+    # Maps property name -> (min, max) for robot physical properties
+    # Supported: "mass" (kg), "width" (meters), etc.
+    physical_ranges: Dict[str, Tuple[float, float]] = field(default_factory=dict)
 
 
 @dataclass
