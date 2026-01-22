@@ -287,7 +287,7 @@ def create_rebuilt_game() -> Game:
         center=(HALF_LENGTH, HALF_WIDTH),
         navigation_point=(HALF_LENGTH, HALF_WIDTH, Degree(0)),
         name="Neutral Zone",
-        initial_fuel=0,  # Starts empty, fills from Hub scores
+        initial_fuel=360,  # Starts with 360 fuel
     )
     game.add_interactable(neutral_zone)
     

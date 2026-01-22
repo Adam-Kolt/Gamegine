@@ -79,6 +79,10 @@ class TrainingConfig:
     observe_opponent_states: bool = False  # If True, add opponent x,y,theta,vx,vy
     observe_opponent_capabilities: bool = False # If True, add opponent capabilities
     
+    # Teammate Observation
+    observe_teammate_states: bool = False # 2 teammates * 5 vars
+    observe_teammate_capabilities: bool = False # 2 teammates * capability_vector_size
+    
     # Interaction Randomization (for Versatile Strategy Networks)
     # Maps interaction name -> (min_duration_seconds, max_duration_seconds)
     # Example: {"score_fuel": (0.033, 1.0), "climb_level_3": (4.0, 20.0)}
@@ -88,6 +92,18 @@ class TrainingConfig:
     # Maps property name -> (min, max) for robot physical properties
     # Supported: "mass" (kg), "width" (meters), etc.
     physical_ranges: Dict[str, Tuple[float, float]] = field(default_factory=dict)
+    
+    # Symmetry
+    # If True, Red alliance observations are mirrored to look like Blue alliance,
+    # and actions are mapped relative to the alliance (e.g., Own Hub vs Opponent Hub).
+    mirror_red_alliance: bool = True
+    
+    # Randomization
+    randomize_start_pose: bool = False
+    start_pose_noise: float = 0.5 # meters
+    
+    # Action Masking
+    use_action_masking: bool = True # If True, masks invalid actions (e.g. scoring without fuel)
 
 
 @dataclass

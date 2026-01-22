@@ -144,11 +144,90 @@ def create_robot_configs(alliance: Alliance, game, num_robots: int = 3):
     return configs
 
 
+# 1. Define Capability Ranges (Min, Max)
+CAPABILITY_RANGES = {
+    "max_speed": (1.5, 5.5),           # 1.5 m/s to 5.5 m/s
+    "max_acceleration": (1.0, 6.0),    # 1.0 m/s^2 to 6.0 m/s^2
+    "rotational_speed": (3.0, 10.0),   # 3 rad/s to 10 rad/s
+}
+
+# 2. Define Interaction Ranges (duration in seconds)
+INTERACTION_RANGES = {
+    "score_fuel": (0.033, 1.0),
+    "pickup_1": (0.2, 1.0),
+    "pickup_5": (0.5, 2.5),
+    "pickup_10": (1.0, 5.0),
+    "climb_level_1": (2.0, 10.0),
+    "climb_level_2": (3.0, 15.0),
+    "climb_level_3": (4.0, 20.0),
+    "defend": (0.5, 2.0),
+    "shuttle": (0.5, 2.0),
+}
+
+# 3. Define Physical Ranges
+PHYSICAL_RANGES = {
+    "mass": (40.0, 70.0)
+}
+
+def env_creator(cfg):
+    """Create the environment for training."""
+    num_robots = cfg.get("num_robots", 3)
+    
+    # Create game instance with observation support
+    game = create_rebuilt_game()
+    
+    # Base robots
+    red_robots = create_robot_configs(Alliance.RED, game, num_robots)
+    blue_robots = create_robot_configs(Alliance.BLUE, game, num_robots)
+    
+    # Create env with capability flags
+    env = make_alliance_env(
+        game=game,
+        red_robots=red_robots,
+        blue_robots=blue_robots,
+        mode="self_play",
+        fast_mode=True,         # Fast mode recommended for large training runs
+        use_server_pool=True,   # Reuse servers for speed
+        max_episode_steps=500,  # Ensure full match duration (160s / dt) is covered
+    )
+    
+    # Assign custom reward function
+    env.config.reward_fn = AdvancedRebuiltRewardFunction()
+    
+    # Enable versatile strategy features
+    env.training_config.use_capability_context = True
+    env.training_config.randomize_capabilities = True
+    env.training_config.randomize_start_pose = True
+    env.training_config.capability_ranges = CAPABILITY_RANGES
+    env.training_config.interaction_ranges = INTERACTION_RANGES
+    env.training_config.physical_ranges = PHYSICAL_RANGES
+    
+    # Enable opponent awareness
+    env.training_config.observe_opponent_states = True
+    env.training_config.observe_opponent_capabilities = True # Assume scouting data
+    
+    # Enable teammate awareness
+    env.training_config.observe_teammate_states = True
+    env.training_config.observe_teammate_capabilities = True
+    
+    # Force rebuild of spaces
+    env._observation_spaces = {}
+    for agent_id in env._agent_ids:
+        robot_name = env._agent_to_robot[agent_id]
+        env._observation_spaces[agent_id] = env._build_observation_space(robot_name)
+    
+    from gymnasium import spaces
+    env.observation_space = spaces.Dict(env._observation_spaces)
+    
+    return env
+
+
 def train_versatile(
     iterations: int = 100, 
     num_robots: int = 2, 
     num_workers: int = 0, # 0 = Auto-detect
     checkpoint_freq: int = 10,
+    restore_path: str = None,
 ):
     """Run the versatile training loop."""
     print("=" * 60)
@@ -166,103 +245,12 @@ def train_versatile(
         print(f"Auto-detected {multiprocessing.cpu_count()} cores. Using {num_workers} workers.")
     
     ray.init(ignore_reinit_error=True)
-    
-    # 1. Define Capability Ranges (Min, Max)
-    # The network will see capabilities uniformly sampled from these ranges
-    capability_ranges = {
-        "max_speed": (1.5, 5.5),           # 1.5 m/s to 5.5 m/s
-        "max_acceleration": (1.0, 6.0),    # 1.0 m/s^2 to 6.0 m/s^2
-        "rotational_speed": (3.0, 10.0),   # 3 rad/s to 10 rad/s
-    }
-    
-    # 2. Define Interaction Ranges (duration in seconds)
-    # Maps interaction_name -> (min_duration, max_duration)
-    interaction_ranges = {
-        # Shooting: best robots shoot 30 balls/sec, worst ~1 ball/sec
-        "score_fuel": (0.033, 1.0),
-        
-        # Pickup actions
-        "pickup_1": (0.2, 1.0),
-        "pickup_5": (0.5, 2.5),
-        "pickup_10": (1.0, 5.0),
-        
-        # Climbing: L1 is fastest, L3 is slowest
-        "climb_level_1": (2.0, 10.0),
-        "climb_level_2": (3.0, 15.0),
-        "climb_level_3": (4.0, 20.0),
-        
-        # Defense
-        "defend": (0.5, 2.0),
-        
-        # Shuttling
-        "shuttle": (0.5, 2.0),
-    }
-    
-    # 3. Define Physical Ranges
-    physical_ranges = {
-        "mass": (30.0, 60.0),  # Robot mass in kg (66-132 lbs)
-    }
-
-    # 4. Configure Environment Factory
-    def env_creator(cfg):
-        # Create game instance with observation support
-        game = create_rebuilt_game()
-        
-        # Base robots
-        red_robots = create_robot_configs(Alliance.RED, game, num_robots)
-        blue_robots = create_robot_configs(Alliance.BLUE, game, num_robots)
-        
-        # Create env with capability flags
-        env = make_alliance_env(
-            game=game,
-            red_robots=red_robots,
-            blue_robots=blue_robots,
-            mode="self_play",
-            fast_mode=True,         # Fast mode recommended for large training runs
-            use_server_pool=True,   # Reuse servers for speed
-            max_episode_steps=200,  # Allow longer episodes for strategic learning
-        )
-        
-        # Assign custom reward function
-        env.config.reward_fn = AdvancedRebuiltRewardFunction()
-        
-        # Enable versatile strategy features
-        env.training_config.use_capability_context = True
-        env.training_config.randomize_capabilities = True
-        env.training_config.capability_ranges = capability_ranges
-        env.training_config.interaction_ranges = interaction_ranges
-        env.training_config.physical_ranges = physical_ranges
-        
-        # Enable opponent awareness
-        env.training_config.observe_opponent_states = True
-        env.training_config.observe_opponent_capabilities = True # Assume scouting data
-        
-        # Re-initialize to ensure obs spaces are correct
-        # (This is a bit hacky, normally passed in config, but modifying after creation works for AllianceEnv)
-        # Better way: Modify make_alliance_env to accept these, but direct property modification works 
-        # because spaces are rebuilt in __init__ which ran... wait.
-        # Issue: __init__ runs BEFORE we modify these flags, so observation space will be wrong.
-        # We need to hack it or manually reconstruct
-        
-        # Proper way: Pass Config object manually or re-call internal init logic
-        # For this script, we will rebuild the observation spaces manually
-        
-        # Force rebuild of spaces
-        env._observation_spaces = {}
-        for agent_id in env._agent_ids:
-            robot_name = env._agent_to_robot[agent_id]
-            env._observation_spaces[agent_id] = env._build_observation_space(robot_name)
-        
-        from gymnasium import spaces
-        env.observation_space = spaces.Dict(env._observation_spaces)
-        
-        return env
 
     register_env("reefscape-versatile-v0", env_creator)
     
     # 3. Inspect Environment
     print("Inspecting environment...")
-    temp_env = env_creator({})
+    temp_env = env_creator({"num_robots": num_robots})
     agent_id = list(temp_env.get_agent_ids())[0]
     obs_sample = temp_env.observation_space[agent_id].sample()
     print(f"Observation Shape: {obs_sample.shape}")
@@ -273,7 +261,7 @@ def train_versatile(
     # 4. Configure PPO with optimized hyperparameters for overnight training
     config = (
         PPOConfig()
-        .environment(env="reefscape-versatile-v0")
+        .environment(env="reefscape-versatile-v0", env_config={"num_robots": num_robots})
         .multi_agent(
             policies={
                 "versatile_policy": PolicySpec(
@@ -290,7 +278,10 @@ def train_versatile(
         .framework("torch") # Explicitly use Torch
         .training(
             # Learning rate with decay
-            lr=3e-4,
+            lr=[
+                [0, 3e-4],
+                [iterations * 2000, 1e-5], # Decay over total timesteps (approx)
+            ],
             # Discount factor - high for strategic games
             gamma=0.99,
             # GAE lambda for advantage estimation
@@ -300,11 +291,11 @@ def train_versatile(
             # Mini-batch size - increased for M4 memory bandwidth
             minibatch_size=2048,
             # Number of SGD epochs per batch
-            num_epochs=10,
+            num_epochs=15,
             # PPO clip range
-            clip_param=0.2,
+            clip_param=0.15,
             # Entropy bonus for exploration (IMPORTANT!)
-            entropy_coeff=0.01,
+            entropy_coeff=0.02,
             # Value function loss coefficient
             vf_loss_coeff=0.5,
             # Gradient clipping
@@ -321,7 +312,8 @@ def train_versatile(
             # Obs space: ~40+ dims (robot state + capabilities + 3 opponents + game state)
             # Action space: 51 discrete actions
             model_config={
-                "fcnet_hiddens": [512, 512, 512],  # Deeper for strategic reasoning
+                # Reduced capacity for stability/speed (was [512, 1024, 1024, 512])
+                "fcnet_hiddens": [512, 512],  
                 "fcnet_activation": "relu",
                 "vf_share_layers": False,  # Separate value network for stability
             }
@@ -330,6 +322,10 @@ def train_versatile(
     )
     
     algo = config.build()
+    
+    if restore_path:
+        print(f"Restoring from checkpoint: {restore_path}")
+        algo.restore(restore_path)
     
     print(f"\nTraining for {iterations} iterations...")
     import os
@@ -381,9 +377,10 @@ def train_versatile(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--iterations", type=int, default=100)
-    parser.add_argument("--workers", type=int, default=0) # 0 = Auto
+    parser.add_argument("--iterations", type=int, default=20)
+    parser.add_argument("--workers", type=int, default=4) # 4 workers for M4
     parser.add_argument("--robots", type=int, default=3)
+    parser.add_argument("--restore", type=str, default=None, help="Path to checkpoint to restore from")
     args = parser.parse_args()
     
-    train_versatile(args.iterations, args.robots, args.workers)
+    train_versatile(args.iterations, args.robots, args.workers, restore_path=args.restore)

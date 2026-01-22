@@ -31,9 +31,9 @@ class AdvancedRebuiltRewardFunction:
             
             # Climbing
             "climb_auto": 2.0,        # High value for auto climb
-            "climb_endgame_l1": 1.0,
-            "climb_endgame_l2": 2.0,
-            "climb_endgame_l3": 3.0,
+            "climb_endgame_l1": 10.0,
+            "climb_endgame_l2": 20.0,
+            "climb_endgame_l3": 30.0,
             
             # Defense & Strategy
             "successful_defense": 0.1, # Per step while defending effectively
@@ -200,7 +200,23 @@ class AdvancedRebuiltRewardFunction:
                 pass
 
 
-            # 4. Idle Penalty
+            # 4. Auto Foul Penalty (Pickup from Opponent Zone)
+            if match_period == MatchPeriod.AUTO:
+                if "pickup" in current_action and "Alliance Zone" in current_action:
+                    # Check for cross-alliance interaction
+                    target_is_blue_zone = "Blue Alliance Zone" in current_action
+                    target_is_red_zone = "Red Alliance Zone" in current_action
+                    
+                    is_foul = False
+                    if alliance == Alliance.RED and target_is_blue_zone:
+                         is_foul = True
+                    elif alliance == Alliance.BLUE and target_is_red_zone:
+                         is_foul = True
+                         
+                    if is_foul:
+                        robot_reward += self.weights.get("foul_opponent_zone", -5.0)
+
+            # 5. Idle Penalty
             # If velocity is low and not interacting
             # (Requires accessing robot velocity from state, which might be in physics state not high level state)
             # RobotState has `physics_state` usually

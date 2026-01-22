@@ -403,6 +403,16 @@ class RebuiltMatchController:
                             if robot_name in climbed:
                                 climbed.remove(robot_name)
                                 unclimbed.append(robot_name)
+                                
+                                # Reset robot gameover state
+                                try:
+                                    # Need to access robot state. match_logic usually has game_state.
+                                    robot_state = self.game_state.get_robot(robot_name)
+                                    if robot_state:
+                                        robot_state.setValue("gameover", False)
+                                        # Also reset position? No, they stay at tower until they move.
+                                except:
+                                    pass
                         
                         # Update the tower state
                         tower_state.setValue("climbed_robots", climbed)

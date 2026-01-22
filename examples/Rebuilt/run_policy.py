@@ -24,6 +24,36 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspa
 import ray
 from ray.rllib.algorithms.algorithm import Algorithm
 from ray.tune.registry import register_env
+from ray.rllib.utils.replay_buffers.replay_buffer import ReplayBuffer
+from ray.rllib.utils.from_config import from_config
+
+# === MONKEY PATCH START ===
+# Patching RLlib bug where buffer config type is a Class but checked as String
+def patched_create_local_replay_buffer_if_necessary(self, config):
+    """Create a MultiAgentReplayBuffer instance if necessary."""
+    if not config.get("replay_buffer_config") or config["replay_buffer_config"].get(
+        "no_local_replay_buffer"
+    ):
+        return
+
+    # BUG FIX: Handle type being a Class object
+    buffer_type = config["replay_buffer_config"].get("type")
+    type_name = buffer_type
+    if isinstance(buffer_type, type):
+        type_name = buffer_type.__name__
+        
+    if "EpisodeReplayBuffer" in str(type_name):
+        config["replay_buffer_config"][
+            "metrics_num_episodes_for_smoothing"
+        ] = self.config.metrics_num_episodes_for_smoothing
+
+    return from_config(ReplayBuffer, config["replay_buffer_config"])
+
+# Apply Patch
+Algorithm._create_local_replay_buffer_if_necessary = patched_create_local_replay_buffer_if_necessary
+print("Applied monkey patch to Algorithm._create_local_replay_buffer_if_necessary")
+# === MONKEY PATCH END ===
+
 
 from gamegine.first.alliance import Alliance
 from gamegine.rl import (
@@ -100,6 +130,7 @@ def run_policy(
         return env
 
     register_env("rebuilt-versatile-v0", env_creator)
+    register_env("reefscape-rainbow-v0", env_creator) # Register both names just in case checkpoint expects rainbow
     
     # Setup Algorithm
     if checkpoint_path and checkpoint_path.lower() != "none":

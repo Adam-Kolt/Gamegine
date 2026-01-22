@@ -30,6 +30,7 @@ from gamegine.utils.NCIM.ncim import (
     SpatialMeasurement,
     AngularMeasurement,
     Centimeter,
+    Meter,
 )
 from gamegine.utils.NCIM.Dimensions.mass import Pound
 import arcade
@@ -187,12 +188,45 @@ class Hub(RobotInteractable):
         
         return score_fuel
     
+    @staticmethod
+    def __generate_score_condition(alliance: Alliance):
+        """Condition: Robot has fuel AND belongs to the correct alliance."""
+        def condition(interactableState: HubState, robotState: RobotState, gameState: GameState) -> bool:
+            # Check fuel
+            has_fuel = robotState.gamepieces.get().get(Fuel, 0) > 0
+            if not has_fuel:
+                return False
+                
+            # Check alliance
+            # Check alliance
+            # robotState.alliance is usually a ValueEntry (wrapper)
+            try:
+                # Try getting the value from the state space directly
+                robot_alliance_entry = robotState.getValue("alliance")
+                # Unwrap if it's an entry
+                if hasattr(robot_alliance_entry, "get"):
+                    robot_alliance = robot_alliance_entry.get()
+                else:
+                    robot_alliance = robot_alliance_entry
+            except:
+                robot_alliance = None
+                
+            if robot_alliance is None:
+                 # Fallback: check attribute (might be raw value in some mocks)
+                 robot_alliance = getattr(robotState, "alliance", None)
+                 if hasattr(robot_alliance, "get"): # Is it a ValueEntry?
+                     robot_alliance = robot_alliance.get()
+            
+            return robot_alliance == alliance
+            
+        return condition
+
     def get_interactions(self) -> List[InteractionOption]:
         return [
             InteractionOption(
                 "score_fuel",
                 f"Score FUEL in the {self.alliance.name} Hub",
-                has_fuel_condition,
+                Hub.__generate_score_condition(self.alliance),
                 Hub.__generate_score_fuel_function(self.alliance),
             ),
         ]
@@ -300,6 +334,7 @@ class Tower(RobotInteractable):
     ):
         super().__init__(Point(*center, Inch(0)), name or f"{alliance.name} Tower", navigation_point)
         self.alliance = alliance
+        self.center = Point(*center, Inch(0))
     
     @staticmethod
     def initializeInteractableState() -> TowerState:
@@ -343,31 +378,70 @@ class Tower(RobotInteractable):
             
             # Mark robot as game over ONLY in TELEOP (not AUTO - they unclimb)
             if not is_auto(gameState):
+                print(f"DEBUG: SETTING GAMEOVER for {robot_name}. Is Auto? {is_auto(gameState)}. Time: {gameState.current_time.get()}")
                 robotState.setValue("gameover", True)
             
             return changes
         
         return climb
     
+    @staticmethod
+    def __generate_climb_condition(level: int, alliance: Alliance, base_condition, center, radius):
+        """Condition: Robot belongs to alliance AND meets base climb condition AND is within range."""
+        def condition(interactableState: TowerState, robotState: RobotState, gameState: GameState) -> bool:
+            # Check range
+            dist = robotState.distance_to(center.x, center.y)
+            print(f"DEBUG: Climb Check - Robot at ({robotState.x}, {robotState.y}) vs Tower ({center.x}, {center.y}) Dist: {dist} Radius: {radius}")
+            if dist > radius:
+                 print("DEBUG: Climb Too Far!")
+                 return False
+
+            # Check alliance
+            try:
+                # Try getting the value from the state space directly
+                robot_alliance_entry = robotState.getValue("alliance")
+                # Unwrap if it's an entry
+                if hasattr(robot_alliance_entry, "get"):
+                    robot_alliance = robot_alliance_entry.get()
+                else:
+                    robot_alliance = robot_alliance_entry
+            except:
+                robot_alliance = None
+                
+            if robot_alliance is None:
+                 # Fallback: check attribute (might be raw value in some mocks)
+                 robot_alliance = getattr(robotState, "alliance", None)
+                 if hasattr(robot_alliance, "get"): # Is it a ValueEntry?
+                     robot_alliance = robot_alliance.get()
+                     
+            if robot_alliance is not None and robot_alliance != alliance:
+                print(f"DEBUG: Wrong Alliance! Robot:{robot_alliance} Tower:{alliance}")
+                return False
+            
+            # Check base condition
+            return base_condition(interactableState, robotState, gameState)
+            
+        return condition
+
     def get_interactions(self) -> List[InteractionOption]:
         return [
             InteractionOption(
                 "climb_level_1",
                 f"Climb to Level 1 on {self.alliance.name} Tower",
-                can_climb_auto_l1,  # Updated to use AUTO-aware condition
+                Tower.__generate_climb_condition(1, self.alliance, can_climb_auto_l1, self.center, Meter(1.5)),
                 Tower.__generate_climb_function(1, 15, 10, self.alliance),
             ),
             InteractionOption(
                 "climb_level_2",
                 f"Climb to Level 2 on {self.alliance.name} Tower",
-                can_climb_level_2_or_3,
-                Tower.__generate_climb_function(2, 15, 20, self.alliance),  # 15 pts in AUTO
+                Tower.__generate_climb_condition(2, self.alliance, can_climb_level_2_or_3, self.center, Meter(1.5)),
+                Tower.__generate_climb_function(2, 15, 20, self.alliance),
             ),
             InteractionOption(
                 "climb_level_3",
                 f"Climb to Level 3 on {self.alliance.name} Tower",
-                can_climb_level_2_or_3,
-                Tower.__generate_climb_function(3, 15, 30, self.alliance),  # 15 pts in AUTO
+                Tower.__generate_climb_condition(3, self.alliance, can_climb_level_2_or_3, self.center, Meter(1.5)),
+                Tower.__generate_climb_function(3, 15, 30, self.alliance),
             ),
         ]
 
@@ -797,8 +871,9 @@ class MatchPhaseManager:
         elif red_score > blue_score:
             self.auto_winner = Alliance.RED
         else:
-            # Tie: default to BLUE (could also do coinflip)
-            self.auto_winner = Alliance.BLUE
+            # Tie: Randomize to prevent training bias
+            import random
+            self.auto_winner = random.choice([Alliance.BLUE, Alliance.RED])
     
     def get_phase_for_time(self, time: float) -> MatchPhase:
         """Get the match phase for a given time."""
