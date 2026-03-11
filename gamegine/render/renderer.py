@@ -109,25 +109,36 @@ _TYPE_LAYERS: Dict[str, int] = {
 }
 
 
+# Cache for type-to-layer mapping
+_TYPE_TO_LAYER_CACHE: Dict[Type, str] = {}
+
+
 def _get_layer_for_type(obj: Any) -> str:
     """Determine layer for an object based on its type."""
-    type_name = type(obj).__name__.lower()
+    obj_type = type(obj)
+    if obj_type in _TYPE_TO_LAYER_CACHE:
+        return _TYPE_TO_LAYER_CACHE[obj_type]
+
+    type_name = obj_type.__name__.lower()
     
     # Known types
     if "trajectory" in type_name:
-        return "trajectory"
+        layer = "trajectory"
     elif "path" in type_name:
-        return "path"
+        layer = "path"
     elif "robot" in type_name:
-        return "robot"
+        layer = "robot"
     elif "obstacle" in type_name or "boundary" in type_name:
-        return "obstacles"
+        layer = "obstacles"
     elif "mesh" in type_name or "map" in type_name or "graph" in type_name:
-        return "mesh"
+        layer = "mesh"
     elif "gamepiece" in type_name:
-        return "gamepiece"
+        layer = "gamepiece"
+    else:
+        layer = "objects"
     
-    return "objects"
+    _TYPE_TO_LAYER_CACHE[obj_type] = layer
+    return layer
 
 
 # =============================================================================
